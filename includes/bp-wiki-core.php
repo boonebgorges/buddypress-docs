@@ -869,7 +869,7 @@ function bp_wiki_user_can_create_group_page() {
  * This class allows group-based wiki support.  
  *
  */
-if ( class_exists( BP_Group_Extension ) ) {
+if ( class_exists( 'BP_Group_Extension' ) ) {
 
 	class BP_Wiki extends BP_Group_Extension {	
 
@@ -883,7 +883,7 @@ if ( class_exists( BP_Group_Extension ) ) {
 			$this->nav_item_position = 41;
 			
 			// Only enable the group nav item if the groupwiki has been activated
-			if ( groups_get_groupmeta( $bp->groups->current_group->id, 'bp_wiki_group_wiki_enabled' ) == 'yes' ) {
+			if ( !empty( $bp->groups->current_group->id ) && groups_get_groupmeta( $bp->groups->current_group->id, 'bp_wiki_group_wiki_enabled' ) == 'yes' ) {
 				$this->enable_nav_item = true;
 			} else {
 				$this->enable_nav_item = false;
