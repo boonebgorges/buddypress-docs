@@ -150,12 +150,12 @@ global $bp;
 
 	<p><?php _e( 'Please select the default privacy levels for your wiki pages.  Any new pages created will default to these privacy settings.', 'bp-wiki' ); ?></p>
 
-	<input type="radio" name="wiki-privacy" value="public" <?php if ( groups_get_groupmeta( $bp->groups->current_group->id, 'bp_wiki_group_wiki_default_page_privacy' ) == 'public' ) echo 'checked="1"'; ?>/>
+	<input type="radio" name="wiki-privacy" value="public" <?php if ( bp_wiki_group_default_page_privacy() == 'public' ) echo 'checked="1"'; ?>/>
 
 		<strong><?php _e( 'Public', 'bp-wiki' ); ?></strong>
 		<?php _e( ' - Wiki pages are viewable to all site visitors.', 'bp-wiki' ); ?><br/>
 
-	<input type="radio" name="wiki-privacy" value="member-only" <?php if ( groups_get_groupmeta( $bp->groups->current_group->id, 'bp_wiki_group_wiki_default_page_privacy' ) == 'member-only' ) echo 'checked="1"'; ?>/>
+	<input type="radio" name="wiki-privacy" value="member-only" <?php if ( bp_wiki_group_default_page_privacy() == 'member-only' ) echo 'checked="1"'; ?>/>
 
 		<strong><?php _e( 'Private', 'bp-wiki' ); ?></strong>
 		<?php _e( ' - Wiki pages may only be viewed by members of the group.', 'bp-wiki' ); ?><br/>
