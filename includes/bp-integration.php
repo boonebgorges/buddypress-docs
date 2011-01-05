@@ -1,14 +1,16 @@
 <?php
 
 class BP_Docs_BP_Integration {
+	var $hhh;
+	
 	/**
 	 * PHP 4 constructor
 	 *
 	 * @package BuddyPress Docs
 	 * @since 1.0
 	 */
-	function bp_docs() {
-		$this->construct();
+	function bp_docs_bp_integration() {
+		$this->__construct();
 	}
 
 	/**
@@ -33,15 +35,18 @@ class BP_Docs_BP_Integration {
 	function setup_globals() {
 		global $bp;
 		
+		$this->hhh = 'htthtn';
 		$bp->bp_docs->format_notification_function = 'bp_docs_format_notifications';
 		$bp->bp_docs->slug = BP_DOCS_SLUG;
 	
 		// Todo: You only need this if you need top level access: example.com/docs
 		/* Register this in the active components array */
 		//$bp->active_components[ $bp->wiki->slug ] = $bp->wiki->id;
+		
 	}
 }
 
+// Todo: this should probably be separated into a groups-only file
 class BP_Docs_Group_Extension extends BP_Group_Extension {	
 
 	// Todo: make this configurable
@@ -149,21 +154,29 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	function display() {
 		global $bp;
 		
-		$current_view = !empty( $bp->action_variables[0] ) ? $bp->action_variables[0] : BP_DOCS_LIST_SLUG;
+		$current_view = bp_docs_get_current_view();
 		
 		switch ( $current_view ) {
-			case BP_DOCS_LIST_SLUG :
-				echo 'List';
+			case 'list' :
+				// Get the correct args based on URL
+				// Then load the loop template
 				break;
-			
-			case BP_DOCS_EDIT_SLUG :
-				echo 'Edit';
-				break;
-			
-			case BP_DOCS_SINGLE_SLUG :
-				echo 'Single';
-				break;
-		}
+			case 'category' :
+				// Check to make sure the category exists
+				// If not, redirect back to list view with error
+				// Otherwise, get args based on category ID
+				// Then load the loop template
+			case 'single' :
+				// Check to make sure the post exists
+				// If not, redirect back to list view with error
+				// Otherwise, get args based on post ID
+				// Then load the single item template
+			case 'edit' :
+				// Check to make sure the post exists
+				// If not, redirect back to the list with error
+				// Otherwise, get args based on post ID
+				// Then load the edit template
+		}		
 	}
 
 	/**
