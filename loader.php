@@ -9,5 +9,5 @@ function bp_docs_init() {
 	require( dirname( __FILE__ ) . '/bp-docs.php' );
 	$bp_docs = new BP_Docs;
 }
-add_action( 'bp_include', 'bp_docs_init' );
+add_action( 'bp_loaded', 'bp_docs_init' );
 ?>
