@@ -155,7 +155,6 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 		global $bp_docs_template;
 		
 		$bp_docs_template = new BP_Docs_Query;
-		print_r( $bp_docs_template );
 	}
 
 	/**
