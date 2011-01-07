@@ -30,12 +30,15 @@ class BP_Docs_Query {
 	 * @package BuddyPress Docs
 	 * @since 1.0
 	 */	
-	function __construct() {
+	function __construct() {		
 		$this->item_type = $this->get_item_type();
 		$this->setup_item();
 		$this->setup_terms();
 		$this->current_view = $this->get_current_view();
 		
+		// Get the item slug, if there is one available
+		if ( $this->current_view == 'single' || $this->current_view == 'edit' )
+			$this->doc_slug = $this->get_doc_slug();
 		
 	}
 
@@ -95,6 +98,17 @@ class BP_Docs_Query {
 		$this->item_id = apply_filters( 'bp_docs_get_item_id', $id );
 		$this->item_name = apply_filters( 'bp_docs_get_item_name', $name );
 		$this->item_slug = apply_filters( 'bp_docs_get_item_slug', $slug );
+	}
+	
+	function get_doc_slug() {
+		global $bp;
+		
+		$slug = false;
+		
+		if ( $this->item_type == 'group' )
+			$slug = $bp->action_variables[0];
+		
+		return apply_filters( 'bp_docs_this_doc_slug', $slug, $this );
 	}
 	
 	/**
@@ -243,11 +257,6 @@ class BP_Docs_Query {
 				break;
 			case 'single' :
 			case 'edit' :
-				// First, find the slug
-				if ( $this->item_type == 'group' )
-					$slug = $bp->action_variables[0];
-				
-				$this->doc_slug = apply_filters( 'bp_docs_this_doc_slug', $slug, $this );
 				
 				$args = $this->build_query();
 				
@@ -286,8 +295,8 @@ class BP_Docs_Query {
 			'message' => __( 'Unknown error. Please try again.', 'bp-docs' ),
 			'redirect' => 'create'
 		);
-	
-		if ( empty( $this->doc_id ) ) {
+		
+		if ( empty( $this->doc_slug ) ) {
 			// This is a new doc
 			if ( !$post_id = wp_insert_post( $r ) ) {
 				$result['message'] = __( 'There was an error when creating the doc.', 'bp-doc' );
@@ -305,10 +314,18 @@ class BP_Docs_Query {
 				$result['redirect'] = 'single';
 			}				
 		} else {
-			// This is an existing doc
-			$args['ID'] = $this->doc_id;
+			// This is an existing doc, so we need to get the post ID
+			$the_doc_args = array(
+				'name' => $this->doc_slug,
+				'post_type' => 'bp_doc'
+			);
 			
-			if ( !wp_insert_post( $r ) ) {
+			$the_docs = get_posts( $the_doc_args );			
+			$this->doc_id = $the_docs[0]->ID;	
+				
+			$r['ID'] = $this->doc_id;
+			
+			if ( !wp_update_post( $r ) ) {
 				$result['message'] = __( 'There was an error when saving the doc.', 'bp-doc' );
 				$result['redirect'] = 'edit';
 			} else {
