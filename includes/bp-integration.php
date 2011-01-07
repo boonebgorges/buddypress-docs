@@ -24,6 +24,8 @@ class BP_Docs_BP_Integration {
 		
 		// Todo: Only fire this if you actually need it for a given group
 		bp_register_group_extension( 'BP_Docs_Group_Extension' );
+		
+		add_action( 'wp', array( $this, 'catch_form_submits' ), 1 );
 	}
 	
 	/**
@@ -41,6 +43,25 @@ class BP_Docs_BP_Integration {
 		// Todo: You only need this if you need top level access: example.com/docs
 		/* Register this in the active components array */
 		//$bp->active_components[ $bp->wiki->slug ] = $bp->wiki->id;
+		
+	}
+	
+		
+	/**
+	 * Catches incoming form submits and sends them on their merry way
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 */
+	function catch_form_submits() {
+		global $bp;
+		
+		if ( !empty( $_POST['doc-edit-submit'] ) ) {
+			$this_doc = new BP_Docs_Query;
+			$this_doc->save();
+			print_r( $this_doc ); die();
+		}
+		
 		
 	}
 }
@@ -156,6 +177,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	 */
 	function display() {		
 		$bp_docs_template = new BP_Docs_Query;
+		$bp_docs_template->template_decider();
 	}
 
 	/**
