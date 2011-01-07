@@ -59,7 +59,7 @@ class BP_Docs_BP_Integration {
 		if ( !empty( $_POST['doc-edit-submit'] ) ) {
 			$this_doc = new BP_Docs_Query;
 			$this_doc->save();
-			print_r( $this_doc ); die();
+			//print_r( $this_doc ); die();
 		}
 		
 		
