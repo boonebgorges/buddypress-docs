@@ -65,6 +65,10 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 
 		$this->create_step_position = 45;
 		$this->nav_item_position = 45;
+		
+		//$group_link = bp_get_group_permalink();
+		//$group_slug = bp_get_group_slug();
+		
 	}
 
 	/**
@@ -151,9 +155,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	 * @package BuddyPress Docs
 	 * @since 1.0
 	 */
-	function display() {
-		global $bp_docs_template;
-		
+	function display() {		
 		$bp_docs_template = new BP_Docs_Query;
 	}
 
