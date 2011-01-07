@@ -35,7 +35,6 @@ class BP_Docs_BP_Integration {
 	function setup_globals() {
 		global $bp;
 		
-		$this->hhh = 'htthtn';
 		$bp->bp_docs->format_notification_function = 'bp_docs_format_notifications';
 		$bp->bp_docs->slug = BP_DOCS_SLUG;
 	
