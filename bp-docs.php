@@ -27,7 +27,10 @@ class BP_Docs {
 		add_action( 'init', array( $this, 'register_post_type' ) );
 		
 		// Includes necessary files
-		add_action( 'bp_docs_init', array( $this, 'includes' ) );		
+		add_action( 'bp_docs_init', array( $this, 'includes' ) );
+		
+		// Load the BP integration functions
+		add_action( 'bp_docs_init', array( $this, 'do_integration' ) );
 
 		// Let plugins know that BP Docs has started loading
 		$this->init_hook();
@@ -170,17 +173,26 @@ class BP_Docs {
 		
 		$includes_path = BP_DOCS_INSTALL_PATH . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR;
 		
+		// query-builder.php contains the class that fetches the content for each view
+		require_once( $includes_path . 'query-builder.php' );
+		
 		// bp-integration.php provides the hooks necessary to hook into BP navigation
 		require_once( $includes_path . 'bp-integration.php' );
-		$this->bp_integration = new BP_Docs_BP_Integration;
 		
 		// templatetags.php has all functions in the global space available to templates
 		require_once( $includes_path . 'templatetags.php' );
 		
-		// query-builder.php contains the class that fetches the content for each view
-		require_once( $includes_path . 'query-builder.php' );
-	}
+	}	
 	
+	/**
+	 * Initiates the BP integration functions
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 */
+	function do_integration() {
+		$this->bp_integration = new BP_Docs_BP_Integration;	
+	}
 }
 
 ?>

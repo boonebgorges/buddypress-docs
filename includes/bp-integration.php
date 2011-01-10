@@ -1,8 +1,6 @@
 <?php
 
-class BP_Docs_BP_Integration {
-	var $hhh;
-	
+class BP_Docs_BP_Integration {	
 	/**
 	 * PHP 4 constructor
 	 *
@@ -20,12 +18,20 @@ class BP_Docs_BP_Integration {
 	 * @since 1.0
 	 */	
 	function __construct() {
+		add_action( 'bp_loaded', array( $this, 'do_query' ) );
+		
 		add_action( 'bp_setup_globals', array( $this, 'setup_globals' ) );
 		
 		// Todo: Only fire this if you actually need it for a given group
 		bp_register_group_extension( 'BP_Docs_Group_Extension' );
 		
 		add_action( 'wp', array( $this, 'catch_form_submits' ), 1 );
+		
+		add_action( 'wp_print_scripts', array( $this, 'enqueue_scripts' ) );
+	}
+	
+	function do_query() {
+		$this->query = new BP_Docs_Query;
 	}
 	
 	/**
@@ -61,8 +67,18 @@ class BP_Docs_BP_Integration {
 			$this_doc->save();
 			//print_r( $this_doc ); die();
 		}
+	}
+	
+	/**
+	 * Loads JavaScript
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 */	
+	function enqueue_scripts() {
 		
-		
+		if ( !empty( $this->query->current_view ) && ( 'edit' == $this->query->current_view || 'create' == $this->query->current_view ) )
+			wp_enqueue_script( 'tiny_mce' );
 	}
 }
 
@@ -175,9 +191,10 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	 * @package BuddyPress Docs
 	 * @since 1.0
 	 */
-	function display() {		
-		$bp_docs_template = new BP_Docs_Query;
-		$bp_docs_template->template_decider();
+	function display() {
+		global $bp_docs;
+		
+		$bp_docs->bp_integration->query->load_template();
 	}
 
 	/**
