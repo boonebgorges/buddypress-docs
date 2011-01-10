@@ -9,7 +9,7 @@
 	
 	<br />
 	
-	<textarea name="content" id="doc-content"><?php echo get_the_content() ?></textarea>
+	<textarea name="content" id="theEditor"><?php echo get_the_content() ?></textarea>
 	
 	<input type="submit" value="<?php _e( 'Save Changes', 'bp-docs' ) ?>" name="doc-edit-submit" />
 	
