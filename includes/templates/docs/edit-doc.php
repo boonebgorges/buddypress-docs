@@ -130,10 +130,6 @@ include_once ABSPATH . '/wp-admin/includes/media.php' ;
 require_once ABSPATH . '/wp-admin/includes/post.php' ;
 wp_tiny_mce();
 
-
-global $bp; print_r( $bp->bp_docs->current_post );
-
-
 ?>
 <form action="" method="post" class="standard-form" id="doc-form">
     <div class="doc-meta">
