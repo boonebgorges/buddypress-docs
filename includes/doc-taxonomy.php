@@ -32,6 +32,9 @@ class BP_Docs_Taxonomy {
 	
 		// Hook into post saves to save any taxonomy terms. 
 		add_action( 'bp_docs_doc_saved', array( $this, 'save_post' ) );
+		
+		// Display a doc's terms on its single doc page
+		add_action( 'bp_docs_single_doc_meta', array( $this, 'show_terms' ) );
 	}
 	
 	/**
@@ -86,6 +89,23 @@ class BP_Docs_Taxonomy {
 			wp_set_post_terms( $query->doc_id, $terms, $tax_name );
 		}
 	}
+	
+	/**
+	 * Saves post taxonomy terms to a doc when saved from the front end
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 *
+	 * @param object $query The query object created by BP_Docs_Query
+	 * @return int $post_id Returns the doc's post_id on success
+	 */	
+	 function show_terms() {
+	 	foreach( $this->taxonomies as $tax_name ) {
+	 		// Todo: Make the tax name dynamic by adding a tag name to $this->taxonomies
+	 		// Todo: Make these terms link to a group-specific tax director
+	 		echo get_the_term_list( get_the_ID(), $tax_name, 'Tags: ', ', ', '' );
+	 	}
+	 }
 }
 
 ?>

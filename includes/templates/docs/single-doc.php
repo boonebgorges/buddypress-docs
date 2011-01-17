@@ -6,6 +6,9 @@
 
 <?php the_content() ?>
 
+<div class="doc-meta">
+	<?php do_action( 'bp_docs_single_doc_meta' ) ?>
+</div>
 
 <a href="<?php bp_docs_group_doc_permalink() ?>/edit">Edit</a> 
 
