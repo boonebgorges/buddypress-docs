@@ -80,7 +80,13 @@ class BP_Docs_BP_Integration {
 		
 		if ( !empty( $this->query->current_view ) && ( 'edit' == $this->query->current_view || 'create' == $this->query->current_view ) ) {
 			require_once( ABSPATH . '/wp-admin/includes/post.php' );
-			wp_tiny_mce( false, array( 'theme' => 'default' ) );
+			wp_enqueue_script( 'common' );
+			wp_enqueue_script( 'jquery-color' );
+			//wp_print_scripts('editor');
+			if (function_exists('add_thickbox')) add_thickbox();
+			//wp_print_scripts('media-upload');
+			wp_admin_css();
+			wp_enqueue_script('utils');
 		}
 	}
 	

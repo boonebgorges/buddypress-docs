@@ -258,7 +258,7 @@ class BP_Docs_Query {
 			case 'create' :
 				// Todo: Make sure the user has permission to create
 				
-				$template = $template_path . 'create-doc.php';
+				$template = $template_path . 'edit-doc.php';
 				break;
 			case 'list' :
 				$args = $this->build_query();
@@ -282,6 +282,20 @@ class BP_Docs_Query {
 				
 				query_posts( $args );
 				
+				// If this is the edit screen, we won't really be able to use a 
+				// regular have_posts() loop in the template, so we'll stash the
+				// post in the $bp global for the edit-specific template tags
+				if ( $this->current_view == 'edit' ) {
+					if ( have_posts() ) : while ( have_posts() ) : the_post();
+						$bp->bp_docs->current_post = $post;
+					endwhile; endif;
+					
+					/** 
+					 * Load the template tags for the edit screen
+					 */
+					 require BP_DOCS_INSTALL_PATH . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'templatetags-edit.php';
+				}
+
 				if ( $this->current_view == 'single' )
 					$template = $template_path . 'single-doc.php';	
 				else
