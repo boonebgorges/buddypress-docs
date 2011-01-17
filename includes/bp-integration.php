@@ -27,7 +27,7 @@ class BP_Docs_BP_Integration {
 		
 		add_action( 'wp', array( $this, 'catch_form_submits' ), 1 );
 		
-		add_action( 'wp_print_scripts', array( $this, 'enqueue_scripts' ) );
+		add_action( 'init', array( $this, 'enqueue_scripts' ) );
 		add_action( 'wp_print_styles', array( $this, 'enqueue_styles' ) );
 	}
 	

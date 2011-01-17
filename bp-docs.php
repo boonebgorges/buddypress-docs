@@ -23,6 +23,9 @@ class BP_Docs {
 		// Load predefined constants first thing
 		add_action( 'bp_docs_init', array( $this, 'load_constants' ), 2 );
 		
+		// Set up doc taxonomy
+		add_action( 'init', array( $this, 'load_post_taxonomies' ) );
+		
 		// Hooks into the 'init' action to register our WP custom post type and tax
 		add_action( 'init', array( $this, 'register_post_type' ) );
 		
@@ -75,7 +78,7 @@ class BP_Docs {
 	 * @since 1.0
 	 */	
 	function load_constants() {
-		// You should never really need to override this
+		// You should never really need to override this bad boy
 		if ( !defined( 'BP_DOCS_INSTALL_PATH' ) )
 			define( 'BP_DOCS_INSTALL_PATH', dirname(__FILE__) );
 		
@@ -99,6 +102,22 @@ class BP_Docs {
 		if ( !defined( 'BP_DOCS_CREATE_SLUG' ) )
 			define( 'BP_DOCS_CREATE_SLUG', 'create' );
 	}	
+	
+	/**
+	 * Loads the file that enables the use of post taxonomies for docs
+	 *
+	 * This is loaded conditionally, so that the use of post taxonomies can be disabled by the
+	 * administrator. It is loaded before the bp_docs post type is registered so that we have
+	 * access to the 'taxonomy' argument of register_post_type.
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 */
+	function load_post_taxonomies() {
+		// Todo: make this conditional with a filter or a constant
+		require_once( BP_DOCS_INSTALL_PATH . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'doc-taxonomy.php' );
+		$this->taxonomy = new BP_Docs_Taxonomy;
+	}
 	
 	/**
 	 * Registers BuddyPress Docs's post types and taxonomies
@@ -133,8 +152,9 @@ class BP_Docs {
 			'parent_item_colon' => ''
 		);
 	
-		// Register the bp_doc post type
-		register_post_type( 'bp_doc', array(
+		// Set up the arguments to be used when the post type is registered
+		// Only filter this if you are hella smart and/or know what you're doing
+		$bp_docs_post_type_args = apply_filters( 'bp_docs_post_type_args', array(
 			'label' => __( 'BuddyPress Docs', 'bp-docs' ),
 			'labels' => $post_type_labels,
 			'public' => true,
@@ -145,7 +165,10 @@ class BP_Docs {
 			'query_var' => true,
 			//'rewrite' => false
 			'rewrite' => array( "slug" => "docs", 'with_front' => false ), // Permalinks format
-		));
+		) );
+	
+		// Register the bp_doc post type
+		register_post_type( 'bp_doc', $bp_docs_post_type_args );
 		
 		// Define the labels to be used by the taxonomy bp_docs_associated_item
 		$associated_item_labels = array(
