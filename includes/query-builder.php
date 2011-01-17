@@ -257,6 +257,11 @@ class BP_Docs_Query {
 		switch ( $this->current_view ) {
 			case 'create' :
 				// Todo: Make sure the user has permission to create
+								
+				/** 
+				 * Load the template tags for the edit screen
+				 */
+				 require BP_DOCS_INSTALL_PATH . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'templatetags-edit.php';
 				
 				$template = $template_path . 'edit-doc.php';
 				break;
@@ -306,7 +311,8 @@ class BP_Docs_Query {
 				break;
 		}
 		
-		include( apply_filters( 'bp_docs_template', $template, $this ) );
+		if ( !empty( $template ) )
+			include( apply_filters( 'bp_docs_template', $template, $this ) );
 	}
 
 	/**
@@ -321,60 +327,71 @@ class BP_Docs_Query {
 	function save( $args = false ) {
 		global $bp;
 		
+		// Get the required taxonomy items associated with the group. We only run this
+		// on a save because it requires extra database hits.
 		$this->setup_terms();
 		
-		$defaults = array(
-			'post_type' => 'bp_doc',
-			'post_author' => bp_loggedin_user_id(),
-			'post_title' => $_POST['title'],
-			'post_content' => $_POST['content'],
-			'post_status' => 'publish'
-		);
-		
-		$r = wp_parse_args( $args, $defaults );
-	
+		// Set up the default value for the result message
 		$results = array(
 			'message' => __( 'Unknown error. Please try again.', 'bp-docs' ),
 			'redirect' => 'create'
 		);
 		
-		if ( empty( $this->doc_slug ) ) {
-			// This is a new doc
-			if ( !$post_id = wp_insert_post( $r ) ) {
-				$result['message'] = __( 'There was an error when creating the doc.', 'bp-doc' );
-				$result['redirect'] = 'create';
-			} else {
-				// If the doc was saved successfully, place it in the proper tax
-				wp_set_post_terms( $post_id, $this->term_id, 'bp_docs_associated_item' );
-				
-				$this->doc_id = $post_id;
-				
-				$the_doc = get_post( $this->doc_id );
-				$this->doc_slug = $the_doc->post_name;
-				
-				$result['message'] = __( 'Doc successfully created!', 'bp-doc' );
-				$result['redirect'] = 'single';
-			}				
+		if ( empty( $_POST['doc']['title'] ) || empty( $_POST['doc']['content'] ) ) {
+			// Both the title and the content fields are required
+			$result['message'] = __( 'Both the title and the content fields are required.', 'bp-doc' );
+			$result['redirect'] = $this->current_view;
 		} else {
-			// This is an existing doc, so we need to get the post ID
-			$the_doc_args = array(
-				'name' => $this->doc_slug,
-				'post_type' => 'bp_doc'
+			// If both the title and content fields are filled in, we can proceed
+			$defaults = array(
+				'post_type' => 'bp_doc',
+				'post_author' => bp_loggedin_user_id(),
+				'post_title' => $_POST['doc']['title'],
+				'post_content' => $_POST['doc']['content'],
+				'post_status' => 'publish'
 			);
 			
-			$the_docs = get_posts( $the_doc_args );			
-			$this->doc_id = $the_docs[0]->ID;	
-				
-			$r['ID'] = $this->doc_id;
+			$r = wp_parse_args( $args, $defaults );
 			
-			if ( !wp_update_post( $r ) ) {
-				$result['message'] = __( 'There was an error when saving the doc.', 'bp-doc' );
-				$result['redirect'] = 'edit';
+			if ( empty( $this->doc_slug ) ) {
+				// This is a new doc
+				if ( !$post_id = wp_insert_post( $r ) ) {
+					$result['message'] = __( 'There was an error when creating the doc.', 'bp-doc' );
+					$result['redirect'] = 'create';
+				} else {
+					// If the doc was saved successfully, place it in the proper tax
+					wp_set_post_terms( $post_id, $this->term_id, 'bp_docs_associated_item' );
+					
+					$this->doc_id = $post_id;
+					
+					$the_doc = get_post( $this->doc_id );
+					$this->doc_slug = $the_doc->post_name;
+					
+					$result['message'] = __( 'Doc successfully created!', 'bp-doc' );
+					$result['redirect'] = 'single';
+				}				
 			} else {
-				$result['message'] = __( 'Doc successfully saved!', 'bp-doc' );
-				$result['redirect'] = 'single';
+				// This is an existing doc, so we need to get the post ID
+				$the_doc_args = array(
+					'name' => $this->doc_slug,
+					'post_type' => 'bp_doc'
+				);
+				
+				$the_docs = get_posts( $the_doc_args );			
+				$this->doc_id = $the_docs[0]->ID;	
+					
+				$r['ID'] = $this->doc_id;
+				
+				if ( !wp_update_post( $r ) ) {
+					$result['message'] = __( 'There was an error when saving the doc.', 'bp-doc' );
+					$result['redirect'] = 'edit';
+				} else {
+					$result['message'] = __( 'Doc successfully saved!', 'bp-doc' );
+					$result['redirect'] = 'single';
+				}
 			}
 		}
+
 		
 		$message_type = $result['redirect'] == 'single' ? 'success' : 'error';
 		bp_core_add_message( $result['message'], $message_type );
