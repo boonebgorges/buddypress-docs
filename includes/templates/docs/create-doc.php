@@ -14,4 +14,4 @@
 	
 	<a href="<?php bp_docs_group_doc_permalink() ?>">Cancel</a> 
 
-</form>
+</form> 
