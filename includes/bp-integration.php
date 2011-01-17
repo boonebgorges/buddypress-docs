@@ -1,6 +1,8 @@
 <?php
 
 class BP_Docs_BP_Integration {	
+	var $includes_url;
+	
 	/**
 	 * PHP 4 constructor
 	 *
@@ -27,10 +29,17 @@ class BP_Docs_BP_Integration {
 		
 		add_action( 'wp', array( $this, 'catch_form_submits' ), 1 );
 		
+		add_action( 'bp_loaded', array( $this, 'set_includes_url' ) );
 		add_action( 'init', array( $this, 'enqueue_scripts' ) );
 		add_action( 'wp_print_styles', array( $this, 'enqueue_styles' ) );
 	}
 	
+	/**
+	 * Loads the Docs query.
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 */
 	function do_query() {
 		$this->query = new BP_Docs_Query;
 	}
@@ -71,6 +80,16 @@ class BP_Docs_BP_Integration {
 	}
 	
 	/**
+	 * Sets the includes URL for use when loading scripts and styles
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 */
+	function set_includes_url() {
+		$this->includes_url = plugins_url() . '/buddypress-docs/includes/';
+	}
+	
+	/**
 	 * Loads JavaScript
 	 *
 	 * @package BuddyPress Docs
@@ -90,8 +109,17 @@ class BP_Docs_BP_Integration {
 		}
 	}
 	
+	/**
+	 * Loads styles
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 */
 	function enqueue_styles() {
-		wp_enqueue_style('thickbox');
+		if ( !empty( $this->query->current_view ) && ( 'edit' == $this->query->current_view || 'create' == $this->query->current_view ) ) {
+			wp_enqueue_style('thickbox');
+			wp_enqueue_style( 'bpd-edit-css', $this->includes_url . 'css' . DIRECTORY_SEPARATOR . 'edit.css' );
+		}
 	}
 }
 

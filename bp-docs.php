@@ -80,7 +80,11 @@ class BP_Docs {
 	function load_constants() {
 		// You should never really need to override this bad boy
 		if ( !defined( 'BP_DOCS_INSTALL_PATH' ) )
-			define( 'BP_DOCS_INSTALL_PATH', dirname(__FILE__) );
+			define( 'BP_DOCS_INSTALL_PATH', dirname(__FILE__) . DIRECTORY_SEPARATOR );
+		
+		// Ditto
+		if ( !defined( 'BP_DOCS_INCLUDES_PATH' ) )
+			define( 'BP_DOCS_INCLUDES_PATH', BP_DOCS_INSTALL_PATH . 'includes' . DIRECTORY_SEPARATOR );
 		
 		// The main slug
 		if ( !defined( 'BP_DOCS_SLUG' ) )
@@ -193,17 +197,15 @@ class BP_Docs {
 	 * @since 1.0
 	 */	
 	function includes() {
-		
-		$includes_path = BP_DOCS_INSTALL_PATH . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR;
-		
+	
 		// query-builder.php contains the class that fetches the content for each view
-		require_once( $includes_path . 'query-builder.php' );
+		require_once( BP_DOCS_INCLUDES_PATH . 'query-builder.php' );
 		
 		// bp-integration.php provides the hooks necessary to hook into BP navigation
-		require_once( $includes_path . 'bp-integration.php' );
+		require_once( BP_DOCS_INCLUDES_PATH . 'bp-integration.php' );
 		
 		// templatetags.php has all functions in the global space available to templates
-		require_once( $includes_path . 'templatetags.php' );
+		require_once( BP_DOCS_INCLUDES_PATH . 'templatetags.php' );
 		
 	}	
 	

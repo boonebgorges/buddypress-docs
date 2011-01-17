@@ -94,6 +94,9 @@ function bp_docs_post_tags_meta_box($post) {
 	<div class="nojs-tags hide-if-js">
 	<p><?php echo $taxonomy->labels->add_or_remove_items; ?></p>
 	<textarea name="<?php echo "doc[$tax_name]"; ?>" rows="3" cols="20" class="the-tags" id="tax-input-<?php echo $tax_name; ?>" <?php echo $disabled; ?>><?php echo get_terms_to_edit( $bp->bp_docs->current_post->ID, $tax_name ); // textarea_escaped by esc_attr() ?></textarea></div>
+ 	
+ 	<?php /* Removed for the moment until fancypants JS is in place */ ?>
+ 	<?php /* ?>
  	<?php if ( current_user_can($taxonomy->cap->assign_terms) ) : ?>
 	<div class="ajaxtag hide-if-no-js">
 		<label class="screen-reader-text" for="new-tag-<?php echo $tax_name; ?>"><?php echo $box['title']; ?></label>
@@ -109,6 +112,9 @@ function bp_docs_post_tags_meta_box($post) {
 <?php if ( current_user_can($taxonomy->cap->assign_terms) ) : ?>
 <p class="hide-if-no-js"><a href="#titlediv" class="tagcloud-link" id="link-<?php echo $tax_name; ?>"><?php echo $taxonomy->labels->choose_from_most_used; ?></a></p>
 <?php endif; ?>
+	<?php */ ?>
+	</div>
+	</div>
 <?php
 }
 
