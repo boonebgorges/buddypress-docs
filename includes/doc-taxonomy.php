@@ -91,7 +91,7 @@ class BP_Docs_Taxonomy {
 	}
 	
 	/**
-	 * Saves post taxonomy terms to a doc when saved from the front end
+	 * Shows a doc's taxonomy terms
 	 *
 	 * @package BuddyPress Docs
 	 * @since 1.0
