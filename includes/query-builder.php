@@ -30,7 +30,7 @@ class BP_Docs_Query {
 	 * @package BuddyPress Docs
 	 * @since 1.0
 	 */	
-	function __construct() {		
+	function __construct() {
 		$this->item_type = $this->get_item_type();
 		$this->setup_item();
 		$this->current_view = $this->get_current_view();
@@ -53,11 +53,6 @@ class BP_Docs_Query {
 		global $bp;
 		
 		$type = '';
-		
-		// First, test to see whether this is a group docs page
-		if ( $bp->current_component == $bp->groups->slug ) {
-			$type = 'group';
-		}
 		
 		return apply_filters( 'bp_docs_get_item_type', $type, $this );
 	}
@@ -97,6 +92,7 @@ class BP_Docs_Query {
 				break;
 		}
 		
+		// Todo: abstract into groups. Will be a pain
 		$this->item_id = apply_filters( 'bp_docs_get_item_id', $id );
 		$this->item_name = apply_filters( 'bp_docs_get_item_name', $name );
 		$this->item_slug = apply_filters( 'bp_docs_get_item_slug', $slug );
@@ -198,28 +194,7 @@ class BP_Docs_Query {
 		if ( !$item_type )
 			$item_type = $this->item_type;
 		
-		// First, test to see whether this is a group docs page
-		if ( $item_type == 'group' ) {
-			if ( empty( $bp->action_variables[0] ) ) {
-				// An empty $bp->action_variables[0] means that you're looking at a list
-				$view = 'list';
-			} else if ( $bp->action_variables[0] == BP_DOCS_CATEGORY_SLUG ) {
-				// Category view
-				$view = 'category';
-			} else if ( $bp->action_variables[0] == BP_DOCS_CREATE_SLUG ) {
-				// Create new doc
-				$view = 'create';
-			} else if ( empty( $bp->action_variables[1] ) ) {
-				// $bp->action_variables[1] is the slug for this doc. If there's no
-				// further chunk, then we're attempting to view a single item
-				$view = 'single';
-			} else if ( !empty( $bp->action_variables[1] ) && $bp->action_variables[1] == BP_DOCS_EDIT_SLUG ) {
-				// This is an edit page
-				$view = 'edit';
-			}
-		}
-		
-		$view = apply_filters( 'bp_docs_get_current_view', $view );
+		$view = apply_filters( 'bp_docs_get_current_view', $view, $item_type );
 	
 		// Stuffing into the $bp global for later use. Cheating, I know.
 		$bp->bp_docs->current_view = $view;
