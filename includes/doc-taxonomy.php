@@ -105,9 +105,6 @@ class BP_Docs_Taxonomy {
 	 *
 	 * @package BuddyPress Docs
 	 * @since 1.0
-	 *
-	 * @param object $query The query object created by BP_Docs_Query
-	 * @return int $post_id Returns the doc's post_id on success
 	 */	
 	function show_terms() {
 	 	foreach( $this->taxonomies as $tax_name ) {
@@ -123,8 +120,8 @@ class BP_Docs_Taxonomy {
 	 * @package BuddyPress Docs
 	 * @since 1.0
 	 *
-	 * @param object $query The query object created by BP_Docs_Query
-	 * @return int $post_id Returns the doc's post_id on success
+	 * @param array $terms The terms submitted in the most recent save
+	 * @param int $doc_id The unique id of the doc
 	 */	
 	function cache_terms_for_item( $terms = array(), $doc_id ) {
 		$existing_terms = $this->get_item_terms();
@@ -171,11 +168,13 @@ class BP_Docs_Taxonomy {
 	/**
 	 * Gets the list of terms used by an item's docs
 	 *
+	 * This is a dummy function that allows specific item types to hook in their own methods
+	 * for retrieving metadata (groups_update_groupmeta(), get_user_meta(), etc)
+	 *
 	 * @package BuddyPress Docs
 	 * @since 1.0
 	 *
-	 * @param object $query The query object created by BP_Docs_Query
-	 * @return int $post_id Returns the doc's post_id on success
+	 * @return array $terms The item's terms
 	 */	
 	function get_item_terms() {
 		$terms = array();
@@ -190,6 +189,8 @@ class BP_Docs_Taxonomy {
 	 *
 	 * @package BuddyPress Docs
 	 * @since 1.0
+	 *
+	 * @return array $terms The item's terms
 	 */	
 	function save_item_terms( $terms ) {
 		do_action( 'bp_docs_taxonomy_save_item_terms', $terms );
