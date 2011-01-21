@@ -103,4 +103,7 @@ class BP_Docs_Hierarchy {
 	 }
 }
 
+class BP_Docs_Hierarchy_Walker extends Walker {
+}
+
 ?>
