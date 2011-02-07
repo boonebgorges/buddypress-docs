@@ -1,6 +1,9 @@
 
 <?php include( apply_filters( 'bp_docs_header_template', $template_path . 'docs-header.php' ) ) ?>
 
+<div class="docs-info-header">
+	<?php bp_docs_info_header() ?>
+</div>
 
 <?php if ( have_posts() ) : ?>
 	<table class="doctable">

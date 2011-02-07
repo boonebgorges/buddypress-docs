@@ -28,13 +28,16 @@ class BP_Docs_Taxonomy {
 	 */	
 	function __construct() {
 		// Make sure that the bp_docs post type supports our post taxonomies
-		add_filter( 'bp_docs_post_type_args', array( $this, 'register_with_post_type' ) );
+		add_filter( 'bp_docs_post_type_args', 	array( $this, 'register_with_post_type' ) );
 	
 		// Hook into post saves to save any taxonomy terms. 
-		add_action( 'bp_docs_doc_saved', array( $this, 'save_post' ) );
+		add_action( 'bp_docs_doc_saved', 	array( $this, 'save_post' ) );
 		
 		// Display a doc's terms on its single doc page
-		add_action( 'bp_docs_single_doc_meta', array( $this, 'show_terms' ) );
+		add_action( 'bp_docs_single_doc_meta', 	array( $this, 'show_terms' ) );
+		
+		// Modify the main tax_query in the doc loop
+		add_filter( 'bp_docs_tax_query', 	array( $this, 'modify_tax_query' ) );
 	}
 	
 	/**
@@ -108,9 +111,14 @@ class BP_Docs_Taxonomy {
 	 */	
 	function show_terms() {
 	 	foreach( $this->taxonomies as $tax_name ) {
-	 		// Todo: Make the tax name dynamic by adding a tag name to $this->taxonomies
-	 		// Todo: Make these terms link to a group-specific tax director
-	 		echo get_the_term_list( get_the_ID(), $tax_name, 'Tags: ', ', ', '' );
+	 		$tagtext 	= array();
+	 		$tags 		= wp_get_post_terms( get_the_ID(), $tax_name );
+	 		
+	 		foreach( $tags as $tag ) {
+	 			$tagtext[] = bp_docs_get_tag_link( array( 'tag' => $tag->name ) );
+	 		}	 		
+	 		
+	 		echo sprintf( __( 'Tags: %s', 'bp-docs' ), implode( ', ', $tagtext ) ); 
 	 	}
 	}
 	
@@ -195,8 +203,28 @@ class BP_Docs_Taxonomy {
 	function save_item_terms( $terms ) {
 		do_action( 'bp_docs_taxonomy_save_item_terms', $terms );
 	}
-	 
 	
+	function modify_tax_query( $tax_query ) {
+
+		// Check for the existence tag filters in the request URL
+		if ( !empty( $_REQUEST['bpd_tag'] ) ) {
+			// The bpd_tag argument may be comma-separated
+			$tags = explode( ',', urldecode( $_REQUEST['bpd_tag'] ) );
+		
+			// Clean up the tag input
+			foreach( $tags as $key => $value ) {
+				$tags[$key] = esc_attr( $value );
+			}
+		
+			$tax_query[] = array(
+				'taxonomy'	=> 'post_tag',
+				'terms'		=> $tags,
+				'field'		=> 'slug'
+			);
+		}
+		
+		return $tax_query;
+	}
 }
 
 ?>
