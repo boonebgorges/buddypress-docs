@@ -79,6 +79,22 @@ class BP_Docs_BP_Integration {
 			$this_doc->save();
 			//print_r( $this_doc ); die();
 		}
+		
+		if ( !empty( $_POST['docs-filter-submit'] ) ) {
+			$this->handle_filters();
+		}
+	}
+	
+	/**
+	 * Handles doc filters from a form post and translates to $_GET arguments before redirect
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 */
+	function handle_filters() {
+		$redirect_url = apply_filters( 'bp_docs_handle_filters', bp_docs_get_item_docs_link() );
+
+		bp_core_redirect( $redirect_url );		
 	}
 	
 	/**
@@ -98,7 +114,19 @@ class BP_Docs_BP_Integration {
 	 * @since 1.0
 	 */	
 	function enqueue_scripts() {
+		wp_register_script( 'bp-docs-js', plugins_url( 'buddypress-docs/includes/js/bp-docs.js' ), 'jquery' );
 		
+		// Only load our JS on the right sorts of pages. Generous to account for
+		// different item types
+		if ( in_array( BP_DOCS_SLUG, array( bp_current_component(), bp_current_action() ) ) ) {
+			wp_enqueue_script( 'bp-docs-js' );
+			wp_localize_script( 'bp-docs-js', 'bp_docs', array(
+				'addfilters'	=> __( 'Add Filters', 'bp-docs' ),
+				'modifyfilters'	=> __( 'Modify Filters', 'bp-docs' )
+			) );
+		}
+		
+		// This is for edit/create scripts
 		if ( !empty( $this->query->current_view ) && ( 'edit' == $this->query->current_view || 'create' == $this->query->current_view ) ) {
 			require_once( ABSPATH . '/wp-admin/includes/post.php' );
 			wp_enqueue_script( 'common' );
@@ -118,6 +146,11 @@ class BP_Docs_BP_Integration {
 	 * @since 1.0
 	 */
 	function enqueue_styles() {
+		// Load the main CSS only on the proper pages
+		if ( in_array( BP_DOCS_SLUG, array( bp_current_component(), bp_current_action() ) ) ) {
+			wp_enqueue_style( 'bp-docs-css', $this->includes_url . 'css' . DIRECTORY_SEPARATOR . 'bp-docs.css' );
+		}
+		
 		if ( !empty( $this->query->current_view ) && ( 'edit' == $this->query->current_view || 'create' == $this->query->current_view ) ) {
 			wp_enqueue_style('thickbox');
 			wp_enqueue_style( 'bpd-edit-css', $this->includes_url . 'css' . DIRECTORY_SEPARATOR . 'edit.css' );

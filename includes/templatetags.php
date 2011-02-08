@@ -79,7 +79,7 @@ function bp_docs_group_doc_permalink() {
 		
 		if ( $doc_id )
 			$post = get_post( $doc_id );
-		
+
 		if ( !empty( $post->post_name ) )
 			$doc_slug = $post->post_name;
 		else
@@ -116,29 +116,33 @@ function bp_docs_info_header() {
 			$message = __( 'You are viewing all docs.', 'bp-docs' );	
 		} else {
 			$message = array();
-			if ( !empty( $filters['tags'] ) ) {
-				$tagtext = array();
-				
-				foreach( $filters['tags'] as $tag ) {
-					$tagtext[] = bp_docs_get_tag_link( array( 'tag' => $tag ) );
-				}
-				
-				$message[] = sprintf( __( 'You are viewing docs with the following tags: %s', 'bp-docs' ), implode( ', ', $tagtext ) );  
-			}
 		
+			$message = apply_filters( 'bp_docs_info_header_message', $message, $filters );
+			
 			$message = implode( "\n", $message );
 			
+			// We are viewing a subset of docs, so we'll add a link to clear filters
 			$message .= ' - ' . sprintf( __( '<strong><a href="%s" title="View All Docs">View All Docs</a></strong>', 'bp_docs' ), bp_docs_get_item_docs_link() );
 		}
-		
 		
 		?>
 		
 		<p><?php echo $message ?></p>
 		
-		<div class="docs-filters">
-			<?php do_action( 'bp_docs_filter_markup' ) ?>
-		</div>
+		<form action="<?php bp_docs_item_docs_link() ?>" method="post">
+				
+			<div class="docs-filters">
+				<?php do_action( 'bp_docs_filter_markup' ) ?>
+			</div>
+
+			<div class="clear"> </div>
+			
+			<?php /*
+			<input class="button" id="docs-filter-submit" name="docs-filter-submit" value="<?php _e( 'Submit', 'bp-docs' ) ?>" type="submit" />
+			*/ ?>
+
+		</form>
+		
 		
 		<?php
 	}
@@ -170,58 +174,81 @@ function bp_docs_get_current_filters() {
 /**
  * Get an archive link for a given tag
  *
+ * Optional arguments:
+ *  - 'tag' 	The tag linked to. This one is required
+ *  - 'type' 	'html' returns a link; anything else returns a URL
+ *
  * @package BuddyPress Docs
  * @since 1.0
  *
+ * @param array $args Optional arguments
  * @return array $filters
  */
 function bp_docs_get_tag_link( $args = array() ) {
 	global $bp;
 	
-	extract( $args, EXTR_SKIP );
+	$defaults = array(
+		'tag' 	=> false,
+		'type' 	=> 'html'
+	);
+	
+	$r = wp_parse_args( $args, $defaults );
+	extract( $r, EXTR_SKIP );
 	
 	$item_docs_url = bp_docs_get_item_docs_link();
 	
 	$url = apply_filters( 'bp_docs_get_tag_link_url', add_query_arg( 'bpd_tag', urlencode( $tag ), $item_docs_url ), $args, $item_docs_url );
 	
+	if ( $type != 'html' )
+		return apply_filters( 'bp_docs_get_tag_link_url', $url, $tag, $type );
+	
 	$html = '<a href="' . $url . '" title="' . sprintf( __( 'Docs tagged %s', 'bp-docs' ), esc_attr( $tag ) ) . '">' . esc_html( $tag ) . '</a>';
 	
-	return apply_filters( 'bp_docs_get_tag_link', $html, $url, $tag );	
+	return apply_filters( 'bp_docs_get_tag_link', $html, $url, $tag, $type );	
 }
 
 /**
- * Get the link to the docs section of an item
+ * Echoes the output of bp_docs_get_item_docs_link()
  *
  * @package BuddyPress Docs
  * @since 1.0
- *
- * @return array $filters
  */
-function bp_docs_get_item_docs_link( $args = array() ) {
-	global $bp;
-	
-	// Defaulting to groups for now
-	$defaults = array(
-		'item_id'	=> !empty( $bp->groups->current_group->id ) ? $bp->groups->current_group->id : false,
-		'item_type'	=> !empty( $bp->groups->current_group->id ) ? 'group' : false
-	);
-
-	$r = wp_parse_args( $args, $defaults );
-	extract( $r, EXTR_SKIP );
-
-	if ( !$item_id || !$item_type )
-		return false;
-		
-	switch ( $item_type ) {
-		case 'group' :
-			if ( !$group = $bp->groups->current_group )
-				$group = new BP_Groups_Group;
-			
-			$base_url = bp_get_group_permalink( $group );
-			break;
-	}
-	
-	return apply_filters( 'bp_docs_get_item_docs_link', $base_url . $bp->bp_docs->slug . '/', $base_url, $r );
+function bp_docs_item_docs_link() {
+	echo bp_docs_get_item_docs_link();
 }
+	/**
+	 * Get the link to the docs section of an item
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 *
+	 * @return array $filters
+	 */
+	function bp_docs_get_item_docs_link( $args = array() ) {
+		global $bp;
+		
+		// Defaulting to groups for now
+		$defaults = array(
+			'item_id'	=> !empty( $bp->groups->current_group->id ) ? $bp->groups->current_group->id : false,
+			'item_type'	=> !empty( $bp->groups->current_group->id ) ? 'group' : false
+		);
+	
+		$r = wp_parse_args( $args, $defaults );
+		extract( $r, EXTR_SKIP );
+	
+		if ( !$item_id || !$item_type )
+			return false;
+			
+		switch ( $item_type ) {
+			case 'group' :
+				if ( !$group = $bp->groups->current_group )
+					$group = new BP_Groups_Group;
+				
+				$base_url = bp_get_group_permalink( $group );
+				break;
+		}
+		
+		return apply_filters( 'bp_docs_get_item_docs_link', $base_url . $bp->bp_docs->slug . '/', $base_url, $r );
+	}
 
 ?>

@@ -1,0 +1,16 @@
+.docs-filter {
+	display: block;
+	width: 400px;
+	float: left;
+}
+
+.docs-filter-tags ul li {
+	display: block;
+	width: 100px;
+	float: left;
+	padding: 4px 4px;
+}
+
+#docs-filter-submit {
+	margin: 10px 4px;
+}
