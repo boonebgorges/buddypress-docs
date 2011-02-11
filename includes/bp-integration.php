@@ -125,7 +125,7 @@ class BP_Docs_BP_Integration {
 	 * @since 1.0
 	 */	
 	function enqueue_scripts() {
-		wp_register_script( 'bp-docs-js', plugins_url( 'buddypress-docs/includes/js/bp-docs.js' ), 'jquery' );
+		wp_register_script( 'bp-docs-js', plugins_url( 'buddypress-docs/includes/js/bp-docs.js' ), array( 'jquery' ) );
 		
 		// Only load our JS on the right sorts of pages. Generous to account for
 		// different item types

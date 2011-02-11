@@ -328,9 +328,9 @@ class BP_Docs_Taxonomy {
 		?>
 		
 		<div class="docs-filter docs-filter-tags">
-			<h4><?php _e( 'Tags', 'bp-docs' ) ?></h4>
+			<p id="filter-by-tag"><?php _e( 'Filter by tag', 'bp-docs' ) ?></p>
 	
-			<ul>
+			<ul class="filter-tags-list">
 			<?php foreach( $existing_terms as $term => $posts ) : ?>
 				
 				<li>
