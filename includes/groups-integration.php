@@ -21,12 +21,14 @@ class BP_Docs_Groups_Integration {
 		bp_register_group_extension( 'BP_Docs_Group_Extension' );
 		
 		// Filter some properties of the query object
-		add_filter( 'bp_docs_get_item_type', array( $this, 'get_item_type' ) );
-		add_filter( 'bp_docs_get_current_view', array( $this, 'get_current_view' ), 10, 2 );
+		add_filter( 'bp_docs_get_item_type', 		array( $this, 'get_item_type' ) );
+		add_filter( 'bp_docs_get_current_view', 	array( $this, 'get_current_view' ), 10, 2 );
 		
 		// Taxonomy helpers
-		add_filter( 'bp_docs_taxonomy_get_item_terms', array( $this, 'get_group_terms' ) );
+		add_filter( 'bp_docs_taxonomy_get_item_terms', 	array( $this, 'get_group_terms' ) );
 		add_action( 'bp_docs_taxonomy_save_item_terms', array( $this, 'save_group_terms' ) );
+		
+		add_filter( 'bp_docs_user_can_edit',		array( $this, 'user_can_edit' ), 10, 2 );
 	}
 	
 	/**
@@ -113,6 +115,23 @@ class BP_Docs_Groups_Integration {
 		if ( ! empty( $bp->groups->current_group->id ) ) {
 			groups_update_groupmeta( $bp->groups->current_group->id, 'bp_docs_terms', $terms );
 		}
+	}
+	
+	/**
+	 * Determine whether a user can edit the group doc is question
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 *
+	 * @param bool $can_edit The default perms passed from bp_docs_user_can_edit()
+	 * @param bool $user_id The user id whose perms are being tested
+	 */	
+	function user_can_edit( $can_edit, $user_id ) {
+		// For now, we're going to open up edit access for every member of the group
+		if ( groups_is_user_member( $user_id, bp_get_group_id() ) )
+			$can_edit = true;
+		
+		return $can_edit;
 	}
 }
 

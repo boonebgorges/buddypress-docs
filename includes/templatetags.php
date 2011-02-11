@@ -358,4 +358,62 @@ function bp_docs_is_current_orderby_class( $orderby = 'edited' ) {
 	echo apply_filters( 'bp_docs_is_current_orderby', $class, $is_current_orderby, $current_orderby );
 }
 
+
+/**
+ * Determine whether the current user can edit the current doc
+ *
+ * @package BuddyPress Docs
+ * @since 1.0
+ */
+function bp_docs_current_user_can_edit() {
+	global $bp;
+	
+	// Check to see whether the value has been cached in the global
+	if ( isset( $bp->bp_docs->current_user_can_edit ) ) {
+		$can_edit = 'yes' == $bp->bp_docs->current_user_can_edit ? true : false;
+	} else {
+		$can_edit = bp_docs_user_can_edit( bp_loggedin_user_id() );
+	}
+	
+	// Stash in the $bp global to reduce future lookups
+	$bp->bp_docs->current_user_can_edit = $can_edit ? 'yes' : 'no';
+	
+	return apply_filters( 'bp_docs_current_user_can_edit', $can_edit );
+}
+
+/**
+ * Determine whether a given user can edit a given doc
+ *
+ * @package BuddyPress Docs
+ * @since 1.0
+ *
+ * @param int $user_id Optional. Unique user id for the user being tested. Defaults to logged-in ID
+ * @param int $doc_id Optional. Unique doc id. Defaults to doc currently being viewed
+ */
+function bp_docs_user_can_edit( $user_id = false, $doc_id = false ) {
+	global $bp;
+	
+	if ( !$user_id )
+		$user_id	= bp_loggedin_user_id();
+	
+	$can_edit = false;
+	
+	if ( $user_id ) {
+		if ( is_super_admin() ) {
+			// Super admin always gets to edit. What a big shot
+			$can_edit = true;
+		} else {
+			// Post authors always get to edit
+			if ( get_the_author_meta( 'ID' ) == $user_id ) {
+				$can_edit = true;
+			}
+		}
+	}
+	
+	// Filter this so that groups-integration and other plugins can give their own rules
+	$can_edit = apply_filters( 'bp_docs_user_can_edit', $can_edit, $user_id );
+	
+	return $can_edit;
+}
+
 ?>

@@ -20,20 +20,20 @@ class BP_Docs_BP_Integration {
 	 * @since 1.0
 	 */	
 	function __construct() {
-		add_action( 'bp_init', array( $this, 'do_query' ), 90 );
+		add_action( 'bp_init', 		array( $this, 'do_query' 		), 90 );
 		
-		add_action( 'bp_setup_globals', array( $this, 'setup_globals' ) );
+		add_action( 'bp_setup_globals', array( $this, 'setup_globals' 		) );
 		
 		if ( bp_is_active( 'groups' ) ) {
 			require_once( BP_DOCS_INCLUDES_PATH . 'groups-integration.php' );
 			$this->groups_integration = new BP_Docs_Groups_Integration;
 		}
 		
-		add_action( 'wp', array( $this, 'catch_form_submits' ), 1 );
+		add_action( 'wp', 		array( $this, 'catch_form_submits' 	), 1 );
 		
-		add_action( 'bp_loaded', array( $this, 'set_includes_url' ) );
-		add_action( 'init', array( $this, 'enqueue_scripts' ) );
-		add_action( 'wp_print_styles', array( $this, 'enqueue_styles' ) );
+		add_action( 'bp_loaded', 	array( $this, 'set_includes_url' 	) );
+		add_action( 'init', 		array( $this, 'enqueue_scripts' 	) );
+		add_action( 'wp_print_styles', 	array( $this, 'enqueue_styles' 		) );
 	}
 	
 	/**
@@ -55,8 +55,8 @@ class BP_Docs_BP_Integration {
 	function setup_globals() {
 		global $bp;
 		
-		$bp->bp_docs->format_notification_function = 'bp_docs_format_notifications';
-		$bp->bp_docs->slug = BP_DOCS_SLUG;
+		$bp->bp_docs->format_notification_function 	= 'bp_docs_format_notifications';
+		$bp->bp_docs->slug 				= BP_DOCS_SLUG;
 	
 		// Todo: You only need this if you need top level access: example.com/docs
 		/* Register this in the active components array */
