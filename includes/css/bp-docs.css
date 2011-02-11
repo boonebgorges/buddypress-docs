@@ -14,3 +14,24 @@
 #docs-filter-submit {
 	margin: 10px 4px;
 }
+
+.title-cell {
+	width: 30%;
+}
+
+.author-cell, .created-date-cell, .edited-date-cell {
+	text-align: center;
+	width: 100px;
+}
+
+.current-orderby a {
+	padding-left: 20px;
+}
+
+.asc a {
+	background: url(../images/sort-col-asc.gif) no-repeat;	
+}
+
+.desc a {
+	background: url(../images/sort-col-desc.gif) no-repeat;	
+}
