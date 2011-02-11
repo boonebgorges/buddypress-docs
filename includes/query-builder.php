@@ -347,7 +347,7 @@ class BP_Docs_Query {
 				'post_type' => 'bp_doc',
 				'post_author' => bp_loggedin_user_id(),
 				'post_title' => $_POST['doc']['title'],
-				'post_content' => $_POST['doc']['content'],
+				'post_content' => stripslashes( sanitize_post_field( 'post_content', $_POST['doc']['content'], 0, 'db' ) ),
 				'post_status' => 'publish'
 			);
 			
