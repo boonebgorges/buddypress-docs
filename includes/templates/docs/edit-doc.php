@@ -149,26 +149,26 @@ wp_tiny_mce();
         </div>
         
         <div id="doc-meta">
-        	<div id="doc-tax">
+        	<div id="doc-tax" class="doc-meta-box">
 			<?php bp_docs_post_tags_meta_box();
 			/* bp_docs_post_categories_meta_box(); */ ?>
         	</div>
-		<div id="doc-parent">
+		<div id="doc-parent" class="doc-meta-box">
 			<h4><?php _e( 'Parent doc', 'bp-docs' ) ?></h4>
 			<?php bp_docs_edit_parent_dropdown() ?>
 		</div>
-        </div>	
-        
-        
-        
-        <div id="new-assignment-content-options">
-        
-            <input type="submit" name="doc-edit-submit" id="new-assignment-submit" value="<?php _e( 'Save', 'bp-docs' ) ?>">
-            <div class="alignright submits">
-              
-                <a href="<?php bp_docs_group_doc_permalink() ?>" class="action safe"><?php _e( 'Cancel/Go back', 'bpsp' ); ?></a>
-            </div>
         </div>
+        
+        <div style="clear: both"> </div>
+        
+        <div id="doc-submit-options">
+        
+            <input type="submit" name="doc-edit-submit" id="doc-edit-submit" value="<?php _e( 'Save', 'bp-docs' ) ?>">  <a href="<?php bp_docs_group_doc_permalink() ?>" class="action safe"><?php _e( 'Cancel', 'bp-docs' ); ?></a>
+            
+        </div>
+        
+        
+        <div style="clear: both"> </div>
     </div>
 </form>
 <script type="text/javascript" >
