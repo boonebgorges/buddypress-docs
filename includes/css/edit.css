@@ -19,6 +19,15 @@
 	margin-bottom: 30px;
 }
 
+form.standard-form input[type="text"]#doc-title {
+	width: 98%;
+}
+
+#content-label {
+	margin-bottom: -30px;
+}
+
+/* HTML mode tweaks */
 #quicktags {
 	border: none;
 }
