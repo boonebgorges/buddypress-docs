@@ -1,6 +1,28 @@
 <?php
 
 /**
+ * Determine whether you are viewing a BuddyPress Docs page
+ *
+ * @package BuddyPress Docs
+ * @since 1.0
+ *
+ * @return bool
+ */
+function bp_docs_is_bp_docs_page() {
+	global $bp;
+	
+	$is_bp_docs_page = false;
+	
+	// This is intentionally ambiguous and generous, to account for BP Docs is different
+	// components. Probably should be cleaned up at some point
+	if ( $bp->bp_docs->slug == bp_current_component() || $bp->bp_docs->slug == bp_current_action() )
+		$is_bp_docs_page = true;
+	
+	return apply_filters( 'bp_docs_is_bp_docs_page', $is_bp_docs_page );
+}
+
+
+/**
  * Builds the subnav for the Docs group tab
  *
  * This method is copied from bp_group_admin_tabs(), which itself is a hack for the fact that BP
