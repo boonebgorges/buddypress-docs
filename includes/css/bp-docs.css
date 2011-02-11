@@ -2,13 +2,18 @@
 	display: block;
 	width: 400px;
 	float: left;
+	margin-bottom: 15px;
+}
+
+.docs-filter-tags {
+	width: 100%; /* At the moment there is only one filter box, so let's make it wide */
 }
 
 .docs-filter-tags ul li {
 	display: block;
-	width: 100px;
+	width: 120px;
 	float: left;
-	padding: 4px 4px;
+	padding: 6px;
 }
 
 #docs-filter-submit {
