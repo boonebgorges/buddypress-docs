@@ -123,10 +123,10 @@ class BP_Docs {
 	 */
 	function load_doc_extras() {
 		// Todo: make this conditional with a filter or a constant
-		require_once( BP_DOCS_INSTALL_PATH . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'doc-taxonomy.php' );
+		require_once( BP_DOCS_INSTALL_PATH . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'addon-taxonomy.php' );
 		$this->taxonomy = new BP_Docs_Taxonomy;
 		
-		require_once( BP_DOCS_INSTALL_PATH . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'doc-hierarchy.php' );
+		require_once( BP_DOCS_INSTALL_PATH . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'addon-hierarchy.php' );
 		$this->hierarchy = new BP_Docs_Hierarchy;
 		
 	}
@@ -210,7 +210,7 @@ class BP_Docs {
 		require_once( BP_DOCS_INCLUDES_PATH . 'query-builder.php' );
 		
 		// bp-integration.php provides the hooks necessary to hook into BP navigation
-		require_once( BP_DOCS_INCLUDES_PATH . 'bp-integration.php' );
+		require_once( BP_DOCS_INCLUDES_PATH . 'integration-bp.php' );
 		
 		// templatetags.php has all functions in the global space available to templates
 		require_once( BP_DOCS_INCLUDES_PATH . 'templatetags.php' );

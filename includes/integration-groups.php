@@ -1,5 +1,28 @@
 <?php
+/**
+ * integration-groups.php
+ *
+ * This file contains functions that BP Docs to integrate into the BuddyPress Groups component.
+ * That includes:
+ *   - a class that filters default values to be group-specific etc (BP_Docs_Groups_Integration)
+ *   - an implementation of the BP Groups Extension API, for hooking into group nav, etc *   
+ *     (BP_Docs_Group_Extension)
+ *   - template tags that are specific to the groups component
+ *
+ * @package BuddyPress Docs
+ * @since 1.0
+ */
 
+/**
+ * This class filters a number of key values from BP Docs's core to work in BP groups
+ *
+ * Most of the methods in this class filter the output of dummy methods in the BP_Query class,
+ * providing values that are group-specific. Things have been done this way to allow for future
+ * integration with different kinds of BP items, like users.
+ *
+ * @package BuddyPress Docs
+ * @since 1.0
+ */
 class BP_Docs_Groups_Integration {
 	/**
 	 * PHP 4 constructor
@@ -231,6 +254,13 @@ class BP_Docs_Groups_Integration {
 	}
 }
 
+
+/**
+ * Implementation of BP_Group_Extension
+ *
+ * @package BuddyPress Docs
+ * @since 1.0
+ */
 class BP_Docs_Group_Extension extends BP_Group_Extension {	
 
 	// Todo: make this configurable
@@ -383,5 +413,81 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	
 	function widget_display() { }
 }
+
+
+/**************************
+ * TEMPLATE TAGS
+ **************************/
+ 
+/**
+ * Builds the subnav for the Docs group tab
+ *
+ * This method is copied from bp_group_admin_tabs(), which itself is a hack for the fact that BP
+ * has no native way to register subnav items on a group tab. Component subnavs (for user docs) will
+ * be properly registered with bp_core_new_subnav_item()
+ *
+ * @package BuddyPress Docs
+ * @since 1.0
+ *
+ * @param obj $group optional The BP group object.
+ */
+function bp_docs_group_tabs( $group = false ) {
+	global $bp, $groups_template, $post, $bp_version;
+	
+	if ( !$group )
+		$group = ( $groups_template->group ) ? $groups_template->group : $bp->groups->current_group;
+	
+	// BP 1.2 - 1.3 support
+	$groups_slug = !empty( $bp->groups->root_slug ) ? $bp->groups->root_slug : $bp->groups->slug;
+
+?>
+	<li<?php if ( $bp->bp_docs->current_view == 'list' ) : ?> class="current"<?php endif; ?>><a href="<?php echo $bp->root_domain . '/' . $groups_slug ?>/<?php echo $group->slug ?>/<?php echo $bp->bp_docs->slug ?>/"><?php _e( 'View Docs', 'bp-docs' ) ?></a></li>
+
+	<?php /* Todo: can this user create items? */ ?>
+	<li<?php if ( 'create' == $bp->bp_docs->current_view ) : ?> class="current"<?php endif; ?>><a href="<?php echo $bp->root_domain . '/' . $groups_slug ?>/<?php echo $group->slug ?>/<?php echo $bp->bp_docs->slug ?>/create"><?php _e( 'New Doc', 'bp-docs' ) ?></a></li>
+	
+	
+	<?php if ( $bp->bp_docs->current_view == 'single' || $bp->bp_docs->current_view == 'edit' ) : ?>
+		<li<?php if ( 'single' == $bp->bp_docs->current_view ) : ?> class="current"<?php endif; ?>><a href="<?php echo $bp->root_domain . '/' . $groups_slug ?>/<?php echo $group->slug ?>/<?php echo $bp->bp_docs->slug ?>/<?php echo $post->post_name ?>"><?php the_title() ?></a></li>		
+	<?php endif ?>
+	
+<?php
+}
+
+/**
+ * Echoes the output of bp_docs_get_group_doc_permalink()
+ *
+ * @package BuddyPress Docs
+ * @since 1.0
+ */
+function bp_docs_group_doc_permalink() {
+	echo bp_docs_get_group_doc_permalink();
+}
+	/**
+	 * Returns a link to a specific document in a group
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 *
+	 * @param int $doc_id optional The post_id of the doc
+	 * @return str Permalink for the group doc
+	 */
+	function bp_docs_get_group_doc_permalink( $doc_id = false ) {
+		global $post, $bp;
+		
+		$group			= $bp->groups->current_group;
+		$group_permalink 	= bp_get_group_permalink( $group );
+
+		if ( $doc_id )
+			$post = get_post( $doc_id );
+
+		if ( !empty( $post->post_name ) )
+			$doc_slug = $post->post_name;
+		else
+			return false;
+			
+		return apply_filters( 'bp_docs_get_doc_permalink', $group_permalink . $bp->bp_docs->slug . '/' . $doc_slug );
+	}
+
 
 ?>

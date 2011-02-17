@@ -6,7 +6,13 @@
  *
  * @package BuddyPress Docs
  */
- 
+
+/**
+ * This class sets up the interface and back-end functions needed to use post tags with BP Docs.
+ *
+ * @package BuddyPress Docs
+ * @since 1.0
+ */
 class BP_Docs_Taxonomy {
 	var $taxonomies;
 	var $current_filters;
@@ -379,6 +385,46 @@ class BP_Docs_Taxonomy {
 		
 		return $redirect_url;
 	}
+}
+
+/**************************
+ * TEMPLATE TAGS
+ **************************/
+ 
+/**
+ * Get an archive link for a given tag
+ *
+ * Optional arguments:
+ *  - 'tag' 	The tag linked to. This one is required
+ *  - 'type' 	'html' returns a link; anything else returns a URL
+ *
+ * @package BuddyPress Docs
+ * @since 1.0
+ *
+ * @param array $args Optional arguments
+ * @return array $filters
+ */
+function bp_docs_get_tag_link( $args = array() ) {
+	global $bp;
+	
+	$defaults = array(
+		'tag' 	=> false,
+		'type' 	=> 'html'
+	);
+	
+	$r = wp_parse_args( $args, $defaults );
+	extract( $r, EXTR_SKIP );
+	
+	$item_docs_url = bp_docs_get_item_docs_link();
+	
+	$url = apply_filters( 'bp_docs_get_tag_link_url', add_query_arg( 'bpd_tag', urlencode( $tag ), $item_docs_url ), $args, $item_docs_url );
+	
+	if ( $type != 'html' )
+		return apply_filters( 'bp_docs_get_tag_link_url', $url, $tag, $type );
+	
+	$html = '<a href="' . $url . '" title="' . sprintf( __( 'Docs tagged %s', 'bp-docs' ), esc_attr( $tag ) ) . '">' . esc_html( $tag ) . '</a>';
+	
+	return apply_filters( 'bp_docs_get_tag_link', $html, $url, $tag, $type );	
 }
 
 ?>
