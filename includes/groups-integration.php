@@ -234,8 +234,8 @@ class BP_Docs_Groups_Integration {
 class BP_Docs_Group_Extension extends BP_Group_Extension {	
 
 	// Todo: make this configurable
-	var $visibility = 'public';
-	var $enable_nav_item = true;
+	var $visibility 	= 'public';
+	var $enable_nav_item;
 
 	/**
 	 * Constructor
@@ -244,12 +244,13 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	 * @since 1.0
 	 */
 	function bp_docs_group_extension() {
-		$this->name = __( 'Docs', 'bp-docs' );
-		$this->slug = BP_DOCS_SLUG;
+		$this->name 			= __( 'Docs', 'bp-docs' );
+		$this->slug 			= BP_DOCS_SLUG;
 
-		$this->create_step_position = 45;
-		$this->nav_item_position = 45;
+		$this->create_step_position 	= 45;
+		$this->nav_item_position 	= 45;
 		
+		$this->enable_nav_item		= $this->enable_nav_item();
 		//$group_link = bp_get_group_permalink();
 		//$group_slug = bp_get_group_slug();
 		
@@ -331,6 +332,34 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 			bp_core_add_message( __( 'Settings saved successfully', 'buddypress' ) );
 
 		bp_core_redirect( bp_get_group_permalink( $bp->groups->current_group ) . '/admin/' . $this->slug );
+	}
+
+	/**
+	 * Determine whether the group nav item should show up for the current user
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 */
+	function enable_nav_item() {
+		global $bp;
+		
+		$enable_nav_item = false;
+		
+		if ( !empty( $bp->groups->current_group->status ) && $status = $bp->groups->current_group->status ) {
+			// Docs in public groups are publicly viewable.
+			if ( 'public' == $status ) {
+				$enable_nav_item = true;
+			} else if ( groups_is_user_member( bp_loggedin_user_id(), $bp->groups->current_group->id ) ) {
+				// Docs in private or hidden groups visible only to members
+				$enable_nav_item = true;
+			}
+		}
+		
+		// Super admin override
+		if ( is_super_admin() )
+			$enable_nav_item = true;
+		
+		return apply_filters( 'bp_docs_groups_enable_nav_item', $enable_nav_item );
 	}
 
 	/**

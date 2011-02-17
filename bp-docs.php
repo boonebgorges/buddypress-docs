@@ -169,14 +169,14 @@ class BP_Docs {
 		$bp_docs_post_type_args = apply_filters( 'bp_docs_post_type_args', array(
 			'label' => __( 'BuddyPress Docs', 'bp-docs' ),
 			'labels' => $post_type_labels,
-			'public' => true,
+			'public' => false,
 			'_builtin' => false,
 			'show_ui' => true,
 			'hierarchical' => false,
 			'supports' => array( 'title', 'editor', 'revisions', 'excerpt' ),
 			'query_var' => true,
 			//'rewrite' => false
-			'rewrite' => array( "slug" => "docs", 'with_front' => false ), // Permalinks format
+			'rewrite' => false // Todo: This bites
 		) );
 	
 		// Register the bp_doc post type
