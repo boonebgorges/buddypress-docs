@@ -2,6 +2,7 @@
 
 class BP_Docs_BP_Integration {	
 	var $includes_url;
+	var $slugstocheck;
 	
 	/**
 	 * PHP 4 constructor
@@ -57,7 +58,13 @@ class BP_Docs_BP_Integration {
 		
 		$bp->bp_docs->format_notification_function 	= 'bp_docs_format_notifications';
 		$bp->bp_docs->slug 				= BP_DOCS_SLUG;
-	
+
+		// This info is loaded here because it needs to happen after BP core globals are
+		// set up
+		$this->slugstocheck 	= bp_action_variables() ? bp_action_variables() : array();
+		$this->slugstocheck[] 	= bp_current_component();
+		$this->slugstocheck[] 	= bp_current_action();
+
 		// Todo: You only need this if you need top level access: example.com/docs
 		/* Register this in the active components array */
 		//$bp->active_components[ $bp->wiki->slug ] = $bp->wiki->id;
@@ -155,7 +162,7 @@ class BP_Docs_BP_Integration {
 		
 		// Only load our JS on the right sorts of pages. Generous to account for
 		// different item types
-		if ( in_array( BP_DOCS_SLUG, array( bp_current_component(), bp_current_action() ) ) ) {
+		if ( in_array( BP_DOCS_SLUG, $this->slugstocheck ) ) {
 			wp_enqueue_script( 'bp-docs-js' );
 			wp_localize_script( 'bp-docs-js', 'bp_docs', array(
 				'addfilters'	=> __( 'Add Filters', 'bp-docs' ),
@@ -183,13 +190,15 @@ class BP_Docs_BP_Integration {
 	 * @since 1.0
 	 */
 	function enqueue_styles() {
+		global $bp;
+		
 		// Load the main CSS only on the proper pages
-		if ( in_array( BP_DOCS_SLUG, array( bp_current_component(), bp_current_action() ) ) ) {
+		if ( in_array( BP_DOCS_SLUG, $this->slugstocheck ) ) {
 			wp_enqueue_style( 'bp-docs-css', $this->includes_url . 'css' . DIRECTORY_SEPARATOR . 'bp-docs.css' );
 		}
 		
 		if ( !empty( $this->query->current_view ) && ( 'edit' == $this->query->current_view || 'create' == $this->query->current_view ) ) {
-			wp_enqueue_style('thickbox');
+			wp_enqueue_style( 'thickbox' );
 			wp_enqueue_style( 'bpd-edit-css', $this->includes_url . 'css' . DIRECTORY_SEPARATOR . 'edit.css' );
 		}
 	}
