@@ -271,6 +271,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	
 	var $visibility;
 	var $enable_nav_item;
+	var $enable_create_step;
 	
 	// This is so I can get a reliable group id even during group creation
 	var $maybe_group_id;
@@ -287,11 +288,17 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 		$this->name 			= __( 'Docs', 'bp-docs' );
 		$this->slug 			= BP_DOCS_SLUG;
 
+		$this->enable_create_step	= true;
 		$this->create_step_position 	= 45;
 		$this->nav_item_position 	= 45;
-			
-		$this->maybe_group_id		= !empty( $bp->groups->new_group_id ) ? $bp->groups->new_group_id : $bp->groups->current_group->id;
 		
+		if ( !empty( $bp->groups->current_group->id ) )
+			$this->maybe_group_id	= $bp->groups->current_group->id;
+		else if ( !empty( $bp->groups->new_group_id ) )
+			$this->maybe_group_id	= $bp->groups->new_group_id;
+		else
+			$this->maybe_group_id	= false;
+			
 		// Load the bp-docs setting for the group, for easy access
 		$this->settings			= groups_get_groupmeta( $this->maybe_group_id, 'bp-docs' );
 		$this->group_enable		= !empty( $this->settings['group-enable'] ) ? true : false;
@@ -309,11 +316,9 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	function create_screen() {
 		if ( !bp_is_group_creation_step( $this->slug ) )
 			return false;
-		?>
-
-		<p>The HTML for my creation step goes here.</p>
-
-		<?php
+		
+		$this->admin_markup();
+		
 		wp_nonce_field( 'groups_create_save_' . $this->slug );
 	}
 
@@ -329,8 +334,8 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 
 		check_admin_referer( 'groups_create_save_' . $this->slug );
 
-		/* Save any details submitted here */
-		groups_update_groupmeta( $bp->groups->new_group_id, 'my_meta_name', 'value' );
+		$settings = !empty( $_POST['bp-docs'] ) ? $_POST['bp-docs'] : array();
+		groups_update_groupmeta( $bp->groups->new_group_id, 'bp-docs', $settings );
 	}
 
 	/**
