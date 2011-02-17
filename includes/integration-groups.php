@@ -64,6 +64,9 @@ class BP_Docs_Groups_Integration {
 	 *
 	 * @package BuddyPress Docs
 	 * @since 1.0
+	 *
+	 * @param str $type
+	 * @return str $type
 	 */	
 	function get_item_type( $type ) {
 		global $bp;
@@ -261,11 +264,16 @@ class BP_Docs_Groups_Integration {
  * @package BuddyPress Docs
  * @since 1.0
  */
-class BP_Docs_Group_Extension extends BP_Group_Extension {	
+class BP_Docs_Group_Extension extends BP_Group_Extension {
 
-	// Todo: make this configurable
-	var $visibility 	= 'public';
+	var $group_enable;
+	var $settings;
+	
+	var $visibility;
 	var $enable_nav_item;
+	
+	// This is so I can get a reliable group id even during group creation
+	var $maybe_group_id;
 
 	/**
 	 * Constructor
@@ -274,16 +282,22 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	 * @since 1.0
 	 */
 	function bp_docs_group_extension() {
+		global $bp;
+		
 		$this->name 			= __( 'Docs', 'bp-docs' );
 		$this->slug 			= BP_DOCS_SLUG;
 
 		$this->create_step_position 	= 45;
 		$this->nav_item_position 	= 45;
+			
+		$this->maybe_group_id		= !empty( $bp->groups->new_group_id ) ? $bp->groups->new_group_id : $bp->groups->current_group->id;
 		
+		// Load the bp-docs setting for the group, for easy access
+		$this->settings			= groups_get_groupmeta( $this->maybe_group_id, 'bp-docs' );
+		$this->group_enable		= !empty( $this->settings['group-enable'] ) ? true : false;
+		
+		$this->visibility		= 'public';
 		$this->enable_nav_item		= $this->enable_nav_item();
-		//$group_link = bp_get_group_permalink();
-		//$group_slug = bp_get_group_slug();
-		
 	}
 
 	/**
@@ -327,14 +341,17 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	 */
 	function edit_screen() {
 		if ( !bp_is_group_admin_screen( $this->slug ) )
-			return false; ?>
-
-		<h2><?php echo attribute_escape( $this->name ) ?></h2>
-
-		<p>Edit steps here</p>
-		<input type=&quot;submit&quot; name=&quot;save&quot; value=&quot;Save&quot; />
-
+			return false; 
+		
+		$this->admin_markup();
+		
+		// On the edit screen, we have to provide a save button
+		?>
+		<p>
+			<input type="submit" value="<?php _e( 'Save Changes', 'bp-docs' ) ?>" id="save" name="save" />
+		</p>
 		<?php
+		
 		wp_nonce_field( 'groups_edit_save_' . $this->slug );
 	}
 
@@ -353,7 +370,12 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 
 		check_admin_referer( 'groups_edit_save_' . $this->slug );
 
-		/* Insert your edit screen save code here */
+		$success = false;
+
+		$settings = !empty( $_POST['bp-docs'] ) ? $_POST['bp-docs'] : array();
+
+		if ( groups_update_groupmeta( $this->maybe_group_id, 'bp-docs', $settings ) )
+			$success = true;
 
 		/* To post an error/success message to the screen, use the following */
 		if ( !$success )
@@ -361,7 +383,32 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 		else
 			bp_core_add_message( __( 'Settings saved successfully', 'buddypress' ) );
 
-		bp_core_redirect( bp_get_group_permalink( $bp->groups->current_group ) . '/admin/' . $this->slug );
+		bp_core_redirect( bp_get_group_permalink( $bp->groups->current_group ) . 'admin/' . $this->slug );
+	}
+
+	/**
+	 * Admin markup used on the edit and create admin panels
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 */
+	function admin_markup() {
+		$settings 	= groups_get_groupmeta( $this->maybe_group_id, 'bp-docs' );
+		
+		$group_enable 	= empty( $settings['group-enable'] ) ? false : true;
+		
+		?>
+		
+		<h2><?php _e( 'BuddyPress Docs', 'bp-docs' ) ?></h2>
+		
+		<p><?php _e( 'BuddyPress Docs is a powerful tool for collaboration with members of your group. A cross between document editor and wiki, BuddyPress Docs allows you to co-author and co-edit documents with your fellow group members, which you can then sort and tag in a way that helps your group to get work done.', 'bp-docs' ) ?></p>
+		
+		<p>
+			 <label for="bp-docs[group-enable]"> <input type="checkbox" name="bp-docs[group-enable]" value="1" <?php checked( $group_enable, true ) ?> /> Enable BuddyPress Docs for this group</label>
+		</p>
+		
+		
+		<?php
 	}
 
 	/**
@@ -375,20 +422,23 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 		
 		$enable_nav_item = false;
 		
-		if ( !empty( $bp->groups->current_group->status ) && $status = $bp->groups->current_group->status ) {
-			// Docs in public groups are publicly viewable.
-			if ( 'public' == $status ) {
-				$enable_nav_item = true;
-			} else if ( groups_is_user_member( bp_loggedin_user_id(), $bp->groups->current_group->id ) ) {
-				// Docs in private or hidden groups visible only to members
-				$enable_nav_item = true;
+		// The nav item should only be enabled when BP Docs is enabled for the group
+		if ( $this->group_enable ) {
+			if ( !empty( $bp->groups->current_group->status ) && $status = $bp->groups->current_group->status ) {
+				// Docs in public groups are publicly viewable.
+				if ( 'public' == $status ) {
+					$enable_nav_item = true;
+				} else if ( groups_is_user_member( bp_loggedin_user_id(), $bp->groups->current_group->id ) ) {
+					// Docs in private or hidden groups visible only to members
+					$enable_nav_item = true;
+				}
 			}
-		}
-		
-		// Super admin override
-		if ( is_super_admin() )
-			$enable_nav_item = true;
-		
+			
+			// Super admin override
+			if ( is_super_admin() )
+				$enable_nav_item = true;
+		}			
+
 		return apply_filters( 'bp_docs_groups_enable_nav_item', $enable_nav_item );
 	}
 
