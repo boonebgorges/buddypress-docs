@@ -173,7 +173,7 @@ class BP_Docs {
 			'_builtin' => false,
 			'show_ui' => true,
 			'hierarchical' => false,
-			'supports' => array( 'title', 'editor', 'revisions', 'excerpt' ),
+			'supports' => array( 'title', 'editor', 'revisions', 'excerpt', 'comments' ),
 			'query_var' => true,
 			//'rewrite' => false
 			'rewrite' => false // Todo: This bites
