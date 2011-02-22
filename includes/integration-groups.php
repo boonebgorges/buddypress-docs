@@ -194,7 +194,7 @@ class BP_Docs_Groups_Integration {
 		
 		// Sometimes the post hasn't been loaded early enough, groan
 		if ( empty( $post->ID ) ) {
-			$posts = get_posts( array( 'post_type' => 'bp_doc', 'name' => $bp->bp_docs->doc_slug ) );
+			$posts = get_posts( array( 'post_type' => $bp->bp_docs->post_type_name, 'name' => $bp->bp_docs->doc_slug ) );
 			$post = $posts[0];
 		}
 		
