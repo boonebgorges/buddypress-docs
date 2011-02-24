@@ -46,15 +46,17 @@ wp_tiny_mce();
 			</div>
 		</div>
 		
-		<div id="doc-settings" class="doc-meta-box">
-			<div class="toggleable">
-				<p class="toggle-switch" id="settings-toggle"><?php _e( 'Settings', 'bp-docs' ) ?></p>
-	
-				<div class="toggle-content">
-					<?php bp_docs_doc_settings_markup() ?>
+		<?php if ( bp_docs_current_user_can( 'manage' ) ) : ?>
+			<div id="doc-settings" class="doc-meta-box">
+				<div class="toggleable">
+					<p class="toggle-switch" id="settings-toggle"><?php _e( 'Settings', 'bp-docs' ) ?></p>
+		
+					<div class="toggle-content">
+						<?php bp_docs_doc_settings_markup() ?>
+					</div>
 				</div>
 			</div>
-		</div>
+		<?php endif ?>
         </div>
         
         <div style="clear: both"> </div>
