@@ -230,7 +230,7 @@ class BP_Docs_BP_Integration {
 			if ( !empty( $already_activity['activities'] ) ) {
 				$date_recorded 	= $already_activity['activities'][0]->date_recorded;
 				$drunix 	= strtotime( $date_recorded );
-				if ( time() - $drunix <= apply_filters( 'bp_docs_edit_activity_throttle_time', 1 ) )
+				if ( time() - $drunix <= apply_filters( 'bp_docs_edit_activity_throttle_time', 60*60 ) )
 					return;
 			}
 		}
@@ -249,7 +249,7 @@ class BP_Docs_BP_Integration {
 			$action = sprintf( __( '%1$s edited the doc %2$s', 'bp-docs' ), $user_link, $doc_link );
 		}
 		
-		$action	= apply_filters( 'bp_docs_activity_content', $action, $user_link, $doc_link, $query->is_new_doc, $query );
+		$action	= apply_filters( 'bp_docs_activity_action', $action, $user_link, $doc_link, $query->is_new_doc, $query );
 		
 		// Get a canonical name for the component. This is a nightmare because of the way
 		// the current component and root slug relate in BP 1.3+
