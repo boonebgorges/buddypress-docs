@@ -40,7 +40,7 @@ class BP_Docs_Groups_Integration {
 	 * @package BuddyPress Docs
 	 * @since 1.0
 	 */	
-	function __construct() {
+	function __construct() {	
 		bp_register_group_extension( 'BP_Docs_Group_Extension' );
 		
 		// Filter some properties of the query object
