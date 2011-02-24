@@ -237,4 +237,21 @@ function bp_docs_edit_parent_dropdown() {
 	echo $pages;
 }
 
+/**
+ * Are we editing an existing doc, or is this a new doc?
+ *
+ * @package BuddyPress Docs
+ * @since 1.0
+ *
+ * @return bool True if it's an existing doc
+ */
+function bp_docs_is_existing_doc() {
+	global $bp;
+	
+	if ( empty( $bp->bp_docs->current_post ) )
+		return false;
+	
+	return true;
+}
+
 ?>
