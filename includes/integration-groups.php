@@ -195,11 +195,8 @@ class BP_Docs_Groups_Integration {
 	function user_can( $user_can, $action, $user_id ) {
 		global $bp, $post;
 		
-		// Sometimes the post hasn't been loaded early enough, groan
-		if ( empty( $post->ID ) ) {
-			$posts = get_posts( array( 'post_type' => $bp->bp_docs->post_type_name, 'name' => $bp->bp_docs->doc_slug ) );
-			$post = $posts[0];
-		}
+		if ( empty( $post->ID ) )
+			$post = $bp->bp_docs->current_post;
 		
 		$doc_settings = get_post_meta( get_the_ID(), 'bp_docs_settings', true );
 
