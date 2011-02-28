@@ -342,11 +342,12 @@ function bp_docs_current_user_can( $action = 'edit' ) {
 }
 
 /**
- * Determine whether a given user can edit a given doc
+ * Determine whether a given user can do something with a given doc
  *
  * @package BuddyPress Docs
  * @since 1.0
  *
+ * @param str $action Optional. The action being queried. Eg 'edit', 'read_comments', 'manage'
  * @param int $user_id Optional. Unique user id for the user being tested. Defaults to logged-in ID
  * @param int $doc_id Optional. Unique doc id. Defaults to doc currently being viewed
  */
@@ -360,14 +361,8 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
 		if ( !empty( $post->ID ) ) {
 			$doc_id = $post->ID;
 		} else {
-			// Sometimes the post hasn't been loaded early enough, groan
-			$posts = get_posts( array( 'post_type' => $bp->bp_docs->post_type_name, 'name' => $bp->bp_docs->doc_slug ) );
-			
-			if ( empty( $posts ) )
-				return false;
-			
-			$bp->bp_docs->current_post = $posts[0];
-			$doc_id = $posts[0]->ID;
+			$doc = bp_docs_get_current_doc();
+			$doc_id = $doc->ID;
 		}
 	}
 	
@@ -455,6 +450,38 @@ function bp_docs_current_group_is_public() {
 		return true;
 		
 	return false;
+}
+
+/**
+ * Utility function to get and cache the current doc
+ *
+ * @package BuddyPress Docs
+ * @since 1.0
+ *
+ * @return obj Current doc
+ */
+function bp_docs_get_current_doc() {	
+	global $bp;
+	
+	if ( empty( $bp->bp_docs->current_post ) ) {
+		
+		$posts = get_posts( array( 
+			'post_type' => $bp->bp_docs->post_type_name, 
+			'name' => $bp->bp_docs->doc_slug 
+		) );
+		
+		if ( empty( $posts ) )
+			return false;
+		
+		$doc = $posts[0];
+		
+		$bp->bp_docs->current_post = $posts[0];
+	
+	} else {
+		$doc = $bp->bp_docs->current_post;
+	}
+	
+	return $doc;
 }
 
 ?>
