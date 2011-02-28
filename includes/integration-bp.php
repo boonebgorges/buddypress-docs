@@ -125,6 +125,10 @@ class BP_Docs_BP_Integration {
 				$doc = bp_docs_get_current_doc();
 				
 				// The user can edit, so we check for edit locks
+				// Because we're not using WP autosave at the moment, ensure that
+				// the lock interval always returns as in process
+				add_filter( 'wp_check_post_lock_window', create_function( false, 'return time();' ) );
+				
 				$lock = wp_check_post_lock( $doc->ID );
 				
 				if ( $lock ) {
