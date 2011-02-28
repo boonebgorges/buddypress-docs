@@ -448,4 +448,13 @@ function bp_docs_doc_action_links() {
 	echo implode( ' &#124; ', $links );
 }
 
+function bp_docs_current_group_is_public() {
+	global $bp;
+	
+	if ( !empty( $bp->groups->current_group->status ) && 'public' == $bp->groups->current_group->status )
+		return true;
+		
+	return false;
+}
+
 ?>

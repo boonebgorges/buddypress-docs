@@ -107,6 +107,13 @@ p#filter-by-tag {
 	margin-bottom: 0;
 }
 
+/* Comment section */
+.comments-closed {
+	padding: 10px 20px;
+	background: #eaeaea;
+	margin-top: 10px;
+}
+
 /* Reversing some resets done by bp-default */
 .doc-content ul {
 	list-style: disc;
