@@ -58,8 +58,9 @@ class BP_Docs_Groups_Integration {
 		// Add group-specific settings to the doc settings box
 		add_filter( 'bp_docs_doc_settings_markup',	array( $this, 'doc_settings_markup' ) );
 		
-		// Filter the activity action for group docs-related activity
+		// Filter the activity actions for group docs-related activity
 		add_filter( 'bp_docs_activity_action',		array( $this, 'activity_action' ), 10, 5 );
+		add_filter( 'bp_docs_comment_activity_action',	array( $this, 'comment_activity_action' ), 10, 5 );
 	}
 	
 	/**
@@ -294,6 +295,18 @@ class BP_Docs_Groups_Integration {
 			} else {
 				$action = sprintf( __( '%1$s edited the doc %2$s in the group %3$s', 'bp-docs' ), $user_link, $doc_link, $group_link );
 			}
+		}
+		
+		return $action;
+	}
+	
+	function comment_activity_action( $action, $user_link, $comment_link, $component, $item ) {
+		if ( 'groups' == $component ) {
+			$group		= new BP_Groups_Group( $item );
+			$group_url	= bp_get_group_permalink( $group );
+			$group_link	= '<a href="' . $group_url . '">' . $group->name . '</a>';
+						
+			$action 	= sprintf( __( '%1$s commented on the doc %2$s in the group %3$s', 'bp-docs' ), $user_link, $comment_link, $group_link );
 		}
 		
 		return $action;
