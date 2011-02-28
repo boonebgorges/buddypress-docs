@@ -284,6 +284,19 @@ class BP_Docs_Groups_Integration {
 		}
 	}
 	
+	/**
+	 * Filters the activity action of 'doc created/edited' activity to include the group name
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 * 
+	 * @param str $action The original action text created in BP_Docs_BP_Integration::post_activity()
+	 * @param str $user_link An HTML link to the user profile of the editor
+	 * @param str $doc_link An HTML link to the doc 
+	 * @param bool $is_new_doc True if it's a newly created doc, false if it's an edit
+	 * @param obj $query The query object from BP_Docs_Query
+	 * @return str $action The filtered action text
+	 */
 	function activity_action( $action, $user_link, $doc_link, $is_new_doc, $query ) {
 		if ( $query->item_type == 'group' ) {
 			$group 		= new BP_Groups_Group( $query->item_id );
@@ -300,6 +313,20 @@ class BP_Docs_Groups_Integration {
 		return $action;
 	}
 	
+	
+	/**
+	 * Filters the activity action of 'new doc comment' activity to include the group name
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 * 
+	 * @param str $action The original action text created in BP_Docs_BP_Integration::post_activity()
+	 * @param str $user_link An HTML link to the user profile of the editor
+	 * @param str $comment_link An HTML link to the comment anchor in the doc
+	 * @param str $component The canonical component name ('groups', 'profile', etc)
+	 * @param int $item The id of the item (in this case, the group to which the doc belongs)
+	 * @return str $action The filtered action text
+	 */
 	function comment_activity_action( $action, $user_link, $comment_link, $component, $item ) {
 		if ( 'groups' == $component ) {
 			$group		= new BP_Groups_Group( $item );
