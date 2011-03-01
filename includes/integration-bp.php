@@ -25,6 +25,9 @@ class BP_Docs_BP_Integration {
 		
 		add_action( 'bp_setup_globals', 	array( $this, 'setup_globals' 		) );
 		
+		// for now...
+		require_once( BP_DOCS_INCLUDES_PATH . 'integration-component.php' );
+		
 		if ( bp_is_active( 'groups' ) ) {
 			require_once( BP_DOCS_INCLUDES_PATH . 'integration-groups.php' );
 			$this->groups_integration = new BP_Docs_Groups_Integration;

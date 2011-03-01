@@ -184,7 +184,7 @@ class BP_Docs_Component extends BP_Component {
 
 		// Add 'Groups' to the main navigation
 		$main_nav = array(
-			'name'                => sprintf( __( 'Groups <span>(%d)</span>', 'buddypress' ), groups_total_groups_for_user() ),
+			'name'                => __( 'Docs', 'buddypress' ),
 			'slug'                => $this->slug,
 			'position'            => 70,
 			'screen_function'     => 'groups_screen_my_groups',
@@ -367,6 +367,6 @@ class BP_Docs_Component extends BP_Component {
 	}
 }
 // Create the groups component
-$bp->groups = new BP_Groups_Component();
+$bp->docs = new BP_Docs_Component();
 
 ?>
