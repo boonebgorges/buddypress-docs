@@ -78,7 +78,7 @@ function bp_docs_post_tags_meta_box() {
 	
 	require_once(ABSPATH . '/wp-admin/includes/taxonomy.php');
         		
-	$defaults = array('taxonomy' => 'post_tag');
+	$defaults = array('taxonomy' => $bp->bp_docs->docs_tag_tax_name);
 	if ( !isset($box['args']) || !is_array($box['args']) )
 		$args = array();
 	else
