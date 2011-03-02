@@ -62,11 +62,6 @@ form.standard-form input[type="text"]#doc-title {
 	padding: 2px;
 }
 
-#editorcontainer textarea.theEditor {
-	width: 865px;
-}
-
-
 /* Visual mode tweaks */
 
 .wp_themeSkin tr.mceFirst td.mceToolbar {
