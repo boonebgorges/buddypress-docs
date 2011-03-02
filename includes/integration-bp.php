@@ -532,7 +532,6 @@ class BP_Docs_BP_Integration {
 			wp_enqueue_script( 'editor' );
 			if ( function_exists( 'add_thickbox' ) ) 
 				add_thickbox();
-			wp_admin_css();
 			wp_enqueue_script( 'utils' );
 			
 			wp_register_script( 'bp-docs-idle-js', plugins_url( 'buddypress-docs/includes/js/idle.js' ), array( 'jquery', 'bp-docs-js' ) );
