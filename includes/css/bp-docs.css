@@ -1,0 +1,147 @@
+.doc-header h4 {
+	margin-bottom: 15px !important;
+}
+
+.docs-filter {
+	display: block;
+	width: 400px;
+	float: left;
+	margin-bottom: 15px;
+}
+
+.doc-search {
+	float: right;
+	width: 250px;
+	text-align: right;
+}
+
+.docs-filter-tags {
+	width: 100%; /* At the moment there is only one filter box, so let's make it wide */
+}
+
+.docs-filter-tags ul li {
+	display: block;
+	width: 120px;
+	float: left;
+	padding: 6px;
+}
+
+.doctable p {
+	padding: 0;
+	margin: 0;
+}
+
+.row-actions {
+	visibility: hidden;
+	padding: 2px 0 0;
+}
+
+.row-actions a {
+	color: #999;
+	font-size: 11px;
+}
+
+.doctable tr:hover .row-actions {
+	visibility: visible;
+}
+
+.doctable tr:nth-child(even) {
+	background-color: #eaeaea;
+}
+
+
+#docs-filter-submit {
+	margin: 10px 4px;
+}
+
+.title-cell {
+	width: 30%;
+}
+
+.author-cell, .created-date-cell, .edited-date-cell {
+	text-align: center;
+	width: 100px;
+}
+
+.current-orderby a {
+	padding-left: 20px;
+}
+
+.asc a {
+	background: url(../images/sort-col-asc.gif) no-repeat;	
+}
+
+.desc a {
+	background: url(../images/sort-col-desc.gif) no-repeat;	
+}
+
+.doc-edit-link {
+	margin: 15px 0 20px 0;
+}
+
+.doc-meta, #doc-meta, .docs #comments {
+	padding-top: 20px;
+	border-top: 1px solid #ddd;
+}
+
+div.docs-info-header {
+	background: #eaeaea;
+	padding: 5px 10px;
+	margin-bottom: 10px;
+}
+
+p.toggle-switch {
+	margin-bottom: 0;
+}
+
+a.doc-filter-toggle {
+	text-decoration: none;
+	font-weight: bold;
+}
+
+.docs-info-header .docs-filter {
+	margin-bottom: 0;
+}
+
+p#filter-by-tag {
+	margin-bottom: 0;
+}
+
+/* Single doc view */
+div.doc-content {
+	padding: 20px;
+	border: 3px solid #eaeaea;
+	margin-top: 20px;
+}
+
+/* Comment section */
+.comments-closed {
+	padding: 10px 20px;
+	background: #eaeaea;
+	margin-top: 10px;
+}
+
+/* Reversing some resets done by bp-default */
+.doc-content ul {
+	list-style: disc;
+}
+
+.doc-content ol {
+	list-style: decimal;
+}
+
+.doc-content li {
+	margin-left: 20px;
+}
+
+.doc-content blockquote {
+	background: #eaeaea;
+	padding: 5px;
+	margin: 10px 30px;
+}
+
+/* GROUP ADMIN */
+
+div.hidden {
+	display: none;
+}
