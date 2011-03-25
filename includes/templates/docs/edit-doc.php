@@ -79,7 +79,7 @@ wp_tiny_mce();
         
         	<?php wp_nonce_field( 'bp_docs_save' ) ?>
         
-		<input type="submit" name="doc-edit-submit" id="doc-edit-submit" value="<?php _e( 'Save', 'bp-docs' ) ?>"> <a href="<?php bp_docs_group_doc_permalink() ?>" class="action safe"><?php _e( 'Cancel', 'bp-docs' ); ?></a>
+		<input type="submit" name="doc-edit-submit" id="doc-edit-submit" value="<?php _e( 'Save', 'bp-docs' ) ?>"> <a href="<?php bp_docs_cancel_edit_link() ?>" class="action safe"><?php _e( 'Cancel', 'bp-docs' ); ?></a>
             
             	<?php if ( bp_docs_current_user_can( 'manage' ) ) : ?><a class="delete-doc-button" href="<?php echo wp_nonce_url( bp_docs_get_group_doc_permalink() . '/' . BP_DOCS_DELETE_SLUG, 'bp_docs_delete' ) ?>">Delete</a><?php endif ?>
         </div>
