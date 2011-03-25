@@ -496,7 +496,7 @@ function bp_docs_get_current_doc() {
  * stores the data in $bp for future use.
  *
  * @package BuddyPress Docs
- * @since 1.0
+ * @since 1.0-beta-2
  *
  * @param int $doc_id Optional. Defaults to the doc currently being viewed
  * @return int Returns 0 if there is no lock, otherwise returns the user_id of the locker
@@ -536,7 +536,7 @@ function bp_docs_is_doc_edit_locked( $doc_id = false ) {
  * Echoes the output of bp_docs_get_current_doc_locker_name()
  *
  * @package BuddyPress Docs
- * @since 1.0
+ * @since 1.0-beta-2
  */
 function bp_docs_current_doc_locker_name() {
 	echo bp_docs_get_current_doc_locker_name();
@@ -545,7 +545,7 @@ function bp_docs_current_doc_locker_name() {
 	 * Get the name of the user locking the current document, if any
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta-2
 	 *
 	 * @return string $locker_name The full name of the locking user
 	 */
@@ -560,9 +560,23 @@ function bp_docs_current_doc_locker_name() {
 		return apply_filters( 'bp_docs_get_current_doc_locker_name', $locker_name, $locker_id );
 	}
 
+/**
+ * Echoes the output of bp_docs_get_force_cancel_edit_lock_link()
+ *
+ * @package BuddyPress Docs
+ * @since 1.0-beta-2
+ */
 function bp_docs_force_cancel_edit_lock_link() {
 	echo bp_docs_get_force_cancel_edit_lock_link();
 }
+	/**
+	 * Get the URL for canceling the edit lock on the current doc
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0-beta-2
+	 *
+	 * @return string $cancel_link href for the cancel edit lock link
+	 */
 	function bp_docs_get_force_cancel_edit_lock_link() {
 		global $post;
 		
@@ -578,9 +592,26 @@ function bp_docs_force_cancel_edit_lock_link() {
 		return apply_filters( 'bp_docs_get_force_cancel_edit_lock_link', $cancel_link, $doc_permalink );
 	}
 	
+/**
+ * Echoes the output of bp_docs_get_cancel_edit_link()
+ *
+ * @package BuddyPress Docs
+ * @since 1.0-beta-2
+ */
 function bp_docs_cancel_edit_link() {
 	echo bp_docs_get_cancel_edit_link();
 }
+	/**
+	 * Get the URL for canceling out of Edit mode on a doc
+	 *
+	 * This used to be a straight link back to non-edit mode, but something fancier is needed
+	 * in order to detect the Cancel and to remove the edit lock.
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0-beta-2
+	 *
+	 * @return string $cancel_link href for the cancel edit link
+	 */
 	function bp_docs_get_cancel_edit_link() {
 		global $bp, $post;
 
@@ -595,4 +626,60 @@ function bp_docs_cancel_edit_link() {
 		
 		return apply_filters( 'bp_docs_get_cancel_edit_link', $cancel_link, $doc_permalink );
 	}
+
+function bp_docs_paginate_links() {
+	global $wp_query;
+	
+	$cur_page = isset( $_GET['paged'] ) ? absint( $_GET['paged'] ) : 1;
+	
+        $page_links_total = $wp_query->max_num_pages;
+ 
+        $page_links = paginate_links( array(
+		'base' 		=> add_query_arg( 'paged', '%#%' ),
+		'format' 	=> '',
+		'prev_text' 	=> __('&laquo;'),
+		'next_text' 	=> __('&raquo;'),
+		'total' 	=> $page_links_total,
+		'current' 	=> $cur_page
+        ));
+        
+        echo apply_filters( 'bp_docs_paginate_links', $page_links );
+}
+
+function bp_docs_get_current_docs_start() {
+	global $wp_query;
+	
+	$paged = !empty( $wp_query->query_vars['paged'] ) ? $wp_query->query_vars['paged'] : 1;
+
+	$posts_per_page = !empty( $wp_query->query_vars['posts_per_page'] ) ? $wp_query->query_vars['posts_per_page'] : 10;
+	
+	$start = ( ( $paged - 1 ) * $posts_per_page ) + 1;
+	
+	return apply_filters( 'bp_docs_get_current_docs_start', $start );
+}
+
+
+function bp_docs_get_current_docs_end() {
+	global $wp_query;
+	
+	$paged = !empty( $wp_query->query_vars['paged'] ) ? $wp_query->query_vars['paged'] : 1;
+	
+	$posts_per_page = !empty( $wp_query->query_vars['posts_per_page'] ) ? $wp_query->query_vars['posts_per_page'] : 10;
+	
+	$end = $paged * $posts_per_page;
+	
+	if ( $end > bp_docs_get_total_docs_num() )
+		$end = bp_docs_get_total_docs_num();
+	
+	return apply_filters( 'bp_docs_get_current_docs_end', $end );
+}
+
+function bp_docs_get_total_docs_num() {
+	global $wp_query;
+	
+	$total_doc_count = !empty( $wp_query->found_posts ) ? $wp_query->found_posts : 0;
+	
+	return apply_filters( 'bp_docs_get_total_docs_num', $total_doc_count );
+}
+
 ?>

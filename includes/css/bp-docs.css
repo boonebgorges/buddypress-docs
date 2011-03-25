@@ -107,6 +107,26 @@ p#filter-by-tag {
 	margin-bottom: 0;
 }
 
+div#bp-docs-pagination {
+	position: relative;
+	height: 30px;
+}
+	div#bp-docs-pagination-count {
+		position: absolute;
+		left: 0;
+		top: 5px;
+		font-size: .9em;
+		color: #999;
+	}
+	div#bp-docs-paginate-links {
+		position: absolute;
+		right: 0;
+		top: 5px;
+	}
+	div#bp-docs-paginate-links a {
+		padding: 0 4px;
+	}
+
 /* Single doc view */
 div.doc-content {
 	padding: 20px;
