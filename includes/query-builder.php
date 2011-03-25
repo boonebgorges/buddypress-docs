@@ -246,7 +246,12 @@ class BP_Docs_Query {
 		
 		$args['orderby'] = !empty( $_GET['orderby'] ) ? urldecode( $_GET['orderby'] ) : apply_filters( 'bp_docs_default_sort_order', 'edited' ) ;
 		
+		// Search
 		$args['s'] = !empty( $_GET['s'] ) ? urldecode( $_GET['s'] ) : ''; 
+		
+		// Page number, posts per page
+		$args['paged'] = !empty( $_GET['paged'] ) ? absint( $_GET['paged'] ) : 1;
+		$args['posts_per_page'] = !empty( $_GET['posts_per_page'] ) ? absint( $_GET['posts_per_page'] ) : 10;
 		
 		return $args;
 	}
