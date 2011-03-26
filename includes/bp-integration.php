@@ -25,7 +25,8 @@ class BP_Docs_BP_Integration {
 		add_action( 'bp_setup_globals', array( $this, 'setup_globals' ) );
 		
 		// Todo: Only fire this if you actually need it for a given group
-		bp_register_group_extension( 'BP_Docs_Group_Extension' );
+		if ( bp_is_active( 'groups' ) )
+			bp_register_group_extension( 'BP_Docs_Group_Extension' );
 		
 		add_action( 'wp', array( $this, 'catch_form_submits' ), 1 );
 		
