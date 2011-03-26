@@ -16,4 +16,6 @@
 	</div>
 <?php endif ?>
 
+<?php comments_template() ?>
+
 <?php endwhile; endif ?>
