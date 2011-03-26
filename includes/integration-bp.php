@@ -41,6 +41,9 @@ class BP_Docs_BP_Integration {
 		// the plugin
 		add_filter( 'comments_template',	array( $this, 'comments_template'	) );
 		
+		// Keep comment notifications from being sent
+		add_filter( 'comment_post', 		array( $this, 'check_comment_type' 	) );
+		
 		add_action( 'bp_loaded', 		array( $this, 'set_includes_url' 	) );
 		add_action( 'init', 			array( $this, 'enqueue_scripts' 	) );
 		add_action( 'wp_print_styles', 		array( $this, 'enqueue_styles' 		) );
@@ -322,6 +325,31 @@ class BP_Docs_BP_Integration {
 		}
 		
 		return apply_filters( 'bp_docs_comment_template_path', $path, $original_path );
+	}
+	
+	/**
+	 * Prevents comment notification emails from being sent on BP Docs comments
+	 *
+	 * For the moment, I'm shutting off WP's native email notifications on BP Docs comments.
+	 * They are better handled as part of the BP activity stream. This maneuver requires a
+	 * trick: when a comment is posted on a BP Doc type post, I hijack the get_option() call 
+	 * for comments_notify and return 0 (rather than false, which would not stop the real
+	 * get_option operation from running).
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 *
+	 * @param int $comment_id ID number of the new comment being posted
+	 */
+	function check_comment_type( $comment_id ) {
+		global $bp;
+		
+		$comment = get_comment( $comment_id );
+		$post = get_post( $comment->comment_post_ID );
+		
+		if ( $bp->bp_docs->post_type_name == $post->post_type ) {
+			add_filter( 'pre_option_comments_notify', create_function( false, 'return 0;' ) );
+		}
 	}
 	
 	/**
