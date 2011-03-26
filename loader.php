@@ -6,6 +6,8 @@ Network: true
 
 /* Only load the component if BuddyPress is loaded and initialized. */
 function bp_docs_init() {
+	global $bp_docs;
+	
 	require( dirname( __FILE__ ) . '/bp-docs.php' );
 	$bp_docs = new BP_Docs;
 }

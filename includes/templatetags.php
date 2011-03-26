@@ -34,6 +34,24 @@ function bp_docs_group_tabs( $group = false ) {
 }
 
 /**
+ * Returns true if the current page is a BP Docs edit or create page (used to load JS)
+ *
+ * @package BuddyPress Docs
+ * @since 1.0
+ *
+ * @returns bool
+ */
+function bp_docs_is_wiki_edit_page() {
+	global $bp;
+	
+	$item_type = BP_Docs_Query::get_item_type();
+	$current_view = BP_Docs_Query::get_current_view( $item_type );
+	
+	
+	return apply_filters( 'bp_docs_is_wiki_edit_page', $is_wiki_edit_page );
+}
+
+/**
  * Echoes the output of bp_docs_get_group_doc_permalink()
  *
  * @package BuddyPress Docs
