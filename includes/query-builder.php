@@ -52,9 +52,12 @@ class BP_Docs_Query {
 	function get_item_type() {
 		global $bp;
 		
-		$type = '';
+		$type = apply_filters( 'bp_docs_get_item_type', '', $this );
 		
-		return apply_filters( 'bp_docs_get_item_type', $type, $this );
+		// Stuffing into the $bp global for later use. Barf.
+		$bp->bp_docs->current_item_type = $type;
+		
+		return $type;
 	}
 	
 	/**
@@ -93,9 +96,9 @@ class BP_Docs_Query {
 		}
 		
 		// Todo: abstract into groups. Will be a pain
-		$this->item_id = apply_filters( 'bp_docs_get_item_id', $id );
-		$this->item_name = apply_filters( 'bp_docs_get_item_name', $name );
-		$this->item_slug = apply_filters( 'bp_docs_get_item_slug', $slug );
+		$this->item_id 		= apply_filters( 'bp_docs_get_item_id', $id );
+		$this->item_name 	= apply_filters( 'bp_docs_get_item_name', $name );
+		$this->item_slug 	= apply_filters( 'bp_docs_get_item_slug', $slug );
 	}
 	
 	/**
@@ -236,6 +239,12 @@ class BP_Docs_Query {
 		return $args;
 	}
 	
+	/**
+	 * Fires the WP query and loads the appropriate template
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 */
 	function load_template() {
 		global $bp, $post;
 		
