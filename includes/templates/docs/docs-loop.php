@@ -5,6 +5,19 @@
 	<?php bp_docs_info_header() ?>
 </div>
 
+<?php /* Have to put this here rather than in the external stylesheet to account for slow loading pages. I feel guilty about it, but you know what, bite me. */ ?>
+<script type="text/javascript">
+/* Swap the 'filter by tag' text with a dummy link and hide tag list on load */
+if ( jQuery('p#filter-by-tag').length != false ) { 
+	var c = jQuery('p#filter-by-tag').html();
+	var cl = '<a href="#" class="doc-filter-toggle tag-filter-toggle">' + c + ' +</a>';
+	jQuery('p#filter-by-tag').html(cl);
+	
+	/* Hide tags */
+	jQuery('ul.filter-tags-list').toggle();
+}
+</script>
+
 <?php if ( have_posts() ) : ?>
 	<table class="doctable">
 
