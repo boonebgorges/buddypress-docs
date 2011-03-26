@@ -1,1 +1,0 @@
-view site wiki page
