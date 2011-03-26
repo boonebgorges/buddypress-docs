@@ -116,8 +116,10 @@ class BP_Docs_BP_Integration {
 				$the_docs = get_posts( $the_doc_args );			
 				$doc_id = $the_docs[0]->ID;	
 				
-				wp_delete_post( $doc_id );
+				do_action( 'bp_docs_before_doc_delete', $doc_id );
 				
+				wp_delete_post( $doc_id );
+								
 				bp_core_add_message( __( 'Doc successfully deleted!', 'bp-docs' ) );
 			} else {
 				bp_core_add_message( __( 'You do not have permission to delete that doc.', 'bp-docs' ), 'error' );
