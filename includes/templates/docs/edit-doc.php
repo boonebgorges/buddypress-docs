@@ -9,6 +9,11 @@ require_once ABSPATH . '/wp-admin/includes/post.php' ;
 wp_tiny_mce();
 
 ?>
+
+<div id="idle-warning" style="display:none">
+	<p><?php _e( 'You have been idle for <span id="idle-warning-time"></span>', 'bp-docs' ) ?></p>
+</div>
+
 <form action="" method="post" class="standard-form" id="doc-form">
     <div class="doc-header">
     
@@ -16,6 +21,10 @@ wp_tiny_mce();
 		<h4><?php the_title() ?></h4>
 	<?php else : ?>
 		<h4><?php _e( 'New Doc', 'bpsp' ); ?></h4>
+	<?php endif ?>
+	
+	<?php if ( bp_docs_is_existing_doc() ) : ?>
+		<input type="hidden" id="existing-doc-id" value="<?php the_ID() ?>" />
 	<?php endif ?>
     </div>
     <div class="doc-content-wrapper">
@@ -83,6 +92,17 @@ wp_tiny_mce();
 <?php bp_docs_inline_toggle_js() ?>
 
 <script type="text/javascript" >
-    var tb_closeImage = "/wp-includes/js/thickbox/tb-close.png";
+    var tb_closeImage = "<?php bp_root_domain() ?>/wp-includes/js/thickbox/tb-close.png";
 </script>
 
+<?php /* Important - do not remove. Needed for autosave stuff */ ?>
+<div id="still_working_content" name="still_working_content" style="display:none;">
+	<br />
+	<h3><?php _e( 'Are you still there?', 'bp-docs' ) ?></h3>
+	
+	<p><?php _e( 'In order to prevent overwriting content, only one person can edit a given doc at a time. For that reason, you must periodically ensure the system that you\'re still actively editing. If you are idle for more than 30 minutes, your changes will be auto-saved, and you\'ll be sent out of Edit mode so that others can access the doc.', 'bp-docs' ) ?></p>
+	
+	<a href="#" onclick="tb_remove(); return false" class="button"><?php _e( 'I\'m still editing!', 'bp-docs' ) ?></a>
+	
+	
+</div>

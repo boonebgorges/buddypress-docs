@@ -391,6 +391,7 @@ class BP_Docs_Query {
 					$the_doc = get_post( $this->doc_id );
 					$this->doc_slug = $the_doc->post_name;
 					
+					// A normal, successful save
 					$result['message'] = __( 'Doc successfully created!', 'bp-doc' );
 					$result['redirect'] = 'single';
 				}				
@@ -416,7 +417,14 @@ class BP_Docs_Query {
 					// Remove the edit lock
 					delete_post_meta( $this->doc_id, '_edit_lock' );
 					
-					$result['message'] = __( 'Doc successfully saved!', 'bp-doc' );
+					// When the post has been autosaved, we need to leave a
+					// special success message
+					if ( !empty( $_POST['is_auto'] ) && $_POST['is_auto'] ) {
+						$result['message'] = __( 'You idled a bit too long while in Edit mode. In order to allow others to edit the doc you were working on, your changes have been autosaved. Click the Edit button to return to Edit mode.', 'bp-docs' );
+					} else {
+						// A normal, successful save
+						$result['message'] = __( 'Doc successfully created!', 'bp-doc' );
+					}
 					$result['redirect'] = 'single';
 				}
 			}
