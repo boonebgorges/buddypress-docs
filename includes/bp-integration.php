@@ -142,7 +142,7 @@ class BP_Docs_BP_Integration {
 			require_once( ABSPATH . '/wp-admin/includes/post.php' );
 			wp_enqueue_script( 'common' );
 			wp_enqueue_script( 'jquery-color' );
-			wp_enqueue_scripts('editor');
+			wp_enqueue_script('editor');
 			if (function_exists('add_thickbox')) add_thickbox();
 			//wp_print_scripts('media-upload');
 			wp_admin_css();
