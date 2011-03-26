@@ -327,10 +327,10 @@ class BP_Docs_Taxonomy {
 	
 		?>
 		
-		<div class="docs-filter docs-filter-tags">
-			<p id="filter-by-tag"><?php _e( 'Filter by tag', 'bp-docs' ) ?></p>
+		<div class="docs-filter docs-filter-tags toggleable">
+			<p id="tags-toggle" class="toggle-switch"><?php _e( 'Filter by tag', 'bp-docs' ) ?></p>
 	
-			<ul class="filter-tags-list">
+			<ul id="tags-list" class="toggle-content">
 			<?php foreach( $existing_terms as $term => $posts ) : ?>
 				
 				<li>
