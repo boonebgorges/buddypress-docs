@@ -146,9 +146,28 @@ function bp_docs_get_current_filters() {
 	return apply_filters( 'bp_docs_get_current_filters', $filters );
 }
 
+/**
+ * Echoes the output of bp_docs_get_doc_link()
+ *
+ * @package BuddyPress Docs
+ * @since 1.0
+ */
 function bp_docs_doc_link( $doc_id ) {
 	echo bp_docs_get_doc_link( $doc_id );
 }
+	/**
+	 * Get the doc's permalink
+	 *
+	 * For the moment, this returns the URL of the first item associated with the doc. If you
+	 * extend BuddyPress Docs so that items can be associated with multiple groups, you'll need
+	 * to change the way this plugin works.
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 *
+	 * @param int $doc_id
+	 * @return str URL of the doc
+	 */
 	function bp_docs_get_doc_link( $doc_id ) {
 		if ( empty( $doc_id ) )
 			return false;
@@ -393,6 +412,12 @@ function bp_docs_inline_toggle_js() {
 	<?php
 }
 
+/**
+ * A hook for intregration pieces to insert their settings markup
+ *
+ * @package BuddyPress Docs
+ * @since 1.0
+ */
 function bp_docs_doc_settings_markup() {
 	$doc_settings = get_post_meta( get_the_ID(), 'bp_docs_settings', true );
 	
