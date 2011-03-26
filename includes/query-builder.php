@@ -233,6 +233,8 @@ class BP_Docs_Query {
 		
 		$args['orderby'] = !empty( $_GET['orderby'] ) ? urldecode( $_GET['orderby'] ) : apply_filters( 'bp_docs_default_sort_order', 'edited' ) ;
 		
+		$args['s'] = !empty( $_GET['s'] ) ? urldecode( $_GET['s'] ) : ''; 
+		
 		return $args;
 	}
 	
