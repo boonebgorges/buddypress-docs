@@ -79,7 +79,7 @@
 	margin: 15px 0 20px 0;
 }
 
-.doc-meta, #doc-meta {
+.doc-meta, #doc-meta, .docs #comments {
 	padding-top: 20px;
 	border-top: 1px solid #ddd;
 }
