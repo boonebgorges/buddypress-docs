@@ -213,13 +213,17 @@ class BP_Docs_Query {
 		// Only call this here to reduce database calls on other pages
 		$this->setup_terms();
 		
-		// Get the tax term by id. Todo: Why can't I make this work less stupidly?
-		$term = get_term_by( 'id', $this->term_id, 'bp_docs_associated_item' );
-		
 		$args = array(
-			'post_type' => 'bp_doc',
-			'bp_docs_associated_item' => $term->slug
+			'post_type' 			=> 'bp_doc'
 		);
+		
+		$args['tax_query'] = apply_filters( 'bp_docs_tax_query', array(
+			array( 
+				'taxonomy'	=> 'bp_docs_associated_item',
+				'terms' 	=> array( $this->term_id ),
+				'slug'		=> 'slug'
+			),
+		) );
 		
 		return $args;
 	}

@@ -88,4 +88,136 @@ function bp_docs_group_doc_permalink() {
 		return apply_filters( 'bp_docs_get_doc_permalink', $group_permalink . $bp->bp_docs->slug . '/' . $doc_slug );
 	}
 
+/**
+ * Echoes the output of bp_docs_get_info_header()
+ *
+ * @package BuddyPress Docs
+ * @since 1.0
+ */
+function bp_docs_info_header() {
+	echo bp_docs_get_info_header();
+}
+	/**
+	 * Get the info header for a list of docs
+	 *
+	 * Contains things like tag filters
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 *
+	 * @param int $doc_id optional The post_id of the doc
+	 * @return str Permalink for the group doc
+	 */
+	function bp_docs_get_info_header() {
+		$filters = bp_docs_get_current_filters();
+		
+		// Set the message based on the current filters
+		if ( empty( $filters ) ) {
+			$message = __( 'You are viewing all docs.', 'bp-docs' );	
+		} else {
+			$message = array();
+			if ( !empty( $filters['tags'] ) ) {
+				$tagtext = array();
+				
+				foreach( $filters['tags'] as $tag ) {
+					$tagtext[] = bp_docs_get_tag_link( array( 'tag' => $tag ) );
+				}
+				
+				$message[] = sprintf( __( 'You are viewing docs with the following tags: %s', 'bp-docs' ), implode( ', ', $tagtext ) );  
+			}
+		
+			$message = implode( "\n", $message );
+			
+			$message .= ' - ' . sprintf( __( '<strong><a href="%s" title="View All Docs">View All Docs</a></strong>', 'bp_docs' ), bp_docs_get_item_docs_link() );
+		}
+		
+		
+		?>
+		
+		<p><?php echo $message ?></p>
+		
+		<?php
+	}
+
+/**
+ * Get the filters currently being applied to the doc list
+ *
+ * @package BuddyPress Docs
+ * @since 1.0
+ *
+ * @return array $filters
+ */
+function bp_docs_get_current_filters() {
+	$filters = array();
+	
+	// First check for tag filters
+	if ( !empty( $_REQUEST['bpd_tag'] ) ) {
+		// The bpd_tag argument may be comma-separated
+		$tags = explode( ',', urldecode( $_REQUEST['bpd_tag'] ) );
+		
+		foreach( $tags as $tag ) {
+			$filters['tags'][] = $tag;
+		}
+	}
+	
+	return apply_filters( 'bp_docs_get_current_filters', $filters );
+}
+
+/**
+ * Get an archive link for a given tag
+ *
+ * @package BuddyPress Docs
+ * @since 1.0
+ *
+ * @return array $filters
+ */
+function bp_docs_get_tag_link( $args = array() ) {
+	global $bp;
+	
+	extract( $args, EXTR_SKIP );
+	
+	$item_docs_url = bp_docs_get_item_docs_link();
+	
+	$url = apply_filters( 'bp_docs_get_tag_link_url', add_query_arg( 'bpd_tag', urlencode( $tag ), $item_docs_url ), $args, $item_docs_url );
+	
+	$html = '<a href="' . $url . '" title="' . sprintf( __( 'Docs tagged %s', 'bp-docs' ), esc_attr( $tag ) ) . '">' . esc_html( $tag ) . '</a>';
+	
+	return apply_filters( 'bp_docs_get_tag_link', $html, $url, $tag );	
+}
+
+/**
+ * Get the link to the docs section of an item
+ *
+ * @package BuddyPress Docs
+ * @since 1.0
+ *
+ * @return array $filters
+ */
+function bp_docs_get_item_docs_link( $args = array() ) {
+	global $bp;
+	
+	// Defaulting to groups for now
+	$defaults = array(
+		'item_id'	=> !empty( $bp->groups->current_group->id ) ? $bp->groups->current_group->id : false,
+		'item_type'	=> !empty( $bp->groups->current_group->id ) ? 'group' : false
+	);
+
+	$r = wp_parse_args( $args, $defaults );
+	extract( $r, EXTR_SKIP );
+
+	if ( !$item_id || !$item_type )
+		return false;
+		
+	switch ( $item_type ) {
+		case 'group' :
+			if ( !$group = $bp->groups->current_group )
+				$group = new BP_Groups_Group;
+			
+			$base_url = bp_get_group_permalink( $group );
+			break;
+	}
+	
+	return apply_filters( 'bp_docs_get_item_docs_link', $base_url . $bp->bp_docs->slug . '/', $base_url, $r );
+}
+
 ?>
