@@ -4,7 +4,7 @@
  * Determine whether you are viewing a BuddyPress Docs page
  *
  * @package BuddyPress Docs
- * @since 1.0
+ * @since 1.0-beta
  *
  * @return bool
  */
@@ -26,7 +26,7 @@ function bp_docs_is_bp_docs_page() {
  * Returns true if the current page is a BP Docs edit or create page (used to load JS)
  *
  * @package BuddyPress Docs
- * @since 1.0
+ * @since 1.0-beta
  *
  * @returns bool
  */
@@ -45,7 +45,7 @@ function bp_docs_is_wiki_edit_page() {
  * Echoes the output of bp_docs_get_info_header()
  *
  * @package BuddyPress Docs
- * @since 1.0
+ * @since 1.0-beta
  */
 function bp_docs_info_header() {
 	echo bp_docs_get_info_header();
@@ -56,7 +56,7 @@ function bp_docs_info_header() {
 	 * Contains things like tag filters
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @param int $doc_id optional The post_id of the doc
 	 * @return str Permalink for the group doc
@@ -104,7 +104,7 @@ function bp_docs_info_header() {
  * Filters the output of the doc list header for search terms
  *
  * @package BuddyPress Docs
- * @since 1.0
+ * @since 1.0-beta
  *
  * @return array $filters
  */
@@ -121,7 +121,7 @@ add_filter( 'bp_docs_info_header_message', 'bp_docs_search_term_filter_text', 10
  * Get the filters currently being applied to the doc list
  *
  * @package BuddyPress Docs
- * @since 1.0
+ * @since 1.0-beta
  *
  * @return array $filters
  */
@@ -150,7 +150,7 @@ function bp_docs_get_current_filters() {
  * Echoes the output of bp_docs_get_doc_link()
  *
  * @package BuddyPress Docs
- * @since 1.0
+ * @since 1.0-beta
  */
 function bp_docs_doc_link( $doc_id ) {
 	echo bp_docs_get_doc_link( $doc_id );
@@ -163,7 +163,7 @@ function bp_docs_doc_link( $doc_id ) {
 	 * to change the way this plugin works.
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @param int $doc_id
 	 * @return str URL of the doc
@@ -190,7 +190,7 @@ function bp_docs_doc_link( $doc_id ) {
  * Echoes the output of bp_docs_get_item_docs_link()
  *
  * @package BuddyPress Docs
- * @since 1.0
+ * @since 1.0-beta
  */
 function bp_docs_item_docs_link() {
 	echo bp_docs_get_item_docs_link();
@@ -199,7 +199,7 @@ function bp_docs_item_docs_link() {
 	 * Get the link to the docs section of an item
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @return array $filters
 	 */
@@ -236,7 +236,7 @@ function bp_docs_item_docs_link() {
  * Detects the current sort order and returns the opposite
  *
  * @package BuddyPress Docs
- * @since 1.0
+ * @since 1.0-beta
  *
  * @return str $new_order Either desc or asc
  */
@@ -261,7 +261,7 @@ function bp_docs_get_sort_order( $orderby = 'edited' ) {
  * Echoes the output of bp_docs_get_order_by_link()
  *
  * @package BuddyPress Docs
- * @since 1.0
+ * @since 1.0-beta
  *
  * @param str $orderby The order_by item: title, author, created, edited, etc
  */
@@ -272,7 +272,7 @@ function bp_docs_order_by_link( $orderby = 'edited' ) {
 	 * Get the URL for the sortable column header links
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @param str $orderby The order_by item: title, author, created, edited, etc
 	 * @return str The URL with args attached
@@ -290,7 +290,7 @@ function bp_docs_order_by_link( $orderby = 'edited' ) {
  * Echoes current-orderby and order classes for the column currently being ordered by
  *
  * @package BuddyPress Docs
- * @since 1.0
+ * @since 1.0-beta
  *
  * @param str $orderby The order_by item: title, author, created, edited, etc
  */
@@ -320,7 +320,7 @@ function bp_docs_is_current_orderby_class( $orderby = 'edited' ) {
  * Determine whether the current user can do something the current doc
  *
  * @package BuddyPress Docs
- * @since 1.0
+ * @since 1.0-beta
  *
  * @param str $action The cap being tested
  * @return bool $user_can
@@ -345,7 +345,7 @@ function bp_docs_current_user_can( $action = 'edit' ) {
  * Determine whether a given user can do something with a given doc
  *
  * @package BuddyPress Docs
- * @since 1.0
+ * @since 1.0-beta
  *
  * @param str $action Optional. The action being queried. Eg 'edit', 'read_comments', 'manage'
  * @param int $user_id Optional. Unique user id for the user being tested. Defaults to logged-in ID
@@ -391,7 +391,7 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
  * load, much less for document.ready. Sorry.
  *
  * @package BuddyPress Docs
- * @since 1.0
+ * @since 1.0-beta
  */
 function bp_docs_inline_toggle_js() {
 	?>
@@ -423,7 +423,7 @@ function bp_docs_inline_toggle_js() {
  * A hook for intregration pieces to insert their settings markup
  *
  * @package BuddyPress Docs
- * @since 1.0
+ * @since 1.0-beta
  */
 function bp_docs_doc_settings_markup() {
 	$doc = bp_docs_get_current_doc();
@@ -458,7 +458,7 @@ function bp_docs_current_group_is_public() {
  * Utility function to get and cache the current doc
  *
  * @package BuddyPress Docs
- * @since 1.0
+ * @since 1.0-beta
  *
  * @return obj Current doc
  */

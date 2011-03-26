@@ -8,7 +8,7 @@ class BP_Docs_BP_Integration {
 	 * PHP 4 constructor
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */
 	function bp_docs_bp_integration() {
 		$this->__construct();
@@ -18,7 +18,7 @@ class BP_Docs_BP_Integration {
 	 * PHP 5 constructor
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */	
 	function __construct() {
 		add_action( 'bp_init', 			array( $this, 'do_query' 		), 90 );
@@ -69,7 +69,7 @@ class BP_Docs_BP_Integration {
 	 * Loads the Docs query.
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */
 	function do_query() {
 		$this->query = new BP_Docs_Query;
@@ -79,7 +79,7 @@ class BP_Docs_BP_Integration {
 	 * Stores some handy information in the $bp global
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */	
 	function setup_globals() {
 		global $bp;
@@ -104,7 +104,7 @@ class BP_Docs_BP_Integration {
 	 * Catches page loads, determines what to do, and sends users on their merry way
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */
 	function catch_page_load() {
 		global $bp;
@@ -185,7 +185,7 @@ class BP_Docs_BP_Integration {
 	 * Handles doc filters from a form post and translates to $_GET arguments before redirect
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */
 	function handle_filters() {
 		$redirect_url = apply_filters( 'bp_docs_handle_filters', bp_docs_get_item_docs_link() );
@@ -197,7 +197,7 @@ class BP_Docs_BP_Integration {
 	 * Sets the includes URL for use when loading scripts and styles
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */
 	function set_includes_url() {
 		$this->includes_url = plugins_url() . '/buddypress-docs/includes/';
@@ -208,7 +208,7 @@ class BP_Docs_BP_Integration {
 	 * comment URL after posting
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @param str $location The original location, created by WP
 	 * @param obj $comment The new comment object
@@ -232,7 +232,7 @@ class BP_Docs_BP_Integration {
 	 * Adds BP Docs options to activity filter dropdowns
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */
 	function activity_filter_options() {
 		?>
@@ -248,7 +248,7 @@ class BP_Docs_BP_Integration {
 	 * Posts an activity item on doc save
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @param obj $query The query object created in BP_Docs_Query and passed to the
 	 *     bp_docs_doc_saved filter
@@ -353,7 +353,7 @@ class BP_Docs_BP_Integration {
 	 * Posts an activity item when a comment is posted to a doc
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @param obj $query The id of the comment that's just been saved
 	 * @return int $activity_id The id number of the activity created
@@ -457,7 +457,7 @@ class BP_Docs_BP_Integration {
 	 * If you find this annoying, I have provided a filter for your convenience.
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @param str $path The path (STYLESHEETPATH . $file) from comments_template()
 	 * @return str The path of the preferred template
@@ -490,7 +490,7 @@ class BP_Docs_BP_Integration {
 	 * get_option operation from running).
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @param int $comment_id ID number of the new comment being posted
 	 */
@@ -509,7 +509,7 @@ class BP_Docs_BP_Integration {
 	 * Loads JavaScript
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */	
 	function enqueue_scripts() {
 		wp_register_script( 'bp-docs-js', plugins_url( 'buddypress-docs/includes/js/bp-docs.js' ), array( 'jquery' ) );
@@ -544,7 +544,7 @@ class BP_Docs_BP_Integration {
 	 * Loads styles
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */
 	function enqueue_styles() {
 		global $bp;

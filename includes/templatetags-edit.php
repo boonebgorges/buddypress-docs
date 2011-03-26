@@ -11,7 +11,7 @@
  * Echoes the output of bp_docs_get_edit_doc_title()
  *
  * @package BuddyPress Docs
- * @since 1.0
+ * @since 1.0-beta
  */
 function bp_docs_edit_doc_title() {
 	echo bp_docs_get_edit_doc_title();
@@ -20,7 +20,7 @@ function bp_docs_edit_doc_title() {
 	 * Returns the title of the doc currently being edited, when it exists
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @return string Doc title
 	 */
@@ -40,7 +40,7 @@ function bp_docs_edit_doc_title() {
  * Echoes the output of bp_docs_get_edit_doc_content()
  *
  * @package BuddyPress Docs
- * @since 1.0
+ * @since 1.0-beta
  */
 function bp_docs_edit_doc_content() {
 	echo bp_docs_get_edit_doc_content();
@@ -49,7 +49,7 @@ function bp_docs_edit_doc_content() {
 	 * Returns the content of the doc currently being edited, when it exists
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @return string Doc content
 	 */
@@ -69,7 +69,7 @@ function bp_docs_edit_doc_content() {
  * Display post tags form fields. Based on WP core's post_tags_meta_box()
  *
  * @package BuddyPress Docs
- * @since 1.0
+ * @since 1.0-beta
  *
  * @param object $post
  */
@@ -125,9 +125,9 @@ function bp_docs_post_tags_meta_box() {
 
 
 /**
- * Display post categories form fields.
+ * Display post categories form fields. Borrowed from WP. Not currently used.
  *
- * @since 2.6.0
+ * @since 1.0-beta
  *
  * @param object $post
  */
@@ -197,7 +197,7 @@ function bp_docs_post_categories_meta_box( $post ) {
  * Get a list of an item's docs for display in the parent dropdown
  *
  * @package BuddyPress Docs
- * @since 1.0
+ * @since 1.0-beta
  */
 function bp_docs_edit_parent_dropdown() {
 	global $bp; 
@@ -241,7 +241,7 @@ function bp_docs_edit_parent_dropdown() {
  * Are we editing an existing doc, or is this a new doc?
  *
  * @package BuddyPress Docs
- * @since 1.0
+ * @since 1.0-beta
  *
  * @return bool True if it's an existing doc
  */
