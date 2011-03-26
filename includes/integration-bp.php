@@ -194,6 +194,8 @@ class BP_Docs_BP_Integration {
 	 * @return int $activity_id The id number of the activity created
 	 */
 	function post_activity( $query ) {
+		global $bp;
+		
 		// todo: exception for autosave?
 		
 		if ( !bp_is_active( 'activity' ) )
@@ -226,14 +228,14 @@ class BP_Docs_BP_Integration {
 			// see if it's within the allotted throttle time. If so, don't record the
 			// activity item
 			if ( !empty( $already_activity['activities'] ) ) {
-				$date_recorded = $already_activity['activities'][0]->date_recorded;
-				$drunix = strtotime( $date_recorded );
-				if ( time() - $drunix <= apply_filters( 'bp_docs_edit_activity_throttle_time', 60*60 ) )
+				$date_recorded 	= $already_activity['activities'][0]->date_recorded;
+				$drunix 	= strtotime( $date_recorded );
+				if ( time() - $drunix <= apply_filters( 'bp_docs_edit_activity_throttle_time', 1 ) )
 					return;
 			}
 		}
 		
-		$doc 	= get_post( $doc_id );
+		$doc = get_post( $doc_id );
 		
 		// Set the action. Filterable so that other integration pieces can alter it
 		$action 	= '';
@@ -249,15 +251,27 @@ class BP_Docs_BP_Integration {
 		
 		$action	= apply_filters( 'bp_docs_activity_content', $action, $user_link, $doc_link, $query->is_new_doc, $query );
 		
-		// Set the action, to be used in activity filtering
+		// Get a canonical name for the component. This is a nightmare because of the way
+		// the current component and root slug relate in BP 1.3+
+		if ( function_exists( 'bp_is_current_component' ) ) {			
+			foreach ( $bp->active_components as $comp => $value ) {
+				if ( bp_is_current_component( $comp ) ) {
+					$component = $comp;
+					break;
+				}
+			}
+		} else {
+			$component = bp_current_component();
+		}
+		
+		// Set the type, to be used in activity filtering
 		$type = $query->is_new_doc ? 'bp_doc_created' : 'bp_doc_edited';
-		
-		
+	
 		$args = array(
 			'user_id'		=> $last_editor,
 			'action'		=> $action,
 			'primary_link'		=> $doc_url,
-			'component'		=> apply_filters( 'bp_docs_activity_component', bp_current_component() ),
+			'component'		=> $component,
 			'type'			=> $type,
 			'item_id'		=> $query->item_id, // Set to the group/user/etc id, for better consistency with other BP components
 			'secondary_item_id'	=> $doc_id, // The id of the doc itself
