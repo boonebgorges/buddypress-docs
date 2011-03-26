@@ -34,8 +34,11 @@ class BP_Docs_BP_Integration {
 		
 		add_action( 'comment_post_redirect', 	array( $this, 'comment_post_redirect' 	), 99, 2 );
 		
-		// Hook the activity function
+		// Hook the create/edit activity function
 		add_action( 'bp_docs_doc_saved',	array( $this, 'post_activity' 		) );
+		
+		// Hook the doc comment activity function
+		add_action( 'comment_post',		array( $this, 'post_comment_activity'	), 8 );
 		
 		// Filter the location of the comments template to allow it to be included with
 		// the plugin
@@ -286,11 +289,110 @@ class BP_Docs_BP_Integration {
 			'hide_sitewide'		=> apply_filters( 'bp_docs_hide_sitewide', false ) // Filtered to allow plugins and integration pieces to dictate
 		);
 		
-		do_action( 'bp_docs_after_activity_save', $args );
+		do_action( 'bp_docs_before_activity_save', $args );
 		
 		$activity_id = bp_activity_add( apply_filters( 'bp_docs_activity_args', $args ) );
 		
 		do_action( 'bp_docs_after_activity_save', $activity_id, $args );
+		
+		return $activity_id;
+	}
+	
+	/**
+	 * Posts an activity item when a comment is posted to a doc
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 *
+	 * @param obj $query The id of the comment that's just been saved
+	 * @return int $activity_id The id number of the activity created
+	 */
+	function post_comment_activity( $comment_id ) {
+		global $bp;
+		
+		if ( !bp_is_active( 'activity' ) )
+			return false;
+		
+		if ( empty( $comment_id ) )
+			return false;
+		
+		$comment 	= get_comment( $comment_id );
+		$doc 		= !empty( $comment->comment_post_ID ) ? get_post( $comment->comment_post_ID ) : false;
+	
+		if ( empty( $doc ) )
+			return false;
+		
+		$doc_id 	= !empty( $doc->ID ) ? $doc->ID : false;
+		
+		if ( !$doc_id )
+			return false;
+				
+		// Make sure that BP doesn't record this comment with its native functions
+		remove_action( 'comment_post', 'bp_blogs_record_comment', 10, 2 );
+		
+		// Get the associated item for this doc. Todo: abstract to standalone function
+		$items = wp_get_post_terms( $doc_id, $bp->bp_docs->associated_item_tax_name );
+		
+		// It's possible that there will be more than one item; for now, post only to the
+		// first one. Todo: make this extensible
+		$item = !empty( $items[0]->name ) ? $items[0]->name : false;
+		
+		// From the item, we can obtain the component (the parent tax of the item tax)
+		if ( !empty( $items[0]->parent ) ) {
+			$parent = get_term( (int)$items[0]->parent, $bp->bp_docs->associated_item_tax_name );
+			
+			// For some reason, I named them singularly. So we have to canonicalize
+			switch ( $parent->slug ) {
+				case 'user' :
+					$component = 'profile';
+					break;
+					
+				case 'group' :
+				default	:
+					$component = 'groups';
+					break;					
+			}
+		}		
+		
+		// Set the action. Filterable so that other integration pieces can alter it
+		$action 	= '';
+		$commenter	= get_user_by_email( $comment->comment_author_email );
+		$commenter_id	= !empty( $commenter->ID ) ? $commenter->ID : false;
+		
+		// Since BP Docs only allows member comments, the following should never happen
+		if ( !$commenter_id )
+			return false;
+		
+		$user_link 	= bp_core_get_userlink( $commenter_id );
+		$doc_url	= bp_docs_get_doc_link( $doc_id );
+		$comment_url	= $doc_url . '#comment-' . $comment->comment_ID;
+		$comment_link	= '<a href="' . $comment_url . '">' . $doc->post_title . '</a>';
+		
+		$action = sprintf( __( '%1$s commented on the doc %2$s', 'bp-docs' ), $user_link, $comment_link );
+		
+		$action	= apply_filters( 'bp_docs_comment_activity_action', $action, $user_link, $comment_link, $component, $item );
+
+		// Set the type, to be used in activity filtering
+		$type = 'bp_doc_comment';
+		
+		$args = array(
+			'user_id'		=> $commenter_id,
+			'action'		=> $action,
+			'content'		=> $comment->comment_content,
+			'primary_link'		=> $comment_url,
+			'component'		=> $component,
+			'type'			=> $type,
+			'item_id'		=> $item, // Set to the group/user/etc id, for better consistency with other BP components
+			'secondary_item_id'	=> $comment_id, // The id of the doc itself. Note: limitations in the BP activity API mean I don't get to store the doc_id, but at least it can be abstracted from the comment_id
+			'recorded_time'		=> bp_core_current_time(),
+			'hide_sitewide'		=> apply_filters( 'bp_docs_hide_sitewide', false ) // Filtered to allow plugins and integration pieces to dictate
+		);
+		
+		do_action( 'bp_docs_before_comment_activity_save', $args );
+		
+		$activity_id = bp_activity_add( apply_filters( 'bp_docs_comment_activity_args', $args ) );
+		
+		do_action( 'bp_docs_after_comment_activity_save', $activity_id, $args );
 		
 		return $activity_id;
 	}
