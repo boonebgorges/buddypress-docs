@@ -169,11 +169,13 @@ function bp_docs_doc_link( $doc_id ) {
 	 * @return str URL of the doc
 	 */
 	function bp_docs_get_doc_link( $doc_id ) {
+		global $bp;
+		
 		if ( empty( $doc_id ) )
 			return false;
 		
 		// Get the associated item
-		$ass_item 	= wp_get_post_terms( $doc_id, 'bp_docs_associated_item' );
+		$ass_item 	= wp_get_post_terms( $doc_id, $bp->bp_docs->associated_item_tax_name );
 
 		// Get the associated item's doc link
 		// Default to 'group' for now. Todo: abstract (will take another query for tax parent)

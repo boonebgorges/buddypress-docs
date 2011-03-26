@@ -224,7 +224,7 @@ function bp_docs_edit_parent_dropdown() {
 	$parent 	= ! empty( $bp->bp_docs->current_post->post_parent ) ? $bp->bp_docs->current_post->post_parent : false;
 
 	$pages = wp_dropdown_pages( array( 
-		'post_type' 	=> 'bp_doc', 
+		'post_type' 	=> $bp->bp_docs->post_type_name, 
 		'exclude' 	=> $exclude,
 		'include'	=> $include,
 		'selected' 	=> $parent, 

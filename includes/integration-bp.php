@@ -111,8 +111,8 @@ class BP_Docs_BP_Integration {
 			if ( bp_docs_current_user_can( 'manage' ) ) {
 			
 				$the_doc_args = array(
-					'name' => $bp->action_variables[0],
-					'post_type' => 'bp_doc'
+					'name' 		=> $bp->action_variables[0],
+					'post_type' 	=> $bp->bp_docs->post_type_name
 				);
 				
 				$the_docs = get_posts( $the_doc_args );			
@@ -167,10 +167,12 @@ class BP_Docs_BP_Integration {
 	 * @return str $location The correct location
 	 */
 	function comment_post_redirect( $location, $comment ) {
+		global $bp;
+		
 		// Check to see whether this is a BP Doc
 		$post = get_post( $comment->comment_post_ID );
 		
-		if ( 'bp_doc' != $post->post_type )
+		if ( $bp->bp_docs->post_type_name != $post->post_type )
 			return $location;
 		
 		$location = bp_docs_get_doc_link( $comment->comment_post_ID ) . '#comment-' . $comment->comment_ID;

@@ -2,6 +2,9 @@
 
 
 class BP_Docs {
+	var $post_type_name;
+	var $associated_item_tax_name;
+	
 	/**
 	 * PHP 4 constructor
 	 *
@@ -19,6 +22,15 @@ class BP_Docs {
 	 * @since 1.0
 	 */	
 	function __construct() {
+		global $bp;
+		
+		// Define post type and taxonomy names for use in the register functions
+		$this->post_type_name 		= apply_filters( 'bp_docs_post_type_name', 'bp_doc' );
+		$this->associated_item_tax_name = apply_filters( 'bp_docs_associated_item_tax_name', 'bp_docs_associated_item' );
+		
+		// Then stash them in the $bp global for use in template tags
+		$bp->bp_docs->post_type_name		= $this->post_type_name;
+		$bp->bp_docs->associated_item_tax_name	= $this->associated_item_tax_name;
 		
 		// Load predefined constants first thing
 		add_action( 'bp_docs_init', 	array( $this, 'load_constants' ), 2 );
@@ -148,7 +160,6 @@ class BP_Docs {
 	 * @since 1.0
 	 */
 	function register_post_type() {
-
 		// Define the labels to be used by the post type bp_doc		
 		$post_type_labels = array(
 			'name' => _x( 'BuddyPress Docs', 'post type general name', 'bp-docs' ),
@@ -180,7 +191,7 @@ class BP_Docs {
 		) );
 	
 		// Register the bp_doc post type
-		register_post_type( 'bp_doc', $bp_docs_post_type_args );
+		register_post_type( $this->post_type_name, $bp_docs_post_type_args );
 		
 		// Define the labels to be used by the taxonomy bp_docs_associated_item
 		$associated_item_labels = array(
@@ -189,7 +200,7 @@ class BP_Docs {
 		);
 		
 		// Register the bp_docs_associated_item taxonomy
-		register_taxonomy( 'bp_docs_associated_item', array( 'bp_doc' ), array(
+		register_taxonomy( $this->associated_item_tax_name, array( $this->associated_item_tax_name ), array(
 			'labels' => $associated_item_labels,
 			'hierarchical' => true,
 			'show_ui' => true, 
