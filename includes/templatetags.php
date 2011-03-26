@@ -101,6 +101,23 @@ function bp_docs_info_header() {
 	}
 
 /**
+ * Filters the output of the doc list header for search terms
+ *
+ * @package BuddyPress Docs
+ * @since 1.0
+ *
+ * @return array $filters
+ */
+function bp_docs_search_term_filter_text( $message, $filters ) {
+	if ( !empty( $filters['search_terms'] ) ) {
+		$message[] = sprintf( __( 'You are searching for docs containing the term <em>%s</em>', 'bp-docs' ), esc_html( $filters['search_terms'] ) );
+	}
+	
+	return $message;
+}
+add_filter( 'bp_docs_info_header_message', 'bp_docs_search_term_filter_text', 10, 2 );
+
+/**
  * Get the filters currently being applied to the doc list
  *
  * @package BuddyPress Docs
@@ -119,6 +136,11 @@ function bp_docs_get_current_filters() {
 		foreach( $tags as $tag ) {
 			$filters['tags'][] = $tag;
 		}
+	}
+	
+	// Now, check for search terms
+	if ( !empty( $_REQUEST['s'] ) ) {
+		$filters['search_terms'] = urldecode( $_REQUEST['s'] );
 	}
 	
 	return apply_filters( 'bp_docs_get_current_filters', $filters );

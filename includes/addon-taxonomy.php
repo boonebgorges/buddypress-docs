@@ -330,6 +330,10 @@ class BP_Docs_Taxonomy {
 	 */
 	function filter_markup() {
 		$existing_terms = $this->get_item_terms();
+		
+		// No need to show the filter if there are no terms to show
+		if ( empty( $existing_terms ) )
+			return;
 	
 		?>
 		
