@@ -208,15 +208,18 @@ class BP_Docs_Query {
 	 * @package BuddyPress Docs
 	 * @since 1.0
 	 *
+	 * @return array $args The query_posts args
 	 */
 	function build_query() {
 		// Only call this here to reduce database calls on other pages
 		$this->setup_terms();
 		
+		// The post type must be set for every query
 		$args = array(
-			'post_type' 			=> 'bp_doc'
+			'post_type' 		=> 'bp_doc'
 		);
 		
+		// Set the taxonomy query. Filtered so that plugins can alter the query
 		$args['tax_query'] = apply_filters( 'bp_docs_tax_query', array(
 			array( 
 				'taxonomy'	=> 'bp_docs_associated_item',
@@ -224,6 +227,11 @@ class BP_Docs_Query {
 				'slug'		=> 'slug'
 			),
 		) );
+		
+		// Order and orderby arguments
+		$args['order']	= !empty( $_GET['order'] ) && 'DESC' == $_GET['order'] ? 'DESC' : 'ASC';
+		
+		$args['orderby'] = !empty( $_GET['orderby'] ) ? urldecode( $_GET['orderby'] ) : apply_filters( 'bp_docs_default_sort_order', 'edited' ) ;
 		
 		return $args;
 	}
