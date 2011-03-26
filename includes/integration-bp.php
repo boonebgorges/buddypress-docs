@@ -98,7 +98,7 @@ class BP_Docs_BP_Integration {
 		// If this is the edit screen, ensure that the user can edit the
 		// doc before querying, and redirect if necessary
 		if ( !empty( $bp->bp_docs->current_view ) && 'edit' == $bp->bp_docs->current_view && !bp_docs_current_user_can( 'edit' ) ) {
-			bp_core_add_message( __( 'You do not have permission to edit the document.', 'bp-docs' ), 'error' );
+			bp_core_add_message( __( 'You do not have permission to edit the doc.', 'bp-docs' ), 'error' );
 			
 			$group_permalink = bp_get_group_permalink( $bp->groups->current_group );
 			$doc_slug = $bp->bp_docs->doc_slug;
@@ -313,8 +313,8 @@ class BP_Docs_BP_Integration {
 			wp_enqueue_script( 'common' );
 			wp_enqueue_script( 'jquery-color' );
 			wp_enqueue_script( 'editor' );
-			if (function_exists('add_thickbox')) add_thickbox();
-			//wp_print_scripts('media-upload');
+			if ( function_exists( 'add_thickbox' ) ) 
+				add_thickbox();
 			wp_admin_css();
 			wp_enqueue_script( 'utils' );
 		}

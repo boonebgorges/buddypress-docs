@@ -202,7 +202,11 @@ class BP_Docs_Groups_Integration {
 		}
 		
 		$doc_settings = get_post_meta( get_the_ID(), 'bp_docs_settings', true );
-		
+
+		// Manage settings don't always get set on doc creation, so we need a default
+		if ( empty( $doc_settings['manage'] ) )
+			$doc_settings['manage'] = 'creator';
+
 		$group_id =  $bp->groups->current_group->id;
 		
 		// Group admins and mods always get to edit
@@ -211,7 +215,7 @@ class BP_Docs_Groups_Integration {
 		} else {
 			switch ( $doc_settings[$action] ) {
 				case 'creator' :
-					if ( get_the_author_meta( 'ID' ) == $user_id )
+					if ( $post->post_author == $user_id )
 						$user_can = true;
 					break;
 				
@@ -219,6 +223,9 @@ class BP_Docs_Groups_Integration {
 					if ( groups_is_user_member( $user_id, $bp->groups->current_group->id ) )
 						$user_can = true;
 					break;
+				
+				default :
+					break; // In other words, other types return false
 			}
 		}
 		
@@ -255,8 +262,12 @@ class BP_Docs_Groups_Integration {
 			?>
 			<label for="settings[edit]"><?php _e( 'Allow the following members to edit this doc:', 'bp-docs' ) ?></label>
 			
-			<input name="settings[edit]" type="radio" value="me" <?php checked( $edit, 'creator' ) ?>/> <?php echo esc_html( $creator_text ) ?><br />
+			<input name="settings[edit]" type="radio" value="creator" <?php checked( $edit, 'creator' ) ?>/> <?php echo esc_html( $creator_text ) ?><br />
 			<input name="settings[edit]" type="radio" value="group-members" <?php checked( $edit, 'group-members' ) ?>/> <?php _e( 'All members of the group', 'bp-docs' ) ?><br />
+			
+			<?php if ( bp_group_is_admin() || bp_group_is_mod() ) : ?>
+				<input name="settings[edit]" type="radio" value="admins-mods" <?php checked( $edit, 'admins-mods' ) ?>/> <?php _e( 'Only admins and mods of this group', 'bp-docs' ) ?><br />
+			<?php endif ?>
 			
 			<?php /* Not sure this is necessary, so leaving out for the moment */ ?>
 			<?php /*
