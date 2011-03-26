@@ -132,7 +132,7 @@ class BP_Docs_BP_Integration {
 				$lock = wp_check_post_lock( $doc->ID );
 				
 				if ( $lock ) {
-					bp_core_add_message( sprintf( __( 'This doc is currently being edited by %s. To prevent overwrites, you cannot edit until the user has finished. Please try again in a few minutes.', 'bp-docs' ), bp_core_get_user_displayname( $lock ) ), 'error' );
+					bp_core_add_message( sprintf( __( 'This doc is currently being edited by %s. To prevent overwrites, you cannot edit until that user has finished. Please try again in a few minutes.', 'bp-docs' ), bp_core_get_user_displayname( $lock ) ), 'error' );
 				
 					$group_permalink = bp_get_group_permalink( $bp->groups->current_group );
 					$doc_slug = $bp->bp_docs->doc_slug;
@@ -150,6 +150,34 @@ class BP_Docs_BP_Integration {
 				// Redirect back to the non-edit view of this document
 				bp_core_redirect( $group_permalink . $bp->bp_docs->slug . '/' . $doc_slug ); 
 			}
+		}
+		
+		// Cancel edit lock
+		if ( !empty( $_GET['bpd_action'] ) && $_GET['bpd_action'] == 'cancel_edit_lock' ) {
+			// Check the nonce
+			check_admin_referer( 'bp_docs_cancel_edit_lock' );
+			
+			// Todo: make this part of the perms system
+			if ( is_super_admin() || bp_group_is_admin() ) {
+				$doc = bp_docs_get_current_doc();
+				
+				// Todo: get this into a proper method as well, blech
+				delete_post_meta( $doc->ID, '_edit_lock' );
+				
+				bp_core_add_message( __( 'Lock successfully removed', 'bp-docs' ) );
+				bp_core_redirect( bp_docs_get_doc_link( $doc->ID ) );
+			}
+		}
+		
+		// Cancel edit
+		// Have to have a catcher for this so the edit lock can be removed
+		if ( !empty( $_GET['bpd_action'] ) && $_GET['bpd_action'] == 'cancel_edit' ) {
+			$doc = bp_docs_get_current_doc();
+
+			// Todo: get this into a proper method as well, blech
+			delete_post_meta( $doc->ID, '_edit_lock' );
+						
+			bp_core_redirect( bp_docs_get_doc_link( $doc->ID ) );
 		}
 		
 		// Todo: get this into a proper method

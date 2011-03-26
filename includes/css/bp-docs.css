@@ -114,6 +114,22 @@ div.doc-content {
 	margin-top: 20px;
 }
 
+div.doc-is-locked .toggle-switch {
+	display: block;
+	background: url(../images/padlock.gif) no-repeat;
+	text-indent: 25px;
+	padding-top: 3px;
+}
+
+div.doc-is-locked .toggle-content {
+	border: 2px solid #f33;
+	margin-top: 5px;
+	padding: 7px 10px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+}
+
 /* Comment section */
 .comments-closed {
 	padding: 10px 20px;

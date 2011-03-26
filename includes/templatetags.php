@@ -489,4 +489,110 @@ function bp_docs_get_current_doc() {
 	return $doc;
 }
 
+/**
+ * Get the lock status of a doc
+ *
+ * The function first tries to get the lock status out of $bp. If it has to look it up, it
+ * stores the data in $bp for future use.
+ *
+ * @package BuddyPress Docs
+ * @since 1.0
+ *
+ * @param int $doc_id Optional. Defaults to the doc currently being viewed
+ * @return int Returns 0 if there is no lock, otherwise returns the user_id of the locker
+ */
+function bp_docs_is_doc_edit_locked( $doc_id = false ) {
+	global $bp, $post;
+
+	// Try to get the lock out of $bp first
+	if ( isset( $bp->bp_docs->current_doc_lock ) ) {
+		$is_edit_locked = $bp->bp_docs->current_doc_lock;
+	} else {
+		$is_edit_locked = 0;
+
+		if ( empty( $doc_id ) )
+			$doc_id = !empty( $post->ID ) ? $post->ID : false;
+
+		if ( $doc_id ) {
+			// Make sure that wp-admin/includes/post.php is loaded
+			if ( !function_exists( 'wp_check_post_lock' ) )
+				require_once( ABSPATH . 'wp-admin/includes/post.php' );
+
+			// Because we're not using WP autosave at the moment, ensure that
+			// the lock interval always returns as in process
+			add_filter( 'wp_check_post_lock_window', create_function( false, 'return time();' ) );
+
+			$is_edit_locked = wp_check_post_lock( $doc_id );
+		}
+		
+		// Put into the $bp global to avoid extra lookups
+		$bp->bp_docs->current_doc_lock = $is_edit_locked;
+	}
+	
+	return apply_filters( 'bp_docs_is_doc_edit_locked', $is_edit_locked, $doc_id );
+}
+
+/**
+ * Echoes the output of bp_docs_get_current_doc_locker_name()
+ *
+ * @package BuddyPress Docs
+ * @since 1.0
+ */
+function bp_docs_current_doc_locker_name() {
+	echo bp_docs_get_current_doc_locker_name();
+}
+	/**
+	 * Get the name of the user locking the current document, if any
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 *
+	 * @return string $locker_name The full name of the locking user
+	 */
+	function bp_docs_get_current_doc_locker_name() {
+		$locker_name = '';
+		
+		$locker_id = bp_docs_is_doc_edit_locked();
+		
+		if ( $locker_id )
+			$locker_name = bp_core_get_user_displayname( $locker_id );
+		
+		return apply_filters( 'bp_docs_get_current_doc_locker_name', $locker_name, $locker_id );
+	}
+
+function bp_docs_force_cancel_edit_lock_link() {
+	echo bp_docs_get_force_cancel_edit_lock_link();
+}
+	function bp_docs_get_force_cancel_edit_lock_link() {
+		global $post;
+		
+		$doc_id = !empty( $post->ID ) ? $post->ID : false;
+		
+		if ( !$doc_id )
+			return false;
+		
+		$doc_permalink = bp_docs_get_doc_link( $doc_id );
+		
+		$cancel_link = wp_nonce_url( add_query_arg( 'bpd_action', 'cancel_edit_lock', $doc_permalink ), 'bp_docs_cancel_edit_lock' );
+		
+		return apply_filters( 'bp_docs_get_force_cancel_edit_lock_link', $cancel_link, $doc_permalink );
+	}
+	
+function bp_docs_cancel_edit_link() {
+	echo bp_docs_get_cancel_edit_link();
+}
+	function bp_docs_get_cancel_edit_link() {
+		global $bp, $post;
+
+		$doc_id = !empty( $bp->bp_docs->current_post->ID ) ? $bp->bp_docs->current_post->ID : false;
+		
+		if ( !$doc_id )
+			return false;
+		
+		$doc_permalink = bp_docs_get_doc_link( $doc_id );
+		
+		$cancel_link = add_query_arg( 'bpd_action', 'cancel_edit', $doc_permalink );
+		
+		return apply_filters( 'bp_docs_get_cancel_edit_link', $cancel_link, $doc_permalink );
+	}
 ?>
