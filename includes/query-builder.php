@@ -5,7 +5,9 @@ class BP_Docs_Query {
 	var $item_id;
 	var $item_name;
 	var $item_slug;
+	
 	var $current_view;
+	
 	var $term_id;
 	var $item_type_term_id;
 	
@@ -197,15 +199,20 @@ class BP_Docs_Query {
 	 *
 	 */
 	function build_query() {
+		// Get the tax term by id. Todo: Why can't I make this work less stupidly?
+		$term = get_term_by( 'id', $this->term_id, 'bp_docs_associated_item' );
 		
 		$args = array(
-			'post_type' => 'bp_doc'
+			'post_type' => 'bp_doc',
+			'bp_docs_associated_item' => $term->slug
 		);
 		
-		
+		query_posts( $args );
 	}
 	
 	function template_decider() {
+		
+		$template_path = BP_DOCS_INSTALL_PATH . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'docs' . DIRECTORY_SEPARATOR;
 		
 		switch ( $this->current_view ) {
 			case 'create' :
@@ -213,8 +220,7 @@ class BP_Docs_Query {
 				// Then load the create template
 			case 'list' :
 				$this->build_query();
-				// Get the correct args based on URL
-				// Then load the loop template
+				$template = $template_path . 'docs-loop.php';				
 				break;
 			case 'category' :
 				// Check to make sure the category exists
@@ -232,7 +238,9 @@ class BP_Docs_Query {
 				// Then load either the single or the edit template
 	
 				break;
-		}		
+		}
+		
+		include( $template );
 	}
 
 
