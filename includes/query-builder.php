@@ -17,6 +17,8 @@ class BP_Docs_Query {
 	var $term_id;
 	var $item_type_term_id;
 	
+	var $is_new_doc;
+	
 	/**
 	 * PHP 4 constructor
 	 *
@@ -370,6 +372,8 @@ class BP_Docs_Query {
 			$r = wp_parse_args( $args, $defaults );
 			
 			if ( empty( $this->doc_slug ) ) {
+				$this->is_new_doc = true;
+				
 				// This is a new doc
 				if ( !$post_id = wp_insert_post( $r ) ) {
 					$result['message'] = __( 'There was an error when creating the doc.', 'bp-doc' );
@@ -387,6 +391,7 @@ class BP_Docs_Query {
 					$result['redirect'] = 'single';
 				}				
 			} else {
+				$this->is_new_doc = false;
 				// This is an existing doc, so we need to get the post ID
 				$the_doc_args = array(
 					'name' => $this->doc_slug,
@@ -406,6 +411,9 @@ class BP_Docs_Query {
 					$result['redirect'] = 'single';
 				}
 			}
+			
+			// Save the last editor id. We'll use this to create an activity item
+			update_post_meta( $this->doc_id, 'bp_docs_last_editor', bp_loggedin_user_id() );
 			
 			// Save settings
 			if ( !empty( $_POST['settings'] ) ) {
