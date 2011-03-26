@@ -39,7 +39,12 @@ class BP_Docs_Groups_Integration {
 	 * @since 1.0
 	 */	
 	function get_item_type( $type ) {
-		if ( bp_is_current_component( 'groups' ) ) {
+		global $bp;
+		
+		// BP 1.2/1.3 compatibility
+		$is_group_component = function_exists( 'bp_is_current_component' ) ? bp_is_current_component( 'groups' ) : $bp->current_component == $bp->groups->slug;
+		
+		if ( $is_group_component ) {
 			$type = 'group';
 		}
 		
@@ -55,7 +60,10 @@ class BP_Docs_Groups_Integration {
 	function get_doc_slug( $slug ) {
 		global $bp;
 		
-		if ( bp_is_current_component( 'groups' ) ) {
+		// BP 1.2/1.3 compatibility
+		$is_group_component = function_exists( 'bp_is_current_component' ) ? bp_is_current_component( 'groups' ) : $bp->current_component == $bp->groups->slug;
+		
+		if ( $is_group_component ) {
 			if ( !empty( $bp->action_variables[0] ) )
 				$slug = $bp->action_variables[0];
 		}
