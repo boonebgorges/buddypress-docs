@@ -34,6 +34,16 @@ class BP_Docs_BP_Integration {
 		
 		add_action( 'comment_post_redirect', 	array( $this, 'comment_post_redirect' 	), 99, 2 );
 		
+		// Add BP Docs activity types to the activity filter dropdown
+		$dropdowns = apply_filters( 'bp_docs_activity_filter_locations', array(
+			'bp_activity_filter_options',
+			'bp_group_activity_filter_options',
+			'bp_member_activity_filter_options'
+		) );
+		foreach( $dropdowns as $hook ) {
+			add_action( $hook, array( $this, 'activity_filter_options' ) );
+		}
+		
 		// Hook the create/edit activity function
 		add_action( 'bp_docs_doc_saved',	array( $this, 'post_activity' 		) );
 		
@@ -191,6 +201,22 @@ class BP_Docs_BP_Integration {
 		$location = bp_docs_get_doc_link( $comment->comment_post_ID ) . '#comment-' . $comment->comment_ID;
 		
 		return $location;
+	}
+	
+	/**
+	 * Adds BP Docs options to activity filter dropdowns
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 */
+	function activity_filter_options() {
+		?>
+		
+		<option value="bp_doc_created"><?php _e( 'Show New Docs', 'buddypress' ); ?></option>
+		<option value="bp_doc_edited"><?php _e( 'Show Doc Edits', 'buddypress' ); ?></option>
+		<option value="bp_doc_comment"><?php _e( 'Show Doc Comments', 'buddypress' ); ?></option>
+		
+		<?php
 	}
 	
 	/**
