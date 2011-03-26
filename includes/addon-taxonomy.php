@@ -14,6 +14,8 @@
  * @since 1.0-beta
  */
 class BP_Docs_Taxonomy {
+	var $docs_tag_tax_name;
+
 	var $taxonomies;
 	var $current_filters;
 	
@@ -34,6 +36,9 @@ class BP_Docs_Taxonomy {
 	 * @since 1.0-beta
 	 */	
 	function __construct() {
+		// Register our custom taxonomy
+		$this->register_taxonomy();
+		
 		// Make sure that the bp_docs post type supports our post taxonomies
 		add_filter( 'bp_docs_post_type_args', 	array( $this, 'register_with_post_type' ) );
 	
@@ -64,6 +69,35 @@ class BP_Docs_Taxonomy {
 	}
 	
 	/**
+	 * Registers the custom taxonomy for BP doc tags
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0-beta
+	 *
+	 */
+	function register_taxonomy() {
+		global $bp;
+		
+		$this->docs_tag_tax_name = apply_filters( 'bp_docs_docs_tag_tax_name', 'bp_docs_tag' );
+		$bp->bp_docs->docs_tag_tax_name = $this->docs_tag_tax_name;
+		
+		// Define the labels to be used by the taxonomy bp_docs_tag
+		$doc_tags_labels = array(
+			'name' 		=> __( 'Docs Tags', 'bp-docs' ),
+			'singular_name' => __( 'Docs Tag', 'bp-docs' )
+		);
+		
+		// Register the bp_docs_associated_item taxonomy
+		register_taxonomy( $this->docs_tag_tax_name, array( $bp->bp_docs->post_type_name ), array(
+			'labels' 	=> $doc_tags_labels,
+			'hierarchical' 	=> false,
+			'show_ui' 	=> true, 
+			'query_var' 	=> true,
+			'rewrite' 	=> array( 'slug' => 'item' ),
+		) );	
+	}
+	
+	/**
 	 * Registers the post taxonomies with the bp_docs post type
 	 *
 	 * @package BuddyPress Docs
@@ -73,10 +107,10 @@ class BP_Docs_Taxonomy {
 	 * @return array $args The modified parameters
 	 */	
 	function register_with_post_type( $args ) {
-		$this->taxonomies = array( /* 'category', */ 'post_tag' );
+		$this->taxonomies = array( /* 'category', */ $this->docs_tag_tax_name );
 	
 		// Todo: make this fine-grained for tags and/or categories
-		$args['taxonomies'] = array( 'post_tag' );
+		$args['taxonomies'] = array( $this->docs_tag_tax_name );
 		
 		//$args['taxonomies'] = array( 'category', 'post_tag' );
 		
@@ -93,7 +127,6 @@ class BP_Docs_Taxonomy {
 	 * @return int $post_id Returns the doc's post_id on success
 	 */	
 	function save_post( $query ) {
-		
 		foreach( $this->taxonomies as $tax_name ) {
 			
 			if ( $tax_name == 'category' )
@@ -138,7 +171,7 @@ class BP_Docs_Taxonomy {
 		// Terms for the item (group, user, etc)
 		$item_terms 	= $this->get_item_terms();
 		// Terms for the doc
-		$doc_terms	= wp_get_post_terms( $doc_id, 'post_tag' );
+		$doc_terms	= wp_get_post_terms( $doc_id, $this->docs_tag_tax_name );
 
 		foreach( $doc_terms as $doc_term ) {
 			$term_name = $doc_term->name;
@@ -283,7 +316,7 @@ class BP_Docs_Taxonomy {
 			}
 		
 			$tax_query[] = array(
-				'taxonomy'	=> 'post_tag',
+				'taxonomy'	=> $this->docs_tag_tax_name,
 				'terms'		=> $tags,
 				'field'		=> 'slug'
 			);
@@ -317,7 +350,7 @@ class BP_Docs_Taxonomy {
 	 * @since 1.0-beta
 	 */	
 	function tags_td() {
-		$tags 		= wp_get_post_terms( get_the_ID(), 'post_tag' );
+		$tags 		= wp_get_post_terms( get_the_ID(), $this->docs_tag_tax_name );
 		$tagtext 	= array();
 	
 		foreach( $tags as $tag ) {

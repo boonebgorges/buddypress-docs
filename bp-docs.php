@@ -199,7 +199,7 @@ class BP_Docs {
 		);
 		
 		// Register the bp_docs_associated_item taxonomy
-		register_taxonomy( $this->associated_item_tax_name, array( $this->associated_item_tax_name ), array(
+		register_taxonomy( $this->associated_item_tax_name, array( $this->post_type_name ), array(
 			'labels' => $associated_item_labels,
 			'hierarchical' => true,
 			'show_ui' => true, 
