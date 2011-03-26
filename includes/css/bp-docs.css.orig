@@ -1,0 +1,199 @@
+<<<<<<< HEAD
+.doc-header h4 {
+	margin-bottom: 15px !important;
+}
+
+=======
+>>>>>>> Basic tag filtering
+.docs-filter {
+	display: block;
+	width: 400px;
+	float: left;
+<<<<<<< HEAD
+	margin-bottom: 15px;
+}
+
+.doc-search {
+	float: right;
+	width: 250px;
+	text-align: right;
+}
+
+.docs-filter-tags {
+	width: 100%; /* At the moment there is only one filter box, so let's make it wide */
+=======
+>>>>>>> Basic tag filtering
+}
+
+.docs-filter-tags ul li {
+	display: block;
+<<<<<<< HEAD
+	width: 120px;
+	float: left;
+	padding: 6px;
+}
+
+.doctable p {
+	padding: 0;
+	margin: 0;
+}
+
+.row-actions {
+	visibility: hidden;
+	padding: 2px 0 0;
+}
+
+.row-actions a {
+	color: #999;
+	font-size: 11px;
+}
+
+.doctable tr:hover .row-actions {
+	visibility: visible;
+}
+
+.doctable tr:nth-child(even) {
+	background-color: #eaeaea;
+}
+
+
+#docs-filter-submit {
+	margin: 10px 4px;
+}
+
+.title-cell {
+	width: 30%;
+}
+
+.author-cell, .created-date-cell, .edited-date-cell {
+	text-align: center;
+	width: 100px;
+}
+
+.current-orderby a {
+	padding-left: 20px;
+}
+
+.asc a {
+	background: url(../images/sort-col-asc.gif) no-repeat;	
+}
+
+.desc a {
+	background: url(../images/sort-col-desc.gif) no-repeat;	
+}
+
+.doc-edit-link {
+	margin: 15px 0 20px 0;
+}
+
+.doc-meta, #doc-meta, .docs #comments {
+	padding-top: 20px;
+	border-top: 1px solid #ddd;
+}
+
+div.docs-info-header {
+	background: #eaeaea;
+	padding: 5px 10px;
+	margin-bottom: 10px;
+}
+
+p.toggle-switch {
+	margin-bottom: 0;
+}
+
+a.doc-filter-toggle {
+	text-decoration: none;
+	font-weight: bold;
+}
+
+.docs-info-header .docs-filter {
+	margin-bottom: 0;
+}
+
+p#filter-by-tag {
+	margin-bottom: 0;
+}
+
+div#bp-docs-pagination {
+	position: relative;
+	height: 30px;
+}
+	div#bp-docs-pagination-count {
+		position: absolute;
+		left: 0;
+		top: 5px;
+		font-size: .9em;
+		color: #999;
+	}
+	div#bp-docs-paginate-links {
+		position: absolute;
+		right: 0;
+		top: 5px;
+	}
+	div#bp-docs-paginate-links a {
+		padding: 0 4px;
+	}
+
+/* Single doc view */
+div.doc-content {
+	padding: 20px;
+	border: 3px solid #eaeaea;
+	margin-top: 20px;
+}
+
+div.doc-is-locked .toggle-switch {
+	display: block;
+	background: url(../images/padlock.gif) no-repeat;
+	text-indent: 25px;
+	padding-top: 3px;
+}
+
+div.doc-is-locked .toggle-content {
+	border: 2px solid #f33;
+	margin-top: 5px;
+	padding: 7px 10px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+}
+
+/* Comment section */
+.comments-closed {
+	padding: 10px 20px;
+	background: #eaeaea;
+	margin-top: 10px;
+}
+
+/* Reversing some resets done by bp-default */
+.doc-content ul {
+	list-style: disc;
+}
+
+.doc-content ol {
+	list-style: decimal;
+}
+
+.doc-content li {
+	margin-left: 20px;
+}
+
+.doc-content blockquote {
+	background: #eaeaea;
+	padding: 5px;
+	margin: 10px 30px;
+}
+
+/* GROUP ADMIN */
+
+div.hidden {
+	display: none;
+=======
+	width: 100px;
+	float: left;
+	padding: 4px 4px;
+}
+
+#docs-filter-submit {
+	margin: 10px 4px;
+>>>>>>> Basic tag filtering
+}
