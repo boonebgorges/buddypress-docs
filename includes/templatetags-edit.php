@@ -92,10 +92,10 @@ function bp_docs_post_tags_meta_box() {
 ?>
 <div class="tagsdiv" id="<?php echo $tax_name; ?>">
 	<div class="jaxtag">
-	<div class="nojs-tags hide-if-js">
-	<h4><?php _e( 'Doc Tags', 'bp-docs' ) ?></h4>
-	<p><?php _e( 'Separate tags with commas', 'bp-docs' ) ?></p>
-	<textarea name="<?php echo "$tax_name"; ?>" rows="3" cols="20" class="the-tags" id="tax-input-<?php echo $tax_name; ?>"><?php echo $terms; // textarea_escaped by esc_attr() ?></textarea></div>
+
+	<label for="<?php echo $tax_name ?>"><?php _e( 'Tags:', 'bp-docs' ) ?></label>
+	<textarea name="<?php echo "$tax_name"; ?>" rows="3" cols="20" class="the-tags" id="tax-input-<?php echo $tax_name; ?>"><?php echo $terms; // textarea_escaped by esc_attr() ?></textarea>
+	<span class="description"><?php _e( 'Separate tags with commas', 'bp-docs' ) ?></span>
  	
  	<?php /* Removed for the moment until fancypants JS is in place */ ?>
  	<?php /* ?>
