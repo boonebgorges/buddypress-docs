@@ -211,6 +211,8 @@ class BP_Docs {
 		// templatetags.php has all functions in the global space available to templates
 		require_once( BP_DOCS_INCLUDES_PATH . 'templatetags.php' );
 		
+		// formatting.php contains filters and functions used to modify appearance only
+		require_once( BP_DOCS_INCLUDES_PATH . 'formatting.php' );
 	}	
 	
 	/**
