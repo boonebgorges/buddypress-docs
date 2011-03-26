@@ -136,6 +136,10 @@ function bp_docs_info_header() {
 		
 		<p><?php echo $message ?></p>
 		
+		<div class="docs-filters">
+			<?php do_action( 'bp_docs_filter_markup' ) ?>
+		</div>
+		
 		<?php
 	}
 
