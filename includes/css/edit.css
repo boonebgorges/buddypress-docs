@@ -69,28 +69,6 @@ form.standard-form input[type="text"]#doc-title {
 	height: 26px;
 }
 
-
-/* Overriding some stubborn wp-admin styles */
-#footer {
-	margin: 20px 0;
-	padding: 0;
-	font-size: inherit;
-	font-family: inherit;
-	font-style: inherit;
-	border: none;
-}
-
-#footer a {
-	font-size: inherit;
-	font-family: inherit;
-	font-style: inherit;
-}
-
-#footer p {
-	line-height: inherit;
-	padding: inherit;
-}
-
 /* Borrowing much of this styling from BP Courseware - thanks Stas! */
 
 #editor-toolbar { margin: 10px 0 0; }
