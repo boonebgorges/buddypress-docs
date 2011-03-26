@@ -25,6 +25,8 @@ jQuery(document).ready(function($){
 		
 		// Finally, slide the tags up or down
 		$('ul.filter-tags-list').slideToggle(400);
+		
+		return false;
 	});
 	
 },(jQuery));
