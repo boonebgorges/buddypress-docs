@@ -63,17 +63,17 @@ class BP_Docs_Hierarchy {
 	 * @return int $post_id Returns the doc's post_id on success
 	 */	
 	function save_post( $query ) {
-		if ( ! empty( $_POST['parent_id'] ) ) {
-			$args = array(
-				'ID' => $query->doc_id,
-				'post_parent' => (int) $_POST['parent_id']
-			);
-			
-			if ( $post_id = wp_update_post( $args ) )
-				return $post_id;
-			else
-				return false;
-		}
+		$post_parent = !empty( $_POST['parent_id'] ) ? $_POST['parent_id'] : 0;
+		
+		$args = array(
+			'ID' => $query->doc_id,
+			'post_parent' => (int) $_POST['parent_id']
+		);
+		
+		if ( $post_id = wp_update_post( $args ) )
+			return $post_id;
+		else
+			return false;	
 	}
 	
 	/**
