@@ -47,7 +47,7 @@ class BP_Docs_Taxonomy {
 	 * @return array $args The modified parameters
 	 */	
 	function register_with_post_type( $args ) {
-		$this->taxonomies = array( 'category', 'post_tag' );
+		$this->taxonomies = array( /* 'category', */ 'post_tag' );
 	
 		// Todo: make this fine-grained for tags and/or categories
 		$args['taxonomies'] = array( 'post_tag' );
@@ -67,12 +67,19 @@ class BP_Docs_Taxonomy {
 	 * @return int $post_id Returns the doc's post_id on success
 	 */	
 	function save_post( $query ) {
+		
 		foreach( $this->taxonomies as $tax_name ) {
+			
 			if ( $tax_name == 'category' )
 				$tax_name = 'post_category';
 		
 			// Separate out the terms
 			$terms = !empty( $_POST[$tax_name] ) ? explode( ',', $_POST[$tax_name] ) : array();
+			
+			// Strip whitespace from the terms
+			foreach ( $terms as $key => $term ) {
+				$terms[$key] = trim( $term );
+			}
 			
 			$tax = get_taxonomy( $tax_name );
 			
@@ -87,6 +94,9 @@ class BP_Docs_Taxonomy {
 			}
 			
 			wp_set_post_terms( $query->doc_id, $terms, $tax_name );
+			
+			// Store these terms in the item term cache, to be used for tag clouds etc
+			$this->cache_terms_for_item( $terms, $query->doc_id );
 		}
 	}
 	
@@ -99,13 +109,93 @@ class BP_Docs_Taxonomy {
 	 * @param object $query The query object created by BP_Docs_Query
 	 * @return int $post_id Returns the doc's post_id on success
 	 */	
-	 function show_terms() {
+	function show_terms() {
 	 	foreach( $this->taxonomies as $tax_name ) {
 	 		// Todo: Make the tax name dynamic by adding a tag name to $this->taxonomies
 	 		// Todo: Make these terms link to a group-specific tax director
 	 		echo get_the_term_list( get_the_ID(), $tax_name, 'Tags: ', ', ', '' );
 	 	}
-	 }
+	}
+	
+	/**
+	 * Store taxonomy terms and their use count for a given item
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 *
+	 * @param object $query The query object created by BP_Docs_Query
+	 * @return int $post_id Returns the doc's post_id on success
+	 */	
+	function cache_terms_for_item( $terms = array(), $doc_id ) {
+		$existing_terms = $this->get_item_terms();
+		
+		// First, make sure that each submitted term is recorded
+		foreach ( $terms as $term ) {
+			if ( empty( $existing_terms[$term] ) || ! is_array( $existing_terms[$term] ) )
+				$existing_terms[$term] = array();
+			
+			if ( ! in_array( $doc_id, $existing_terms[$term] ) )
+				$existing_terms[$term][] = $doc_id;
+		}
+		
+		// Then, loop through to see if any existing terms have been deleted
+		foreach ( $existing_terms as $existing_term => $docs ) {
+			// If the existing term is not in the list of submitted terms...
+			if ( ! in_array( $existing_term, $terms ) ) {
+				// ... check to see whether the current doc is listed under that
+				// term. If so, that indicates that the term has been removed from
+				// the doc
+				$key = array_search( $doc_id, $docs );
+				if ( $key !== false ) {
+					unset( $docs[$key] );
+				}
+			}
+			
+			// Reset the array keys for the term's docs
+			$docs = array_values( $docs );
+			
+			if ( empty( $docs ) ) {
+				// If there are no more docs associated with the term, we can remove
+				// it from the array
+				unset( $existing_terms[$existing_term] );
+			} else {
+				// Othewise, store the docs back in the existing terms array
+				$existing_terms[$existing_term] = $docs;
+			}
+		}
+		
+		// Save the terms back to the item
+		$this->save_item_terms( $existing_terms );
+	}
+	
+	/**
+	 * Gets the list of terms used by an item's docs
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 *
+	 * @param object $query The query object created by BP_Docs_Query
+	 * @return int $post_id Returns the doc's post_id on success
+	 */	
+	function get_item_terms() {
+		$terms = array();
+		
+		return apply_filters( 'bp_docs_taxonomy_get_item_terms', $terms );
+	}
+	
+	/**
+	 * Save list of terms used by an item's docs
+	 *
+	 * Just a dummy hook for the moment, for the integration modules to hook into
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 */	
+	function save_item_terms( $terms ) {
+		do_action( 'bp_docs_taxonomy_save_item_terms', $terms );
+	}
+	 
+	
 }
 
 ?>
