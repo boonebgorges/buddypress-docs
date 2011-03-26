@@ -107,6 +107,12 @@ p#filter-by-tag {
 	margin-bottom: 0;
 }
 
+/* Single doc view */
+div.doc-content {
+	padding: 20px;
+	border: 3px solid #eaeaea;
+}
+
 /* Comment section */
 .comments-closed {
 	padding: 10px 20px;
