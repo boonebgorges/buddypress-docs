@@ -157,6 +157,10 @@ div.doc-is-locked .toggle-content {
 	margin-top: 10px;
 }
 
+#respond {
+	margin-top: 20px;
+}
+
 /* Reversing some resets done by bp-default */
 .doc-content ul {
 	list-style: disc;
