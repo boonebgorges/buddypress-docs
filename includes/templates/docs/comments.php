@@ -18,9 +18,9 @@ foreach ( (array)$comments as $comment ) {
 
 <?php if ( bp_docs_current_user_can( 'read_comments' ) ) : ?>
 	<div id="comments">
-		<h4>
+		<h3>
 			<?php printf( __( 'Discussion (%d)', 'bp-docs' ), $num_comments ) ?>
-		</h4>
+		</h3>
 		
 		<?php do_action( 'bp_before_blog_comment_list' ) ?>
 
