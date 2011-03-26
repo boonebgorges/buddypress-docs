@@ -11,7 +11,12 @@ wp_tiny_mce();
 ?>
 <form action="" method="post" class="standard-form" id="doc-form">
     <div class="doc-header">
-        <h4><?php _e( 'New Doc', 'bpsp' ); ?></h4>
+    
+	<?php if ( bp_docs_is_existing_doc() ) : ?>
+		<h4><?php the_title() ?></h4>
+	<?php else : ?>
+		<h4><?php _e( 'New Doc', 'bpsp' ); ?></h4>
+	<?php endif ?>
     </div>
     <div class="doc-content-wrapper">
         <div id="doc-content-title">
