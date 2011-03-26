@@ -97,8 +97,9 @@ function bp_docs_group_doc_permalink() {
 	function bp_docs_get_group_doc_permalink( $doc_id = false ) {
 		global $post, $bp;
 		
-		$group_permalink = bp_get_group_permalink();
-		
+		$group			= $bp->groups->current_group;
+		$group_permalink 	= bp_get_group_permalink( $group );
+
 		if ( $doc_id )
 			$post = get_post( $doc_id );
 

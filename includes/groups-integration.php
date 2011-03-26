@@ -23,6 +23,7 @@ class BP_Docs_Groups_Integration {
 		// Filter some properties of the query object
 		add_filter( 'bp_docs_get_item_type', 		array( $this, 'get_item_type' ) );
 		add_filter( 'bp_docs_get_current_view', 	array( $this, 'get_current_view' ), 10, 2 );
+		add_filter( 'bp_docs_this_doc_slug',		array( $this, 'get_doc_slug' ) );
 		
 		// Taxonomy helpers
 		add_filter( 'bp_docs_taxonomy_get_item_terms', 	array( $this, 'get_group_terms' ) );
@@ -43,6 +44,26 @@ class BP_Docs_Groups_Integration {
 		}
 		
 		return $type;
+	}
+	
+	/**
+	 * Set the doc slug when we are viewing a group doc
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 */	
+	function get_doc_slug( $slug ) {
+		global $bp;
+		
+		if ( bp_is_current_component( 'groups' ) ) {
+			if ( !empty( $bp->action_variables[0] ) )
+				$slug = $bp->action_variables[0];
+		}
+		
+		// Cache in the $bp global
+		$bp->bp_docs->doc_slug = $slug;
+		
+		return $slug;
 	}
 	
 	/**
@@ -127,8 +148,10 @@ class BP_Docs_Groups_Integration {
 	 * @param bool $user_id The user id whose perms are being tested
 	 */	
 	function user_can_edit( $can_edit, $user_id ) {
+		global $bp;
+		
 		// For now, we're going to open up edit access for every member of the group
-		if ( groups_is_user_member( $user_id, bp_get_group_id() ) )
+		if ( groups_is_user_member( $user_id, $bp->groups->current_group->id ) )
 			$can_edit = true;
 		
 		return $can_edit;

@@ -61,6 +61,22 @@ class BP_Docs_Query {
 	}
 	
 	/**
+	 * Gets the doc slug as represented in the URL
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 *
+	 * @return str $view The current doc slug
+	 */
+	function get_doc_slug() {
+		global $bp;
+		
+		$slug = apply_filters( 'bp_docs_this_doc_slug', '', $this );
+		
+		return $slug;
+	}
+	
+	/**
 	 * Gets the item id of the item (eg group, user) associated with the page you're on.
 	 *
 	 * @package BuddyPress Docs
@@ -99,25 +115,6 @@ class BP_Docs_Query {
 		$this->item_id 		= apply_filters( 'bp_docs_get_item_id', $id );
 		$this->item_name 	= apply_filters( 'bp_docs_get_item_name', $name );
 		$this->item_slug 	= apply_filters( 'bp_docs_get_item_slug', $slug );
-	}
-	
-	/**
-	 * Gets the doc slug as represented in the URL
-	 *
-	 * @package BuddyPress Docs
-	 * @since 1.0
-	 *
-	 * @return str $view The current doc slug
-	 */
-	function get_doc_slug() {
-		global $bp;
-		
-		$slug = false;
-		
-		if ( $this->item_type == 'group' )
-			$slug = $bp->action_variables[0];
-		
-		return apply_filters( 'bp_docs_this_doc_slug', $slug, $this );
 	}
 	
 	/**
