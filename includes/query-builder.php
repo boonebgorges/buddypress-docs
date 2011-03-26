@@ -279,6 +279,7 @@ class BP_Docs_Query {
 				break;
 			case 'single' :
 			case 'edit' :
+			case 'delete' :
 				
 				$args = $this->build_query();
 				
@@ -326,6 +327,8 @@ class BP_Docs_Query {
 	 */
 	function save( $args = false ) {
 		global $bp;
+		
+		check_admin_referer( 'bp_docs_save' );
 		
 		// Get the required taxonomy items associated with the group. We only run this
 		// on a save because it requires extra database hits.
@@ -389,6 +392,11 @@ class BP_Docs_Query {
 					$result['message'] = __( 'Doc successfully saved!', 'bp-doc' );
 					$result['redirect'] = 'single';
 				}
+			}
+			
+			// Save settings
+			if ( !empty( $_POST['settings'] ) ) {
+				update_post_meta( $this->doc_id, 'bp_docs_settings', $_POST['settings'] );
 			}
 			
 			// Provide a custom hook for plugins and optional components.

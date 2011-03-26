@@ -361,25 +361,28 @@ function bp_docs_is_current_orderby_class( $orderby = 'edited' ) {
 
 
 /**
- * Determine whether the current user can edit the current doc
+ * Determine whether the current user can do something the current doc
  *
  * @package BuddyPress Docs
  * @since 1.0
+ *
+ * @param str $action The cap being tested
+ * @return bool $user_can
  */
-function bp_docs_current_user_can_edit() {
+function bp_docs_current_user_can( $action = 'edit' ) {
 	global $bp;
 	
 	// Check to see whether the value has been cached in the global
-	if ( isset( $bp->bp_docs->current_user_can_edit ) ) {
-		$can_edit = 'yes' == $bp->bp_docs->current_user_can_edit ? true : false;
+	if ( isset( $bp->bp_docs->current_user_can[$action] ) ) {
+		$user_can = 'yes' == $bp->bp_docs->current_user_can[$action] ? true : false;
 	} else {
-		$can_edit = bp_docs_user_can_edit( bp_loggedin_user_id() );
+		$user_can = bp_docs_user_can( $action, bp_loggedin_user_id() );
 	}
 	
 	// Stash in the $bp global to reduce future lookups
-	$bp->bp_docs->current_user_can_edit = $can_edit ? 'yes' : 'no';
+	$bp->bp_docs->current_user_can[$action] = $user_can ? 'yes' : 'no';
 	
-	return apply_filters( 'bp_docs_current_user_can_edit', $can_edit );
+	return apply_filters( 'bp_docs_current_user_can', $user_can );
 }
 
 /**
@@ -391,30 +394,75 @@ function bp_docs_current_user_can_edit() {
  * @param int $user_id Optional. Unique user id for the user being tested. Defaults to logged-in ID
  * @param int $doc_id Optional. Unique doc id. Defaults to doc currently being viewed
  */
-function bp_docs_user_can_edit( $user_id = false, $doc_id = false ) {
+function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false ) {
 	global $bp;
 	
 	if ( !$user_id )
 		$user_id	= bp_loggedin_user_id();
 	
-	$can_edit = false;
+	$user_can = false;
 	
 	if ( $user_id ) {
 		if ( is_super_admin() ) {
 			// Super admin always gets to edit. What a big shot
-			$can_edit = true;
+			$user_can = true;
 		} else {
-			// Post authors always get to edit
+			// Post authors always get to whatever they want
 			if ( get_the_author_meta( 'ID' ) == $user_id ) {
-				$can_edit = true;
+				$user_can = true;
 			}
+			
+			// Filter this so that groups-integration and other plugins can give their
+			// own rules. Done inside the conditional so that plugins don't have to
+			// worry about the is_super_admin() check
+			$user_can = apply_filters( 'bp_docs_user_can', $user_can, $action, $user_id );
 		}
 	}
 	
-	// Filter this so that groups-integration and other plugins can give their own rules
-	$can_edit = apply_filters( 'bp_docs_user_can_edit', $can_edit, $user_id );
+	return $user_can;
+}
+
+/**
+ * Prints the inline toggle setup script
+ *
+ * Ideally, I would put this into an external document; but the fact that it is supposed to hide
+ * content immediately on pageload means that I didn't want to wait for an external script to
+ * load, much less for document.ready. Sorry.
+ *
+ * @package BuddyPress Docs
+ * @since 1.0
+ */
+function bp_docs_inline_toggle_js() {
+	?>
+	<script type="text/javascript">
+		/* Swap toggle text with a dummy link and hide toggleable content on load */
+		var togs = jQuery('.toggleable');
+		
+		jQuery(togs).each(function(){
+			var ts = jQuery(this).children('.toggle-switch');
+			
+			/* Get a unique identifier for the toggle */
+			var tsid = jQuery(ts).attr('id').split('-');
+			var type = tsid[0];
+			
+			/* Replace the static toggle text with a link */
+			var toggleid = type + '-toggle-link';
+			
+			jQuery(ts).html('<a href="#" id="' + toggleid + '" class="toggle-link">' + jQuery(ts).html() + ' +</a>');
+			
+			/* Hide the toggleable area */
+			jQuery(this).children('.toggle-content').toggle();	
+		});
+		
+	</script>
+	<?php
+}
+
+function bp_docs_doc_settings_markup() {
+	$doc_settings = get_post_meta( get_the_ID(), 'bp_docs_settings', true );
 	
-	return $can_edit;
+	// For now, I'll hand off the creation of settings to individual integration pieces
+	do_action( 'bp_docs_doc_settings_markup', $doc_settings );
 }
 
 ?>

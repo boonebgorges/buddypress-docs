@@ -5,28 +5,7 @@
 	<?php bp_docs_info_header() ?>
 </div>
 
-<?php /* Have to put this here rather than in the external stylesheet to account for slow loading pages. I feel guilty about it, but you know what, bite me. */ ?>
-<script type="text/javascript">
-	/* Swap toggle text with a dummy link and hide toggleable content on load */
-	var togs = jQuery('.toggleable');
-	
-	jQuery(togs).each(function(){
-		var ts = jQuery(this).children('.toggle-switch');
-		
-		/* Get a unique identifier for the toggle */
-		var tsid = jQuery(ts).attr('id').split('-');
-		var type = tsid[0];
-		
-		/* Replace the static toggle text with a link */
-		var toggleid = type + '-toggle-link';
-		
-		jQuery(ts).html('<a href="#" id="' + toggleid + '" class="toggle-link">' + jQuery(ts).html() + ' +</a>');
-		
-		/* Hide the toggleable area */
-		jQuery(this).children('.toggle-content').toggle();	
-	});
-	
-</script>
+<?php bp_docs_inline_toggle_js() ?>
 
 <?php if ( have_posts() ) : ?>
 	<table class="doctable">
@@ -83,7 +62,6 @@
 		</tr>
 	<?php endwhile ?>        
         </tbody>
-
-
+        
 	</table>
 <?php endif ?>
