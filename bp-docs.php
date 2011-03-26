@@ -18,8 +18,65 @@ class BP_Docs {
 	 * @since 1.0
 	 */	
 	function __construct() {
-		add_action( 'init', array( $this, 'register_post_type' ) );	
+		
+		// Load predefined constants first thing
+		add_action( 'bp_docs_init', array( $this, 'load_constants' ), 2 );
+		
+		// Hooks into the 'init' action to register our WP custom post type and tax
+		add_action( 'init', array( $this, 'register_post_type' ) );
+		
+		// Includes necessary files
+		add_action( 'bp_docs_init', array( $this, 'includes' ), 6 );		
+
+		// Let plugins know that BP Docs has started loading
+		$this->init();
+
+		// Let other plugins know that BP Docs has finished initializing
+		$this->loaded();
 	}
+	
+	/**
+	 * Defines bp_docs_init action
+	 *
+	 * This action fires on WP's init action and provides a way for the rest of BuddyPress
+	 * Docs, as well as other dependent plugins, to hook into the loading process in an
+	 * orderly fashion.
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 */
+	function init() {
+		do_action( 'bp_docs_init' );
+	}
+	
+	/**
+	 * Defines bp_docs_loaded action
+	 *
+	 * This action tells BP Docs and other plugins that the main initialization process has
+	 * finished.
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 */
+	function loaded() {
+		do_action( 'bp_docs_loaded' );
+	}
+	
+	/**
+	 * Defines constants needed throughout the plugin.
+	 *
+	 * These constants can be overridden in bp-custom.php or wp-config.php.
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 */	
+	function load_constants() {
+		if ( !defined( 'BP_DOCS_INSTALL_PATH' ) )
+			define( 'BP_DOCS_INSTALL_PATH', dirname(__FILE__) );
+		
+		if ( !defined( 'BP_DOCS_SLUG' ) )
+			define( 'BP_DOCS_SLUG', 'docs' );
+	}	
 	
 	/**
 	 * Registers BuddyPress Docs's post types and taxonomies
@@ -83,6 +140,19 @@ class BP_Docs {
 			'rewrite' => array( 'slug' => 'item' ),
 		));
 	}
+	
+	/**
+	 * Includes files needed by BuddyPress Docs
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 */	
+	function includes() {
+		// bp-integration.php provides the hooks necessary to hook into BP navigation
+		require_once( BP_DOCS_INSTALL_PATH . '/includes/bp-integration.php' );
+		$this->bp_integration = new BP_Docs_BP_Integration;
+	}
+	
 }
 
 ?>
