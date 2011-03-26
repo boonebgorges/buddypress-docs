@@ -154,6 +154,9 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	function display() {
 		global $bp;
 		
+		// Todo: what about Create?
+		// Todo: This should be moved someplace globally accessible, as it's not specific to groups
+		
 		$current_view = bp_docs_get_current_view();
 		
 		switch ( $current_view ) {
@@ -166,16 +169,19 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 				// If not, redirect back to list view with error
 				// Otherwise, get args based on category ID
 				// Then load the loop template
+				break;
 			case 'single' :
 				// Check to make sure the post exists
 				// If not, redirect back to list view with error
 				// Otherwise, get args based on post ID
 				// Then load the single item template
+				break;
 			case 'edit' :
 				// Check to make sure the post exists
 				// If not, redirect back to the list with error
 				// Otherwise, get args based on post ID
 				// Then load the edit template
+				break;
 		}		
 	}
 
