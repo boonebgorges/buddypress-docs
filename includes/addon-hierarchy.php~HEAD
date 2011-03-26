@@ -15,7 +15,7 @@ class BP_Docs_Hierarchy {
 	 * PHP 4 constructor
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */
 	function bp_docs_hierarchy() {
 		$this->__construct();
@@ -25,7 +25,7 @@ class BP_Docs_Hierarchy {
 	 * PHP 5 constructor
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */	
 	function __construct() {
 		// Make sure that the bp_docs post type supports our post taxonomies
@@ -42,7 +42,7 @@ class BP_Docs_Hierarchy {
 	 * Registers the post taxonomies with the bp_docs post type
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @param array The $bp_docs_post_type_args array created in BP_Docs::register_post_type()
 	 * @return array $args The modified parameters
@@ -57,7 +57,7 @@ class BP_Docs_Hierarchy {
 	 * Saves post parent to a doc when saved from the front end
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @param object $query The query object created by BP_Docs_Query
 	 * @return int $post_id Returns the doc's post_id on success
@@ -80,7 +80,7 @@ class BP_Docs_Hierarchy {
 	 * Display a link to the doc's parent
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @param object $query The query object created by BP_Docs_Query
 	 * @return int $post_id Returns the doc's post_id on success

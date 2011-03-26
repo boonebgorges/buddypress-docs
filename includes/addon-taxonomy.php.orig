@@ -6,8 +6,16 @@
  *
  * @package BuddyPress Docs
  */
- 
+
+/**
+ * This class sets up the interface and back-end functions needed to use post tags with BP Docs.
+ *
+ * @package BuddyPress Docs
+ * @since 1.0-beta
+ */
 class BP_Docs_Taxonomy {
+	var $docs_tag_tax_name;
+
 	var $taxonomies;
 	var $current_filters;
 	
@@ -15,7 +23,7 @@ class BP_Docs_Taxonomy {
 	 * PHP 4 constructor
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */
 	function bp_docs_query() {
 		$this->__construct();
@@ -25,14 +33,20 @@ class BP_Docs_Taxonomy {
 	 * PHP 5 constructor
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */	
 	function __construct() {
+		// Register our custom taxonomy
+		$this->register_taxonomy();
+		
 		// Make sure that the bp_docs post type supports our post taxonomies
 		add_filter( 'bp_docs_post_type_args', 	array( $this, 'register_with_post_type' ) );
 	
 		// Hook into post saves to save any taxonomy terms. 
 		add_action( 'bp_docs_doc_saved', 	array( $this, 'save_post' ) );
+		
+		// When a doc is deleted, take its terms out of the local taxonomy
+		add_action( 'bp_docs_before_doc_delete', array( $this, 'delete_post' ) );
 		
 		// Display a doc's terms on its single doc page
 		add_action( 'bp_docs_single_doc_meta', 	array( $this, 'show_terms' ) );
@@ -55,19 +69,48 @@ class BP_Docs_Taxonomy {
 	}
 	
 	/**
+	 * Registers the custom taxonomy for BP doc tags
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0-beta
+	 *
+	 */
+	function register_taxonomy() {
+		global $bp;
+		
+		$this->docs_tag_tax_name = apply_filters( 'bp_docs_docs_tag_tax_name', 'bp_docs_tag' );
+		$bp->bp_docs->docs_tag_tax_name = $this->docs_tag_tax_name;
+		
+		// Define the labels to be used by the taxonomy bp_docs_tag
+		$doc_tags_labels = array(
+			'name' 		=> __( 'Docs Tags', 'bp-docs' ),
+			'singular_name' => __( 'Docs Tag', 'bp-docs' )
+		);
+		
+		// Register the bp_docs_associated_item taxonomy
+		register_taxonomy( $this->docs_tag_tax_name, array( $bp->bp_docs->post_type_name ), array(
+			'labels' 	=> $doc_tags_labels,
+			'hierarchical' 	=> false,
+			'show_ui' 	=> true, 
+			'query_var' 	=> true,
+			'rewrite' 	=> array( 'slug' => 'item' ),
+		) );	
+	}
+	
+	/**
 	 * Registers the post taxonomies with the bp_docs post type
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @param array The $bp_docs_post_type_args array created in BP_Docs::register_post_type()
 	 * @return array $args The modified parameters
 	 */	
 	function register_with_post_type( $args ) {
-		$this->taxonomies = array( /* 'category', */ 'post_tag' );
+		$this->taxonomies = array( /* 'category', */ $this->docs_tag_tax_name );
 	
 		// Todo: make this fine-grained for tags and/or categories
-		$args['taxonomies'] = array( 'post_tag' );
+		$args['taxonomies'] = array( $this->docs_tag_tax_name );
 		
 		//$args['taxonomies'] = array( 'category', 'post_tag' );
 		
@@ -78,13 +121,12 @@ class BP_Docs_Taxonomy {
 	 * Saves post taxonomy terms to a doc when saved from the front end
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @param object $query The query object created by BP_Docs_Query
 	 * @return int $post_id Returns the doc's post_id on success
 	 */	
 	function save_post( $query ) {
-		
 		foreach( $this->taxonomies as $tax_name ) {
 			
 			if ( $tax_name == 'category' )
@@ -118,10 +160,45 @@ class BP_Docs_Taxonomy {
 	}
 	
 	/**
+	 * Handles taxonomy cleanup when a post is deleted
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0-beta
+	 *
+	 * @param int $doc_id
+	 */	
+	function delete_post( $doc_id ) {
+		// Terms for the item (group, user, etc)
+		$item_terms 	= $this->get_item_terms();
+		// Terms for the doc
+		$doc_terms	= wp_get_post_terms( $doc_id, $this->docs_tag_tax_name );
+
+		foreach( $doc_terms as $doc_term ) {
+			$term_name = $doc_term->name;
+			
+			// If the term is currently used (should always be true - this is a
+			// sanity check)
+			if ( !empty( $item_terms[$term_name] ) ) {
+				// Get the array key of the entry corresponding to the doc
+				// being deleted
+				$key	= array_search( $doc_id, $item_terms[$term_name] );
+				
+				// If found, unset that item, and renumber the array
+				if ( $key !== false ) {
+					unset( $item_terms[$term_name][$key] );
+					$item_terms[$term_name] = array_values( $item_terms[$term_name] );
+				}
+			}
+		}
+		
+		$this->save_item_terms( $item_terms );
+	}
+	
+	/**
 	 * Shows a doc's taxonomy terms
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */	
 	function show_terms() {
 	 	foreach( $this->taxonomies as $tax_name ) {
@@ -140,7 +217,7 @@ class BP_Docs_Taxonomy {
 	 * Store taxonomy terms and their use count for a given item
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @param array $terms The terms submitted in the most recent save
 	 * @param int $doc_id The unique id of the doc
@@ -194,7 +271,7 @@ class BP_Docs_Taxonomy {
 	 * for retrieving metadata (groups_update_groupmeta(), get_user_meta(), etc)
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @return array $terms The item's terms
 	 */	
@@ -210,7 +287,7 @@ class BP_Docs_Taxonomy {
 	 * Just a dummy hook for the moment, for the integration modules to hook into
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @return array $terms The item's terms
 	 */	
@@ -222,7 +299,7 @@ class BP_Docs_Taxonomy {
 	 * Modifies the tax_query on the doc loop to account for doc tags
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @return array $terms The item's terms
 	 */	
@@ -239,7 +316,7 @@ class BP_Docs_Taxonomy {
 			}
 		
 			$tax_query[] = array(
-				'taxonomy'	=> 'post_tag',
+				'taxonomy'	=> $this->docs_tag_tax_name,
 				'terms'		=> $tags,
 				'field'		=> 'slug'
 			);
@@ -255,7 +332,7 @@ class BP_Docs_Taxonomy {
 	 * Markup for the Tags <th> on the docs loop
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */	
 	
 	function tags_th() {
@@ -270,10 +347,10 @@ class BP_Docs_Taxonomy {
 	 * Markup for the Tags <td> on the docs loop
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */	
 	function tags_td() {
-		$tags 		= wp_get_post_terms( get_the_ID(), 'post_tag' );
+		$tags 		= wp_get_post_terms( get_the_ID(), $this->docs_tag_tax_name );
 		$tagtext 	= array();
 	
 		foreach( $tags as $tag ) {
@@ -293,7 +370,7 @@ class BP_Docs_Taxonomy {
 	 * Modifies the info header message to account for current tags
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @param array $message An array of the messages explaining the current view
 	 * @param array $filters The filters pulled out of the $_REQUEST global
@@ -320,10 +397,14 @@ class BP_Docs_Taxonomy {
 	 * Creates the markup for the tags filter checkboxes on the docs loop
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */
 	function filter_markup() {
 		$existing_terms = $this->get_item_terms();
+		
+		// No need to show the filter if there are no terms to show
+		if ( empty( $existing_terms ) )
+			return;
 	
 		?>
 		
@@ -362,7 +443,7 @@ class BP_Docs_Taxonomy {
 	 * Handles doc filters from a form post and translates to $_GET arguments before redirect
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */
 	function handle_filters( $redirect_url ) {
 		if ( !empty( $_POST['filter_terms'] ) ) {
@@ -379,6 +460,46 @@ class BP_Docs_Taxonomy {
 		
 		return $redirect_url;
 	}
+}
+
+/**************************
+ * TEMPLATE TAGS
+ **************************/
+ 
+/**
+ * Get an archive link for a given tag
+ *
+ * Optional arguments:
+ *  - 'tag' 	The tag linked to. This one is required
+ *  - 'type' 	'html' returns a link; anything else returns a URL
+ *
+ * @package BuddyPress Docs
+ * @since 1.0-beta
+ *
+ * @param array $args Optional arguments
+ * @return array $filters
+ */
+function bp_docs_get_tag_link( $args = array() ) {
+	global $bp;
+	
+	$defaults = array(
+		'tag' 	=> false,
+		'type' 	=> 'html'
+	);
+	
+	$r = wp_parse_args( $args, $defaults );
+	extract( $r, EXTR_SKIP );
+	
+	$item_docs_url = bp_docs_get_item_docs_link();
+	
+	$url = apply_filters( 'bp_docs_get_tag_link_url', add_query_arg( 'bpd_tag', urlencode( $tag ), $item_docs_url ), $args, $item_docs_url );
+	
+	if ( $type != 'html' )
+		return apply_filters( 'bp_docs_get_tag_link_url', $url, $tag, $type );
+	
+	$html = '<a href="' . $url . '" title="' . sprintf( __( 'Docs tagged %s', 'bp-docs' ), esc_attr( $tag ) ) . '">' . esc_html( $tag ) . '</a>';
+	
+	return apply_filters( 'bp_docs_get_tag_link', $html, $url, $tag, $type );	
 }
 
 ?>

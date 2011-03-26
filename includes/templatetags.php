@@ -23,42 +23,6 @@ function bp_docs_is_bp_docs_page() {
 
 
 /**
- * Builds the subnav for the Docs group tab
- *
- * This method is copied from bp_group_admin_tabs(), which itself is a hack for the fact that BP
- * has no native way to register subnav items on a group tab. Component subnavs (for user docs) will
- * be properly registered with bp_core_new_subnav_item()
- *
- * @package BuddyPress Docs
- * @since 1.0
- *
- * @param obj $group optional The BP group object.
- *
- */
-function bp_docs_group_tabs( $group = false ) {
-	global $bp, $groups_template, $post, $bp_version;
-	
-	if ( !$group )
-		$group = ( $groups_template->group ) ? $groups_template->group : $bp->groups->current_group;
-	
-	// BP 1.2 - 1.3 support
-	$groups_slug = !empty( $bp->groups->root_slug ) ? $bp->groups->root_slug : $bp->groups->slug;
-
-?>
-	<li<?php if ( $bp->bp_docs->current_view == 'list' ) : ?> class="current"<?php endif; ?>><a href="<?php echo $bp->root_domain . '/' . $groups_slug ?>/<?php echo $group->slug ?>/<?php echo $bp->bp_docs->slug ?>/"><?php _e( 'View Docs', 'bp-docs' ) ?></a></li>
-
-	<?php /* Todo: can this user create items? */ ?>
-	<li<?php if ( 'create' == $bp->bp_docs->current_view ) : ?> class="current"<?php endif; ?>><a href="<?php echo $bp->root_domain . '/' . $groups_slug ?>/<?php echo $group->slug ?>/<?php echo $bp->bp_docs->slug ?>/create"><?php _e( 'New Doc', 'bp-docs' ) ?></a></li>
-	
-	
-	<?php if ( $bp->bp_docs->current_view == 'single' || $bp->bp_docs->current_view == 'edit' ) : ?>
-		<li<?php if ( 'single' == $bp->bp_docs->current_view ) : ?> class="current"<?php endif; ?>><a href="<?php echo $bp->root_domain . '/' . $groups_slug ?>/<?php echo $group->slug ?>/<?php echo $bp->bp_docs->slug ?>/<?php echo $post->post_name ?>"><?php the_title() ?></a></li>		
-	<?php endif ?>
-	
-<?php
-}
-
-/**
  * Returns true if the current page is a BP Docs edit or create page (used to load JS)
  *
  * @package BuddyPress Docs
@@ -76,40 +40,6 @@ function bp_docs_is_wiki_edit_page() {
 	return apply_filters( 'bp_docs_is_wiki_edit_page', $is_wiki_edit_page );
 }
 
-/**
- * Echoes the output of bp_docs_get_group_doc_permalink()
- *
- * @package BuddyPress Docs
- * @since 1.0
- */
-function bp_docs_group_doc_permalink() {
-	echo bp_docs_get_group_doc_permalink();
-}
-	/**
-	 * Returns a link to a specific document in a group
-	 *
-	 * @package BuddyPress Docs
-	 * @since 1.0
-	 *
-	 * @param int $doc_id optional The post_id of the doc
-	 * @return str Permalink for the group doc
-	 */
-	function bp_docs_get_group_doc_permalink( $doc_id = false ) {
-		global $post, $bp;
-		
-		$group			= $bp->groups->current_group;
-		$group_permalink 	= bp_get_group_permalink( $group );
-
-		if ( $doc_id )
-			$post = get_post( $doc_id );
-
-		if ( !empty( $post->post_name ) )
-			$doc_slug = $post->post_name;
-		else
-			return false;
-			
-		return apply_filters( 'bp_docs_get_doc_permalink', $group_permalink . $bp->bp_docs->slug . '/' . $doc_slug );
-	}
 
 /**
  * Echoes the output of bp_docs_get_info_header()
@@ -194,41 +124,6 @@ function bp_docs_get_current_filters() {
 	return apply_filters( 'bp_docs_get_current_filters', $filters );
 }
 
-/**
- * Get an archive link for a given tag
- *
- * Optional arguments:
- *  - 'tag' 	The tag linked to. This one is required
- *  - 'type' 	'html' returns a link; anything else returns a URL
- *
- * @package BuddyPress Docs
- * @since 1.0
- *
- * @param array $args Optional arguments
- * @return array $filters
- */
-function bp_docs_get_tag_link( $args = array() ) {
-	global $bp;
-	
-	$defaults = array(
-		'tag' 	=> false,
-		'type' 	=> 'html'
-	);
-	
-	$r = wp_parse_args( $args, $defaults );
-	extract( $r, EXTR_SKIP );
-	
-	$item_docs_url = bp_docs_get_item_docs_link();
-	
-	$url = apply_filters( 'bp_docs_get_tag_link_url', add_query_arg( 'bpd_tag', urlencode( $tag ), $item_docs_url ), $args, $item_docs_url );
-	
-	if ( $type != 'html' )
-		return apply_filters( 'bp_docs_get_tag_link_url', $url, $tag, $type );
-	
-	$html = '<a href="' . $url . '" title="' . sprintf( __( 'Docs tagged %s', 'bp-docs' ), esc_attr( $tag ) ) . '">' . esc_html( $tag ) . '</a>';
-	
-	return apply_filters( 'bp_docs_get_tag_link', $html, $url, $tag, $type );	
-}
 
 /**
  * Echoes the output of bp_docs_get_item_docs_link()
