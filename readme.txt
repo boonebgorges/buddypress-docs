@@ -36,6 +36,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.0 =
+* Improved support for TinyMCE loading on custom themes
+
 = 1.0-beta-2 =
 * Added pagination for doc list view
 * Improvements to the simultaneous edit lock mechanism
