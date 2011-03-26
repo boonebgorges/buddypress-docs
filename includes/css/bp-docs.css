@@ -107,6 +107,25 @@ p#filter-by-tag {
 	margin-bottom: 0;
 }
 
+/* Reversing some resets done by bp-default */
+.doc-content ul {
+	list-style: disc;
+}
+
+.doc-content ol {
+	list-style: decimal;
+}
+
+.doc-content li {
+	margin-left: 20px;
+}
+
+.doc-content blockquote {
+	background: #eaeaea;
+	padding: 5px;
+	margin: 10px 30px;
+}
+
 /* GROUP ADMIN */
 
 div.hidden {
