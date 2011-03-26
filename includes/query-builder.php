@@ -269,9 +269,71 @@ class BP_Docs_Query {
 		include( apply_filters( 'bp_docs_template', $template, $this ) );
 	}
 
-	function save() {
+	function save( $args = false ) {
+		global $bp;
 		
-	}
+		$defaults = array(
+			'post_type' => 'bp_doc',
+			'post_author' => bp_loggedin_user_id(),
+			'post_title' => $_POST['title'],
+			'post_content' => $_POST['content'],
+			'post_status' => 'publish'
+		);
+		
+		$r = wp_parse_args( $args, $defaults );
+	
+		$results = array(
+			'message' => __( 'Unknown error. Please try again.', 'bp-docs' ),
+			'redirect' => 'create'
+		);
+	
+		if ( empty( $this->doc_id ) ) {
+			// This is a new doc
+			if ( !$post_id = wp_insert_post( $r ) ) {
+				$result['message'] = __( 'There was an error when creating the doc.', 'bp-doc' );
+				$result['redirect'] = 'create';
+			} else {
+				// If the doc was saved successfully, place it in the proper tax
+				wp_set_post_terms( $post_id, $this->term_id, 'bp_docs_associated_item' );
+				
+				$this->doc_id = $post_id;
+				
+				$the_doc = get_post( $this->doc_id );
+				$this->doc_slug = $the_doc->post_name;
+				
+				$result['message'] = __( 'Doc successfully created!', 'bp-doc' );
+				$result['redirect'] = 'single';
+			}				
+		} else {
+			// This is an existing doc
+			$args['ID'] = $this->doc_id;
+			
+			if ( !wp_insert_post( $r ) ) {
+				$result['message'] = __( 'There was an error when saving the doc.', 'bp-doc' );
+				$result['redirect'] = 'edit';
+			} else {
+				$result['message'] = __( 'Doc successfully saved!', 'bp-doc' );
+				$result['redirect'] = 'single';
+			}
+		}
+		
+		$message_type = $result['redirect'] == 'single' ? 'success' : 'error';
+		bp_core_add_message( $result['message'], $message_type );
+		
+		// todo: abstract this out so I don't have to call group permalink here
+		$redirect_url = bp_get_group_permalink( $bp->groups->current_group ) . $bp->bp_docs->slug . '/';
+		
+	
+		if ( $result['redirect'] == 'single' ) {
+			$redirect_url .= $this->doc_slug;
+		} else if ( $result['redirect'] == 'edit' ) {
+			$redirect_url .= $this->doc_slug . '/' . BP_DOCS_EDIT_SLUG;
+		} else if ( $result['redirect'] == 'create' ) {
+			$redirect_url .= BP_DOCS_CREATE_SLUG;
+		}
+		
+		bp_core_redirect( $redirect_url );
+	}	
 
 
 }
