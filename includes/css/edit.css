@@ -49,6 +49,7 @@ form.standard-form input[type="text"]#doc-title {
 /* HTML mode tweaks */
 #quicktags {
 	border: none;
+	background-image: none;
 }
 
 #quicktags #ed_toolbar {
@@ -97,9 +98,6 @@ form.standard-form input[type="text"]#doc-title {
 
 /* Borrowing much of this styling from BP Courseware - thanks Stas! */
 
-/**
- * Editor Screens
- */
 #editor-toolbar { margin: 10px 0 0; }
 #editorcontainer {
     border: 1px solid #DDD;
