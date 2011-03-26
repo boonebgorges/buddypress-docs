@@ -54,13 +54,23 @@
 	border-top: 1px solid #ddd;
 }
 
-p.currently-viewing {
-	font-size: 12pt;
+div.docs-info-header {
+	background: #eaeaea;
+	padding: 5px 10px;
+	margin-bottom: 10px;
+}
+
+p.toggle-switch {
+	margin-bottom: 0;
 }
 
 a.doc-filter-toggle {
 	text-decoration: none;
 	font-weight: bold;
+}
+
+.docs-info-header .docs-filter {
+	margin-bottom: 0;
 }
 
 p#filter-by-tag {
