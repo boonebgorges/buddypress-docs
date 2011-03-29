@@ -23,6 +23,10 @@ class BP_Docs_Groups_Integration {
 		// Filter some properties of the query object
 		add_filter( 'bp_docs_get_item_type', array( $this, 'get_item_type' ) );
 		add_filter( 'bp_docs_get_current_view', array( $this, 'get_current_view' ), 10, 2 );
+		
+		// Taxonomy helpers
+		add_filter( 'bp_docs_taxonomy_get_item_terms', array( $this, 'get_group_terms' ) );
+		add_action( 'bp_docs_taxonomy_save_item_terms', array( $this, 'save_group_terms' ) );
 	}
 	
 	/**
@@ -69,6 +73,43 @@ class BP_Docs_Groups_Integration {
 		}
 		
 		return $view;
+	}
+	
+	/**
+	 * Gets the list of terms used by a group's docs
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 *
+	 * @return array $terms
+	 */	
+	function get_group_terms( $terms ) {
+		global $bp;
+		
+		if ( ! empty( $bp->groups->current_group->id ) ) {
+			$terms = groups_get_groupmeta( $bp->groups->current_group->id, 'bp_docs_terms' );
+			
+			if ( empty( $terms ) )
+				$terms = array();
+		}
+		
+		return apply_filters( 'bp_docs_taxonomy_get_group_terms', $terms );
+	}
+	
+	/**
+	 * Saves the list of terms used by a group's docs
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 *
+	 * @return array $terms
+	 */	
+	function save_group_terms( $terms ) {
+		global $bp;
+		
+		if ( ! empty( $bp->groups->current_group->id ) ) {
+			groups_update_groupmeta( $bp->groups->current_group->id, 'bp_docs_terms', $terms );
+		}
 	}
 }
 
