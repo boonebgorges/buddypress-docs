@@ -41,6 +41,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * More consistent tab highlighting in group subnav
 * Fixed bug that prevented reverting to the "no parent" setting
 * Improvements in the logic of doc comment display
+* Improvements in the way that activity posts respect privacy settings of groups
 
 = 1.0-beta-2 =
 * Added pagination for doc list view

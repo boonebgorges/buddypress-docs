@@ -61,6 +61,9 @@ class BP_Docs_Groups_Integration {
 		// Filter the activity actions for group docs-related activity
 		add_filter( 'bp_docs_activity_action',		array( $this, 'activity_action' ), 10, 5 );
 		add_filter( 'bp_docs_comment_activity_action',	array( $this, 'comment_activity_action' ), 10, 5 );
+		
+		// Filter the activity hide_sitewide parameter to respect group privacy levels
+		add_filter( 'bp_docs_hide_sitewide',		array( $this, 'hide_sitewide' ) );
 	}
 	
 	/**
@@ -382,6 +385,29 @@ class BP_Docs_Groups_Integration {
 		}
 		
 		return $action;
+	}
+	
+	/**
+	 * Filter the hide_sitewide variable to ensure that hidden/private group activity is hidden
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 *
+	 * @param bool $hide_sitewide
+	 * @return bool $hide_sitewide
+	 */
+	function hide_sitewide( $hide_sitewide ) {
+		global $bp;
+		
+		$group_status = !empty( $bp->groups->current_group->status ) ? $bp->groups->current_group->status : 'public';
+		
+		// BuddyPress only supports three statuses by default. I'll err on the side of
+		// caution, and let plugin authors use the filter provided.
+		if ( 'public' != $group_status ) {
+			$hide_sitewide = true;
+		}
+		
+		return apply_filters( 'bp_docs_groups_hide_sitewide', $hide_sitewide, $group_status );
 	}
 }
 
