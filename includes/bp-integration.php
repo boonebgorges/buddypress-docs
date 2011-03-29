@@ -92,6 +92,7 @@ class BP_Docs_BP_Integration {
 			$group_permalink = bp_get_group_permalink( $bp->groups->current_group );
 			$doc_slug = $bp->bp_docs->doc_slug;
 			
+			// Redirect back to the non-edit view of this document
 			bp_core_redirect( $group_permalink . $bp->bp_docs->slug . '/' . $doc_slug );
 		}
 	}
