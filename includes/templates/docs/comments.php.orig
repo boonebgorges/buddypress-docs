@@ -6,7 +6,6 @@
  */
 <<<<<<< HEAD
 
-
 $num_comments = 0;
 $num_trackbacks = 0;
 foreach ( (array)$comments as $comment ) {
@@ -18,7 +17,52 @@ foreach ( (array)$comments as $comment ) {
 
 ?>
 
-<?php if ( have_comments() && bp_docs_current_user_can( 'read_comments' ) ) : ?>
+<?php if ( bp_docs_current_user_can( 'read_comments' ) ) : ?>
+	<div id="comments">
+		<h3>
+			<?php printf( __( 'Discussion (%d)', 'bp-docs' ), $num_comments ) ?>
+		</h3>
+		
+		<?php do_action( 'bp_before_blog_comment_list' ) ?>
+
+		<?php if ( have_comments() ) : ?>
+	
+			<ol class="commentlist">
+				<?php wp_list_comments( array( 'callback' => 'bp_dtheme_blog_comments' ) ) ?>
+			</ol><!-- .comment-list -->
+	
+			<?php do_action( 'bp_after_blog_comment_list' ) ?>
+	
+			<?php if ( get_option( 'page_comments' ) ) : ?>
+				<div class="comment-navigation paged-navigation">
+					<?php paginate_comments_links() ?>
+				</div>
+			<?php endif; ?>
+		
+		<?php else : ?>
+
+			<p class="comments-closed comments-empty">
+				<?php _e( 'There are no comments for this doc yet.', 'bp-docs' ) ?>
+			</p>
+
+		<?php endif ?>
+
+	</div><!-- #comments -->
+
+<?php else : ?>
+	<p class="comments-closed comment-display-disabled">
+		<?php _e( 'Comment display has been disabled on this doc.', 'bp-docs' ) ?>
+	</p>
+
+<?php endif; ?>
+
+<?php if ( comments_open() && bp_docs_current_user_can( 'post_comments' ) ) : ?>
+	<?php comment_form() ?>
+<?php else : ?>
+	<p class="comments-closed comment-posting-disabled">
+		<?php _e( 'Comment posting has been disabled on this doc.', 'bp-docs' ) ?>
+	</p>
+<?php endif; ?>
 =======
 	if ( is_page() && !have_comments() && !comments_open() && !pings_open() )
 		return;
@@ -33,7 +77,6 @@ foreach ( (array)$comments as $comment ) {
 				$num_comments++;
 		}
 ?>
->>>>>>> Adds comment template for future styling work
 	<div id="comments">
 
 		<h4>
@@ -57,21 +100,6 @@ foreach ( (array)$comments as $comment ) {
 	</div><!-- #comments -->
 <?php else : ?>
 
-<<<<<<< HEAD
-	<p class="comments-closed comment-display-disabled">
-		<?php _e( 'Comment display has been disabled on this doc.', 'bp-docs' ) ?>
-	</p>
-
-<?php endif; ?>
-
-<?php if ( comments_open() && bp_docs_current_user_can( 'post_comments' ) ) : ?>
-	<?php comment_form() ?>
-<?php else : ?>
-	<p class="comments-closed comment-posting-disabled">
-		<?php _e( 'Comment posting has been disabled on this doc.', 'bp-docs' ) ?>
-	</p>
-<?php endif; ?>
-=======
 	<?php if ( pings_open() && !comments_open() && is_single() ) : ?>
 		<p class="comments-closed pings-open">
 			<?php printf( __( 'Comments are closed, but <a href="%1$s" title="Trackback URL for this post">trackbacks</a> and pingbacks are open.', 'buddypress' ), trackback_url( '0' ) ) ?>

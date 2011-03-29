@@ -37,6 +37,10 @@ class BP_Docs_BP_Integration {
 		// Hook the activity function
 		add_action( 'bp_docs_doc_saved',	array( $this, 'post_activity' 		) );
 		
+		// Filter the location of the comments template to allow it to be included with
+		// the plugin
+		add_filter( 'comments_template',	array( $this, 'comments_template'	) );
+		
 		add_action( 'bp_loaded', 		array( $this, 'set_includes_url' 	) );
 		add_action( 'init', 			array( $this, 'enqueue_scripts' 	) );
 		add_action( 'wp_print_styles', 		array( $this, 'enqueue_styles' 		) );
@@ -286,6 +290,38 @@ class BP_Docs_BP_Integration {
 		do_action( 'bp_docs_after_activity_save', $activity_id, $args );
 		
 		return $activity_id;
+	}
+	
+	/**
+	 * Filter the location of the comments.php template
+	 *
+	 * This function uses a little trick to make sure that the comments.php file can be
+	 * overridden by child themes, yet still has a fallback in the plugin folder.
+	 *
+	 * If you find this annoying, I have provided a filter for your convenience.
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 *
+	 * @param str $path The path (STYLESHEETPATH . $file) from comments_template()
+	 * @return str The path of the preferred template
+	 */
+	function comments_template( $path ) {
+		if ( !bp_docs_is_bp_docs_page() )
+			return $path;
+		
+		$original_path = $path;
+		
+		if ( !file_exists( $path ) ) {	
+			$file = str_replace( STYLESHEETPATH, '', $path );
+			
+			if ( file_exists( TEMPLATEPATH . $file ) )
+				$path = TEMPLATEPATH .  $file;
+			else 
+				$path = BP_DOCS_INSTALL_PATH . 'includes' . DIRECTORY_SEPARATOR . 'templates' . $file;
+		}
+		
+		return apply_filters( 'bp_docs_comment_template_path', $path, $original_path );
 	}
 	
 	/**
