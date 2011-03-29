@@ -126,7 +126,9 @@
 <?php include( apply_filters( 'bp_docs_header_template', $template_path . 'docs-header.php' ) ) ?>
 
 <?php
-include_once ABSPATH . '/wp-admin/includes/media.php' ;
+// No media support at the moment. Want to integrate with something like BP Group Documents
+// include_once ABSPATH . '/wp-admin/includes/media.php' ;
+
 require_once ABSPATH . '/wp-admin/includes/post.php' ;
 wp_tiny_mce();
 
@@ -137,15 +139,19 @@ wp_tiny_mce();
     </div>
     <div class="doc-content-wrapper">
         <div id="doc-content-title">
-            <input type="text" id="doc-title" name="doc[title]" class="long" value="<?php bp_docs_edit_doc_title() ?>" />
+		<label for="doc[title]"><?php _e( 'Title:', 'bp-docs' ) ?></label>        	
+		<input type="text" id="doc-title" name="doc[title]" class="long" value="<?php bp_docs_edit_doc_title() ?>" />
         </div>
         <div id="doc-content-textarea">
-            <div id="editor-toolbar">
-                <div id="media-toolbar">
-                    <?php /* echo bpsp_media_buttons(); */ ?>
-                </div>
-                <?php the_editor( bp_docs_get_edit_doc_content(), 'doc[content]' ); ?>
-            </div>
+		<label id="content-label" for="doc[content]"><?php _e( 'Content:', 'bp-docs' ) ?></label>        
+		<div id="editor-toolbar">
+			<?php /* No media support for now
+			<div id="media-toolbar">
+			    <?php  echo bpsp_media_buttons(); ?>
+			</div>
+			*/ ?>
+			<?php the_editor( bp_docs_get_edit_doc_content(), 'doc[content]' ); ?>
+		</div>
         </div>
         
         <div id="doc-meta">
@@ -154,7 +160,7 @@ wp_tiny_mce();
 			/* bp_docs_post_categories_meta_box(); */ ?>
         	</div>
 		<div id="doc-parent" class="doc-meta-box">
-			<h4><?php _e( 'Parent doc', 'bp-docs' ) ?></h4>
+			<label for="parent_id"><?php _e( 'Parent:', 'bp-docs' ) ?></label>
 			<?php bp_docs_edit_parent_dropdown() ?>
 		</div>
         </div>
