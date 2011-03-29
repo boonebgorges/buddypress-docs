@@ -11,10 +11,22 @@
 	<thead>
 		<tr valign="bottom">
 			<th scope="column"> </th>
-			<th scope="column"><?php _e( 'Title', 'bpsp' ); ?></th>
-			<th scope="column"><?php _e( 'Author', 'bpsp' ); ?></th>
-			<th scope="column"><?php _e( 'Created', 'bpsp' ); ?></th>
-			<th scope="column"><?php _e( 'Last Edited', 'bpsp' ); ?></th>
+			
+			<th scope="column" class="title-cell<?php bp_docs_is_current_orderby_class( 'title' ) ?>">
+				<a href="<?php bp_docs_order_by_link( 'title' ) ?>"><?php _e( 'Title', 'bpsp' ); ?></a>
+			</th>
+			
+			<th scope="column" class="author-cell<?php bp_docs_is_current_orderby_class( 'author' ) ?>">
+				<a href="<?php bp_docs_order_by_link( 'author' ) ?>"><?php _e( 'Author', 'bpsp' ); ?></a>
+			</th>
+			
+			<th scope="column" class="created-date-cell<?php bp_docs_is_current_orderby_class( 'created' ) ?>">
+				<a href="<?php bp_docs_order_by_link( 'created' ) ?>"><?php _e( 'Created', 'bpsp' ); ?></a>
+			</th>
+			
+			<th scope="column" class="edited-date-cell<?php bp_docs_is_current_orderby_class( 'edited' ) ?>">
+				<a href="<?php bp_docs_order_by_link( 'edited' ) ?>"><?php _e( 'Last Edited', 'bpsp' ); ?></a>
+			</th>
 			
 			<?php do_action( 'bp_docs_loop_additional_th' ) ?>
 		</tr>
