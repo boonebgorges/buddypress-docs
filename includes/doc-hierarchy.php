@@ -93,17 +93,16 @@ class BP_Docs_Hierarchy {
 	 	
 	 	if ( ! empty( $post->post_parent ) ) {			
 			$parent = get_post( $post->post_parent );
-			$parent_url = bp_docs_get_group_doc_permalink( $parent->ID );
-			$parent_title = $post->post_title;
-			
-			$html = "<p>" . __( 'Parent: ', 'bp-docs' ) . "<a href=\"$parent_url\" title=\"$parent_title\">$parent_title</a></p>";
+			if ( !empty( $parent->ID ) ) {
+				$parent_url = bp_docs_get_group_doc_permalink( $parent->ID );
+				$parent_title = $post->post_title;
+				
+				$html = "<p>" . __( 'Parent: ', 'bp-docs' ) . "<a href=\"$parent_url\" title=\"$parent_title\">$parent_title</a></p>";
+			}
 	 	}
 	 	
 	 	echo apply_filters( 'bp_docs_hierarchy_show_parent', $html, $parent );
 	 }
-}
-
-class BP_Docs_Hierarchy_Walker extends Walker {
 }
 
 ?>

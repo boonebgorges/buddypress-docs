@@ -29,7 +29,11 @@ class BP_Docs_Groups_Integration {
 		add_filter( 'bp_docs_taxonomy_get_item_terms', 	array( $this, 'get_group_terms' ) );
 		add_action( 'bp_docs_taxonomy_save_item_terms', array( $this, 'save_group_terms' ) );
 		
-		add_filter( 'bp_docs_user_can_edit',		array( $this, 'user_can_edit' ), 10, 2 );
+		// Filter the core user_can_edit function for group-specific functionality
+		add_filter( 'bp_docs_user_can',			array( $this, 'user_can' ), 10, 3 );
+		
+		// Add group-specific settings to the doc settings box
+		add_filter( 'bp_docs_doc_settings_markup',	array( $this, 'doc_settings_markup' ) );
 	}
 	
 	/**
@@ -100,6 +104,9 @@ class BP_Docs_Groups_Integration {
 			} else if ( !empty( $bp->action_variables[1] ) && $bp->action_variables[1] == BP_DOCS_EDIT_SLUG ) {
 				// This is an edit page
 				$view = 'edit';
+			} else if ( !empty( $bp->action_variables[1] ) && $bp->action_variables[1] == BP_DOCS_DELETE_SLUG ) {
+				// This is an edit page
+				$view = 'delete';
 			}
 		}
 		
@@ -152,17 +159,75 @@ class BP_Docs_Groups_Integration {
 	 * @package BuddyPress Docs
 	 * @since 1.0
 	 *
-	 * @param bool $can_edit The default perms passed from bp_docs_user_can_edit()
-	 * @param bool $user_id The user id whose perms are being tested
+	 * @param bool $user_can The default perms passed from bp_docs_user_can_edit()
+	 * @param str $action At the moment, 'edit' or 'manage'
+	 * @param int $user_id The user id whose perms are being tested
 	 */	
-	function user_can_edit( $can_edit, $user_id ) {
-		global $bp;
+	function user_can( $user_can, $action, $user_id ) {
+		global $bp, $post;
 		
-		// For now, we're going to open up edit access for every member of the group
-		if ( groups_is_user_member( $user_id, $bp->groups->current_group->id ) )
-			$can_edit = true;
+		// Sometimes the post hasn't been loaded early enough, groan
+		if ( empty( $post->ID ) ) {
+			$posts = get_posts( array( 'post_type' => 'bp_doc', 'name' => $bp->bp_docs->doc_slug ) );
+			$post = $posts[0];
+		}
 		
-		return $can_edit;
+		$doc_settings = get_post_meta( get_the_ID(), 'bp_docs_settings', true );
+		
+		$group_id =  $bp->groups->current_group->id;
+		
+		// Group admins and mods always get to edit
+		if ( groups_is_user_admin( $user_id, $group_id ) || groups_is_user_mod( $user_id, $group_id ) ) {
+			$user_can = true;
+		} else {			
+			switch ( $doc_settings[$action] ) {
+				case 'me' :
+					if ( get_the_author_meta( 'ID' ) == $user_id )
+						$user_can = true;
+					break;
+				
+				case 'group-members' :
+				default :
+					if ( groups_is_user_member( $user_id, $bp->groups->current_group->id ) )
+						$user_can = true;
+					break;
+			}
+		}
+		
+		return $user_can;
+	}
+	
+	function doc_settings_markup( $doc_settings ) {
+		// Only add these settings if we're in the group component
+		
+		// BP 1.2/1.3 compatibility
+		$is_group_component = function_exists( 'bp_is_current_component' ) ? bp_is_current_component( 'groups' ) : $bp->current_component == $bp->groups->slug;
+		
+		if ( $is_group_component ) {
+			$edit = !empty( $doc_settings['edit'] ) ? $doc_settings['edit'] : 'group-members';
+			$manage = !empty( $doc_settings['manage'] ) ? $doc_settings['manage'] : 'me';
+		
+			?>
+			<label for="settings[edit]"><?php _e( 'Allow the following members to edit this doc:', 'bp-docs' ) ?></label>
+			
+			<input name="settings[edit]" type="radio" value="me" <?php checked( $edit, 'me' ) ?>/> <?php _e( 'Just me', 'bp-docs' ) ?><br />
+			<input name="settings[edit]" type="radio" value="group-members" <?php checked( $edit, 'group-members' ) ?>/> <?php _e( 'All members of the group', 'bp-docs' ) ?><br />
+			
+			<?php /* Not sure this is necessary, so leaving out for the moment */ ?>
+			<?php /*
+			
+			<label for="settings[manage]"><?php _e( 'Allow the following members to manage this doc:', 'bp-docs' ) ?></label>
+			
+			<input name="settings[manage]" type="radio" value="me" <?php checked( $manage, 'me' ) ?>/> <?php _e( 'Just me', 'bp-docs' ) ?><br />
+			<input name="settings[manage]" type="radio" value="group-members" <?php checked( $manage, 'group-members' ) ?>/> <?php _e( 'All members of the group', 'bp-docs' ) ?><br />
+			<span class="description"><?php _e( '"Managing" users can change doc settings and delete the doc.', 'bp-docs' ) ?></span><br /><br />
+			
+			<span class="description"><?php _e( '<strong>Note:</strong> Group admins and mods, as well as site administrators, can edit and manage docs regardless of settings.', 'bp-docs' ) ?></span>
+			
+			*/ ?>
+			
+			<?php
+		}
 	}
 }
 

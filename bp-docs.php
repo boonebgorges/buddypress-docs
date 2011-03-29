@@ -105,6 +105,10 @@ class BP_Docs {
 		// The slug used when creating a new doc
 		if ( !defined( 'BP_DOCS_CREATE_SLUG' ) )
 			define( 'BP_DOCS_CREATE_SLUG', 'create' );
+		
+		// The slug used when deleting a doc
+		if ( !defined( 'BP_DOCS_DELETE_SLUG' ) )
+			define( 'BP_DOCS_DELETE_SLUG', 'delete' );
 	}	
 	
 	/**
