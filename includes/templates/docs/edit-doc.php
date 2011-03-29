@@ -151,7 +151,9 @@ wp_tiny_mce();
         <div id="doc-meta">
         	<?php
         	
-        	bp_docs_post_tags_meta_box() ?>
+        	bp_docs_post_tags_meta_box();
+        	/* bp_docs_post_categories_meta_box(); */
+        	?>
         </div>
         
         <div id="new-assignment-content-options">

@@ -93,7 +93,7 @@ function bp_docs_post_tags_meta_box($post) {
 	<div class="jaxtag">
 	<div class="nojs-tags hide-if-js">
 	<p><?php echo $taxonomy->labels->add_or_remove_items; ?></p>
-	<textarea name="<?php echo "doc[$tax_name]"; ?>" rows="3" cols="20" class="the-tags" id="tax-input-<?php echo $tax_name; ?>" <?php echo $disabled; ?>><?php echo get_terms_to_edit( $bp->bp_docs->current_post->ID, $tax_name ); // textarea_escaped by esc_attr() ?></textarea></div>
+	<textarea name="<?php echo "$tax_name"; ?>" rows="3" cols="20" class="the-tags" id="tax-input-<?php echo $tax_name; ?>" <?php echo $disabled; ?>><?php echo get_terms_to_edit( $bp->bp_docs->current_post->ID, $tax_name ); // textarea_escaped by esc_attr() ?></textarea></div>
  	
  	<?php /* Removed for the moment until fancypants JS is in place */ ?>
  	<?php /* ?>
@@ -126,7 +126,11 @@ function bp_docs_post_tags_meta_box($post) {
  *
  * @param object $post
  */
-function bp_docs_post_categories_meta_box( $post, $box ) {
+function bp_docs_post_categories_meta_box( $post ) {
+	global $bp;
+	
+	require_once(ABSPATH . '/wp-admin/includes/template.php');
+
 	$defaults = array('taxonomy' => 'category');
 	if ( !isset($box['args']) || !is_array($box['args']) )
 		$args = array();
@@ -154,7 +158,7 @@ function bp_docs_post_categories_meta_box( $post, $box ) {
             echo "<input type='hidden' name='{$name}[]' value='0' />"; // Allows for an empty term set to be sent. 0 is an invalid Term ID and will be ignored by empty() checks.
             ?>
 			<ul id="<?php echo $taxonomy; ?>checklist" class="list:<?php echo $taxonomy?> categorychecklist form-no-clear">
-				<?php wp_terms_checklist($post->ID, array( 'taxonomy' => $taxonomy, 'popular_cats' => $popular_ids ) ) ?>
+				<?php wp_terms_checklist($bp->bp_docs->current_post->ID, array( 'taxonomy' => $taxonomy, 'popular_cats' => $popular_ids ) ) ?>
 			</ul>
 		</div>
 	<?php if ( current_user_can($tax->cap->edit_terms) ) : ?>
