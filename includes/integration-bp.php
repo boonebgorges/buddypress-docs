@@ -301,6 +301,7 @@ class BP_Docs_BP_Integration {
 		// different item types
 		if ( in_array( BP_DOCS_SLUG, $this->slugstocheck ) ) {
 			wp_enqueue_script( 'bp-docs-js' );
+			wp_enqueue_script( 'comment-reply' );
 			wp_localize_script( 'bp-docs-js', 'bp_docs', array(
 				'addfilters'	=> __( 'Add Filters', 'bp-docs' ),
 				'modifyfilters'	=> __( 'Modify Filters', 'bp-docs' )
