@@ -36,6 +36,7 @@ require ( dirname( __FILE__ ) . '/bp-wiki-ajax.php' );
 require ( dirname( __FILE__ ) . '/bp-wiki-forms.php' );
 require ( dirname( __FILE__ ) . '/bp-wiki-cssjs.php' );
 require ( dirname( __FILE__ ) . '/bp-wiki-filters.php' );
+require ( dirname( __FILE__ ) . '/bp-wiki-templatetags.php' );
 
 require ( dirname( __FILE__ ) . '/bp-fadmin-group-wikis.php' );
 
