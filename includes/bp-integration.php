@@ -44,17 +44,30 @@ class BP_Docs_BP_Integration {
 
 class BP_Docs_Group_Extension extends BP_Group_Extension {	
 
+	// Todo: make this configurable
 	var $visibility = 'public';
 	var $enable_nav_item = true;
 
+	/**
+	 * Constructor
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 */
 	function bp_docs_group_extension() {
-		$this->name = 'My Group Extension';
-		$this->slug = 'my-group-extension';
+		$this->name = __( 'Docs', 'bp-docs' );
+		$this->slug = BP_DOCS_SLUG;
 
-		$this->create_step_position = 21;
-		$this->nav_item_position = 31;
+		$this->create_step_position = 45;
+		$this->nav_item_position = 45;
 	}
 
+	/**
+	 * Determines what shows up on the BP Docs panel of the Create process
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 */
 	function create_screen() {
 		if ( !bp_is_group_creation_step( $this->slug ) )
 			return false;
@@ -66,6 +79,13 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 		wp_nonce_field( 'groups_create_save_' . $this->slug );
 	}
 
+	/**
+	 * Runs when the create screen is saved
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 */
+	
 	function create_screen_save() {
 		global $bp;
 
@@ -75,6 +95,12 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 		groups_update_groupmeta( $bp->groups->new_group_id, 'my_meta_name', 'value' );
 	}
 
+	/**
+	 * Determines what shows up on the BP Docs panel of the Group Admin
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 */
 	function edit_screen() {
 		if ( !bp_is_group_admin_screen( $this->slug ) )
 			return false; ?>
@@ -88,6 +114,13 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 		wp_nonce_field( 'groups_edit_save_' . $this->slug );
 	}
 
+	/**
+	 * Runs when the admin panel is saved
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 */
+	
 	function edit_screen_save() {
 		global $bp;
 
@@ -107,20 +140,40 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 		bp_core_redirect( bp_get_group_permalink( $bp->groups->current_group ) . '/admin/' . $this->slug );
 	}
 
+	/**
+	 * Loads the display template
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 */
 	function display() {
-		/* Use this function to display the actual content of your group extension when the nav item is selected */
+		global $bp;
+		
+		$current_view = !empty( $bp->action_variables[0] ) ? $bp->action_variables[0] : BP_DOCS_LIST_SLUG;
+		
+		switch ( $current_view ) {
+			case BP_DOCS_LIST_SLUG :
+				echo 'List';
+				break;
+			
+			case BP_DOCS_EDIT_SLUG :
+				echo 'Edit';
+				break;
+			
+			case BP_DOCS_SINGLE_SLUG :
+				echo 'Single';
+				break;
+		}
 	}
 
-	function widget_display() { ?>
-		<div class=&quot;info-group&quot;>
-			<h4><?php echo attribute_escape( $this->name ) ?></h4>
-			<p>
-				You could display a small snippet of information from your group extension here. It will show on the group
-				home screen.
-			</p>
-		</div>
-		<?php
-	}
+	/**
+	 * Dummy function that must be overridden by this extending class, as per API
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 */
+	
+	function widget_display() { }
 }
 
 ?>
