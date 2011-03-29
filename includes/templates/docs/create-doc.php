@@ -7,7 +7,8 @@
 	<input name="title" id="doc-title" value="" /> 
 	
 	<br />
-	<textarea name="content" id="tinyeditor" class="tinyeditor"></textarea>
+	<?php the_editor(  ); ?>
+	
 	
 	<input type="submit" value="<?php _e( 'Save', 'bp-docs' ) ?>" name="doc-edit-submit" />
 	
