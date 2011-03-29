@@ -1,0 +1,136 @@
+body, td, pre {color:#555; font-family:Arial,Tahoma,Verdana,sans-serif; font-size:12px; margin:8px;}
+body {
+	background:#FFF;
+	line-height:170%;
+}
+body.mceForceColors {background:#FFF; color:#000;}
+p {
+	margin-bottom:15px;
+}
+h1,h2,h3,h4,h5,h6 {
+	margin:10px 0;
+	font-weight:bold;
+}
+h1,h2,h3,h4 {
+	color:#000;
+}
+h1 {
+	font-size:1.5em;
+}
+
+h2 {
+	font-size:1.4em;
+}
+ 
+h3 {
+	font-size:1.3em;
+} 
+
+h4 {
+	font-size:1.2em;
+} 
+
+h5 {
+	font-size:1.1em;
+} 
+
+h6 {
+	font-size:1.0em;
+} 
+
+code, pre {
+	font-family: monospace;
+}
+/* List styles */
+
+ul {
+	list-style-type: disc;
+	list-style-position: inside;
+	margin-left:10px;
+	margin-bottom:10px;
+}
+
+ol {
+	list-style-type: decimal;
+	list-style-position: inside;
+	margin-left:10px;
+	margin-bottom:10px;
+}
+
+/* Default Table Style */
+
+table {
+	border-collapse: collapse;
+	text-align:left;
+	margin-left: auto;
+	margin-right: auto;
+}
+table tr td, 
+table tr th {
+	padding:2px;
+}
+caption {
+	text-transform:	uppercase;
+	font-size: 1.0em;
+	color: #000000;
+	text-align: center;
+	font-weight: bolder;
+	margin-left: 1px 0 0 0 ;
+	border-bottom: 3px solid #000;
+}
+
+thead tr th{
+	color: #0099ff;
+	text-transform: uppercase;
+	text-align: center;	
+	border-bottom: 3px solid #000;
+}
+
+tfoot th, tfoot td{
+	border-top: 3px solid #000;
+}
+
+tr td, tr th{
+	margin-left: 1px 0 0 0 ;
+	line-height: 1.5em;
+}
+
+tbody th a{
+	text-transform:uppercase;
+}
+
+tbody a, tbody a:link{
+	color: #0099ff;
+	font-weight:bold;	
+	text-decoration:none;
+}
+
+tbody a:visited{
+	color:#000;
+}
+
+
+
+.mceItemTable, .mceItemTable td, .mceItemTable th, .mceItemTable caption, .mceItemVisualAid {border: 1px dashed #BBB;}
+a.mceItemAnchor {width:12px; line-height:6px; overflow:hidden; padding-left:12px; background:url(img/items.gif) no-repeat bottom left;}
+img.mceItemAnchor {width:12px; height:12px; background:url(img/items.gif) no-repeat;}
+img {border:0;}
+table {cursor:default}
+table td, table th {cursor:text}
+ins {border-bottom:1px solid green; text-decoration: none; color:green}
+del {color:red; text-decoration:line-through}
+cite {border-bottom:1px dashed blue}
+acronym {border-bottom:1px dotted #CCC; cursor:help}
+abbr, html\:abbr {border-bottom:1px dashed #CCC; cursor:help}
+
+/* IE */
+* html body {
+scrollbar-3dlight-color:#F0F0EE;
+scrollbar-arrow-color:#676662;
+scrollbar-base-color:#F0F0EE;
+scrollbar-darkshadow-color:#DDD;
+scrollbar-face-color:#E0E0DD;
+scrollbar-highlight-color:#F0F0EE;
+scrollbar-shadow-color:#F0F0EE;
+scrollbar-track-color:#F5F5F5;
+}
