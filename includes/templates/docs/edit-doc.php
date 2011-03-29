@@ -132,14 +132,14 @@ wp_tiny_mce();
 
 ?>
 <form action="" method="post" class="standard-form" id="doc-form">
-    <div class="doc-meta">
-        <h4 class="meta"><?php _e( 'New Doc', 'bpsp' ); ?></h4>
+    <div class="doc-header">
+        <h4><?php _e( 'New Doc', 'bpsp' ); ?></h4>
     </div>
     <div class="doc-content-wrapper">
         <div id="doc-content-title">
             <input type="text" id="doc-title" name="doc[title]" class="long" value="<?php bp_docs_edit_doc_title() ?>" />
         </div>
-        <div id="new-assignment-content-textarea">
+        <div id="doc-content-textarea">
             <div id="editor-toolbar">
                 <div id="media-toolbar">
                     <?php /* echo bpsp_media_buttons(); */ ?>
@@ -147,6 +147,13 @@ wp_tiny_mce();
                 <?php the_editor( bp_docs_get_edit_doc_content(), 'doc[content]' ); ?>
             </div>
         </div>
+        
+        <div id="doc-meta">
+        	<?php
+        	
+        	bp_docs_post_tags_meta_box() ?>
+        </div>
+        
         <div id="new-assignment-content-options">
             <input type="hidden" id="new-assignment-post-object" name="assignment[object]" value="group"/>
             <input type="hidden" id="new-assignment-post-in" name="assignment[group_id]" value="<?php echo $group_id; ?>">
