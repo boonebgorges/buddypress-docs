@@ -157,14 +157,10 @@ wp_tiny_mce();
         </div>
         
         <div id="new-assignment-content-options">
-            <input type="hidden" id="new-assignment-post-object" name="assignment[object]" value="group"/>
-            <input type="hidden" id="new-assignment-post-in" name="assignment[group_id]" value="<?php echo $group_id; ?>">
-            <?php echo $nonce ? $nonce: ''; ?>
+        
             <input type="submit" name="doc-edit-submit" id="new-assignment-submit" value="<?php _e( 'Save', 'bp-docs' ) ?>">
             <div class="alignright submits">
-                <?php if( $delete_nonce ): ?>
-                    <a href="<?php echo $delete_nonce; ?>" class="action alert"><?php _e( 'Delete Assignment', 'bpsp' ); ?></a>
-                <?php endif; ?>
+              
                 <a href="<?php bp_docs_group_doc_permalink() ?>" class="action safe"><?php _e( 'Cancel/Go back', 'bpsp' ); ?></a>
             </div>
         </div>

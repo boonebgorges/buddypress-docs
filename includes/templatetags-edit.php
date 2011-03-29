@@ -88,12 +88,14 @@ function bp_docs_post_tags_meta_box() {
 	$tax_name = esc_attr($taxonomy);
 	$taxonomy = get_taxonomy($taxonomy);
 	$disabled = !current_user_can($taxonomy->cap->assign_terms) ? 'disabled="disabled"' : '';
+	
+	$terms = !empty( $bp->bp_docs->current_post ) ? get_terms_to_edit( $bp->bp_docs->current_post->ID, $tax_name ) : '';
 ?>
 <div class="tagsdiv" id="<?php echo $tax_name; ?>">
 	<div class="jaxtag">
 	<div class="nojs-tags hide-if-js">
 	<p><?php echo $taxonomy->labels->add_or_remove_items; ?></p>
-	<textarea name="<?php echo "$tax_name"; ?>" rows="3" cols="20" class="the-tags" id="tax-input-<?php echo $tax_name; ?>" <?php echo $disabled; ?>><?php echo get_terms_to_edit( $bp->bp_docs->current_post->ID, $tax_name ); // textarea_escaped by esc_attr() ?></textarea></div>
+	<textarea name="<?php echo "$tax_name"; ?>" rows="3" cols="20" class="the-tags" id="tax-input-<?php echo $tax_name; ?>" <?php echo $disabled; ?>><?php echo $terms; // textarea_escaped by esc_attr() ?></textarea></div>
  	
  	<?php /* Removed for the moment until fancypants JS is in place */ ?>
  	<?php /* ?>
