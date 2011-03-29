@@ -78,19 +78,22 @@ class BP_Docs_Query {
 		
 		$id = '';
 		$name = '';
+		$slug = '';
 		
 		switch ( $this->item_type ) {
 			case 'group' :
-				if ( !empty( $bp->groups->current_group->id ) )
+				if ( !empty( $bp->groups->current_group->id ) ) {
 					$id = $bp->groups->current_group->id;
 					$name = $bp->groups->current_group->name;
 					$slug = $bp->groups->current_group->slug;
+				}
 				break;
 			case 'user' :
-				if ( !empty( $bp->displayed_user->id ) )
+				if ( !empty( $bp->displayed_user->id ) ) {
 					$id = $bp->displayed_user->id;
 					$id = $bp->displayed_user->display_name;
 					$id = $bp->displayed_user->userdata->user_nicename;
+				}
 				break;
 		}
 		
