@@ -10,7 +10,9 @@
 	<?php endif ?>
 </h2> 
 
-<?php the_content() ?>
+<div class="doc-content">
+	<?php the_content() ?>
+</div>
 
 <div class="doc-meta">
 	<?php do_action( 'bp_docs_single_doc_meta' ) ?>
