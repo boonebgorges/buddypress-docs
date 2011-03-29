@@ -363,7 +363,6 @@ class BP_Docs_Query {
 			// If both the title and content fields are filled in, we can proceed
 			$defaults = array(
 				'post_type' => $this->post_type_name,
-				'post_author' => bp_loggedin_user_id(),
 				'post_title' => $_POST['doc']['title'],
 				'post_content' => stripslashes( sanitize_post_field( 'post_content', $_POST['doc']['content'], 0, 'db' ) ),
 				'post_status' => 'publish'
@@ -373,6 +372,8 @@ class BP_Docs_Query {
 			
 			if ( empty( $this->doc_slug ) ) {
 				$this->is_new_doc = true;
+				
+				$r['post_author'] = bp_loggedin_user_id();
 				
 				// This is a new doc
 				if ( !$post_id = wp_insert_post( $r ) ) {
@@ -392,6 +393,7 @@ class BP_Docs_Query {
 				}				
 			} else {
 				$this->is_new_doc = false;
+				
 				// This is an existing doc, so we need to get the post ID
 				$the_doc_args = array(
 					'name' => $this->doc_slug,
@@ -401,7 +403,8 @@ class BP_Docs_Query {
 				$the_docs = get_posts( $the_doc_args );			
 				$this->doc_id = $the_docs[0]->ID;	
 					
-				$r['ID'] = $this->doc_id;
+				$r['ID'] 		= $this->doc_id;
+				$r['post_author'] 	= $the_docs[0]->post_author; 
 				
 				if ( !wp_update_post( $r ) ) {
 					$result['message'] = __( 'There was an error when saving the doc.', 'bp-doc' );
