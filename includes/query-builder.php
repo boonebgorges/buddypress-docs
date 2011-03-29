@@ -115,6 +115,9 @@ class BP_Docs_Query {
 		$this->item_id 		= apply_filters( 'bp_docs_get_item_id', $id );
 		$this->item_name 	= apply_filters( 'bp_docs_get_item_name', $name );
 		$this->item_slug 	= apply_filters( 'bp_docs_get_item_slug', $slug );
+		
+		// Put some stuff in $bp
+		$bp->bp_docs->current_item	= $this->item_id;
 	}
 	
 	/**
