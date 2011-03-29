@@ -161,7 +161,7 @@ function bp_docs_doc_link( $doc_id ) {
 	 *
 	 * For the moment, this returns the URL of the first item associated with the doc. If you
 	 * extend BuddyPress Docs so that items can be associated with multiple groups, you'll need
-	 * to change the way this plugin works.
+	 * to change the way this function works.
 	 *
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta

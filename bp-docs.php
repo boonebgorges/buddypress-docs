@@ -1,5 +1,6 @@
 <?php
 
+
 class BP_Docs {
 	/**
 	 * PHP 4 constructor
@@ -8,7 +9,7 @@ class BP_Docs {
 	 * @since 1.0
 	 */
 	function bp_docs() {
-		$this->construct();
+		$this->__construct();
 	}
 
 	/**
@@ -26,10 +27,10 @@ class BP_Docs {
 		add_action( 'init', array( $this, 'register_post_type' ) );
 		
 		// Includes necessary files
-		add_action( 'bp_docs_init', array( $this, 'includes' ), 6 );		
+		add_action( 'bp_docs_init', array( $this, 'includes' ) );		
 
 		// Let plugins know that BP Docs has started loading
-		$this->init();
+		$this->init_hook();
 
 		// Let other plugins know that BP Docs has finished initializing
 		$this->loaded();
@@ -45,7 +46,7 @@ class BP_Docs {
 	 * @package BuddyPress Docs
 	 * @since 1.0
 	 */
-	function init() {
+	function init_hook() {
 		do_action( 'bp_docs_init' );
 	}
 	
@@ -79,9 +80,9 @@ class BP_Docs {
 		if ( !defined( 'BP_DOCS_SLUG' ) )
 			define( 'BP_DOCS_SLUG', 'docs' );
 		
-		// The slug used when viewing a list of an item's docs
-		if ( !defined( 'BP_DOCS_LIST_SLUG' ) )
-			define( 'BP_DOCS_LIST_SLUG', 'list' );
+		// The slug used when viewing a doc category
+		if ( !defined( 'BP_DOCS_CATEGORY_SLUG' ) )
+			define( 'BP_DOCS_CATEGORY_SLUG', 'category' );
 		
 		// The slug used when editing a single item
 		if ( !defined( 'BP_DOCS_EDIT_SLUG' ) )
@@ -162,9 +163,15 @@ class BP_Docs {
 	 * @since 1.0
 	 */	
 	function includes() {
+		
+		$includes_path = BP_DOCS_INSTALL_PATH . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR;
+		
 		// bp-integration.php provides the hooks necessary to hook into BP navigation
-		require_once( BP_DOCS_INSTALL_PATH . '/includes/bp-integration.php' );
+		require_once( $includes_path . 'bp-integration.php' );
 		$this->bp_integration = new BP_Docs_BP_Integration;
+		
+		// templatetags.php has all functions in the global space available to templates
+		require_once( $includes_path . 'templatetags.php' );
 	}
 	
 }
