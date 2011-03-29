@@ -40,3 +40,12 @@
 .desc a {
 	background: url(../images/sort-col-desc.gif) no-repeat;	
 }
+
+.doc-edit-link {
+	margin: 0 0 20px 0;
+}
+
+.doc-meta, #doc-meta {
+	padding-top: 20px;
+	border-top: 1px solid #ddd;
+}
