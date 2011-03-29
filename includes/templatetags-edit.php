@@ -73,7 +73,7 @@ function bp_docs_edit_doc_content() {
  *
  * @param object $post
  */
-function bp_docs_post_tags_meta_box($post) {
+function bp_docs_post_tags_meta_box() {
 	global $bp;
 	
 	require_once(ABSPATH . '/wp-admin/includes/taxonomy.php');
