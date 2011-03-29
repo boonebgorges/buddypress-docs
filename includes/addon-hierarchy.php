@@ -36,6 +36,9 @@ class BP_Docs_Hierarchy {
 		
 		// Display a doc's parent on its single doc page
 		add_action( 'bp_docs_single_doc_meta', array( $this, 'show_parent' ) );
+		
+		// Display a doc's children on its single doc page
+		add_action( 'bp_docs_single_doc_meta', array( $this, 'show_children' ) );
 	}
 	
 	/**
@@ -94,14 +97,59 @@ class BP_Docs_Hierarchy {
 	 	if ( ! empty( $post->post_parent ) ) {			
 			$parent = get_post( $post->post_parent );
 			if ( !empty( $parent->ID ) ) {
-				$parent_url = bp_docs_get_group_doc_permalink( $parent->ID );
-				$parent_title = $post->post_title;
+				$parent_url = bp_docs_get_doc_link( $parent->ID );
+				$parent_title = $parent->post_title;
 				
 				$html = "<p>" . __( 'Parent: ', 'bp-docs' ) . "<a href=\"$parent_url\" title=\"$parent_title\">$parent_title</a></p>";
 			}
 	 	}
 	 	
 	 	echo apply_filters( 'bp_docs_hierarchy_show_parent', $html, $parent );
+	 }
+	 
+	 function show_children() {
+	 	global $bp;
+	 	
+	 	// Get the child posts
+	 	$child_posts_args = array(
+	 		'post_type'	=> $bp->bp_docs->post_type_name,
+	 		'post_parent'	=> get_the_ID()
+	 	);
+	 	
+	 	$child_posts = new WP_Query( $child_posts_args );
+	 	
+	 	// Assemble the link data out of the query
+	 	$child_data = array();
+	 	if ( $child_posts->have_posts() ) {
+	 		while ( $child_posts->have_posts() ) {
+	 			$child_posts->the_post();
+	 			
+	 			$child_id = get_the_ID();
+	 			$child_data[$child_id] = array(
+	 				'post_name' => get_the_title(),
+	 				'post_link' => bp_docs_get_doc_link( $child_id )
+	 			);
+	 		}
+	 	}
+	 	
+	 	$child_data = apply_filters( 'bp_docs_hierarchy_child_data', $child_data );
+	 	
+	 	// Create the HTML
+	 	$html = '';
+	 	if ( !empty( $child_data ) ) {
+	 		$html .= '<p>' . __( 'Children: ', 'bp-docs' );
+	 		
+	 		$children_html = array();
+	 		foreach( $child_data as $child ) {
+	 			$children_html[] = '<a href="' . $child['post_link'] . '">' . $child['post_name'] . '</a>';
+	 		}
+	 		
+	 		$html .= implode( ', ', $children_html );
+	 		
+	 		$html .= '</p>';
+	 	}
+	 	
+	 	echo apply_filters( 'bp_docs_hierarchy_show_children', $html, $child_data );
 	 }
 }
 
