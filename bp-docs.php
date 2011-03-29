@@ -30,10 +30,10 @@ class BP_Docs {
 		add_action( 'init', array( $this, 'register_post_type' ) );
 		
 		// Includes necessary files
-		add_action( 'bp_docs_init', array( $this, 'includes' ) );
+		add_action( 'bp_docs_init', array( $this, 'includes' ), 4 );
 		
 		// Load the BP integration functions
-		add_action( 'bp_docs_init', array( $this, 'do_integration' ) );
+		add_action( 'bp_docs_init', array( $this, 'do_integration' ), 6 );
 
 		// Let plugins know that BP Docs has started loading
 		$this->init_hook();
