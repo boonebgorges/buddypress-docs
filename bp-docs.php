@@ -1,6 +1,5 @@
 <?php
 
-
 class BP_Docs {
 	var $post_type_name;
 	var $associated_item_tax_name;
@@ -9,7 +8,7 @@ class BP_Docs {
 	 * PHP 4 constructor
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */
 	function bp_docs() {
 		$this->__construct();
@@ -19,7 +18,7 @@ class BP_Docs {
 	 * PHP 5 constructor
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */	
 	function __construct() {
 		global $bp;
@@ -62,7 +61,7 @@ class BP_Docs {
 	 * orderly fashion.
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */
 	function init_hook() {
 		do_action( 'bp_docs_init' );
@@ -75,7 +74,7 @@ class BP_Docs {
 	 * finished.
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */
 	function loaded() {
 		do_action( 'bp_docs_loaded' );
@@ -87,7 +86,7 @@ class BP_Docs {
 	 * These constants can be overridden in bp-custom.php or wp-config.php.
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */	
 	function load_constants() {
 		// You should never really need to override this bad boy
@@ -131,7 +130,7 @@ class BP_Docs {
 	 * access to the 'taxonomy' argument of register_post_type.
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */
 	function load_doc_extras() {
 		// Todo: make this conditional with a filter or a constant
@@ -157,7 +156,7 @@ class BP_Docs {
 	 * the taxonomy bp_docs_associated_item '6', where '6' is a sub-tax of 'groups'.
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */
 	function register_post_type() {
 		// Define the labels to be used by the post type bp_doc		
@@ -213,7 +212,7 @@ class BP_Docs {
 	 * Includes files needed by BuddyPress Docs
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */	
 	function includes() {
 	
@@ -234,7 +233,7 @@ class BP_Docs {
 	 * Initiates the BP integration functions
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */
 	function do_integration() {
 		$this->bp_integration = new BP_Docs_BP_Integration;	
