@@ -84,13 +84,17 @@ class BP_Docs {
 		if ( !defined( 'BP_DOCS_CATEGORY_SLUG' ) )
 			define( 'BP_DOCS_CATEGORY_SLUG', 'category' );
 		
-		// The slug used when editing a single item
+		// The slug used when editing a doc
 		if ( !defined( 'BP_DOCS_EDIT_SLUG' ) )
 			define( 'BP_DOCS_EDIT_SLUG', 'edit' );
 		
-		// The slug used when viewing a single item
+		// The slug used when viewing a single doc
 		if ( !defined( 'BP_DOCS_SINGLE_SLUG' ) )
 			define( 'BP_DOCS_SINGLE_SLUG', 'single' );
+			
+		// The slug used when creating a new doc
+		if ( !defined( 'BP_DOCS_CREATE_SLUG' ) )
+			define( 'BP_DOCS_CREATE_SLUG', 'create' );
 	}	
 	
 	/**
@@ -172,6 +176,9 @@ class BP_Docs {
 		
 		// templatetags.php has all functions in the global space available to templates
 		require_once( $includes_path . 'templatetags.php' );
+		
+		// query-builder.php contains the class that fetches the content for each view
+		require_once( $includes_path . 'query-builder.php' );
 	}
 	
 }
