@@ -243,6 +243,13 @@ class BP_Docs_Query {
 			case 'list' :
 				$args = $this->build_query();
 				
+				/* Todo: Get this into its own 'tree' view */
+				/*
+				$the_docs = get_posts( $args );
+				$f = walk_page_tree($the_docs, 0, 0, array( 'walker' => new Walker_Page ) );
+				print_r( $f );
+				*/
+				
 				query_posts( $args );
 				$template = $template_path . 'docs-loop.php';				
 				break;
