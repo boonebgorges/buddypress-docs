@@ -4,19 +4,20 @@
  * Mostly borrowed from BuddyPress Default
  *
  */
-	if ( is_page() && !have_comments() && !comments_open() && !pings_open() )
-		return;
 
-	if ( have_comments() ) :
-		$num_comments = 0;
-		$num_trackbacks = 0;
-		foreach ( (array)$comments as $comment ) {
-			if ( 'comment' != get_comment_type() )
-				$num_trackbacks++;
-			else
-				$num_comments++;
-		}
+
+$num_comments = 0;
+$num_trackbacks = 0;
+foreach ( (array)$comments as $comment ) {
+	if ( 'comment' != get_comment_type() )
+		$num_trackbacks++;
+	else
+		$num_comments++;
+}
+
 ?>
+
+<?php if ( have_comments() && bp_docs_current_user_can( 'read_comments' ) ) : ?>
 	<div id="comments">
 
 		<h4>
@@ -40,42 +41,16 @@
 	</div><!-- #comments -->
 <?php else : ?>
 
-	<?php if ( pings_open() && !comments_open() && is_single() ) : ?>
-		<p class="comments-closed pings-open">
-			<?php printf( __( 'Comments are closed, but <a href="%1$s" title="Trackback URL for this post">trackbacks</a> and pingbacks are open.', 'buddypress' ), trackback_url( '0' ) ) ?>
-		</p>
-	<?php elseif ( !comments_open() && is_single() ) : ?>
-		<p class="comments-closed">
-			<?php _e( 'Comments are closed.', 'buddypress' ) ?>
-		</p>
-	<?php endif; ?>
+	<p class="comments-closed comment-display-disabled">
+		<?php _e( 'Comment display has been disabled on this doc.', 'bp-docs' ) ?>
+	</p>
 
 <?php endif; ?>
 
-<?php if ( comments_open() ) : ?>
+<?php if ( comments_open() && bp_docs_current_user_can( 'post_comments' ) ) : ?>
 	<?php comment_form() ?>
-<?php endif; ?>
-
-<?php if ( !empty( $num_trackbacks ) ) : ?>
-	<div id="trackbacks">
-		<span class="title"><?php the_title() ?></span>
-
-		<h3>
-			<?php printf( _n( '%d Trackback', '%d Trackbacks', $num_trackbacks, 'buddypress' ), number_format_i18n( $num_trackbacks ) ) ?>
-		</h3>
-
-		<ul id="trackbacklist">
-			<?php foreach ( (array)$comments as $comment ) : ?>
-
-				<?php if ( 'comment' != get_comment_type() ) : ?>
-					<li>
-						<h5><?php comment_author_link() ?></h5>
-						<em>on <?php comment_date() ?></em>
-					</li>
- 				<?php endif; ?>
-
-			<?php endforeach; ?>
-		</ul>
-
-	</div>
+<?php else : ?>
+	<p class="comments-closed comment-posting-disabled">
+		<?php _e( 'Comment posting has been disabled on this doc.', 'bp-docs' ) ?>
+	</p>
 <?php endif; ?>
