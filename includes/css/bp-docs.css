@@ -26,14 +26,27 @@
 	padding: 6px;
 }
 
-table tr td.doc-action-links {
-	font-size: 8pt;
-	padding: 0 0 10px 8px;
-	margin-top: -10px;
+.doctable p {
+	padding: 0;
+	margin: 0;
 }
 
-.doc-action-links a {
+.row-actions {
+	visibility: hidden;
+	padding: 2px 0 0;
+}
+
+tr:hover .row-actions {
+	visibility: visible;
+}
+
+tr:nth-child(even) {
+	background-color: #eaeaea;
+}
+
+.row-actions a {
 	color: #999;
+	font-size: 11px;
 }
 
 #docs-filter-submit {

@@ -433,7 +433,7 @@ function bp_docs_doc_action_links() {
 	if ( bp_docs_user_can( 'edit', bp_loggedin_user_id() ) )
 		$links[] 	= '<a href="' . bp_docs_get_group_doc_permalink() . '/' . BP_DOCS_EDIT_SLUG . '">' . __( 'Edit', 'bp-docs' ) . '</a>';
 	
-	echo implode( ' &middot; ', $links );
+	echo implode( ' &#124; ', $links );
 }
 
 ?>
