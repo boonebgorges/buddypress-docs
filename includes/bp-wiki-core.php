@@ -950,7 +950,7 @@ if ( class_exists( 'BP_Group_Extension' ) ) {
 		function edit_screen() {
 			global $bp;
 			
-			if ( !groups_is_user_admin( $bp->loggedin_user->id, $bp->groups->current_group->id ) ) {
+			if ( !groups_is_user_admin( $bp->loggedin_user->id, $bp->groups->current_group->id ) && empty( $bp->loggedin_user->is_super_admin ) ) {
 				return false;
 			}
 			
