@@ -29,7 +29,7 @@ class BP_Docs_BP_Integration {
 			$this->groups_integration = new BP_Docs_Groups_Integration;
 		}
 		
-		add_action( 'wp', 		array( $this, 'catch_form_submits' 	), 1 );
+		add_action( 'wp', 		array( $this, 'catch_page_load' 	), 1 );
 		
 		add_action( 'bp_loaded', 	array( $this, 'set_includes_url' 	) );
 		add_action( 'init', 		array( $this, 'enqueue_scripts' 	) );
@@ -66,12 +66,12 @@ class BP_Docs_BP_Integration {
 	
 		
 	/**
-	 * Catches incoming form submits and sends them on their merry way
+	 * Catches page loads, determines what to do, and sends users on their merry way
 	 *
 	 * @package BuddyPress Docs
 	 * @since 1.0
 	 */
-	function catch_form_submits() {
+	function catch_page_load() {
 		global $bp;
 		
 		if ( !empty( $_POST['doc-edit-submit'] ) ) {
@@ -82,6 +82,17 @@ class BP_Docs_BP_Integration {
 		
 		if ( !empty( $_POST['docs-filter-submit'] ) ) {
 			$this->handle_filters();
+		}
+		
+		// If this is the edit screen, ensure that the user can edit the
+		// doc before querying, and redirect if necessary
+		if ( !empty( $bp->bp_docs->current_view ) && 'edit' == $bp->bp_docs->current_view && !bp_docs_current_user_can_edit() ) {
+			bp_core_add_message( __( 'You do not have permission to edit the document.', 'bp-docs' ), 'error' );
+			
+			$group_permalink = bp_get_group_permalink( $bp->groups->current_group );
+			$doc_slug = $bp->bp_docs->doc_slug;
+			
+			bp_core_redirect( $group_permalink . $bp->bp_docs->slug . '/' . $doc_slug );
 		}
 	}
 	
