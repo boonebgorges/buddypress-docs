@@ -428,7 +428,7 @@ function bp_docs_inline_toggle_js() {
 function bp_docs_doc_settings_markup() {
 	$doc = bp_docs_get_current_doc();
 	
-	$doc_settings = get_post_meta( $doc->ID, 'bp_docs_settings', true );
+	$doc_settings = !empty( $doc->ID ) ? get_post_meta( $doc->ID, 'bp_docs_settings', true ) : array();
 	
 	// For now, I'll hand off the creation of settings to individual integration pieces
 	do_action( 'bp_docs_doc_settings_markup', $doc_settings );
@@ -464,6 +464,9 @@ function bp_docs_current_group_is_public() {
  */
 function bp_docs_get_current_doc() {	
 	global $bp;
+	
+	if ( empty( $bp->bp_docs->doc_slug ) )
+		return false;
 	
 	if ( empty( $bp->bp_docs->current_post ) ) {
 		
