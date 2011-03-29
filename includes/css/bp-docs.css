@@ -150,6 +150,10 @@ div.doc-is-locked .toggle-content {
 	border-radius: 3px;
 }
 
+div.doc-meta p {
+	margin-bottom: 5px;
+}
+
 /* Comment section */
 .comments-closed {
 	padding: 10px 20px;
