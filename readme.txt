@@ -1,9 +1,9 @@
-=== BuddyPress Wiki Component ===
+=== BuddyPress Group Pages  ===
 Contributors: Aekeron
 Tags: buddypress, wiki, education, collaboration, group
 Requires at least: WordPress 3.0.1, BuddyPress 1.2.5.2
 Tested up to: WordPress 3.0.2 / BuddyPress 1.2.6
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 
 This plugin provides site and group based wiki functionality for a Buddypress installation.
 
