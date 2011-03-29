@@ -7,7 +7,10 @@
  * @package BuddyPress Docs
  */
  
-class BP_Docs_Hierarchy {	
+class BP_Docs_Hierarchy {
+	var $parent;
+	var $children;
+	
 	/**
 	 * PHP 4 constructor
 	 *
@@ -30,6 +33,9 @@ class BP_Docs_Hierarchy {
 	
 		// Hook into post saves to save any taxonomy terms. 
 		add_action( 'bp_docs_doc_saved', array( $this, 'save_post' ) );
+		
+		// Display a doc's parent on its single doc page
+		add_action( 'bp_docs_single_doc_meta', array( $this, 'show_parent' ) );
 	}
 	
 	/**
@@ -69,6 +75,32 @@ class BP_Docs_Hierarchy {
 				return false;
 		}
 	}
+	
+	/**
+	 * Display a link to the doc's parent
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 *
+	 * @param object $query The query object created by BP_Docs_Query
+	 * @return int $post_id Returns the doc's post_id on success
+	 */	
+	 function show_parent() {
+	 	global $post;
+	 	
+	 	$html = '';
+	 	$parent = false;
+	 	
+	 	if ( ! empty( $post->post_parent ) ) {			
+			$parent = get_post( $post->post_parent );
+			$parent_url = bp_docs_get_group_doc_permalink( $parent->ID );
+			$parent_title = $post->post_title;
+			
+			$html = "<p>" . __( 'Parent: ', 'bp-docs' ) . "<a href=\"$parent_url\" title=\"$parent_title\">$parent_title</a></p>";
+	 	}
+	 	
+	 	echo apply_filters( 'bp_docs_hierarchy_show_parent', $html, $parent );
+	 }
 }
 
 ?>
