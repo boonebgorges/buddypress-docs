@@ -309,6 +309,9 @@ class BP_Docs_Query {
 				if ( $this->current_view == 'edit' ) {
 					if ( have_posts() ) : while ( have_posts() ) : the_post();
 						$bp->bp_docs->current_post = $post;
+										
+						// Set an edit lock
+						wp_set_post_lock( $post->ID );
 					endwhile; endif;
 					
 					/** 
@@ -410,6 +413,9 @@ class BP_Docs_Query {
 					$result['message'] = __( 'There was an error when saving the doc.', 'bp-doc' );
 					$result['redirect'] = 'edit';
 				} else {
+					// Remove the edit lock
+					delete_post_meta( $this->doc_id, '_edit_lock' );
+					
 					$result['message'] = __( 'Doc successfully saved!', 'bp-doc' );
 					$result['redirect'] = 'single';
 				}
