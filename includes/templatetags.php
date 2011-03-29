@@ -136,7 +136,7 @@ function bp_docs_info_header() {
 		
 		// Set the message based on the current filters
 		if ( empty( $filters ) ) {
-			$message = __( 'You are viewing all docs.', 'bp-docs' );	
+			$message = __( 'You are viewing <strong>all</strong> docs.', 'bp-docs' );	
 		} else {
 			$message = array();
 		
@@ -150,7 +150,7 @@ function bp_docs_info_header() {
 		
 		?>
 		
-		<p><?php echo $message ?></p>
+		<p class="currently-viewing"><?php echo $message ?></p>
 		
 		<form action="<?php bp_docs_item_docs_link() ?>" method="post">
 				

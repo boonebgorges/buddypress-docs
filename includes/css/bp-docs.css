@@ -49,3 +49,12 @@
 	padding-top: 20px;
 	border-top: 1px solid #ddd;
 }
+
+p.currently-viewing {
+	font-size: 12pt;
+}
+
+a.doc-filter-toggle {
+	text-decoration: none;
+	font-weight: bold;
+}
