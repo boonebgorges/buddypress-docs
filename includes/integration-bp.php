@@ -32,6 +32,8 @@ class BP_Docs_BP_Integration {
 		
 		add_action( 'wp', 		array( $this, 'catch_page_load' 	), 1 );
 		
+		add_action( 'comment_post_redirect', array( $this, 'comment_post_redirect' ), 99, 2 );
+		
 		add_action( 'bp_loaded', 	array( $this, 'set_includes_url' 	) );
 		add_action( 'init', 		array( $this, 'enqueue_scripts' 	) );
 		add_action( 'wp_print_styles', 	array( $this, 'enqueue_styles' 		) );
@@ -151,6 +153,18 @@ class BP_Docs_BP_Integration {
 	 */
 	function set_includes_url() {
 		$this->includes_url = plugins_url() . '/buddypress-docs/includes/';
+	}
+	
+	function comment_post_redirect( $location, $comment ) {
+		// Check to see whether this is a BP Doc
+		$post = get_post( $comment->comment_post_ID );
+		
+		if ( 'bp_doc' != $post->post_type )
+			return $location;
+		
+		$location = bp_docs_get_doc_link( $comment->comment_post_ID ) . '#comment-' . $comment->comment_ID;
+		
+		return $location;
 	}
 	
 	/**
