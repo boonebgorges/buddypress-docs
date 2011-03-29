@@ -201,7 +201,7 @@ function bp_docs_edit_parent_dropdown() {
 	$pages = wp_dropdown_pages( array( 
 		'post_type' => 'bp_doc', 
 		'exclude_tree' => $exclude, 
-		'selected' => $exclude, 
+		'selected' => $parent, 
 		'name' => 'parent_id', 
 		'show_option_none' => __( '(no parent)', 'bp-docs' ),
 		'sort_column'=> 'menu_order, post_title', 
