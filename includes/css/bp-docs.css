@@ -111,6 +111,7 @@ p#filter-by-tag {
 div.doc-content {
 	padding: 20px;
 	border: 3px solid #eaeaea;
+	margin-top: 20px;
 }
 
 /* Comment section */
