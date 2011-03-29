@@ -1,3 +1,68 @@
 .tagsdiv {
 	width: 300px;
 }
+
+.doc-meta-box {
+	width: 400px;
+	float: left;
+}
+
+#doc-submit-options {
+	margin-top: 30px;
+}
+
+#doc-meta .tagsdiv .the-tags {
+	margin: 0;
+}
+
+#doc-content-textarea {
+	margin-bottom: 30px;
+}
+
+#quicktags {
+	border: none;
+}
+
+#quicktags #ed_toolbar {
+	padding-bottom: 6px;
+	height: 29px;
+}
+
+
+#editorcontainer table .mceToolbar {
+	padding: 2px;
+}
+
+#editorcontainer textarea.theEditor {
+	width: 865px;
+}
+
+
+/* Visual mode tweaks */
+
+.wp_themeSkin tr.mceFirst td.mceToolbar {
+	border: none;
+	height: 26px;
+}
+
+
+/* Overriding some stubborn wp-admin styles */
+#footer {
+	margin: 20px 0;
+	padding: 0;
+	font-size: inherit;
+	font-family: inherit;
+	font-style: inherit;
+	border: none;
+}
+
+#footer a {
+	font-size: inherit;
+	font-family: inherit;
+	font-style: inherit;
+}
+
+#footer p {
+	line-height: inherit;
+	padding: inherit;
+}
