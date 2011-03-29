@@ -627,6 +627,12 @@ function bp_docs_cancel_edit_link() {
 		return apply_filters( 'bp_docs_get_cancel_edit_link', $cancel_link, $doc_permalink );
 	}
 
+/**
+ * Echo the pagination links for the doc list view
+ *
+ * @package BuddyPress Docs
+ * @since 1.0-beta-2
+ */
 function bp_docs_paginate_links() {
 	global $wp_query;
 	
@@ -646,6 +652,17 @@ function bp_docs_paginate_links() {
         echo apply_filters( 'bp_docs_paginate_links', $page_links );
 }
 
+/**
+ * Get the start number for the current docs view (ie "Viewing *5* - 8 of 12")
+ *
+ * Here's the math: Subtract one from the current page number; multiply times posts_per_page to get
+ * the last post on the previous page; add one to get the start for this page.
+ *
+ * @package BuddyPress Docs
+ * @since 1.0-beta-2
+ *
+ * @return int $start The start number
+ */
 function bp_docs_get_current_docs_start() {
 	global $wp_query;
 	
@@ -658,7 +675,17 @@ function bp_docs_get_current_docs_start() {
 	return apply_filters( 'bp_docs_get_current_docs_start', $start );
 }
 
-
+/**
+ * Get the end number for the current docs view (ie "Viewing 5 - *8* of 12")
+ *
+ * Here's the math: Multiply the posts_per_page by the current page number. If it's the last page
+ * (ie if the result is greater than the total number of docs), just use the total doc count
+ *
+ * @package BuddyPress Docs
+ * @since 1.0-beta-2
+ *
+ * @return int $end The start number
+ */
 function bp_docs_get_current_docs_end() {
 	global $wp_query;
 	
@@ -674,6 +701,14 @@ function bp_docs_get_current_docs_end() {
 	return apply_filters( 'bp_docs_get_current_docs_end', $end );
 }
 
+/**
+ * Get the total number of found docs out of $wp_query
+ *
+ * @package BuddyPress Docs
+ * @since 1.0-beta-2
+ *
+ * @return int $total_doc_count The start number
+ */
 function bp_docs_get_total_docs_num() {
 	global $wp_query;
 	
