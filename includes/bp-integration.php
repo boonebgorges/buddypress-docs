@@ -77,7 +77,6 @@ class BP_Docs_BP_Integration {
 		if ( !empty( $_POST['doc-edit-submit'] ) ) {
 			$this_doc = new BP_Docs_Query;
 			$this_doc->save();
-			//print_r( $this_doc ); die();
 		}
 		
 		if ( !empty( $_POST['docs-filter-submit'] ) ) {
@@ -143,7 +142,7 @@ class BP_Docs_BP_Integration {
 			require_once( ABSPATH . '/wp-admin/includes/post.php' );
 			wp_enqueue_script( 'common' );
 			wp_enqueue_script( 'jquery-color' );
-			//wp_print_scripts('editor');
+			wp_enqueue_scripts('editor');
 			if (function_exists('add_thickbox')) add_thickbox();
 			//wp_print_scripts('media-upload');
 			wp_admin_css();
