@@ -19,4 +19,11 @@ jQuery(document).ready(function($){
 		return false;
 	});
 	
+	/* Disabled until I build a proper set of options */
+	/*
+	$('#bp-docs-group-enable').click(function(){
+		$('#group-doc-options').slideToggle(400);
+	});
+	*/
+	
 },(jQuery));

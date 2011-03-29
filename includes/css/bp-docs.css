@@ -79,6 +79,10 @@ p#filter-by-tag {
 
 /* GROUP ADMIN */
 
-.hidden {
+div.hidden {
 	display: none;
+}
+
+#group-doc-options {
+	
 }
