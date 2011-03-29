@@ -240,16 +240,26 @@ function bp_docs_item_docs_link() {
  *
  * @return str $new_order Either desc or asc
  */
-function bp_docs_get_sort_order( $orderby = 'edited' ) {
+function bp_docs_get_sort_order( $orderby = 'modified' ) {
 
 	$new_order	= false;
 
 	// We only want a non-default order if we are currently ordered by this $orderby
 	// The default order is Last Edited, so we must account for that
-	$current_orderby	= !empty( $_GET['orderby'] ) ? $_GET['orderby'] : apply_filters( 'bp_docs_default_sort_order', 'edited' );
+	$current_orderby	= !empty( $_GET['orderby'] ) ? $_GET['orderby'] : apply_filters( 'bp_docs_default_sort_order', 'modified' );
 	
 	if ( $orderby == $current_orderby ) {
-		$current_order 	= empty( $_GET['order'] ) || 'ASC' == $_GET['order'] ? 'ASC' : 'DESC';
+		// Default sort orders are different for date fields
+		if ( empty( $_GET['order'] ) ) {
+			// If no order is explicitly stated, we must provide one.
+			// It'll be different for date fields (should be DESC)
+			if ( 'modified' == $current_orderby || 'date' == $current_orderby )
+				$current_order = 'DESC';
+			else
+				$current_order = 'ASC';
+		} else {
+			$current_order = $_GET['order'];
+		}
 		
 		$new_order	= 'ASC' == $current_order ? 'DESC' : 'ASC';
 	}
@@ -265,7 +275,7 @@ function bp_docs_get_sort_order( $orderby = 'edited' ) {
  *
  * @param str $orderby The order_by item: title, author, created, edited, etc
  */
-function bp_docs_order_by_link( $orderby = 'edited' ) {
+function bp_docs_order_by_link( $orderby = 'modified' ) {
 	echo bp_docs_get_order_by_link( $orderby );
 }
 	/**
@@ -277,7 +287,7 @@ function bp_docs_order_by_link( $orderby = 'edited' ) {
 	 * @param str $orderby The order_by item: title, author, created, edited, etc
 	 * @return str The URL with args attached
 	 */
-	function bp_docs_get_order_by_link( $orderby = 'edited' ) {
+	function bp_docs_get_order_by_link( $orderby = 'modified' ) {
 		$args = array(
 			'orderby' 	=> $orderby,
 			'order'		=> bp_docs_get_sort_order( $orderby )
@@ -294,9 +304,9 @@ function bp_docs_order_by_link( $orderby = 'edited' ) {
  *
  * @param str $orderby The order_by item: title, author, created, edited, etc
  */
-function bp_docs_is_current_orderby_class( $orderby = 'edited' ) {
+function bp_docs_is_current_orderby_class( $orderby = 'modified' ) {
 	// Get the current orderby column
-	$current_orderby	= !empty( $_GET['orderby'] ) ? $_GET['orderby'] : apply_filters( 'bp_docs_default_sort_order', 'edited' );
+	$current_orderby	= !empty( $_GET['orderby'] ) ? $_GET['orderby'] : apply_filters( 'bp_docs_default_sort_order', 'modified' );
 	
 	// Does the current orderby match the $orderby parameter?
 	$is_current_orderby 	= $current_orderby == $orderby ? true : false;
@@ -306,10 +316,17 @@ function bp_docs_is_current_orderby_class( $orderby = 'edited' ) {
 	if ( $is_current_orderby ) {
 		$class = ' current-orderby';
 		
-		if ( !empty( $_GET['order'] ) && 'DESC' == $_GET['order'] )
-			$class .= ' desc';
-		else
-			$class .= ' asc';
+		// Different for date fields
+		if ( empty( $_GET['order'] ) ) {
+			// If no order is explicitly stated, we must provide one.
+			// It'll be different for date fields (should be DESC)
+			if ( 'modified' == $current_orderby || 'date' == $current_orderby )
+				$class .= ' desc';
+			else
+				$class .= ' asc';
+		} else {
+			$class .= 'DESC' == $_GET['order'] ? ' desc' : ' asc';
+		}
 	}
 	
 	echo apply_filters( 'bp_docs_is_current_orderby', $class, $is_current_orderby, $current_orderby );
