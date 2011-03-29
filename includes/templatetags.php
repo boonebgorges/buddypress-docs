@@ -356,6 +356,9 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
 	if ( !$user_id )
 		$user_id	= bp_loggedin_user_id();
 	
+	if ( !$doc_id )
+		$doc_id		= get_the_ID();
+	
 	$user_can = false;
 	
 	if ( $user_id ) {
@@ -366,7 +369,7 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
 			// Filter this so that groups-integration and other plugins can give their
 			// own rules. Done inside the conditional so that plugins don't have to
 			// worry about the is_super_admin() check
-			$user_can = apply_filters( 'bp_docs_user_can', $user_can, $action, $user_id );
+			$user_can = apply_filters( 'bp_docs_user_can', $user_can, $action, $user_id, $doc_id );
 		}
 	}
 	
@@ -420,6 +423,17 @@ function bp_docs_doc_settings_markup() {
 	
 	// For now, I'll hand off the creation of settings to individual integration pieces
 	do_action( 'bp_docs_doc_settings_markup', $doc_settings );
+}
+
+function bp_docs_doc_action_links() {
+	$links 		= array();
+	
+	$links[] 	= '<a href="' . bp_docs_get_group_doc_permalink() . '">' . __( 'View', 'bp-docs' ) . '</a>';
+	
+	if ( bp_docs_user_can( 'edit', bp_loggedin_user_id() ) )
+		$links[] 	= '<a href="' . bp_docs_get_group_doc_permalink() . '/' . BP_DOCS_EDIT_SLUG . '">' . __( 'Edit', 'bp-docs' ) . '</a>';
+	
+	echo implode( ' &middot; ', $links );
 }
 
 ?>

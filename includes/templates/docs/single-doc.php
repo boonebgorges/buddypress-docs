@@ -5,7 +5,7 @@
 <h2><?php the_title() ?> 
 	<?php if ( bp_docs_current_user_can( 'edit' ) ) : ?>
 		
-		<a class="button" href="<?php bp_docs_group_doc_permalink() ?>/edit"><?php _e( 'Edit', 'bp-docs' ) ?></a> 
+		<a class="button" href="<?php bp_docs_group_doc_permalink() . '/' . BP_DOCS_EDIT_SLUG ?>"><?php _e( 'Edit', 'bp-docs' ) ?></a> 
 
 	<?php endif ?>
 </h2> 

@@ -26,6 +26,15 @@
 	padding: 6px;
 }
 
+.doc-action-links {
+	font-size: 8pt;
+	margin-left: 10px;
+}
+
+.doc-action-links a {
+	color: #999;
+}
+
 #docs-filter-submit {
 	margin: 10px 4px;
 }
