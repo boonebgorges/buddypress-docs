@@ -9,6 +9,7 @@
  
 class BP_Docs_Taxonomy {
 	var $taxonomies;
+	var $current_filters;
 	
 	/**
 	 * PHP 4 constructor
@@ -42,6 +43,15 @@ class BP_Docs_Taxonomy {
 		// Add the Tags column to the docs loop
 		add_filter( 'bp_docs_loop_additional_th', array( $this, 'tags_th' ) );
 		add_filter( 'bp_docs_loop_additional_td', array( $this, 'tags_td' ) );
+		
+		// Filter the message in the docs info header
+		add_filter( 'bp_docs_info_header_message', array( $this, 'info_header_message' ), 10, 2 );
+		
+		// Add the tags filter markup
+		add_filter( 'bp_docs_filter_markup',	array( $this, 'filter_markup' ) );
+		
+		// Adds filter arguments to a URL
+		add_filter( 'bp_docs_handle_filters',	array( $this, 'handle_filters' ) );
 	}
 	
 	/**
@@ -233,6 +243,9 @@ class BP_Docs_Taxonomy {
 				'terms'		=> $tags,
 				'field'		=> 'slug'
 			);
+			
+			if ( !empty( $_REQUEST['bool'] ) && $_REQUEST['bool'] == 'and' )
+				$tax_query['operator'] = 'AND';
 		}
 		
 		return apply_filters( 'bp_docs_modify_tax_query_for_tax', $tax_query );
@@ -259,7 +272,6 @@ class BP_Docs_Taxonomy {
 	 * @package BuddyPress Docs
 	 * @since 1.0
 	 */	
-	
 	function tags_td() {
 		$tags 		= wp_get_post_terms( get_the_ID(), 'post_tag' );
 		$tagtext 	= array();
@@ -275,6 +287,97 @@ class BP_Docs_Taxonomy {
 		</td>
 	
 		<?php
+	}
+	
+	/**
+	 * Modifies the info header message to account for current tags
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 *
+	 * @param array $message An array of the messages explaining the current view
+	 * @param array $filters The filters pulled out of the $_REQUEST global
+	 *
+	 * @return array $message The maybe modified message array
+	 */
+	function info_header_message( $message, $filters ) {
+		$this->current_filters = $filters;
+		
+		if ( !empty( $filters['tags'] ) ) {
+			$tagtext = array();
+			
+			foreach( $filters['tags'] as $tag ) {
+				$tagtext[] = bp_docs_get_tag_link( array( 'tag' => $tag ) );
+			}
+			
+			$message[] = sprintf( __( 'You are viewing docs with the following tags: %s', 'bp-docs' ), implode( ', ', $tagtext ) );  
+		}
+		
+		return $message;
+	}
+	
+	/**
+	 * Creates the markup for the tags filter checkboxes on the docs loop
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 */
+	function filter_markup() {
+		$existing_terms = $this->get_item_terms();
+	
+		?>
+		
+		<div class="docs-filter docs-filter-tags">
+			<h4><?php _e( 'Tags', 'bp-docs' ) ?></h4>
+	
+			<ul>
+			<?php foreach( $existing_terms as $term => $posts ) : ?>
+				
+				<li>
+				<a href="<?php echo bp_docs_get_tag_link( array( 'tag' => $term, 'type' => 'url' ) ) ?>" title="<?php echo esc_html( $term ) ?>"><?php echo esc_html( $term ) ?> <?php printf( __( '(%d)', 'bp-docs' ), count( $posts ) ) ?></a>
+				
+				<?php /* Going with tag cloud type fix for now */ ?>
+				<?php /*
+				
+				<?php
+				
+				$checked = empty( $this->current_filters ) || ( !empty( $this->current_filters['tags'] ) && in_array( $term, $this->current_filters['tags'] ) ) ? true : false;
+				
+				?>
+				<label for="filter_terms[<?php echo esc_attr( $term ) ?>]"> 
+					<input type="checkbox" value="1" name="filter_terms[<?php echo esc_attr( $term ) ?>]" <?php checked( $checked ) ?>/>
+					<?php echo esc_html( $term ) ?> <?php printf( __( '(%d)', 'bp-docs' ), count( $posts ) ) ?>
+				</label>
+				*/ ?>
+				</li>
+			
+			<?php endforeach ?>
+			</ul>
+		</div>
+		
+		<?php
+	}
+	
+	/**
+	 * Handles doc filters from a form post and translates to $_GET arguments before redirect
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 */
+	function handle_filters( $redirect_url ) {
+		if ( !empty( $_POST['filter_terms'] ) ) {
+			$tags = array();
+			
+			foreach( $_POST['filter_terms'] as $term => $value ) {
+				$tags[] = urlencode( $term );
+			}
+			
+			$tags = implode( ',', $tags );
+			
+			$redirect_url = add_query_arg( 'bpd_tag', $tags, $redirect_url );
+		}
+		
+		return $redirect_url;
 	}
 }
 
