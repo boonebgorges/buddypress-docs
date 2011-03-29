@@ -46,7 +46,7 @@
 }
 
 .doc-edit-link {
-	margin: 0 0 20px 0;
+	margin: 15px 0 20px 0;
 }
 
 .doc-meta, #doc-meta {
@@ -75,4 +75,10 @@ a.doc-filter-toggle {
 
 p#filter-by-tag {
 	margin-bottom: 0;
+}
+
+/* GROUP ADMIN */
+
+.hidden {
+	display: none;
 }
