@@ -7,8 +7,7 @@
 	<?php while ( have_posts() ) : the_post() ?>
 		<li>
 			<h2><a href="<?php bp_docs_group_doc_permalink() ?>"><?php the_title() ?></a></h2>
-			<?php the_content() ?>
-			<?php the_permalink() ?>
+			<?php the_excerpt() ?>
 		</li>
 	<?php endwhile ?>
 	</ul>
