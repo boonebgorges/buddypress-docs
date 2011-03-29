@@ -33,7 +33,6 @@ class BP_Docs_Query {
 	function __construct() {		
 		$this->item_type = $this->get_item_type();
 		$this->setup_item();
-		$this->setup_terms();
 		$this->current_view = $this->get_current_view();
 		
 		// Get the item slug, if there is one available
@@ -185,15 +184,19 @@ class BP_Docs_Query {
 	 * @package BuddyPress Docs
 	 * @since 1.0
 	 *
+	 * @param str $item_type Defaults to the object's item type
 	 * @return str $view The current view. Core values: edit, single, list, category
 	 */
-	function get_current_view() {
+	function get_current_view( $item_type = false ) {
 		global $bp;
 		
 		$view = '';
 		
+		if ( !$item_type )
+			$item_type = $this->item_type;
+		
 		// First, test to see whether this is a group docs page
-		if ( $this->item_type == 'group' ) {
+		if ( $item_type == 'group' ) {
 			if ( empty( $bp->action_variables[0] ) ) {
 				// An empty $bp->action_variables[0] means that you're looking at a list
 				$view = 'list';
@@ -229,6 +232,9 @@ class BP_Docs_Query {
 	 *
 	 */
 	function build_query() {
+		// Only call this here to reduce database calls on other pages
+		$this->setup_terms();
+		
 		// Get the tax term by id. Todo: Why can't I make this work less stupidly?
 		$term = get_term_by( 'id', $this->term_id, 'bp_docs_associated_item' );
 		
@@ -240,7 +246,7 @@ class BP_Docs_Query {
 		return $args;
 	}
 	
-	function template_decider() {
+	function load_template() {
 		global $bp, $post;
 		
 		$template_path = BP_DOCS_INSTALL_PATH . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'docs' . DIRECTORY_SEPARATOR;
@@ -297,6 +303,8 @@ class BP_Docs_Query {
 	 */
 	function save( $args = false ) {
 		global $bp;
+		
+		$this->setup_terms();
 		
 		$defaults = array(
 			'post_type' => 'bp_doc',
