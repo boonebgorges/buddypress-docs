@@ -21,19 +21,22 @@ class BP_Docs {
 	function __construct() {
 		
 		// Load predefined constants first thing
-		add_action( 'bp_docs_init', array( $this, 'load_constants' ), 2 );
+		add_action( 'bp_docs_init', 	array( $this, 'load_constants' ), 2 );
 		
 		// Set up doc taxonomy
-		add_action( 'init', array( $this, 'load_doc_extras' ) );
+		add_action( 'init', 		array( $this, 'load_doc_extras' ) );
 		
 		// Hooks into the 'init' action to register our WP custom post type and tax
-		add_action( 'init', array( $this, 'register_post_type' ) );
+		add_action( 'init', 		array( $this, 'register_post_type' ) );
 		
 		// Includes necessary files
-		add_action( 'bp_docs_init', array( $this, 'includes' ), 4 );
+		add_action( 'bp_docs_init', 	array( $this, 'includes' ), 4 );
 		
 		// Load the BP integration functions
-		add_action( 'bp_docs_init', array( $this, 'do_integration' ), 6 );
+		add_action( 'bp_docs_init', 	array( $this, 'do_integration' ), 6 );
+		
+		// Enqueue Javascript
+		add_action( 'wp_print_scripts',	array( $this, 'print_scripts' ) );
 
 		// Let plugins know that BP Docs has started loading
 		$this->init_hook();
@@ -221,6 +224,26 @@ class BP_Docs {
 	 */
 	function do_integration() {
 		$this->bp_integration = new BP_Docs_BP_Integration;	
+	}
+	
+	/**
+	 * Loads JavaScript
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 */
+	function print_scripts() {
+		wp_register_script( 'bp-docs-js', plugins_url( 'buddypress-docs/includes/js/bp-docs.js' ), 'jquery' );
+		
+		// Only load our JS on the right sorts of pages. Generous to account for
+		// different item types
+		if ( in_array( BP_DOCS_SLUG, array( bp_current_component(), bp_current_action() ) ) ) {
+			wp_enqueue_script( 'bp-docs-js' );
+			wp_localize_script( 'bp-docs-js', 'bp_docs', array(
+				'addfilters'	=> __( 'Add Filters', 'bp-docs' ),
+				'modifyfilters'	=> __( 'Modify Filters', 'bp-docs' )
+			));
+		}
 	}
 }
 
