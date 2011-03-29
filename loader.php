@@ -11,7 +11,7 @@ Tested up to: WP 3.0.2, BuddyPress 1.2.6
 License: AGPL http://www.fsf.org/licensing/licenses/agpl-3.0.html
 Author: David Cartwright
 Author URI: http://namoo.co.uk
-Site Wide Only: true
+Network: true
 */
 
  
