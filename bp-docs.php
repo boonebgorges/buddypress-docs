@@ -24,7 +24,7 @@ class BP_Docs {
 		add_action( 'bp_docs_init', array( $this, 'load_constants' ), 2 );
 		
 		// Set up doc taxonomy
-		add_action( 'init', array( $this, 'load_post_taxonomies' ) );
+		add_action( 'init', array( $this, 'load_doc_extras' ) );
 		
 		// Hooks into the 'init' action to register our WP custom post type and tax
 		add_action( 'init', array( $this, 'register_post_type' ) );
@@ -108,19 +108,23 @@ class BP_Docs {
 	}	
 	
 	/**
-	 * Loads the file that enables the use of post taxonomies for docs
+	 * Loads the file that enables the use of extras (doc taxonomy, hierarchy, etc)
 	 *
-	 * This is loaded conditionally, so that the use of post taxonomies can be disabled by the
+	 * This is loaded conditionally, so that the use of extras can be disabled by the
 	 * administrator. It is loaded before the bp_docs post type is registered so that we have
 	 * access to the 'taxonomy' argument of register_post_type.
 	 *
 	 * @package BuddyPress Docs
 	 * @since 1.0
 	 */
-	function load_post_taxonomies() {
+	function load_doc_extras() {
 		// Todo: make this conditional with a filter or a constant
 		require_once( BP_DOCS_INSTALL_PATH . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'doc-taxonomy.php' );
 		$this->taxonomy = new BP_Docs_Taxonomy;
+		
+		require_once( BP_DOCS_INSTALL_PATH . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'doc-hierarchy.php' );
+		$this->hierarchy = new BP_Docs_Hierarchy;
+		
 	}
 	
 	/**
