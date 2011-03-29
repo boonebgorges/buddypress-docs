@@ -38,6 +38,10 @@ class BP_Docs_Taxonomy {
 		
 		// Modify the main tax_query in the doc loop
 		add_filter( 'bp_docs_tax_query', 	array( $this, 'modify_tax_query' ) );
+		
+		// Add the Tags column to the docs loop
+		add_filter( 'bp_docs_loop_additional_th', array( $this, 'tags_th' ) );
+		add_filter( 'bp_docs_loop_additional_td', array( $this, 'tags_td' ) );
 	}
 	
 	/**
@@ -204,6 +208,14 @@ class BP_Docs_Taxonomy {
 		do_action( 'bp_docs_taxonomy_save_item_terms', $terms );
 	}
 	
+	/**
+	 * Modifies the tax_query on the doc loop to account for doc tags
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 *
+	 * @return array $terms The item's terms
+	 */	
 	function modify_tax_query( $tax_query ) {
 
 		// Check for the existence tag filters in the request URL
@@ -223,7 +235,46 @@ class BP_Docs_Taxonomy {
 			);
 		}
 		
-		return $tax_query;
+		return apply_filters( 'bp_docs_modify_tax_query_for_tax', $tax_query );
+	}
+
+	/**
+	 * Markup for the Tags <th> on the docs loop
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 */	
+	
+	function tags_th() {
+		?>
+		
+		<th scope="column"><?php _e( 'Tags', 'bpsp' ); ?></th>
+		
+		<?php
+	}
+	
+	/**
+	 * Markup for the Tags <td> on the docs loop
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 */	
+	
+	function tags_td() {
+		$tags 		= wp_get_post_terms( get_the_ID(), 'post_tag' );
+		$tagtext 	= array();
+	
+		foreach( $tags as $tag ) {
+			$tagtext[] = bp_docs_get_tag_link( array( 'tag' => $tag->name ) );
+		}
+		
+		?>
+		
+		<td class="tags-cell">
+			<?php echo implode( ', ', $tagtext ) ?>
+		</td>
+	
+		<?php
 	}
 }
 
