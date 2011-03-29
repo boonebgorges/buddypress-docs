@@ -57,6 +57,9 @@ class BP_Docs_Groups_Integration {
 		
 		// Add group-specific settings to the doc settings box
 		add_filter( 'bp_docs_doc_settings_markup',	array( $this, 'doc_settings_markup' ) );
+		
+		// Filter the activity action for group docs-related activity
+		add_filter( 'bp_docs_activity_action',		array( $this, 'activity_action' ), 10, 5 );
 	}
 	
 	/**
@@ -223,6 +226,14 @@ class BP_Docs_Groups_Integration {
 		return $user_can;
 	}
 	
+	/**
+	 * Creates the markup for the group-specific doc settings
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 *
+	 * @param array $doc_settings Passed along to reduce lookups
+	 */	
 	function doc_settings_markup( $doc_settings ) {
 		// Only add these settings if we're in the group component
 		
@@ -254,6 +265,22 @@ class BP_Docs_Groups_Integration {
 			
 			<?php
 		}
+	}
+	
+	function activity_action( $action, $user_link, $doc_link, $is_new_doc, $query ) {
+		if ( $query->item_type == 'group' ) {
+			$group 		= new BP_Groups_Group( $query->item_id );
+			$group_url	= bp_get_group_permalink( $group );
+			$group_link	= '<a href="' . $group_url . '">' . $group->name . '</a>';
+			
+			if ( $is_new_doc ) {
+				$action = sprintf( __( '%1$s created the doc %2$s in the group %3$s', 'bp-docs' ), $user_link, $doc_link, $group_link );
+			} else {
+				$action = sprintf( __( '%1$s edited the doc %2$s in the group %3$s', 'bp-docs' ), $user_link, $doc_link, $group_link );
+			}
+		}
+		
+		return $action;
 	}
 }
 
