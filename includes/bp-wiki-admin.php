@@ -40,7 +40,7 @@ function bp_wiki_admin() {
 
 					<td>
 
-						<input name="wiki-setting-one" type="text" id="wiki-setting-one" value="<?php echo attribute_escape( $setting_one ); ?>" size="60" />
+						<input name="wiki-setting-one" type="text" id="wiki-setting-one" value="<?php echo esc_attr( $setting_one ); ?>" size="60" />
 
 
 					</td>
@@ -55,7 +55,7 @@ function bp_wiki_admin() {
 					<td>
 
 
-						<input name="wiki-setting-two" type="text" id="wiki-setting-two" value="<?php echo attribute_escape( $setting_two ); ?>" size="60" />
+						<input name="wiki-setting-two" type="text" id="wiki-setting-two" value="<?php echo esc_attr( $setting_two ); ?>" size="60" />
 						
 
 					</td>

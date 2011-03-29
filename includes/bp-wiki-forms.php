@@ -3,7 +3,7 @@
 function bp_wiki_group_page_save_editor() {
 	global $bp;
 
-	if ( $_POST['wiki_page_action'] == 'edit-group-page-save' ) {
+	if ( !empty( $_POST['wiki_page_action'] ) && $_POST['wiki_page_action'] == 'edit-group-page-save' ) {
 
 		$wiki_page_id = $_POST['wiki_page_id'];
 		$wiki_page_content = $_POST['wiki_page_content_box'];
@@ -82,7 +82,7 @@ add_action( 'init', 'bp_wiki_group_page_save_editor' );
 function bp_wiki_group_page_create() {
 	global $bp;
 
-	if ( $_POST['wiki_page_action'] == 'new-group-page-create' ) {
+	if ( !empty( $_POST['wiki_page_action'] ) && $_POST['wiki_page_action'] == 'new-group-page-create' ) {
 
 		$wiki_page_content = $_POST['wiki_page_content_box'];
 		$wiki_page_title = $_POST['wiki-page-title-textbox'];
