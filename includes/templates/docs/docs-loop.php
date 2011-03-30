@@ -15,7 +15,8 @@
 			<th scope="column"><?php _e( 'Author', 'bpsp' ); ?></th>
 			<th scope="column"><?php _e( 'Created', 'bpsp' ); ?></th>
 			<th scope="column"><?php _e( 'Last Edited', 'bpsp' ); ?></th>
-			<th scope="column"><?php _e( 'Tags', 'bpsp' ); ?></th>
+			
+			<?php do_action( 'bp_docs_loop_additional_th' ) ?>
 		</tr>
         </thead>
         
@@ -31,7 +32,7 @@
 			</td>
 			
 			<td class="author-cell">
-				<?php the_author() ?>
+				<a href="<?php echo bp_core_get_user_domain( get_the_author_meta( 'ID' ) ) ?>" title="<?php echo bp_core_get_user_displayname( get_the_author_meta( 'ID' ) ) ?>"><?php echo bp_core_get_user_displayname( get_the_author_meta( 'ID' ) ) ?></a>
 			</td>
 			
 			<td class="date-cell created-date-cell"> 
@@ -42,10 +43,7 @@
 				<?php echo get_the_modified_date() ?>
 			</td>
 			
-			<td class="tags-cell">
-				tags
-			</td>
-			
+			<?php do_action( 'bp_docs_loop_additional_td' ) ?>		
 			
 		</tr>
 	<?php endwhile ?>        
