@@ -1,5 +1,14 @@
 <?php
 /*
+<<<<<<< refs/remotes/trunk
+Plugin Name: BuddyPress Docs
+Plugin URI: http://github.com/boonebgorges/buddypress-docs
+Description: Adds collaborative Docs to BuddyPress
+Version: 1.0-beta-2
+Author: Boone B Gorges
+Author URI: http://boonebgorges.com
+Licence: GPLv3
+=======
 Plugin Name: BuddyPress Wiki Component
 Plugin URI: http://wordpress.org/extend/plugins/bp-wiki/
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=A9NEGJEZR23H4
@@ -11,6 +20,7 @@ Tested up to: WP 3.0.2, BuddyPress 1.2.6
 License: AGPL http://www.fsf.org/licensing/licenses/agpl-3.0.html
 Author: David Cartwright
 Author URI: http://namoo.co.uk
+>>>>>>> HEAD~149
 Network: true
 */
 
