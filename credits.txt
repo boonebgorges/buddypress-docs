@@ -1,4 +1,4 @@
-BuddyPress Docs was developed for the CUNY Academic Commons http://commons.gc.cuny.edu Many thanks to the CAC team for their ongoing support for open-source software like this.
+ BuddyPress Docs was developed for the CUNY Academic Commons http://commons.gc.cuny.edu Many thanks to the CAC team for their ongoing support for open-source software like this.
 
 The original goal of BuddyPress Docs was to create "private wiki space" for BuddyPress. I'd planned to modify David Cartwright's BP Group Wiki plugin for that purpose (in fact, you can see that I committed the entire thing to the buddypress-docs git repo at the very beginning). In the end, I haven't used any code from David's plugin, but I would like to thank him for the original inspiration.
 
