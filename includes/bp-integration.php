@@ -79,7 +79,7 @@ class BP_Docs_BP_Integration {
 		
 		if ( !empty( $this->query->current_view ) && ( 'edit' == $this->query->current_view || 'create' == $this->query->current_view ) ) {
 			require_once( ABSPATH . '/wp-admin/includes/post.php' );
-			wp_tiny_mce( false, array( 'editor_selector' => 'tinyeditor' ) );
+			wp_tiny_mce( );
 		}
 	}
 }
