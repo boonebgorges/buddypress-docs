@@ -155,6 +155,17 @@ class BP_Docs_BP_Integration {
 		$this->includes_url = plugins_url() . '/buddypress-docs/includes/';
 	}
 	
+	/**
+	 * Filters the comment_post_direct URL so that the user gets sent back to the true
+	 * comment URL after posting
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 *
+	 * @param str $location The original location, created by WP
+	 * @param obj $comment The new comment object
+	 * @return str $location The correct location
+	 */
 	function comment_post_redirect( $location, $comment ) {
 		// Check to see whether this is a BP Doc
 		$post = get_post( $comment->comment_post_ID );
