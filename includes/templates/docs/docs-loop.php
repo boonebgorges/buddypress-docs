@@ -64,4 +64,8 @@
         </tbody>
         
 	</table>
+<?php else: ?>
+
+	<p class="no-docs"><?php printf( __( 'There are no docs for this view. Why not <a href="%s">create one</a>?', 'bp-docs' ), bp_docs_get_item_docs_link() . BP_DOCS_CREATE_SLUG ) ?>
+
 <?php endif ?>
