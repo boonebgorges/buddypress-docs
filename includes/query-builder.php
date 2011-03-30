@@ -36,7 +36,7 @@ class BP_Docs_Query {
 		$this->setup_terms();
 		$this->current_view = $this->get_current_view();
 		
-		$this->template = $this->template_decider();
+		
 	}
 
 	/**
@@ -225,8 +225,10 @@ class BP_Docs_Query {
 		
 		switch ( $this->current_view ) {
 			case 'create' :
-				// Make sure the user has permission to create
-				// Then load the create template
+				// Todo: Make sure the user has permission to create
+				
+				$template = $template_path . 'create-doc.php';
+				break;
 			case 'list' :
 				$args = $this->build_query();
 				
@@ -265,6 +267,10 @@ class BP_Docs_Query {
 		}
 		
 		include( apply_filters( 'bp_docs_template', $template, $this ) );
+	}
+
+	function save() {
+		
 	}
 
 
