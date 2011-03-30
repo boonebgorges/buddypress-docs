@@ -28,6 +28,7 @@ class BP_Docs_BP_Integration {
 		add_action( 'wp', array( $this, 'catch_form_submits' ), 1 );
 		
 		add_action( 'wp_print_scripts', array( $this, 'enqueue_scripts' ) );
+		add_action( 'wp_print_styles', array( $this, 'enqueue_styles' ) );
 	}
 	
 	function do_query() {
@@ -79,8 +80,12 @@ class BP_Docs_BP_Integration {
 		
 		if ( !empty( $this->query->current_view ) && ( 'edit' == $this->query->current_view || 'create' == $this->query->current_view ) ) {
 			require_once( ABSPATH . '/wp-admin/includes/post.php' );
-			wp_tiny_mce( );
+			wp_tiny_mce( false, array( 'theme' => 'default' ) );
 		}
+	}
+	
+	function enqueue_styles() {
+		wp_enqueue_style('thickbox');
 	}
 }
 

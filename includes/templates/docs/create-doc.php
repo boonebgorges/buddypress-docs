@@ -7,7 +7,7 @@
 	<input name="title" id="doc-title" value="" /> 
 	
 	<br />
-	<?php the_editor(  ); ?>
+	<?php the_editor( false ); ?>
 	
 	
 	<input type="submit" value="<?php _e( 'Save', 'bp-docs' ) ?>" name="doc-edit-submit" />
