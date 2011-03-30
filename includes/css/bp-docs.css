@@ -90,6 +90,60 @@ div.docs-info-header {
 	margin-bottom: 10px;
 }
 
+/* TOGGLES */
+
+.toggle-switch {
+	display: block;
+	font-weight: bold;
+	font-size: 1.1em;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+	background: #aaa;
+	border: 1px solid #333;
+	padding: 3px 16px;
+	margin: 16px 0 0;
+}
+	.toggle-switch.active-switch {		
+		-moz-border-radius-bottomleft: 10px;
+		-webkit-border-bottom-left-radius: 10px;
+		-moz-border-radius-bottomright: 10px;
+		-webkit-border-bottom-right-radius: 10px;
+		border-radius: 3px 3px 0px 0px;
+	}
+	.toggle-switch a {
+		text-decoration: none;
+		display: block;
+		width: 100%;
+		height: 100%;
+		color: #fff;
+	}
+	.standard-form label.toggle-switch {
+		margin: 16px 0 0;
+	}
+
+.toggle-content{
+	-moz-border-radius-bottomleft: 3px;
+	-webkit-border-bottom-left-radius: 3px;
+	-moz-border-radius-bottomright: 3px;
+	-webkit-border-bottom-right-radius: 3px;
+	border: 1px solid #333;
+	border-top: none;
+}
+
+span.plus-or-minus {
+	font-size: 1.3em;
+	font-weight: normal;
+	display: block;
+	float: left;
+	width: 20px;
+}
+
+td.desc-column {
+	width: 300px;
+	padding: 0px 18px 12px;
+}
+
 p.toggle-switch {
 	margin-bottom: 0;
 }

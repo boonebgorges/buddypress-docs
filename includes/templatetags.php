@@ -406,10 +406,11 @@ function bp_docs_inline_toggle_js() {
 			var tsid = jQuery(ts).attr('id').split('-');
 			var type = tsid[0];
 			
-			/* Replace the static toggle text with a link */
+			/* Append the static toggle text with a '+' sign and linkify */
 			var toggleid = type + '-toggle-link';
+			var plus = '<span class="plus-or-minus">+</span>';
 			
-			jQuery(ts).html('<a href="#" id="' + toggleid + '" class="toggle-link">' + jQuery(ts).html() + ' +</a>');
+			jQuery(ts).html('<a href="#" id="' + toggleid + '" class="toggle-link">' + plus + jQuery(ts).html() + '</a>');
 			
 			/* Hide the toggleable area */
 			jQuery(this).children('.toggle-content').toggle();	
