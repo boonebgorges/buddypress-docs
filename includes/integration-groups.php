@@ -212,6 +212,10 @@ class BP_Docs_Groups_Integration {
 			$user_can = true;
 		} else {
 			switch ( $doc_settings[$action] ) {
+				case 'anyone' :
+					$user_can = true;
+					break;
+					
 				case 'creator' :
 					if ( $post->post_author == $user_id )
 						$user_can = true;
@@ -222,6 +226,7 @@ class BP_Docs_Groups_Integration {
 						$user_can = true;
 					break;
 				
+				case 'no-one' :
 				default :
 					break; // In other words, other types return false
 			}
@@ -247,8 +252,19 @@ class BP_Docs_Groups_Integration {
 		$is_group_component = function_exists( 'bp_is_current_component' ) ? bp_is_current_component( 'groups' ) : $bp->current_component == $bp->groups->slug;
 		
 		if ( $is_group_component ) {
-			$edit = !empty( $doc_settings['edit'] ) ? $doc_settings['edit'] : 'group-members';
-			$manage = !empty( $doc_settings['manage'] ) ? $doc_settings['manage'] : 'creator';
+			// Get the current values
+			$edit 		= !empty( $doc_settings['edit'] ) ? $doc_settings['edit'] : 'group-members';
+			
+			$post_comments 	= !empty( $doc_settings['post_comments'] ) ? $doc_settings['post_comments'] : 'group-members';
+			
+			// Read settings have a different default value for public groups
+			if ( !empty( $doc_settings['read_comments'] ) ) {
+				$read_comments = $doc_settings['read_comments'];
+			} else {
+				$read_comments = bp_group_is_visible() ? 'anyone' : 'group-members';
+			}
+			
+			$manage 	= !empty( $doc_settings['manage'] ) ? $doc_settings['manage'] : 'creator';
 			
 			// Set the text of the 'creator only' label
 			if ( !empty( $bp->bp_docs->current_post->post_author ) && $bp->bp_docs->current_post->post_author != bp_loggedin_user_id() ) {
@@ -258,14 +274,43 @@ class BP_Docs_Groups_Integration {
 			}
 		
 			?>
-			<label for="settings[edit]"><?php _e( 'Allow the following members to edit this doc:', 'bp-docs' ) ?></label>
+			
+			<?php /* EDITING */ ?>
+			<label for="settings[edit]"><?php _e( 'Who can edit this doc?', 'bp-docs' ) ?></label>
+			
+			<input name="settings[edit]" type="radio" value="group-members" <?php checked( $edit, 'group-members' ) ?>/> <?php _e( 'All members of the group', 'bp-docs' ) ?><br />
 			
 			<input name="settings[edit]" type="radio" value="creator" <?php checked( $edit, 'creator' ) ?>/> <?php echo esc_html( $creator_text ) ?><br />
-			<input name="settings[edit]" type="radio" value="group-members" <?php checked( $edit, 'group-members' ) ?>/> <?php _e( 'All members of the group', 'bp-docs' ) ?><br />
 			
 			<?php if ( bp_group_is_admin() || bp_group_is_mod() ) : ?>
 				<input name="settings[edit]" type="radio" value="admins-mods" <?php checked( $edit, 'admins-mods' ) ?>/> <?php _e( 'Only admins and mods of this group', 'bp-docs' ) ?><br />
 			<?php endif ?>
+			
+			<?php /* POSTING COMMENTS */ ?>
+			<label for="settings[post_comments]"><?php _e( 'Who can <em>post</em> comments on this doc?', 'bp-docs' ) ?></label>
+			
+			<input name="settings[post_comments]" type="radio" value="group-members" <?php checked( $post_comments, 'group-members' ) ?>/> <?php _e( 'All members of the group', 'bp-docs' ) ?><br />
+			
+			<?php if ( bp_group_is_admin() || bp_group_is_mod() ) : ?>
+				<input name="settings[post_comments]" type="radio" value="admins-mods" <?php checked( $post_comments, 'admins-mods' ) ?>/> <?php _e( 'Only admins and mods of this group', 'bp-docs' ) ?><br />
+			<?php endif ?>
+			
+			<input name="settings[post_comments]" type="radio" value="no-one" <?php checked( $post_comments, 'no-one' ) ?>/> <?php _e( 'No one', 'bp-docs' ) ?><br />
+			
+			<?php /* READING COMMENTS */ ?>
+			<label for="settings[read_comments]"><?php _e( 'Who can <em>read</em> comments on this doc?', 'bp-docs' ) ?></label>
+			
+			<?php if ( bp_docs_current_group_is_public() ) : ?>				
+				<input name="settings[read_comments]" type="radio" value="anyone" <?php checked( $read_comments, 'anyone' ) ?>/> <?php _e( 'Anyone', 'bp-docs' ) ?><br />
+			<?php endif ?>
+			
+			<input name="settings[read_comments]" type="radio" value="group-members" <?php checked( $read_comments, 'group-members' ) ?>/> <?php _e( 'All members of the group', 'bp-docs' ) ?><br />
+			
+			<?php if ( bp_group_is_admin() || bp_group_is_mod() ) : ?>
+				<input name="settings[read_comments]" type="radio" value="admins-mods" <?php checked( $read_comments, 'admins-mods' ) ?>/> <?php _e( 'Only admins and mods of this group', 'bp-docs' ) ?><br />
+			<?php endif ?>
+			
+			<input name="settings[read_comments]" type="radio" value="no-one" <?php checked( $read_comments, 'no-one' ) ?>/> <?php _e( 'No one', 'bp-docs' ) ?><br />
 			
 			<?php /* Not sure this is necessary, so leaving out for the moment */ ?>
 			<?php /*
@@ -629,6 +674,5 @@ function bp_docs_group_doc_permalink() {
 			
 		return apply_filters( 'bp_docs_get_doc_permalink', $group_permalink . $bp->bp_docs->slug . '/' . $doc_slug );
 	}
-
 
 ?>
