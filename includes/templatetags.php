@@ -146,6 +146,24 @@ function bp_docs_get_current_filters() {
 	return apply_filters( 'bp_docs_get_current_filters', $filters );
 }
 
+function bp_docs_doc_link( $doc_id ) {
+	echo bp_docs_get_doc_link( $doc_id );
+}
+	function bp_docs_get_doc_link( $doc_id ) {
+		if ( empty( $doc_id ) )
+			return false;
+		
+		// Get the associated item
+		$ass_item 	= wp_get_post_terms( $doc_id, 'bp_docs_associated_item' );
+
+		// Get the associated item's doc link
+		// Default to 'group' for now. Todo: abstract (will take another query for tax parent)
+		$item_docs_link	= bp_docs_get_item_docs_link( array( 'item_id' => $ass_item[0]->name, 'item_type' => 'group' ) );
+		
+		$post		= get_post( $doc_id );
+		
+		return apply_filters( 'bp_docs_get_doc_link', $item_docs_link . $post->post_name );
+	}
 
 /**
  * Echoes the output of bp_docs_get_item_docs_link()
@@ -175,14 +193,14 @@ function bp_docs_item_docs_link() {
 	
 		$r = wp_parse_args( $args, $defaults );
 		extract( $r, EXTR_SKIP );
-	
+
 		if ( !$item_id || !$item_type )
 			return false;
 			
 		switch ( $item_type ) {
 			case 'group' :
 				if ( !$group = $bp->groups->current_group )
-					$group = new BP_Groups_Group;
+					$group = new BP_Groups_Group( $item_id );
 				
 				$base_url = bp_get_group_permalink( $group );
 				break;
