@@ -36,5 +36,10 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.0-beta-2 =
+* Improvements to the simultaneous edit lock mechanism
+* Streamlining of Doc Edit CSS to fit better with custom themes
+* Improvements to the way that docs tags are handled on the back end
+
 = 1.0-beta =
 * Initial public release
