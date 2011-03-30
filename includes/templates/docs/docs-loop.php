@@ -1,3 +1,6 @@
+
+<?php include( apply_filters( 'bp_docs_header_template', $template_path . 'docs-header.php' ) ) ?>
+
 <?php if ( have_posts() ) : ?>
 
 	<ul>

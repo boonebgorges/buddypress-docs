@@ -191,7 +191,12 @@ class BP_Docs_Query {
 			}
 		}
 		
-		return apply_filters( 'bp_docs_get_current_view', $view );
+		$view = apply_filters( 'bp_docs_get_current_view', $view );
+	
+		// Stuffing into the $bp global for later use. Cheating, I know.
+		$bp->bp_docs->current_view = $view;
+	
+		return $view;
 	}
 	
 	/**
@@ -214,7 +219,7 @@ class BP_Docs_Query {
 	}
 	
 	function template_decider() {
-		global $bp;
+		global $bp, $post;
 		
 		$template_path = BP_DOCS_INSTALL_PATH . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'docs' . DIRECTORY_SEPARATOR;
 		
