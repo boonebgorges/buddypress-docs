@@ -426,7 +426,9 @@ function bp_docs_inline_toggle_js() {
  * @since 1.0
  */
 function bp_docs_doc_settings_markup() {
-	$doc_settings = get_post_meta( get_the_ID(), 'bp_docs_settings', true );
+	$doc = bp_docs_get_current_doc();
+	
+	$doc_settings = get_post_meta( $doc->ID, 'bp_docs_settings', true );
 	
 	// For now, I'll hand off the creation of settings to individual integration pieces
 	do_action( 'bp_docs_doc_settings_markup', $doc_settings );

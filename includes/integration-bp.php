@@ -520,8 +520,7 @@ class BP_Docs_BP_Integration {
 			wp_enqueue_script( 'bp-docs-js' );
 			wp_enqueue_script( 'comment-reply' );
 			wp_localize_script( 'bp-docs-js', 'bp_docs', array(
-				'addfilters'	=> __( 'Add Filters', 'bp-docs' ),
-				'modifyfilters'	=> __( 'Modify Filters', 'bp-docs' )
+				'still_working'		=> __( 'Still working?', 'bp-docs' )
 			) );
 		}
 		
@@ -535,6 +534,9 @@ class BP_Docs_BP_Integration {
 				add_thickbox();
 			wp_admin_css();
 			wp_enqueue_script( 'utils' );
+			
+			wp_register_script( 'bp-docs-idle-js', plugins_url( 'buddypress-docs/includes/js/idle.js' ), array( 'jquery', 'bp-docs-js' ) );
+			wp_enqueue_script( 'bp-docs-idle-js' );
 		}
 	}
 	
