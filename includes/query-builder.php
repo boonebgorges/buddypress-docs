@@ -6,6 +6,9 @@ class BP_Docs_Query {
 	var $item_name;
 	var $item_slug;
 	
+	var $doc_id;
+	var $doc_slug;
+	
 	var $current_view;
 	
 	var $term_id;
@@ -207,10 +210,11 @@ class BP_Docs_Query {
 			'bp_docs_associated_item' => $term->slug
 		);
 		
-		query_posts( $args );
+		return $args;
 	}
 	
 	function template_decider() {
+		global $bp;
 		
 		$template_path = BP_DOCS_INSTALL_PATH . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'docs' . DIRECTORY_SEPARATOR;
 		
@@ -219,7 +223,9 @@ class BP_Docs_Query {
 				// Make sure the user has permission to create
 				// Then load the create template
 			case 'list' :
-				$this->build_query();
+				$args = $this->build_query();
+				
+				query_posts( $args );
 				$template = $template_path . 'docs-loop.php';				
 				break;
 			case 'category' :
@@ -230,17 +236,30 @@ class BP_Docs_Query {
 				break;
 			case 'single' :
 			case 'edit' :
-				// For both:
-				// Check to make sure the post exists
-				// If not, redirect back to list view with error
-				// Otherwise, get args based on post ID
+				// First, find the slug
+				if ( $this->item_type == 'group' )
+					$slug = $bp->action_variables[0];
 				
-				// Then load either the single or the edit template
+				$this->doc_slug = apply_filters( 'bp_docs_this_doc_slug', $slug, $this );
+				
+				$args = $this->build_query();
+				
+				// Add a 'name' argument so that we only get the specific post
+				$args['name'] = $this->doc_slug;
+				
+				query_posts( $args );
+				
+				if ( $this->current_view == 'single' )
+					$template = $template_path . 'single-doc.php';	
+				else
+					$template = $template_path . 'edit-doc.php';
+				
+				// Todo: Maybe some sort of error if there is no edit permission?
 	
 				break;
 		}
 		
-		include( $template );
+		include( apply_filters( 'bp_docs_template', $template, $this ) );
 	}
 
 

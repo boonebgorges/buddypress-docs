@@ -141,7 +141,7 @@ class BP_Docs {
 			'supports' => array( 'title', 'editor', 'revisions', 'excerpt' ),
 			'query_var' => true,
 			//'rewrite' => false
-			'rewrite' => array( "slug" => "doc", 'with_front' => false ), // Permalinks format
+			'rewrite' => array( "slug" => "docs", 'with_front' => false ), // Permalinks format
 		));
 		
 		// Define the labels to be used by the taxonomy bp_docs_associated_item
