@@ -362,6 +362,10 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
 		} else {
 			// Sometimes the post hasn't been loaded early enough, groan
 			$posts = get_posts( array( 'post_type' => $bp->bp_docs->post_type_name, 'name' => $bp->bp_docs->doc_slug ) );
+			
+			if ( empty( $posts ) )
+				return false;
+			
 			$bp->bp_docs->current_post = $posts[0];
 			$doc_id = $posts[0]->ID;
 		}
