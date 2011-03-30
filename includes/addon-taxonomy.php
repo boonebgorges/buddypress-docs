@@ -209,7 +209,9 @@ class BP_Docs_Taxonomy {
 	 			$tagtext[] = bp_docs_get_tag_link( array( 'tag' => $tag->name ) );
 	 		}	 		
 	 		
-	 		echo sprintf( __( 'Tags: %s', 'bp-docs' ), implode( ', ', $tagtext ) ); 
+	 		$html = '<p>' . sprintf( __( 'Tags: %s', 'bp-docs' ), implode( ', ', $tagtext ) ) . '</p>'; 
+	 		
+	 		echo apply_filters( 'bp_docs_taxonomy_show_terms', $html, $tagtext );
 	 	}
 	}
 	
