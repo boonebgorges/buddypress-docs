@@ -71,11 +71,25 @@ class BP_Docs {
 	 * @since 1.0
 	 */	
 	function load_constants() {
+		// You should never really need to override this
 		if ( !defined( 'BP_DOCS_INSTALL_PATH' ) )
 			define( 'BP_DOCS_INSTALL_PATH', dirname(__FILE__) );
 		
+		// The main slug
 		if ( !defined( 'BP_DOCS_SLUG' ) )
 			define( 'BP_DOCS_SLUG', 'docs' );
+		
+		// The slug used when viewing a list of an item's docs
+		if ( !defined( 'BP_DOCS_LIST_SLUG' ) )
+			define( 'BP_DOCS_LIST_SLUG', 'list' );
+		
+		// The slug used when editing a single item
+		if ( !defined( 'BP_DOCS_EDIT_SLUG' ) )
+			define( 'BP_DOCS_EDIT_SLUG', 'edit' );
+		
+		// The slug used when viewing a single item
+		if ( !defined( 'BP_DOCS_SINGLE_SLUG' ) )
+			define( 'BP_DOCS_SINGLE_SLUG', 'single' );
 	}	
 	
 	/**
