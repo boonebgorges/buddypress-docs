@@ -37,6 +37,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 == Changelog ==
 
 = 1.0 =
+* UI improvements on doc meta sliders
 * Doc children are now listed in single doc view
 * Improved support for TinyMCE loading on custom themes
 * More consistent tab highlighting in group subnav
