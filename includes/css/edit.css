@@ -1,28 +1,16 @@
-.tagsdiv {
-	width: 250px;
+/* META SLIDERS */
+.doc-meta-box {
+	width: 100%;
 }
 
 .tagsdiv .the-tags {
-	width: 220px;
-}
-
-p.toggle-switch {
-	display: block;
-	font-weight: bold;
-	margin: 15px 0 5px 0;
-}
-
-.doc-meta-box {
-	width: 250px;
-	float: left;
+	margin: 10px 0;
+	width: 90%;
+	height: 4em;
 }
 
 #doc-submit-options {
 	margin-top: 30px;
-}
-
-#doc-meta .tagsdiv .the-tags {
-	margin: 0;
 }
 
 #doc-content-textarea {

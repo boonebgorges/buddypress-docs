@@ -1,20 +1,39 @@
 jQuery(document).ready(function($){
 	/* When a toggle is clicked, show the toggle-content */
 	$('.toggle-link').click(function(){
-		// Swap the +/- in the link
-		var c = $(this).html();
-		var pom = c.substr( c.length - 1, 1 );
+		// Traverse for some items
+		var toggleable = $(this).parents('.toggleable');
+		var tc = $(toggleable).find('.toggle-content');
+		var ts = $(toggleable).find('.toggle-switch');
+		var pom = $(this).find('.plus-or-minus');
 		
-		if ( pom == '+' ) {
-			var mop = '-';
-		} else {
-			var mop = '+';
+		// Toggle the active-content class
+		if($(tc).hasClass('active-content')){
+			$(tc).removeClass('active-content');
+		}else{
+			$(tc).addClass('active-content');
 		}
 		
-		$(this).html( c.substr( 0, c.length - 1 ) + mop );
+		// Toggle the active-switch class
+		if($(ts).hasClass('active-switch')){
+			$(ts).removeClass('active-switch');
+		}else{
+			$(ts).addClass('active-switch');
+		}
 		
-		// Finally, slide the tags up or down
-		$(this).parent().parent().children('.toggle-content').slideToggle(400);
+		// Slide the tags up or down
+		$(tc).slideToggle(400, function(){
+			// Swap the +/- in the link
+			var c = $(pom).html();
+			
+			if ( c == '+' ) {
+				var mop = '-';
+			} else {
+				var mop = '+';
+			}
+			
+			$(pom).html(mop);
+		});
 		
 		return false;
 	});

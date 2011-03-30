@@ -241,6 +241,8 @@ class BP_Docs_Groups_Integration {
 	/**
 	 * Creates the markup for the group-specific doc settings
 	 *
+	 * In the future I'll try to get the markup out of here. Sorry, themers.
+	 *
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
@@ -279,54 +281,59 @@ class BP_Docs_Groups_Integration {
 			?>
 			
 			<?php /* EDITING */ ?>
-			<label for="settings[edit]"><?php _e( 'Who can edit this doc?', 'bp-docs' ) ?></label>
+			<tr>
+				<td class="desc-column">
+					<label for="settings[edit]"><?php _e( 'Who can edit this doc?', 'bp-docs' ) ?></label>
+				</td>
+				
+				<td class="content-column">
+					<input name="settings[edit]" type="radio" value="group-members" <?php checked( $edit, 'group-members' ) ?>/> <?php _e( 'All members of the group', 'bp-docs' ) ?><br />
 			
-			<input name="settings[edit]" type="radio" value="group-members" <?php checked( $edit, 'group-members' ) ?>/> <?php _e( 'All members of the group', 'bp-docs' ) ?><br />
+					<input name="settings[edit]" type="radio" value="creator" <?php checked( $edit, 'creator' ) ?>/> <?php echo esc_html( $creator_text ) ?><br />
 			
-			<input name="settings[edit]" type="radio" value="creator" <?php checked( $edit, 'creator' ) ?>/> <?php echo esc_html( $creator_text ) ?><br />
-			
-			<?php if ( bp_group_is_admin() || bp_group_is_mod() ) : ?>
-				<input name="settings[edit]" type="radio" value="admins-mods" <?php checked( $edit, 'admins-mods' ) ?>/> <?php _e( 'Only admins and mods of this group', 'bp-docs' ) ?><br />
-			<?php endif ?>
+					<?php if ( bp_group_is_admin() || bp_group_is_mod() ) : ?>
+						<input name="settings[edit]" type="radio" value="admins-mods" <?php checked( $edit, 'admins-mods' ) ?>/> <?php _e( 'Only admins and mods of this group', 'bp-docs' ) ?><br />
+					<?php endif ?>
+				</td>
+			</tr>
 			
 			<?php /* POSTING COMMENTS */ ?>
-			<label for="settings[post_comments]"><?php _e( 'Who can <em>post</em> comments on this doc?', 'bp-docs' ) ?></label>
-			
-			<input name="settings[post_comments]" type="radio" value="group-members" <?php checked( $post_comments, 'group-members' ) ?>/> <?php _e( 'All members of the group', 'bp-docs' ) ?><br />
-			
-			<?php if ( bp_group_is_admin() || bp_group_is_mod() ) : ?>
-				<input name="settings[post_comments]" type="radio" value="admins-mods" <?php checked( $post_comments, 'admins-mods' ) ?>/> <?php _e( 'Only admins and mods of this group', 'bp-docs' ) ?><br />
-			<?php endif ?>
-			
-			<input name="settings[post_comments]" type="radio" value="no-one" <?php checked( $post_comments, 'no-one' ) ?>/> <?php _e( 'No one', 'bp-docs' ) ?><br />
+			<tr>
+				<td class="desc-column">
+					<label for="settings[post_comments]"><?php _e( 'Who can <em>post</em> comments on this doc?', 'bp-docs' ) ?></label>
+				</td>
+				
+				<td class="content-column">
+					<input name="settings[post_comments]" type="radio" value="group-members" <?php checked( $post_comments, 'group-members' ) ?>/> <?php _e( 'All members of the group', 'bp-docs' ) ?><br />
+					
+					<?php if ( bp_group_is_admin() || bp_group_is_mod() ) : ?>
+						<input name="settings[post_comments]" type="radio" value="admins-mods" <?php checked( $post_comments, 'admins-mods' ) ?>/> <?php _e( 'Only admins and mods of this group', 'bp-docs' ) ?><br />
+					<?php endif ?>
+					
+					<input name="settings[post_comments]" type="radio" value="no-one" <?php checked( $post_comments, 'no-one' ) ?>/> <?php _e( 'No one', 'bp-docs' ) ?><br />
+				</td>
+			</tr>
 			
 			<?php /* READING COMMENTS */ ?>
-			<label for="settings[read_comments]"><?php _e( 'Who can <em>read</em> comments on this doc?', 'bp-docs' ) ?></label>
-			
-			<?php if ( bp_docs_current_group_is_public() ) : ?>				
-				<input name="settings[read_comments]" type="radio" value="anyone" <?php checked( $read_comments, 'anyone' ) ?>/> <?php _e( 'Anyone', 'bp-docs' ) ?><br />
-			<?php endif ?>
-			
-			<input name="settings[read_comments]" type="radio" value="group-members" <?php checked( $read_comments, 'group-members' ) ?>/> <?php _e( 'All members of the group', 'bp-docs' ) ?><br />
-			
-			<?php if ( bp_group_is_admin() || bp_group_is_mod() ) : ?>
-				<input name="settings[read_comments]" type="radio" value="admins-mods" <?php checked( $read_comments, 'admins-mods' ) ?>/> <?php _e( 'Only admins and mods of this group', 'bp-docs' ) ?><br />
-			<?php endif ?>
-			
-			<input name="settings[read_comments]" type="radio" value="no-one" <?php checked( $read_comments, 'no-one' ) ?>/> <?php _e( 'No one', 'bp-docs' ) ?><br />
-			
-			<?php /* Not sure this is necessary, so leaving out for the moment */ ?>
-			<?php /*
-			
-			<label for="settings[manage]"><?php _e( 'Allow the following members to manage this doc:', 'bp-docs' ) ?></label>
-			
-			<input name="settings[manage]" type="radio" value="me" <?php checked( $manage, 'creator' ) ?>/> <?php _e( 'Just me', 'bp-docs' ) ?><br />
-			<input name="settings[manage]" type="radio" value="group-members" <?php checked( $manage, 'group-members' ) ?>/> <?php _e( 'All members of the group', 'bp-docs' ) ?><br />
-			<span class="description"><?php _e( '"Managing" users can change doc settings and delete the doc.', 'bp-docs' ) ?></span><br /><br />
-			
-			<span class="description"><?php _e( '<strong>Note:</strong> Group admins and mods, as well as site administrators, can edit and manage docs regardless of settings.', 'bp-docs' ) ?></span>
-			
-			*/ ?>
+			<tr>
+				<td class="desc-column">
+					<label for="settings[read_comments]"><?php _e( 'Who can <em>read</em> comments on this doc?', 'bp-docs' ) ?></label>
+				</td>
+				
+				<td class="content-column">
+					<?php if ( bp_docs_current_group_is_public() ) : ?>				
+						<input name="settings[read_comments]" type="radio" value="anyone" <?php checked( $read_comments, 'anyone' ) ?>/> <?php _e( 'Anyone', 'bp-docs' ) ?><br />
+					<?php endif ?>
+					
+					<input name="settings[read_comments]" type="radio" value="group-members" <?php checked( $read_comments, 'group-members' ) ?>/> <?php _e( 'All members of the group', 'bp-docs' ) ?><br />
+					
+					<?php if ( bp_group_is_admin() || bp_group_is_mod() ) : ?>
+						<input name="settings[read_comments]" type="radio" value="admins-mods" <?php checked( $read_comments, 'admins-mods' ) ?>/> <?php _e( 'Only admins and mods of this group', 'bp-docs' ) ?><br />
+					<?php endif ?>
+					
+					<input name="settings[read_comments]" type="radio" value="no-one" <?php checked( $read_comments, 'no-one' ) ?>/> <?php _e( 'No one', 'bp-docs' ) ?><br />
+				</td>
+			</tr>
 			
 			<?php
 		}

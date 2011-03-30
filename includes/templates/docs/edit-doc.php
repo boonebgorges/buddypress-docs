@@ -46,16 +46,44 @@ wp_tiny_mce();
         
         <div id="doc-meta">
         	<div id="doc-tax" class="doc-meta-box">
-			<?php bp_docs_post_tags_meta_box();
-			/* bp_docs_post_categories_meta_box(); */ ?>
+			<div class="toggleable">
+				<p id="tags-toggle-edit" class="toggle-switch"><?php _e( 'Tags', 'bp-docs' ) ?></p>
+				
+				<div class="toggle-content">
+					<table class="toggle-table" id="toggle-table-tags">
+						<tr>
+							<td class="desc-column">
+								<label for="bp_docs_tag"><?php _e( 'Tags are words or phrases that help to describe and organize your Docs.', 'bp-docs' ) ?></label>
+								<span class="description"><?php _e( 'Separate tags with commas (for example: <em>orchestra, snare drum, piccolo, Brahms</em>)', 'bp-docs' ) ?></span>
+							</td>
+							
+							<td>
+								<?php bp_docs_post_tags_meta_box() ?>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
         	</div>
 		
 		<div id="doc-parent" class="doc-meta-box">
 			<div class="toggleable">
-				<label class="toggle-switch" id="parent-toggle" for="parent_id"><?php _e( 'Parent', 'bp-docs' ) ?></label>
+				<p class="toggle-switch" id="parent-toggle"><?php _e( 'Parent', 'bp-docs' ) ?></p>
 	
 				<div class="toggle-content">
-					<?php bp_docs_edit_parent_dropdown() ?>
+					<table class="toggle-table" id="toggle-table-parent">
+						<tr>
+							<td class="desc-column">
+								<label for="parent_id"><?php _e( 'Select a parent for this Doc.', 'bp-docs' ) ?></label>
+								
+								<span class="description"><?php _e( '(Optional) Assigning a parent Doc means that a link to the parent will appear at the bottom of this Doc, and a link to this Doc will appear at the bottom of the parent.', 'bp-docs' ) ?></span> 
+							</td>
+							
+							<td class="content-column">							
+								<?php bp_docs_edit_parent_dropdown() ?>
+							</td>
+						</tr>
+					</table>
 				</div>
 			</div>
 		</div>
@@ -66,7 +94,9 @@ wp_tiny_mce();
 					<p class="toggle-switch" id="settings-toggle"><?php _e( 'Settings', 'bp-docs' ) ?></p>
 		
 					<div class="toggle-content">
-						<?php bp_docs_doc_settings_markup() ?>
+						<table class="toggle-table" id="toggle-table-settings">
+							<?php bp_docs_doc_settings_markup() ?>
+						</table>
 					</div>
 				</div>
 			</div>
