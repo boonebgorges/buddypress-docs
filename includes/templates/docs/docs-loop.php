@@ -2,6 +2,13 @@
 <?php include( apply_filters( 'bp_docs_header_template', $template_path . 'docs-header.php' ) ) ?>
 
 <div class="docs-info-header">
+	<div class="doc-search">
+		<form action="" method="get">
+			<input name="s" value="<?php the_search_query() ?>">
+			<input name="search_submit" type="submit" value="<?php _e( 'Search', 'bp-docs' ) ?>" />
+		</form>
+	</div>
+
 	<?php bp_docs_info_header() ?>
 </div>
 
@@ -65,12 +72,6 @@
         
 	</table>
 	
-	<div class="doc-search">
-		<form action="" method="get">
-			<input name="s" value="<?php the_search_query() ?>">
-			<input name="search_submit" type="submit" value="<?php _e( 'Search', 'bp-docs' ) ?>" />
-		</form>
-	</div>
 <?php else: ?>
 
 	<p class="no-docs"><?php printf( __( 'There are no docs for this view. Why not <a href="%s">create one</a>?', 'bp-docs' ), bp_docs_get_item_docs_link() . BP_DOCS_CREATE_SLUG ) ?>

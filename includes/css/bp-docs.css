@@ -9,6 +9,12 @@
 	margin-bottom: 15px;
 }
 
+.doc-search {
+	float: right;
+	width: 250px;
+	text-align: right;
+}
+
 .docs-filter-tags {
 	width: 100%; /* At the moment there is only one filter box, so let's make it wide */
 }
@@ -81,8 +87,4 @@ p#filter-by-tag {
 
 div.hidden {
 	display: none;
-}
-
-#group-doc-options {
-	
 }
