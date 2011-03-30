@@ -1,6 +1,9 @@
 <?php
 
 class BP_Docs_Query {
+	var $post_type_name;
+	var $associated_item_tax_name;
+	
 	var $item_type;
 	var $item_id;
 	var $item_name;
@@ -31,9 +34,14 @@ class BP_Docs_Query {
 	 * @since 1.0
 	 */	
 	function __construct() {
-		$this->item_type = $this->get_item_type();
+		global $bp;
+		
+		$this->post_type_name 		= $bp->bp_docs->post_type_name;
+		$this->associated_item_tax_name	= $bp->bp_docs->associated_item_tax_name;
+	
+		$this->item_type 		= $this->get_item_type();
 		$this->setup_item();
-		$this->current_view = $this->get_current_view();
+		$this->current_view 		= $this->get_current_view();
 		
 		// Get the item slug, if there is one available
 		if ( $this->current_view == 'single' || $this->current_view == 'edit' )
@@ -132,7 +140,7 @@ class BP_Docs_Query {
 		global $bp;
 		
 		// Get the term id for the item type
-		$item_type_term = term_exists( $this->item_type, 'bp_docs_associated_item' );
+		$item_type_term = term_exists( $this->item_type, $this->associated_item_tax_name );
 		
 		// If the item type term doesn't exist, then create it
 		if ( empty( $item_type_term ) ) {
@@ -152,14 +160,14 @@ class BP_Docs_Query {
 			$item_type_term_args = !empty( $defaults[$this->item_type] ) ? $defaults[$this->item_type] : false;
 			
 			// Create the item type term
-			if ( !$item_type_term = wp_insert_term( __( 'Groups', 'buddypress' ), 'bp_docs_associated_item', $item_type_term_args ) )
+			if ( !$item_type_term = wp_insert_term( __( 'Groups', 'buddypress' ), $this->associated_item_tax_name, $item_type_term_args ) )
 				return false;	
 		} 
 		
 		$this->item_type_term_id = apply_filters( 'bp_docs_get_item_type_term_id', $item_type_term['term_id'], $this );
 			
 		// Now, find the term associated with the item itself
-		$item_term = term_exists( $this->item_id, 'bp_docs_associated_item', $this->item_type_term_id );
+		$item_term = term_exists( $this->item_id, $this->associated_item_tax_name, $this->item_type_term_id );
 		
 		// If the item term doesn't exist, then create it
 		if ( empty( $item_term ) ) {
@@ -171,7 +179,7 @@ class BP_Docs_Query {
 			) );
 			
 			// Create the item term
-			if ( !$item_term = wp_insert_term( $this->item_id, 'bp_docs_associated_item', $item_term_args ) )
+			if ( !$item_term = wp_insert_term( $this->item_id, $this->associated_item_tax_name, $item_term_args ) )
 				return false;	
 		}
 		
@@ -219,13 +227,13 @@ class BP_Docs_Query {
 		
 		// The post type must be set for every query
 		$args = array(
-			'post_type' 		=> 'bp_doc'
+			'post_type' 		=> $this->post_type_name
 		);
 		
 		// Set the taxonomy query. Filtered so that plugins can alter the query
 		$args['tax_query'] = apply_filters( 'bp_docs_tax_query', array(
 			array( 
-				'taxonomy'	=> 'bp_docs_associated_item',
+				'taxonomy'	=> $this->associated_item_tax_name,
 				'terms' 	=> array( $this->term_id ),
 				'slug'		=> 'slug'
 			),
@@ -352,7 +360,7 @@ class BP_Docs_Query {
 		} else {
 			// If both the title and content fields are filled in, we can proceed
 			$defaults = array(
-				'post_type' => 'bp_doc',
+				'post_type' => $this->post_type_name,
 				'post_author' => bp_loggedin_user_id(),
 				'post_title' => $_POST['doc']['title'],
 				'post_content' => stripslashes( sanitize_post_field( 'post_content', $_POST['doc']['content'], 0, 'db' ) ),
@@ -368,7 +376,7 @@ class BP_Docs_Query {
 					$result['redirect'] = 'create';
 				} else {
 					// If the doc was saved successfully, place it in the proper tax
-					wp_set_post_terms( $post_id, $this->term_id, 'bp_docs_associated_item' );
+					wp_set_post_terms( $post_id, $this->term_id, $this->associated_item_tax_name );
 					
 					$this->doc_id = $post_id;
 					
@@ -382,7 +390,7 @@ class BP_Docs_Query {
 				// This is an existing doc, so we need to get the post ID
 				$the_doc_args = array(
 					'name' => $this->doc_slug,
-					'post_type' => 'bp_doc'
+					'post_type' => $this->post_type_name
 				);
 				
 				$the_docs = get_posts( $the_doc_args );			
