@@ -78,12 +78,15 @@ class BP_Docs_Groups_Integration {
 	/**
 	 * Gets the list of terms used by a group's docs
 	 *
+	 * At the moment, this method (and the next one) assumes that you want the terms of the
+	 * current group. At some point, that should be abstracted a bit.
+	 *
 	 * @package BuddyPress Docs
 	 * @since 1.0
 	 *
 	 * @return array $terms
 	 */	
-	function get_group_terms( $terms ) {
+	function get_group_terms() {
 		global $bp;
 		
 		if ( ! empty( $bp->groups->current_group->id ) ) {
@@ -102,7 +105,7 @@ class BP_Docs_Groups_Integration {
 	 * @package BuddyPress Docs
 	 * @since 1.0
 	 *
-	 * @return array $terms
+	 * @param array $terms The terms to be saved to groupmeta
 	 */	
 	function save_group_terms( $terms ) {
 		global $bp;
