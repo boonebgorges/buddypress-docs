@@ -208,7 +208,7 @@ class BP_Docs_Groups_Integration {
 		// Group admins and mods always get to edit
 		if ( groups_is_user_admin( $user_id, $group_id ) || groups_is_user_mod( $user_id, $group_id ) ) {
 			$user_can = true;
-		} else {			
+		} else {
 			switch ( $doc_settings[$action] ) {
 				case 'me' :
 					if ( get_the_author_meta( 'ID' ) == $user_id )
@@ -216,7 +216,6 @@ class BP_Docs_Groups_Integration {
 					break;
 				
 				case 'group-members' :
-				default :
 					if ( groups_is_user_member( $user_id, $bp->groups->current_group->id ) )
 						$user_can = true;
 					break;
