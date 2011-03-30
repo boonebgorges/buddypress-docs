@@ -193,21 +193,45 @@ function bp_docs_post_categories_meta_box( $post ) {
 	<?php
 }
 
+/**
+ * Get a list of an item's docs for display in the parent dropdown
+ *
+ * @package BuddyPress Docs
+ * @since 1.0
+ */
 function bp_docs_edit_parent_dropdown() {
 	global $bp; 
-
-	$exclude = ! empty( $bp->bp_docs->current_post->ID ) ? $bp->bp_docs->current_post->ID : false;
-	$parent = ! empty( $bp->bp_docs->current_post->post_parent ) ? $bp->bp_docs->current_post->post_parent : false;
 	
+	// Get the item docs to use as Include arguments
+	$q 			= new BP_Docs_Query;
+	$q->current_view 	= 'list';
+	$qt 			= $q->build_query();
+	$include_posts		= new WP_Query( $qt );
+	
+	$include = array();
+	
+	if ( $include_posts->have_posts() ) {
+		while ( $include_posts->have_posts() ) {
+			$include_posts->the_post();
+			$include[] = get_the_ID();
+		}
+	}
+	
+	// Exclude the current doc, if this is 'edit' and not 'create' mode
+	$exclude 	= ! empty( $bp->bp_docs->current_post->ID ) ? array( $bp->bp_docs->current_post->ID ) : false;
+
+	// Highlight the existing parent doc, if any
+	$parent 	= ! empty( $bp->bp_docs->current_post->post_parent ) ? $bp->bp_docs->current_post->post_parent : false;
 
 	$pages = wp_dropdown_pages( array( 
-		'post_type' => 'bp_doc', 
-		'exclude_tree' => $exclude, 
-		'selected' => $parent, 
-		'name' => 'parent_id', 
+		'post_type' 	=> 'bp_doc', 
+		'exclude' 	=> $exclude,
+		'include'	=> $include,
+		'selected' 	=> $parent, 
+		'name' 		=> 'parent_id', 
 		'show_option_none' => __( '(no parent)', 'bp-docs' ),
-		'sort_column'=> 'menu_order, post_title', 
-		'echo' => 0 )
+		'sort_column'	=> 'menu_order, post_title', 
+		'echo' 		=> 0 )
 	);
 	
 	echo $pages;
