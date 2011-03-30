@@ -85,7 +85,7 @@ class BP_Docs_BP_Integration {
 		
 		// If this is the edit screen, ensure that the user can edit the
 		// doc before querying, and redirect if necessary
-		if ( !empty( $bp->bp_docs->current_view ) && 'edit' == $bp->bp_docs->current_view && !bp_docs_current_user_can_edit() ) {
+		if ( !empty( $bp->bp_docs->current_view ) && 'edit' == $bp->bp_docs->current_view && !bp_docs_current_user_can( 'edit' ) ) {
 			bp_core_add_message( __( 'You do not have permission to edit the document.', 'bp-docs' ), 'error' );
 			
 			$group_permalink = bp_get_group_permalink( $bp->groups->current_group );
@@ -93,6 +93,32 @@ class BP_Docs_BP_Integration {
 			
 			// Redirect back to the non-edit view of this document
 			bp_core_redirect( $group_permalink . $bp->bp_docs->slug . '/' . $doc_slug );
+		}
+		
+		// Todo: get this into a proper method
+		if ( $bp->bp_docs->current_view == 'delete' ) {
+			check_admin_referer( 'bp_docs_delete' );
+			
+			if ( bp_docs_current_user_can( 'manage' ) ) {
+			
+				$the_doc_args = array(
+					'name' => $bp->action_variables[0],
+					'post_type' => 'bp_doc'
+				);
+				
+				$the_docs = get_posts( $the_doc_args );			
+				$doc_id = $the_docs[0]->ID;	
+				
+				wp_delete_post( $doc_id );
+				
+				bp_core_add_message( __( 'Doc successfully deleted!', 'bp-docs' ) );
+			} else {
+				bp_core_add_message( __( 'You do not have permission to delete that doc.', 'bp-docs' ), 'error' );
+			}
+			
+			// todo: abstract this out so I don't have to call group permalink here
+			$redirect_url = bp_get_group_permalink( $bp->groups->current_group ) . $bp->bp_docs->slug . '/';
+			bp_core_redirect( $redirect_url );					
 		}
 	}
 	

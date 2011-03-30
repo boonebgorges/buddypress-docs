@@ -4,7 +4,7 @@
 
 <h2><?php the_title() ?></h2> 
 
-<?php if ( bp_docs_current_user_can_edit() ) : ?>
+<?php if ( bp_docs_current_user_can( 'edit' ) ) : ?>
 	<div class="doc-edit-link">
 		<a href="<?php bp_docs_group_doc_permalink() ?>/edit">Edit</a> 
 	</div>

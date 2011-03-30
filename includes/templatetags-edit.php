@@ -91,11 +91,14 @@ function bp_docs_post_tags_meta_box() {
 	$terms = !empty( $bp->bp_docs->current_post ) ? get_terms_to_edit( $bp->bp_docs->current_post->ID, $tax_name ) : '';
 ?>
 <div class="tagsdiv" id="<?php echo $tax_name; ?>">
-	<div class="jaxtag">
+	<div class="jaxtag toggleable">
 
-	<label for="<?php echo $tax_name ?>"><?php _e( 'Tags:', 'bp-docs' ) ?></label>
-	<textarea name="<?php echo "$tax_name"; ?>" rows="3" cols="20" class="the-tags" id="tax-input-<?php echo $tax_name; ?>"><?php echo $terms; // textarea_escaped by esc_attr() ?></textarea>
-	<span class="description"><?php _e( 'Separate tags with commas', 'bp-docs' ) ?></span>
+	<label for="<?php echo $tax_name ?>" id="tags-toggle-edit" class="toggle-switch"><?php _e( 'Tags', 'bp-docs' ) ?></label>
+	
+	<div class="toggle-content">		
+		<textarea name="<?php echo "$tax_name"; ?>" rows="3" cols="20" class="the-tags" id="tax-input-<?php echo $tax_name; ?>"><?php echo $terms; // textarea_escaped by esc_attr() ?></textarea>
+		<span class="description"><?php _e( 'Separate tags with commas', 'bp-docs' ) ?></span>
+	</div>
  	
  	<?php /* Removed for the moment until fancypants JS is in place */ ?>
  	<?php /* ?>
