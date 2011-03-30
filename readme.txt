@@ -36,6 +36,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 == Changelog ==
 
 = 1.0 =
+* Doc children are now listed in single doc view
 * Improved support for TinyMCE loading on custom themes
 * More consistent tab highlighting in group subnav
 * Fixed bug that prevented reverting to the "no parent" setting
