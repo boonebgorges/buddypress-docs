@@ -47,7 +47,9 @@ class BP_Docs_Taxonomy {
 		$this->taxonomies = array( 'category', 'post_tag' );
 	
 		// Todo: make this fine-grained for tags and/or categories
-		$args['taxonomies'] = array( 'category', 'post_tag' );
+		$args['taxonomies'] = array( 'post_tag' );
+		
+		//$args['taxonomies'] = array( 'category', 'post_tag' );
 		
 		return $args;		
 	}
@@ -63,8 +65,11 @@ class BP_Docs_Taxonomy {
 	 */	
 	function save_post( $query ) {
 		foreach( $this->taxonomies as $tax_name ) {
+			if ( $tax_name == 'category' )
+				$tax_name = 'post_category';
+		
 			// Separate out the terms
-			$terms = !empty( $_POST['doc'][$tax_name] ) ? explode( ',', $_POST['doc'][$tax_name] ) : array();
+			$terms = !empty( $_POST[$tax_name] ) ? explode( ',', $_POST[$tax_name] ) : array();
 			
 			$tax = get_taxonomy( $tax_name );
 			
