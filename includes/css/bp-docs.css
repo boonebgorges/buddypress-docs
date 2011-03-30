@@ -36,18 +36,19 @@
 	padding: 2px 0 0;
 }
 
-tr:hover .row-actions {
-	visibility: visible;
-}
-
-tr:nth-child(even) {
-	background-color: #eaeaea;
-}
-
 .row-actions a {
 	color: #999;
 	font-size: 11px;
 }
+
+.doctable tr:hover .row-actions {
+	visibility: visible;
+}
+
+.doctable tr:nth-child(even) {
+	background-color: #eaeaea;
+}
+
 
 #docs-filter-submit {
 	margin: 10px 4px;
