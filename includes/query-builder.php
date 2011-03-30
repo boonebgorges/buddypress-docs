@@ -377,7 +377,7 @@ class BP_Docs_Query {
 			);
 			
 			$r = wp_parse_args( $args, $defaults );
-			
+
 			if ( empty( $this->doc_slug ) ) {
 				$this->is_new_doc = true;
 				
@@ -428,7 +428,7 @@ class BP_Docs_Query {
 						$result['message'] = __( 'You idled a bit too long while in Edit mode. In order to allow others to edit the doc you were working on, your changes have been autosaved. Click the Edit button to return to Edit mode.', 'bp-docs' );
 					} else {
 						// A normal, successful save
-						$result['message'] = __( 'Doc successfully created!', 'bp-doc' );
+						$result['message'] = __( 'Doc successfully edited!', 'bp-doc' );
 					}
 					$result['redirect'] = 'single';
 				}
