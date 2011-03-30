@@ -7,6 +7,7 @@ Stable tag: 1.0-beta-2
 
 Adds collaborative Docs to BuddyPress.
 
+
 == Description ==
 
 BuddyPress Docs adds collaborative work spaces to your BuddyPress community. Part wiki, part document editing, think of these Docs as a BuddyPress version of the Docs service offered by the Big G *ifyouknowwhatimean*
