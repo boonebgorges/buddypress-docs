@@ -241,19 +241,10 @@ class BP_Docs_Query {
 			),
 		) );
 		
-		// Order and orderby arguments		
-		$args['orderby'] = !empty( $_GET['orderby'] ) ? urldecode( $_GET['orderby'] ) : apply_filters( 'bp_docs_default_sort_order', 'modified' ) ;
+		// Order and orderby arguments
+		$args['order']	= !empty( $_GET['order'] ) && 'DESC' == $_GET['order'] ? 'DESC' : 'ASC';
 		
-		if ( empty( $_GET['order'] ) ) {
-			// If no order is explicitly stated, we must provide one.
-			// It'll be different for date fields (should be DESC)
-			if ( 'modified' == $args['orderby'] || 'date' == $args['orderby'] )
-				$args['order'] = 'DESC';
-			else
-				$args['order'] = 'ASC';
-		} else {
-			$args['order'] = $_GET['order'];
-		}
+		$args['orderby'] = !empty( $_GET['orderby'] ) ? urldecode( $_GET['orderby'] ) : apply_filters( 'bp_docs_default_sort_order', 'edited' ) ;
 		
 		// Search
 		$args['s'] = !empty( $_GET['s'] ) ? urldecode( $_GET['s'] ) : ''; 

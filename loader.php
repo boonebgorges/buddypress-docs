@@ -3,7 +3,7 @@
 Plugin Name: BuddyPress Docs
 Plugin URI: http://github.com/boonebgorges/buddypress-docs
 Description: Adds collaborative Docs to BuddyPress
-Version: 1.0-beta-2
+Version: 1.0
 Author: Boone B Gorges
 Author URI: http://boonebgorges.com
 Licence: GPLv3
@@ -11,13 +11,10 @@ Network: true
 */
 
 /*
-This is beta software.
-Don't use it yet.
-
-Seriously!
+It's on like Donkey Kong
 */
 
-define( 'BP_DOCS_VERSION', '1.0-beta-2' );
+define( 'BP_DOCS_VERSION', '1.0' );
 
 /**
  * Loads BP Docs files only if BuddyPress is present
