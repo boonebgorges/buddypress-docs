@@ -58,3 +58,7 @@ a.doc-filter-toggle {
 	text-decoration: none;
 	font-weight: bold;
 }
+
+p#filter-by-tag {
+	margin-bottom: 0;
+}
