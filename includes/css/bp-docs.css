@@ -26,9 +26,10 @@
 	padding: 6px;
 }
 
-.doc-action-links {
+table tr td.doc-action-links {
 	font-size: 8pt;
-	margin-left: 10px;
+	padding: 0 0 10px 8px;
+	margin-top: -10px;
 }
 
 .doc-action-links a {

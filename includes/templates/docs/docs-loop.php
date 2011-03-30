@@ -47,7 +47,7 @@
 			<td> </td>
 			
 			<td class="title-cell">
-				<a href="<?php bp_docs_group_doc_permalink() ?>"><?php the_title() ?></a> <span class="doc-action-links"><?php bp_docs_doc_action_links() ?></span>
+				<a href="<?php bp_docs_group_doc_permalink() ?>"><?php the_title() ?></a>
 				
 				<?php the_excerpt() ?>
 			</td>
@@ -65,7 +65,13 @@
 			</td>
 			
 			<?php do_action( 'bp_docs_loop_additional_td' ) ?>		
-			
+		</tr>
+		
+		<tr>
+			<td> </td>
+			<td colspan="5" class="doc-action-links">
+				<?php bp_docs_doc_action_links() ?>
+			</td>
 		</tr>
 	<?php endwhile ?>        
         </tbody>
