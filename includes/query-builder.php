@@ -23,7 +23,7 @@ class BP_Docs_Query {
 	 * PHP 4 constructor
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */
 	function bp_docs_query() {
 		$this->__construct();
@@ -33,7 +33,7 @@ class BP_Docs_Query {
 	 * PHP 5 constructor
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */	
 	function __construct() {
 		global $bp;
@@ -55,7 +55,7 @@ class BP_Docs_Query {
 	 * Gets the item type of the item you're looking at - e.g 'group', 'user'.
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @return str $view The current item type
 	 */
@@ -74,7 +74,7 @@ class BP_Docs_Query {
 	 * Gets the doc slug as represented in the URL
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @return str $view The current doc slug
 	 */
@@ -90,7 +90,7 @@ class BP_Docs_Query {
 	 * Gets the item id of the item (eg group, user) associated with the page you're on.
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @return str $view The current item type
 	 */
@@ -134,7 +134,7 @@ class BP_Docs_Query {
 	 * Gets the id of the taxonomy term associated with the item
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @return str $view The current item type
 	 */
@@ -194,7 +194,7 @@ class BP_Docs_Query {
 	 * Filter 'bp_docs_get_current_view' to extend to different components.
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @param str $item_type Defaults to the object's item type
 	 * @return str $view The current view. Core values: edit, single, list, category
@@ -219,7 +219,7 @@ class BP_Docs_Query {
 	 * Builds the WP query
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @return array $args The query_posts args
 	 */
@@ -255,7 +255,7 @@ class BP_Docs_Query {
 	 * Fires the WP query and loads the appropriate template
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */
 	function load_template() {
 		global $bp, $post;
@@ -341,7 +341,7 @@ class BP_Docs_Query {
 	 * looking for the presence of $this->doc_slug
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */
 	function save( $args = false ) {
 		global $bp;

@@ -11,7 +11,7 @@
  * This class sets up the interface and back-end functions needed to use post tags with BP Docs.
  *
  * @package BuddyPress Docs
- * @since 1.0
+ * @since 1.0-beta
  */
 class BP_Docs_Taxonomy {
 	var $taxonomies;
@@ -21,7 +21,7 @@ class BP_Docs_Taxonomy {
 	 * PHP 4 constructor
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */
 	function bp_docs_query() {
 		$this->__construct();
@@ -31,7 +31,7 @@ class BP_Docs_Taxonomy {
 	 * PHP 5 constructor
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */	
 	function __construct() {
 		// Make sure that the bp_docs post type supports our post taxonomies
@@ -67,7 +67,7 @@ class BP_Docs_Taxonomy {
 	 * Registers the post taxonomies with the bp_docs post type
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @param array The $bp_docs_post_type_args array created in BP_Docs::register_post_type()
 	 * @return array $args The modified parameters
@@ -87,7 +87,7 @@ class BP_Docs_Taxonomy {
 	 * Saves post taxonomy terms to a doc when saved from the front end
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @param object $query The query object created by BP_Docs_Query
 	 * @return int $post_id Returns the doc's post_id on success
@@ -130,7 +130,7 @@ class BP_Docs_Taxonomy {
 	 * Handles taxonomy cleanup when a post is deleted
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @param int $doc_id
 	 */	
@@ -165,7 +165,7 @@ class BP_Docs_Taxonomy {
 	 * Shows a doc's taxonomy terms
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */	
 	function show_terms() {
 	 	foreach( $this->taxonomies as $tax_name ) {
@@ -184,7 +184,7 @@ class BP_Docs_Taxonomy {
 	 * Store taxonomy terms and their use count for a given item
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @param array $terms The terms submitted in the most recent save
 	 * @param int $doc_id The unique id of the doc
@@ -238,7 +238,7 @@ class BP_Docs_Taxonomy {
 	 * for retrieving metadata (groups_update_groupmeta(), get_user_meta(), etc)
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @return array $terms The item's terms
 	 */	
@@ -254,7 +254,7 @@ class BP_Docs_Taxonomy {
 	 * Just a dummy hook for the moment, for the integration modules to hook into
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @return array $terms The item's terms
 	 */	
@@ -266,7 +266,7 @@ class BP_Docs_Taxonomy {
 	 * Modifies the tax_query on the doc loop to account for doc tags
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @return array $terms The item's terms
 	 */	
@@ -299,7 +299,7 @@ class BP_Docs_Taxonomy {
 	 * Markup for the Tags <th> on the docs loop
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */	
 	
 	function tags_th() {
@@ -314,7 +314,7 @@ class BP_Docs_Taxonomy {
 	 * Markup for the Tags <td> on the docs loop
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */	
 	function tags_td() {
 		$tags 		= wp_get_post_terms( get_the_ID(), 'post_tag' );
@@ -337,7 +337,7 @@ class BP_Docs_Taxonomy {
 	 * Modifies the info header message to account for current tags
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 *
 	 * @param array $message An array of the messages explaining the current view
 	 * @param array $filters The filters pulled out of the $_REQUEST global
@@ -364,7 +364,7 @@ class BP_Docs_Taxonomy {
 	 * Creates the markup for the tags filter checkboxes on the docs loop
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */
 	function filter_markup() {
 		$existing_terms = $this->get_item_terms();
@@ -410,7 +410,7 @@ class BP_Docs_Taxonomy {
 	 * Handles doc filters from a form post and translates to $_GET arguments before redirect
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0
+	 * @since 1.0-beta
 	 */
 	function handle_filters( $redirect_url ) {
 		if ( !empty( $_POST['filter_terms'] ) ) {
@@ -441,7 +441,7 @@ class BP_Docs_Taxonomy {
  *  - 'type' 	'html' returns a link; anything else returns a URL
  *
  * @package BuddyPress Docs
- * @since 1.0
+ * @since 1.0-beta
  *
  * @param array $args Optional arguments
  * @return array $filters
