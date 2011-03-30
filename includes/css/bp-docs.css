@@ -99,7 +99,7 @@ div.docs-info-header {
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
 	border-radius: 3px;
-	background: #aaa;
+	background: #bbb;
 	border: 1px solid #333;
 	padding: 3px 16px;
 	margin: 16px 0 0;
@@ -129,6 +129,7 @@ div.docs-info-header {
 	-webkit-border-bottom-right-radius: 3px;
 	border: 1px solid #333;
 	border-top: none;
+	overflow: hidden;
 }
 
 span.plus-or-minus {
@@ -144,21 +145,26 @@ td.desc-column {
 	padding: 0px 18px 12px;
 }
 
-p.toggle-switch {
-	margin-bottom: 0;
-}
-
-a.doc-filter-toggle {
-	text-decoration: none;
-	font-weight: bold;
-}
-
 .docs-info-header .docs-filter {
 	margin-bottom: 0;
 }
 
+p.currently-viewing {
+	margin-bottom: 5px;
+	font-size: 1.1em;
+	margin-top: 8px;
+}
+
 p#filter-by-tag {
 	margin-bottom: 0;
+}
+
+.docs-info-header .toggle-switch {
+	margin-top: 8px;
+}
+
+#tags-list {
+	padding-left: 10px;
 }
 
 div#bp-docs-pagination {
