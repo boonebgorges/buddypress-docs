@@ -390,9 +390,14 @@ class BP_Docs_Query {
 					$result['redirect'] = 'single';
 				}
 			}
+			
+			// Provide a custom hook for plugins and optional components.
+			// WP's default save_post isn't enough, because we need something that fires
+			// only when we save from the front end (for things like taxonomies, which
+			// the WP admin handles automatically)
+			do_action( 'bp_docs_doc_saved', $this );
 		}
 
-		
 		$message_type = $result['redirect'] == 'single' ? 'success' : 'error';
 		bp_core_add_message( $result['message'], $message_type );
 		
