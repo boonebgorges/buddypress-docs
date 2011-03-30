@@ -210,7 +210,7 @@ class BP_Docs_Groups_Integration {
 			$user_can = true;
 		} else {
 			switch ( $doc_settings[$action] ) {
-				case 'me' :
+				case 'creator' :
 					if ( get_the_author_meta( 'ID' ) == $user_id )
 						$user_can = true;
 					break;
@@ -234,6 +234,8 @@ class BP_Docs_Groups_Integration {
 	 * @param array $doc_settings Passed along to reduce lookups
 	 */	
 	function doc_settings_markup( $doc_settings ) {
+		global $bp;
+		
 		// Only add these settings if we're in the group component
 		
 		// BP 1.2/1.3 compatibility
@@ -241,12 +243,19 @@ class BP_Docs_Groups_Integration {
 		
 		if ( $is_group_component ) {
 			$edit = !empty( $doc_settings['edit'] ) ? $doc_settings['edit'] : 'group-members';
-			$manage = !empty( $doc_settings['manage'] ) ? $doc_settings['manage'] : 'me';
+			$manage = !empty( $doc_settings['manage'] ) ? $doc_settings['manage'] : 'creator';
+			
+			// Set the text of the 'creator only' label
+			if ( !empty( $bp->bp_docs->current_post->post_author ) && $bp->bp_docs->current_post->post_author != bp_loggedin_user_id() ) {
+				$creator_text = sprintf( __( 'Doc creator only (%s)', 'bp-docs' ), bp_core_get_user_displayname( $bp->bp_docs->current_post->post_author ) );
+			} else {
+				$creator_text = __( 'Doc creator only (that\'s you!)', 'bp-docs' );
+			}
 		
 			?>
 			<label for="settings[edit]"><?php _e( 'Allow the following members to edit this doc:', 'bp-docs' ) ?></label>
 			
-			<input name="settings[edit]" type="radio" value="me" <?php checked( $edit, 'me' ) ?>/> <?php _e( 'Just me', 'bp-docs' ) ?><br />
+			<input name="settings[edit]" type="radio" value="me" <?php checked( $edit, 'creator' ) ?>/> <?php echo esc_html( $creator_text ) ?><br />
 			<input name="settings[edit]" type="radio" value="group-members" <?php checked( $edit, 'group-members' ) ?>/> <?php _e( 'All members of the group', 'bp-docs' ) ?><br />
 			
 			<?php /* Not sure this is necessary, so leaving out for the moment */ ?>
@@ -254,7 +263,7 @@ class BP_Docs_Groups_Integration {
 			
 			<label for="settings[manage]"><?php _e( 'Allow the following members to manage this doc:', 'bp-docs' ) ?></label>
 			
-			<input name="settings[manage]" type="radio" value="me" <?php checked( $manage, 'me' ) ?>/> <?php _e( 'Just me', 'bp-docs' ) ?><br />
+			<input name="settings[manage]" type="radio" value="me" <?php checked( $manage, 'creator' ) ?>/> <?php _e( 'Just me', 'bp-docs' ) ?><br />
 			<input name="settings[manage]" type="radio" value="group-members" <?php checked( $manage, 'group-members' ) ?>/> <?php _e( 'All members of the group', 'bp-docs' ) ?><br />
 			<span class="description"><?php _e( '"Managing" users can change doc settings and delete the doc.', 'bp-docs' ) ?></span><br /><br />
 			
