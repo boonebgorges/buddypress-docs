@@ -33,6 +33,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 1. For each group where you want Docs activated, visit Group Admin > Docs and check the checkbox
 1. Sit back and watch the jack roll in
 
+
 == Changelog ==
 
 = 1.0-beta =
