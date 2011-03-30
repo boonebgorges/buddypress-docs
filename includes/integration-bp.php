@@ -21,22 +21,25 @@ class BP_Docs_BP_Integration {
 	 * @since 1.0
 	 */	
 	function __construct() {
-		add_action( 'bp_init', 		array( $this, 'do_query' 		), 90 );
+		add_action( 'bp_init', 			array( $this, 'do_query' 		), 90 );
 		
-		add_action( 'bp_setup_globals', array( $this, 'setup_globals' 		) );
+		add_action( 'bp_setup_globals', 	array( $this, 'setup_globals' 		) );
 		
 		if ( bp_is_active( 'groups' ) ) {
 			require_once( BP_DOCS_INCLUDES_PATH . 'integration-groups.php' );
 			$this->groups_integration = new BP_Docs_Groups_Integration;
 		}
 		
-		add_action( 'wp', 		array( $this, 'catch_page_load' 	), 1 );
+		add_action( 'wp', 			array( $this, 'catch_page_load' 	), 1 );
 		
-		add_action( 'comment_post_redirect', array( $this, 'comment_post_redirect' ), 99, 2 );
+		add_action( 'comment_post_redirect', 	array( $this, 'comment_post_redirect' 	), 99, 2 );
 		
-		add_action( 'bp_loaded', 	array( $this, 'set_includes_url' 	) );
-		add_action( 'init', 		array( $this, 'enqueue_scripts' 	) );
-		add_action( 'wp_print_styles', 	array( $this, 'enqueue_styles' 		) );
+		// Hook the activity function
+		add_action( 'bp_docs_doc_saved',	array( $this, 'post_activity' 		) );
+		
+		add_action( 'bp_loaded', 		array( $this, 'set_includes_url' 	) );
+		add_action( 'init', 			array( $this, 'enqueue_scripts' 	) );
+		add_action( 'wp_print_styles', 		array( $this, 'enqueue_styles' 		) );
 	}
 	
 	/**
@@ -178,6 +181,97 @@ class BP_Docs_BP_Integration {
 		$location = bp_docs_get_doc_link( $comment->comment_post_ID ) . '#comment-' . $comment->comment_ID;
 		
 		return $location;
+	}
+	
+	/**
+	 * Posts an activity item on doc save
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 *
+	 * @param obj $query The query object created in BP_Docs_Query and passed to the
+	 *     bp_docs_doc_saved filter
+	 * @return int $activity_id The id number of the activity created
+	 */
+	function post_activity( $query ) {
+		// todo: exception for autosave?
+		
+		if ( !bp_is_active( 'activity' ) )
+			return false;
+		
+		$doc_id	= !empty( $query->doc_id ) ? $query->doc_id : false;
+		
+		if ( !$doc_id )
+			return false;
+		
+		$last_editor	= get_post_meta( $doc_id, 'bp_docs_last_editor', true );
+		
+		// Throttle 'doc edited' posts. By default, one per user per hour
+		if ( !$query->is_new_doc ) {
+			// Look for an existing activity item corresponding to this user editing
+			// this doc
+			$already_args = array(
+				'max'		=> 1,
+				'sort'		=> 'DESC',
+				'filter'	=> array(
+					'user_id'	=> $last_editor,
+					'action'	=> 'bp_doc_edited', // BP bug. 'action' is type
+					'secondary_id'	=> $doc_id // We don't really care about the item_id for these purposes (it could have been changed)
+				),
+			);
+			
+			$already_activity = bp_activity_get( $already_args );
+			
+			// If any activity items are found, compare its date_recorded with time() to
+			// see if it's within the allotted throttle time. If so, don't record the
+			// activity item
+			if ( !empty( $already_activity['activities'] ) ) {
+				$date_recorded = $already_activity['activities'][0]->date_recorded;
+				$drunix = strtotime( $date_recorded );
+				if ( time() - $drunix <= apply_filters( 'bp_docs_edit_activity_throttle_time', 60*60 ) )
+					return;
+			}
+		}
+		
+		$doc 	= get_post( $doc_id );
+		
+		// Set the action. Filterable so that other integration pieces can alter it
+		$action 	= '';
+		$user_link 	= bp_core_get_userlink( $last_editor );
+		$doc_url	= bp_docs_get_doc_link( $doc_id );
+		$doc_link	= '<a href="' . $doc_url . '">' . $doc->post_title . '</a>';
+		
+		if ( $query->is_new_doc ) {
+			$action = sprintf( __( '%1$s created the doc %2$s', 'bp-docs' ), $user_link, $doc_link );
+		} else {
+			$action = sprintf( __( '%1$s edited the doc %2$s', 'bp-docs' ), $user_link, $doc_link );
+		}
+		
+		$action	= apply_filters( 'bp_docs_activity_content', $action, $user_link, $doc_link, $query->is_new_doc, $query );
+		
+		// Set the action, to be used in activity filtering
+		$type = $query->is_new_doc ? 'bp_doc_created' : 'bp_doc_edited';
+		
+		
+		$args = array(
+			'user_id'		=> $last_editor,
+			'action'		=> $action,
+			'primary_link'		=> $doc_url,
+			'component'		=> apply_filters( 'bp_docs_activity_component', bp_current_component() ),
+			'type'			=> $type,
+			'item_id'		=> $query->item_id, // Set to the group/user/etc id, for better consistency with other BP components
+			'secondary_item_id'	=> $doc_id, // The id of the doc itself
+			'recorded_time'		=> bp_core_current_time(),
+			'hide_sitewide'		=> apply_filters( 'bp_docs_hide_sitewide', false ) // Filtered to allow plugins and integration pieces to dictate
+		);
+		
+		do_action( 'bp_docs_after_activity_save', $args );
+		
+		$activity_id = bp_activity_add( apply_filters( 'bp_docs_activity_args', $args ) );
+		
+		do_action( 'bp_docs_after_activity_save', $activity_id, $args );
+		
+		return $activity_id;
 	}
 	
 	/**
