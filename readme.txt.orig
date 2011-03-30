@@ -1,23 +1,15 @@
-<<<<<<< refs/remotes/trunk
 === BuddyPress Docs  ===
-Contributors: boonebgorges, cuny-academic-commons
+Contributors: boonebgorges
 Tags: buddypress, docs, wiki, documents, collaboration
-Requires at least: WordPress 3.1, BuddyPress 1.3
-Tested up to: WordPress 3.1, BuddyPress 1.3
-Stable tag: 1.0-beta-2
-=======
-=== BuddyPress Group Pages  ===
-Contributors: Aekeron
-Tags: buddypress, wiki, education, collaboration, group
-Requires at least: WordPress 3.0.1, BuddyPress 1.2.5.2
-Tested up to: WordPress 3.0.2 / BuddyPress 1.2.6
-Stable tag: 1.1.0
->>>>>>> HEAD~151
+Requires at least: WordPress 3.0, BuddyPress 1.2.5.2
+Tested up to: WordPress 3.0.4 / BuddyPress 1.2.7
+Stable tag: 1.0
 
 Adds collaborative Docs to BuddyPress.
 
 == Description ==
 
+<<<<<<< refs/remotes/trunk
 BuddyPress Docs adds collaborative work spaces to your BuddyPress community. Part wiki, part document editing, think of these Docs as a BuddyPress version of the Docs service offered by the Big G *ifyouknowwhatimean*
 
 Features include:
@@ -41,10 +33,15 @@ This plugin is in active development. For feature requests and bug reports, visi
 1. Activate
 1. For each group where you want Docs activated, visit Group Admin > Docs and check the checkbox
 1. Sit back and watch the jack roll in
+=======
+== Installation ==
+
+>>>>>>> HEAD~124
 
 == Changelog ==
 
 = 1.0 =
+<<<<<<< refs/remotes/trunk
 * Doc children are now listed in single doc view
 * Improved support for TinyMCE loading on custom themes
 * More consistent tab highlighting in group subnav
@@ -60,3 +57,6 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 = 1.0-beta =
 * Initial public release
+=======
+* Initial release
+>>>>>>> HEAD~124
