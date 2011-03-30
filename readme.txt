@@ -3,10 +3,9 @@ Contributors: boonebgorges, cuny-academic-commons
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.1, BuddyPress 1.3
 Tested up to: WordPress 3.1, BuddyPress 1.3
-Stable tag: 1.0-beta-2
+Stable tag: 1.0
 
 Adds collaborative Docs to BuddyPress.
-
 
 == Description ==
 
@@ -20,8 +19,6 @@ Features include:
 * TinyMCE front-end doc editing
 * One-editor-at-a-time prevention against overwrites, plus idle detection/autosave
 * Dashboard access and management of Docs for the site admin
-
-<strong>NOTE</strong> This is <em>BETA</em> software. There are many bugs and missing features. <em>DO NOT USE ON A PRODUCTION SITE</em>.
 
 <strong>NOTE</strong> This plugin <em>REQUIRES</em> WordPress 3.1 or higher. Lower versions of WP may appear to work, but <em>will</em> compromise the privacy of your Docs.
 
