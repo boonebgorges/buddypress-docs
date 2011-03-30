@@ -251,4 +251,89 @@ function bp_docs_item_docs_link() {
 		return apply_filters( 'bp_docs_get_item_docs_link', $base_url . $bp->bp_docs->slug . '/', $base_url, $r );
 	}
 
+/**
+ * Get the sort order for sortable column links
+ *
+ * Detects the current sort order and returns the opposite
+ *
+ * @package BuddyPress Docs
+ * @since 1.0
+ *
+ * @return str $new_order Either desc or asc
+ */
+function bp_docs_get_sort_order( $orderby = 'edited' ) {
+
+	$new_order	= false;
+
+	// We only want a non-default order if we are currently ordered by this $orderby
+	// The default order is Last Edited, so we must account for that
+	$current_orderby	= !empty( $_GET['orderby'] ) ? $_GET['orderby'] : apply_filters( 'bp_docs_default_sort_order', 'edited' );
+	
+	if ( $orderby == $current_orderby ) {
+		$current_order 	= empty( $_GET['order'] ) || 'ASC' == $_GET['order'] ? 'ASC' : 'DESC';
+		
+		$new_order	= 'ASC' == $current_order ? 'DESC' : 'ASC';
+	}
+	
+	return apply_filters( 'bp_docs_get_sort_order', $new_order );
+}
+
+/**
+ * Echoes the output of bp_docs_get_order_by_link()
+ *
+ * @package BuddyPress Docs
+ * @since 1.0
+ *
+ * @param str $orderby The order_by item: title, author, created, edited, etc
+ */
+function bp_docs_order_by_link( $orderby = 'edited' ) {
+	echo bp_docs_get_order_by_link( $orderby );
+}
+	/**
+	 * Get the URL for the sortable column header links
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 *
+	 * @param str $orderby The order_by item: title, author, created, edited, etc
+	 * @return str The URL with args attached
+	 */
+	function bp_docs_get_order_by_link( $orderby = 'edited' ) {
+		$args = array(
+			'orderby' 	=> $orderby,
+			'order'		=> bp_docs_get_sort_order( $orderby )
+		);
+		
+		return apply_filters( 'bp_docs_get_order_by_link', add_query_arg( $args ), $orderby, $args );
+	}
+
+/**
+ * Echoes current-orderby and order classes for the column currently being ordered by
+ *
+ * @package BuddyPress Docs
+ * @since 1.0
+ *
+ * @param str $orderby The order_by item: title, author, created, edited, etc
+ */
+function bp_docs_is_current_orderby_class( $orderby = 'edited' ) {
+	// Get the current orderby column
+	$current_orderby	= !empty( $_GET['orderby'] ) ? $_GET['orderby'] : apply_filters( 'bp_docs_default_sort_order', 'edited' );
+	
+	// Does the current orderby match the $orderby parameter?
+	$is_current_orderby 	= $current_orderby == $orderby ? true : false;
+	
+	$class = '';
+	// If this is indeed the current orderby, we need to get the asc/desc class as well
+	if ( $is_current_orderby ) {
+		$class = ' current-orderby';
+		
+		if ( !empty( $_GET['order'] ) && 'DESC' == $_GET['order'] )
+			$class .= ' desc';
+		else
+			$class .= ' asc';
+	}
+	
+	echo apply_filters( 'bp_docs_is_current_orderby', $class, $is_current_orderby, $current_orderby );
+}
+
 ?>
