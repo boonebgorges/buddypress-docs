@@ -1,3 +1,7 @@
+.doc-header h4 {
+	margin-bottom: 15px !important;
+}
+
 .docs-filter {
 	display: block;
 	width: 400px;
