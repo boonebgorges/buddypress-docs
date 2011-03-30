@@ -539,18 +539,8 @@ class BP_Docs_BP_Integration {
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */	
-	function enqueue_scripts() {
+	function enqueue_scripts() {		
 		wp_register_script( 'bp-docs-js', plugins_url( 'buddypress-docs/includes/js/bp-docs.js' ), array( 'jquery' ) );
-		
-		// Only load our JS on the right sorts of pages. Generous to account for
-		// different item types
-		if ( in_array( BP_DOCS_SLUG, $this->slugstocheck ) ) {
-			wp_enqueue_script( 'bp-docs-js' );
-			wp_enqueue_script( 'comment-reply' );
-			wp_localize_script( 'bp-docs-js', 'bp_docs', array(
-				'still_working'		=> __( 'Still working?', 'bp-docs' )
-			) );
-		}
 		
 		// This is for edit/create scripts
 		if ( !empty( $this->query->current_view ) && ( 'edit' == $this->query->current_view || 'create' == $this->query->current_view ) ) {
@@ -564,6 +554,21 @@ class BP_Docs_BP_Integration {
 			
 			wp_register_script( 'bp-docs-idle-js', plugins_url( 'buddypress-docs/includes/js/idle.js' ), array( 'jquery', 'bp-docs-js' ) );
 			wp_enqueue_script( 'bp-docs-idle-js' );
+		
+			// Edit mode requires bp-docs-js to be dependent on TinyMCE, so we must
+			// reregister bp-docs-js with the correct dependencies
+			wp_deregister_script( 'bp-docs-js' );
+			wp_register_script( 'bp-docs-js', plugins_url( 'buddypress-docs/includes/js/bp-docs.js' ), array( 'jquery', 'editor' ) );
+		}
+		
+		// Only load our JS on the right sorts of pages. Generous to account for
+		// different item types
+		if ( in_array( BP_DOCS_SLUG, $this->slugstocheck ) ) {
+			wp_enqueue_script( 'bp-docs-js' );
+			wp_enqueue_script( 'comment-reply' );
+			wp_localize_script( 'bp-docs-js', 'bp_docs', array(
+				'still_working'		=> __( 'Still working?', 'bp-docs' )
+			) );
 		}
 	}
 	
