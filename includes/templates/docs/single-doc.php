@@ -12,8 +12,4 @@
 
 <a href="<?php bp_docs_group_doc_permalink() ?>/edit">Edit</a> 
 
-<?php $hi = groups_get_groupmeta( bp_get_group_id(), 'bp_docs_terms' ) ?>
-<?php print_r( $hi ) ?>
-
-
 <?php endwhile; endif ?>
