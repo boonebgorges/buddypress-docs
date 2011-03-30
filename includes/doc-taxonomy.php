@@ -64,9 +64,21 @@ class BP_Docs_Taxonomy {
 	function save_post( $query ) {
 		foreach( $this->taxonomies as $tax_name ) {
 			// Separate out the terms
-			$new_terms = !empty( $_POST['doc'][$tax_name] ) ? explode( ',', $_POST['doc'][$tax_name] ) : array();
-						
-			wp_set_post_terms( $query->doc_id, $new_terms, $tax_name );
+			$terms = !empty( $_POST['doc'][$tax_name] ) ? explode( ',', $_POST['doc'][$tax_name] ) : array();
+			
+			$tax = get_taxonomy( $tax_name );
+			
+			// Hierarchical terms like categories have to be handled differently, with
+			// term IDs rather than the term names themselves
+			if ( !empty( $tax->hierarchical ) ) {
+				$term_ids = array();
+				foreach( $terms as $term ) {
+					$parent = 0;
+					$term_ids[] = term_exists( $term, $tax_id, $parent );
+				}
+			}
+			
+			wp_set_post_terms( $query->doc_id, $terms, $tax_name );
 		}
 	}
 }
