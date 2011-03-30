@@ -84,9 +84,6 @@ class BP_Docs_Hierarchy {
 	 *
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta
-	 *
-	 * @param object $query The query object created by BP_Docs_Query
-	 * @return int $post_id Returns the doc's post_id on success
 	 */	
 	 function show_parent() {
 	 	global $post;
@@ -107,6 +104,12 @@ class BP_Docs_Hierarchy {
 	 	echo apply_filters( 'bp_docs_hierarchy_show_parent', $html, $parent );
 	 }
 	 
+	 /**
+	  * Display links to the doc's children
+	  *
+	  * @package BuddyPress Docs
+	  * @since 1.0
+	  */
 	 function show_children() {
 	 	global $bp;
 	 	
