@@ -17,15 +17,21 @@ Features include:
 * Doc taxonomy, using tags
 * Fully sortable and filterable doc lists
 * TinyMCE front-end doc editing
+* One-editor-at-a-time prevention against overwrites, plus idle detection/autosave
 * Dashboard access and management of Docs for the site admin
 
-***NOTE*** This is ALPHA software. There are many bugs and missing featurs. DO NOT USE ON A PRODUCTION SITE.
-***NOTE*** This plugin REQUIRES WordPress 3.1 or higher. Lower versions of WP may appear to work, but they may compromise the privacy of your Docs.
+<strong>NOTE</strong> This is <em>BETA</em> software. There are many bugs and missing features. <em>DO NOT USE ON A PRODUCTION SITE</em>.
+
+<strong>NOTE</strong> This plugin <em>REQUIRES</em> WordPress 3.1 or higher. Lower versions of WP may appear to work, but <em>will</em> compromise the privacy of your Docs.
 
 == Installation ==
 
+1. Install
+1. Activate
+1. For each group where you want Docs activated, visit Group Admin > Docs and check the checkbox
+1. Sit back and watch the jack roll in
 
 == Changelog ==
 
-= 1.0 =
-* Initial release
+= 1.0-beta =
+* Initial public release
