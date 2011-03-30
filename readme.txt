@@ -1,5 +1,6 @@
 === BuddyPress Docs  ===
 Contributors: boonebgorges, cuny-academic-commons
+Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.1, BuddyPress 1.3
 Tested up to: WordPress 3.1, BuddyPress 1.3
