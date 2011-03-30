@@ -149,12 +149,17 @@ wp_tiny_mce();
         </div>
         
         <div id="doc-meta">
-        	<?php
-        	
-        	bp_docs_post_tags_meta_box();
-        	/* bp_docs_post_categories_meta_box(); */
-        	?>
-        </div>
+        	<div id="doc-tax">
+			<?php bp_docs_post_tags_meta_box();
+			/* bp_docs_post_categories_meta_box(); */ ?>
+        	</div>
+		<div id="doc-parent">
+			<h4><?php _e( 'Parent doc', 'bp-docs' ) ?></h4>
+			<?php bp_docs_edit_parent_dropdown() ?>
+		</div>
+        </div>	
+        
+        
         
         <div id="new-assignment-content-options">
         

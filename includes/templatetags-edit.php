@@ -94,7 +94,8 @@ function bp_docs_post_tags_meta_box() {
 <div class="tagsdiv" id="<?php echo $tax_name; ?>">
 	<div class="jaxtag">
 	<div class="nojs-tags hide-if-js">
-	<p><?php echo $taxonomy->labels->add_or_remove_items; ?></p>
+	<h4><?php _e( 'Doc Tags', 'bp-docs' ) ?></h4>
+	<p><?php _e( 'Separate tags with commas', 'bp-docs' ) ?></p>
 	<textarea name="<?php echo "$tax_name"; ?>" rows="3" cols="20" class="the-tags" id="tax-input-<?php echo $tax_name; ?>" <?php echo $disabled; ?>><?php echo $terms; // textarea_escaped by esc_attr() ?></textarea></div>
  	
  	<?php /* Removed for the moment until fancypants JS is in place */ ?>
@@ -188,6 +189,26 @@ function bp_docs_post_categories_meta_box( $post ) {
 		<?php endif; ?>
 	</div>
 	<?php
+}
+
+function bp_docs_edit_parent_dropdown() {
+	global $bp; 
+
+	$exclude = ! empty( $bp->bp_docs->current_post->ID ) ? $bp->bp_docs->current_post->ID : false;
+	$parent = ! empty( $bp->bp_docs->current_post->post_parent ) ? $bp->bp_docs->current_post->post_parent : false;
+	
+
+	$pages = wp_dropdown_pages( array( 
+		'post_type' => 'bp_doc', 
+		'exclude_tree' => $exclude, 
+		'selected' => $exclude, 
+		'name' => 'parent_id', 
+		'show_option_none' => __( '(no parent)', 'bp-docs' ),
+		'sort_column'=> 'menu_order, post_title', 
+		'echo' => 0 )
+	);
+	
+	echo $pages;
 }
 
 ?>
