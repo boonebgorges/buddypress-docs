@@ -47,7 +47,7 @@
 			<td> </td>
 			
 			<td class="title-cell">
-				<a href="<?php bp_docs_group_doc_permalink() ?>"><?php the_title() ?></a>
+				<a href="<?php bp_docs_group_doc_permalink() ?>"><?php the_title() ?></a> <span class="doc-action-links"><?php bp_docs_doc_action_links() ?></span>
 				
 				<?php the_excerpt() ?>
 			</td>
