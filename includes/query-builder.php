@@ -100,6 +100,14 @@ class BP_Docs_Query {
 		$this->item_slug = apply_filters( 'bp_docs_get_item_slug', $slug );
 	}
 	
+	/**
+	 * Gets the doc slug as represented in the URL
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 *
+	 * @return str $view The current doc slug
+	 */
 	function get_doc_slug() {
 		global $bp;
 		
@@ -278,6 +286,15 @@ class BP_Docs_Query {
 		include( apply_filters( 'bp_docs_template', $template, $this ) );
 	}
 
+	/**
+	 * Saves a doc.
+	 *
+	 * This method handles saving for both new and existing docs. It detects the difference by
+	 * looking for the presence of $this->doc_slug
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0
+	 */
 	function save( $args = false ) {
 		global $bp;
 		
