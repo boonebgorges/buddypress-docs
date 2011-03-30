@@ -351,13 +351,21 @@ function bp_docs_current_user_can( $action = 'edit' ) {
  * @param int $doc_id Optional. Unique doc id. Defaults to doc currently being viewed
  */
 function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false ) {
-	global $bp;
+	global $bp, $post;
 	
 	if ( !$user_id )
-		$user_id	= bp_loggedin_user_id();
+		$user_id = bp_loggedin_user_id();
 	
-	if ( !$doc_id )
-		$doc_id		= get_the_ID();
+	if ( !$doc_id ) {
+		if ( !empty( $post->ID ) ) {
+			$doc_id = $post->ID;
+		} else {
+			// Sometimes the post hasn't been loaded early enough, groan
+			$posts = get_posts( array( 'post_type' => $bp->bp_docs->post_type_name, 'name' => $bp->bp_docs->doc_slug ) );
+			$bp->bp_docs->current_post = $posts[0];
+			$doc_id = $posts[0]->ID;
+		}
+	}
 	
 	$user_can = false;
 	
