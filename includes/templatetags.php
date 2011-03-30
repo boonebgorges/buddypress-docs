@@ -362,12 +362,7 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
 		if ( is_super_admin() ) {
 			// Super admin always gets to edit. What a big shot
 			$user_can = true;
-		} else {
-			// Post authors always get to whatever they want
-			if ( get_the_author_meta( 'ID' ) == $user_id ) {
-				$user_can = true;
-			}
-			
+		} else {			
 			// Filter this so that groups-integration and other plugins can give their
 			// own rules. Done inside the conditional so that plugins don't have to
 			// worry about the is_super_admin() check
