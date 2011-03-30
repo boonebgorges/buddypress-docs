@@ -10,6 +10,8 @@
 	<?php do_action( 'bp_docs_single_doc_meta' ) ?>
 </div>
 
-<a href="<?php bp_docs_group_doc_permalink() ?>/edit">Edit</a> 
+<?php if ( bp_docs_current_user_can_edit() ) : ?>
+	<a href="<?php bp_docs_group_doc_permalink() ?>/edit">Edit</a> 
+<?php endif ?>
 
 <?php endwhile; endif ?>
