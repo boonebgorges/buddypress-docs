@@ -34,6 +34,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.0.1 =
+* Re-fixes problem with JS editor that might cause error message on save in some setups
+
 = 1.0 =
 * UI improvements on doc meta sliders
 * Doc children are now listed in single doc view
