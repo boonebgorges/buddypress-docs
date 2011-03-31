@@ -34,6 +34,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.0.2 =
+* Adds logic for loading textdomain and translations
+
 = 1.0.1 =
 * Fixes bug that prevented Doc delete button from working
 * Adds POT file for translators
