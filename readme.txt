@@ -23,7 +23,7 @@ Features include:
 
 <strong>NOTE</strong> This plugin <em>REQUIRES</em> WordPress 3.1 or higher. Lower versions of WP may appear to work, but <em>will</em> compromise the privacy of your Docs.
 
-This plugin is in active development. For feature requests and bug reports, visit http://github.com/boonebgorges/buddypress-docs
+This plugin is in active development. For feature requests and bug reports, visit http://github.com/boonebgorges/buddypress-docs. If you have translated the plugin and would like to provide your translation for distribution with BuddyPress Docs, please contact the plugin author.
 
 == Installation ==
 
@@ -36,6 +36,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 = 1.0.1 =
 * Fixes bug that prevented Doc delete button from working
+* Adds POT file for translators
 * Re-fixes problem with JS editor that might cause error message on save in some setups
 
 = 1.0 =
