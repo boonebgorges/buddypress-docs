@@ -54,7 +54,11 @@ jQuery(document).ready(function($){
 	}
 
 	/* On some setups, it helps TinyMCE to load if we fire the switchEditors event on load */
-	switchEditors.go('doc[content]', 'tinymce');
+	if ( typeof(switchEditors) == 'object' ) {
+		if ( !$("#edButtonPreview").hasClass('active') ) {
+			switchEditors.go('doc[content]', 'tinymce');
+		}
+	}
 	
 	/* Disabled until I build a proper set of options */
 	/*
