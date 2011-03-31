@@ -6,7 +6,6 @@ Requires at least: WordPress 3.1, BuddyPress 1.3
 Tested up to: WordPress 3.1, BuddyPress 1.3
 Stable tag: 1.0.1
 
-
 Adds collaborative Docs to BuddyPress.
 
 == Description ==
@@ -32,7 +31,6 @@ This plugin is in active development. For feature requests and bug reports, visi
 1. Activate
 1. For each group where you want Docs activated, visit Group Admin > Docs and check the checkbox
 1. Sit back and watch the jack roll in
-
 
 == Changelog ==
 
