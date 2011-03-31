@@ -46,9 +46,8 @@ class BP_Docs_Query {
 		$this->current_view 		= $this->get_current_view();
 		
 		// Get the item slug, if there is one available
-		if ( $this->current_view == 'single' || $this->current_view == 'edit' )
-			$this->doc_slug = $this->get_doc_slug();
-		
+		if ( $this->current_view == 'single' || $this->current_view == 'edit' || $this->current_view == 'delete' )
+			$this->doc_slug = $this->get_doc_slug();		
 	}
 
 	/**
