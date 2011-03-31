@@ -35,7 +35,6 @@ This plugin is in active development. For feature requests and bug reports, visi
 == Changelog ==
 
 = 1.0.1 =
-* Fixes bug that prevented Doc delete button from working
 * Re-fixes problem with JS editor that might cause error message on save in some setups
 
 = 1.0 =
