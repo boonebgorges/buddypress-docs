@@ -629,6 +629,38 @@ function bp_docs_cancel_edit_link() {
 	}
 
 /**
+ * Echoes the output of bp_docs_get_delete_doc_link()
+ *
+ * @package BuddyPress Docs
+ * @since 1.0.1
+ */
+function bp_docs_delete_doc_link() {
+	echo bp_docs_get_delete_doc_link();
+}
+	/**
+	 * Get the URL to delete the current doc
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0.1
+	 *
+	 * @return string $delete_link href for the delete doc link
+	 */
+	function bp_docs_get_delete_doc_link() {
+		global $bp, $post;
+
+		$doc_id = !empty( $bp->bp_docs->current_post->ID ) ? $bp->bp_docs->current_post->ID : false;
+		
+		if ( !$doc_id )
+			return false;
+		
+		$doc_permalink = bp_docs_get_doc_link( $doc_id );
+		
+		$delete_link = wp_nonce_url( $doc_permalink . '/' . BP_DOCS_DELETE_SLUG, 'bp_docs_delete' ); 
+		
+		return apply_filters( 'bp_docs_get_delete_doc_link', $delete_link, $doc_permalink ); 
+	}
+
+/**
  * Echo the pagination links for the doc list view
  *
  * @package BuddyPress Docs
