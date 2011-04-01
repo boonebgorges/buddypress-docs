@@ -34,6 +34,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.0.3 =
+* Adds Spanish translation
+
 = 1.0.2 =
 * Adds logic for loading textdomain and translations
 
