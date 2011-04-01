@@ -7,3 +7,8 @@ The original goal of BuddyPress Docs was to create "private wiki space" for Budd
 idle.js (includes/js/idle.js) is by Alexios Chouchoulas, and provided under the GPL v2.0 or later at http://www.bedroomlan.org/coding/detecting-%E2%80%98idle%E2%80%99-and-%E2%80%98away%E2%80%99-timeouts-javascript
 
 includes/images/padlock.png is derived from the file Gnome-emblem-readonly.svg, available under GPLv2+ from http://commons.wikimedia.org/wiki/File:Gnome-emblem-readonly.svg
+
+== TRANSLATION CREDITS ==
+
+Huge thanks go out to the individuals who donate their translations, making plugins like this one usable for a far bigger audience. Translations for BuddyPress Docs:
+- Spanish: Selu Vega 
