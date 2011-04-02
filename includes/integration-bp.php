@@ -405,9 +405,17 @@ class BP_Docs_BP_Integration {
 		
 		if ( !$doc_id )
 			return false;
-				
+		
 		// Make sure that BP doesn't record this comment with its native functions
 		remove_action( 'comment_post', 'bp_blogs_record_comment', 10, 2 );
+		
+		// Until better individual activity item privacy controls are available in BP,
+		// comments will only be shown in the activity stream if "Who can read comments on
+		// this doc?" is set to "Anyone" or "Group members"
+		$doc_settings	= get_post_meta( $doc_id, 'bp_docs_settings', true );
+		
+		if ( !empty( $doc_settings['read_comments'] ) && ( 'admins-mods' == $doc_settings['read_comments'] || 'no-one' == $doc_settings['read_comments'] ) )
+			return false;
 		
 		// Get the associated item for this doc. Todo: abstract to standalone function
 		$items = wp_get_post_terms( $doc_id, $bp->bp_docs->associated_item_tax_name );
