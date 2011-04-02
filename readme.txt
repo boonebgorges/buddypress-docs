@@ -35,6 +35,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 == Changelog ==
 
 = 1.0.3 =
+* Fixes bug that allowed doc comments to show up in activity streams incorrectly
 * Adds Spanish translation
 
 = 1.0.2 =
