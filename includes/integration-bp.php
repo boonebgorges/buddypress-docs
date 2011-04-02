@@ -196,7 +196,12 @@ class BP_Docs_BP_Integration {
 				
 				do_action( 'bp_docs_before_doc_delete', $doc_id );
 				
-				wp_delete_post( $doc_id );
+				$delete_args = array(
+					'ID'		=> $doc_id,
+					'post_status'	=> 'trash'
+				);
+				
+				wp_update_post( $delete_args );
 								
 				bp_core_add_message( __( 'Doc successfully deleted!', 'bp-docs' ) );
 			} else {

@@ -35,6 +35,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 == Changelog ==
 
 = 1.0.3 =
+* Switches Delete to trash action rather than a true delete
 * Removes More button from TinyMCE in Docs context
 * Fixes bug that allowed doc comments to show up in activity streams incorrectly
 * Adds Spanish translation
