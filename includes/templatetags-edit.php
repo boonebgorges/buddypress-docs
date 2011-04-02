@@ -126,4 +126,26 @@ function bp_docs_is_existing_doc() {
 	return true;
 }
 
+/**
+ * Removes the More button from the TinyMCE editor in the Docs context
+ *
+ * @package BuddyPress Docs
+ * @since 1.0.3
+ *
+ * @param array $buttons The default TinyMCE buttons as set by WordPress
+ * @return array $buttons The buttons with More removed
+ */
+function bp_docs_remove_tinymce_more_button( $buttons ) {
+	if ( bp_docs_is_bp_docs_page() ) {
+		$wp_more_key = array_search( 'wp_more', $buttons );
+		if ( $wp_more_key ) {
+			unset( $buttons[$wp_more_key] );
+			$buttons = array_values( $buttons );
+		}
+	}
+	
+	return $buttons;
+}
+add_filter( 'mce_buttons', 'bp_docs_remove_tinymce_more_button' );
+
 ?>
