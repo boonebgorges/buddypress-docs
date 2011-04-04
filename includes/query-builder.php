@@ -266,6 +266,10 @@ class BP_Docs_Query {
 		
 		$template_path = BP_DOCS_INSTALL_PATH . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'docs' . DIRECTORY_SEPARATOR;
 		
+		// Docs are stored on the root blog
+		if ( !bp_is_root_blog() )
+			switch_to_blog( BP_ROOT_BLOG );
+		
 		switch ( $this->current_view ) {
 			case 'create' :
 				// Todo: Make sure the user has permission to create
@@ -333,6 +337,10 @@ class BP_Docs_Query {
 	
 				break;
 		}
+		
+		// Only register on the root blog
+		if ( !bp_is_root_blog() )
+			restore_current_blog();
 		
 		if ( !empty( $template ) )
 			include( apply_filters( 'bp_docs_template', $template, $this ) );

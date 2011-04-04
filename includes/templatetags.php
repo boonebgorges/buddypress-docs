@@ -1,5 +1,31 @@
 <?php
 
+if ( !function_exists( 'bp_is_root_blog' ) ) :
+	/**
+	 * Is this BP_ROOT_BLOG?
+	 *
+	 * I'm hoping to have this function in BP 1.3 core, but just in case, here's a
+	 * conditionally-loaded version. Checks against $wpdb->blogid, which provides greater
+	 * support for switch_to_blog()
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0.4
+	 *
+	 * @return bool $is_root_blog Returns true if this is BP_ROOT_BLOG. Always true on non-MS
+	 */
+	function bp_is_root_blog() {
+		global $wpdb;
+		
+		$is_root_blog = true;
+		
+		if ( is_multisite() && $wpdb->blogid != BP_ROOT_BLOG )
+			$is_root_blog = false;
+		
+		return apply_filters( 'bp_is_root_blog', $is_root_blog );
+	}
+endif;
+
+
 /**
  * Determine whether you are viewing a BuddyPress Docs page
  *
