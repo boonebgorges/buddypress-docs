@@ -35,6 +35,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 == Changelog ==
 
 = 1.0.4 =
+* Better performance on MS (plugin is not loaded on non-root-blogs by default)
 * Fixes TinyMCE link button in WP 3.1.x by removing wplink internal linking plugin in Docs context
 
 = 1.0.3 =
