@@ -162,6 +162,10 @@ class BP_Docs {
 	 * @since 1.0-beta
 	 */
 	function register_post_type() {
+		// Only register on the root blog
+		if ( !bp_is_root_blog() )
+			switch_to_blog( BP_ROOT_BLOG );
+			
 		// Define the labels to be used by the post type bp_doc		
 		$post_type_labels = array(
 			'name' => _x( 'BuddyPress Docs', 'post type general name', 'bp-docs' ),
@@ -209,6 +213,10 @@ class BP_Docs {
 			'query_var' => true,
 			'rewrite' => array( 'slug' => 'item' ),
 		));
+		
+		// Only register on the root blog
+		if ( !bp_is_root_blog() )
+			restore_current_blog();
 	}
 	
 	/**
