@@ -33,8 +33,8 @@
 				<a href="<?php bp_docs_order_by_link( 'created' ) ?>"><?php _e( 'Created', 'bpsp' ); ?></a>
 			</th>
 			
-			<th scope="column" class="edited-date-cell<?php bp_docs_is_current_orderby_class( 'edited' ) ?>">
-				<a href="<?php bp_docs_order_by_link( 'edited' ) ?>"><?php _e( 'Last Edited', 'bpsp' ); ?></a>
+			<th scope="column" class="edited-date-cell<?php bp_docs_is_current_orderby_class( 'modified' ) ?>">
+				<a href="<?php bp_docs_order_by_link( 'modified' ) ?>"><?php _e( 'Last Edited', 'bpsp' ); ?></a>
 			</th>
 			
 			<?php do_action( 'bp_docs_loop_additional_th' ) ?>
