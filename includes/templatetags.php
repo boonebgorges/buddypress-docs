@@ -383,13 +383,20 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
 	if ( !$user_id )
 		$user_id = bp_loggedin_user_id();
 	
-	if ( !$doc_id ) {
-		if ( !empty( $post->ID ) ) {
-			$doc_id = $post->ID;
-		} else {
-			$doc = bp_docs_get_current_doc();
-			$doc_id = $doc->ID;
+	// Only certain actions are checked against doc_ids
+	$need_doc_ids_actions = apply_filters( 'bp_docs_need_doc_ids_actions', array( 'edit', 'manage' ) );
+	
+	if ( in_array( $action, $need_doc_ids_actions ) ) {		
+		if ( !$doc_id ) {
+			if ( !empty( $post->ID ) ) {
+				$doc_id = $post->ID;
+			} else {
+				$doc = bp_docs_get_current_doc();
+				$doc_id = $doc->ID;
+			}
 		}
+	} else {
+		$doc_id = false;
 	}
 	
 	$user_can = false;
