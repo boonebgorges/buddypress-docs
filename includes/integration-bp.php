@@ -152,6 +152,18 @@ class BP_Docs_BP_Integration {
 			}
 		}
 		
+		if ( !empty( $bp->bp_docs->current_view ) && 'create' == $bp->bp_docs->current_view ) {
+			if ( !bp_docs_current_user_can( 'create' ) ) {
+				// The user does not have edit permission. Redirect.
+				bp_core_add_message( __( 'You do not have permission to create a Doc in this group.', 'bp-docs' ), 'error' );
+			
+				$group_permalink = bp_get_group_permalink( $bp->groups->current_group );
+				
+				// Redirect back to the Doc list view
+				bp_core_redirect( $group_permalink . $bp->bp_docs->slug . '/' ); 
+			}
+		}
+		
 		// Cancel edit lock
 		if ( !empty( $_GET['bpd_action'] ) && $_GET['bpd_action'] == 'cancel_edit_lock' ) {
 			// Check the nonce

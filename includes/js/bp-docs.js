@@ -60,11 +60,8 @@ jQuery(document).ready(function($){
 		}
 	}
 	
-	/* Disabled until I build a proper set of options */
-	/*
 	$('#bp-docs-group-enable').click(function(){
 		$('#group-doc-options').slideToggle(400);
 	});
-	*/
 	
 },(jQuery));

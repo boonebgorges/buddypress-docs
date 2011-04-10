@@ -193,46 +193,79 @@ class BP_Docs_Groups_Integration {
 	 * @since 1.0-beta
 	 *
 	 * @param bool $user_can The default perms passed from bp_docs_user_can_edit()
-	 * @param str $action At the moment, 'edit' or 'manage'
+	 * @param str $action At the moment, 'edit', 'manage', 'create'
 	 * @param int $user_id The user id whose perms are being tested
 	 */	
 	function user_can( $user_can, $action, $user_id ) {
 		global $bp, $post;
 		
-		if ( empty( $post->ID ) )
-			$post = $bp->bp_docs->current_post;
+		$user_can = false;
 		
-		$doc_settings = get_post_meta( get_the_ID(), 'bp_docs_settings', true );
-
-		// Manage settings don't always get set on doc creation, so we need a default
-		if ( empty( $doc_settings['manage'] ) )
-			$doc_settings['manage'] = 'creator';
+		if ( empty( $post->ID ) )
+			$post = !empty( $bp->bp_docs->current_post ) ? $bp->bp_docs->current_post : false;
+		
+		if ( !empty( $post->ID ) ) {
+			$doc_settings = get_post_meta( $post->ID, 'bp_docs_settings', true );
+	
+			// Manage settings don't always get set on doc creation, so we need a default
+			if ( empty( $doc_settings['manage'] ) )
+				$doc_settings['manage'] = 'creator';
+		}
 
 		$group_id =  $bp->groups->current_group->id;
 		
-		// Group admins and mods always get to edit
-		if ( groups_is_user_admin( $user_id, $group_id ) || groups_is_user_mod( $user_id, $group_id ) ) {
-			$user_can = true;
-		} else {
-			switch ( $doc_settings[$action] ) {
-				case 'anyone' :
+		switch ( $action ) {
+			case 'create' :
+				$group_settings = groups_get_groupmeta( $group_id, 'bp-docs' );
+				
+				if ( !empty( $group_settings['can-create'] ) ) {
+					switch ( $group_settings['can-create'] ) {
+						case 'admin' :
+							if ( groups_is_user_admin( $user_id, $group_id ) )
+								$user_can = true;
+							break;
+						case 'mod' :
+							if ( groups_is_user_mod( $user_id, $group_id ) )
+								$user_can = true;
+							break;
+						case 'member' :
+						default :
+							if ( groups_is_user_member( $user_id, $group_id ) )
+								$user_can = true;
+							break;
+					}
+				}
+				
+				break;
+				
+			case 'edit' : 
+			default :
+				// Group admins and mods always get to edit
+				if ( groups_is_user_admin( $user_id, $group_id ) || groups_is_user_mod( $user_id, $group_id ) ) {
 					$user_can = true;
-					break;
-					
-				case 'creator' :
-					if ( $post->post_author == $user_id )
-						$user_can = true;
-					break;
+				} else {
+					switch ( $doc_settings[$action] ) {
+						case 'anyone' :
+							$user_can = true;
+							break;
+							
+						case 'creator' :
+							if ( $post->post_author == $user_id )
+								$user_can = true;
+							break;
+						
+						case 'group-members' :
+							if ( groups_is_user_member( $user_id, $bp->groups->current_group->id ) )
+								$user_can = true;
+							break;
+						
+						case 'no-one' :
+						default :
+							break; // In other words, other types return false
+					}
+				}
 				
-				case 'group-members' :
-					if ( groups_is_user_member( $user_id, $bp->groups->current_group->id ) )
-						$user_can = true;
-					break;
-				
-				case 'no-one' :
-				default :
-					break; // In other words, other types return false
-			}
+				break;
 		}
 		
 		return $user_can;
@@ -492,11 +525,10 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	
 	function create_screen_save() {
 		global $bp;
-
+		
 		check_admin_referer( 'groups_create_save_' . $this->slug );
 
-		$settings = !empty( $_POST['bp-docs'] ) ? $_POST['bp-docs'] : array();
-		groups_update_groupmeta( $bp->groups->new_group_id, 'bp-docs', $settings );
+		$success = $this->settings_save( $bp->groups->new_group_id );
 	}
 
 	/**
@@ -527,7 +559,6 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
-	
 	function edit_screen_save() {
 		global $bp;
 
@@ -536,13 +567,8 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 
 		check_admin_referer( 'groups_edit_save_' . $this->slug );
 
-		$success = false;
-
-		$settings = !empty( $_POST['bp-docs'] ) ? $_POST['bp-docs'] : array();
-
-		if ( groups_update_groupmeta( $this->maybe_group_id, 'bp-docs', $settings ) )
-			$success = true;
-
+		$success = $this->settings_save();
+		
 		/* To post an error/success message to the screen, use the following */
 		if ( !$success )
 			bp_core_add_message( __( 'There was an error saving, please try again', 'buddypress' ), 'error' );
@@ -553,15 +579,46 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	}
 
 	/**
+	 * Saves group settings. Called from edit_screen_save() and create_screen_save()
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0-beta
+	 */
+	function settings_save( $group_id = false ) {
+		$success = false;
+		
+		if ( !$group_id )
+			$group_id = $this->maybe_group_id;
+		
+		$settings = !empty( $_POST['bp-docs'] ) ? $_POST['bp-docs'] : array();
+
+		if ( groups_update_groupmeta( $group_id, 'bp-docs', $settings ) )
+			$success = true;
+			
+		return $success;
+	}
+
+	/**
 	 * Admin markup used on the edit and create admin panels
 	 *
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function admin_markup() {
-		$settings 	= groups_get_groupmeta( $this->maybe_group_id, 'bp-docs' );
 		
-		$group_enable 	= empty( $settings['group-enable'] ) ? false : true;
+		if ( bp_is_group_creation_step( $this->slug ) ) {
+			// Default settings
+			$settings = array(
+				'group-enable'	=> 0,
+				'can-create' 	=> 'member'
+			);
+		} else {		
+			$settings = groups_get_groupmeta( $this->maybe_group_id, 'bp-docs' );
+		}
+		
+		$group_enable = empty( $settings['group-enable'] ) ? false : true;
+		
+		$can_create = empty( $settings['can-create'] ) ? false : $settings['can-create'];
 		
 		?>
 		
@@ -574,7 +631,24 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 		</p>
 		
 		<div id="group-doc-options" <?php if ( !$group_enable ) : ?>class="hidden"<?php endif ?>>
-			<?php /* Disabled until I get a chance to build options */ ?>
+			<h3>Options</h3>
+			
+			<table class="group-docs-options">
+				<tr>
+					<td class="label">
+						<label for="bp-docs[can-create-admins]"><?php _e( 'Minimum role to create new Docs:', 'bp-docs' ) ?>
+					</td>
+					
+					<td>
+						<select name="bp-docs[can-create]">
+							<option value="admin" <?php selected( $can_create, 'admin' ) ?> /><?php _e( 'Group admin', 'bp-docs' ) ?></option>
+							<option value="mod" <?php selected( $can_create, 'mod' ) ?> /><?php _e( 'Group moderator', 'bp-docs' ) ?></option>
+							<option value="member" <?php selected( $can_create, 'member' ) ?> /><?php _e( 'Group member', 'bp-docs' ) ?></option>						
+						</select>
+					</td>
+				</tr>
+			
+			</table>
 		</div>
 		
 		<?php
@@ -662,9 +736,9 @@ function bp_docs_group_tabs( $group = false ) {
 ?>
 	<li<?php if ( $bp->bp_docs->current_view == 'list' ) : ?> class="current"<?php endif; ?>><a href="<?php echo $bp->root_domain . '/' . $groups_slug ?>/<?php echo $group->slug ?>/<?php echo $bp->bp_docs->slug ?>/"><?php _e( 'View Docs', 'bp-docs' ) ?></a></li>
 
-	<?php /* Todo: can this user create items? */ ?>
-	<li<?php if ( 'create' == $bp->bp_docs->current_view ) : ?> class="current"<?php endif; ?>><a href="<?php echo $bp->root_domain . '/' . $groups_slug ?>/<?php echo $group->slug ?>/<?php echo $bp->bp_docs->slug ?>/create"><?php _e( 'New Doc', 'bp-docs' ) ?></a></li>
-	
+	<?php if ( bp_docs_current_user_can( 'create' ) ) : ?>
+		<li<?php if ( 'create' == $bp->bp_docs->current_view ) : ?> class="current"<?php endif; ?>><a href="<?php echo $bp->root_domain . '/' . $groups_slug ?>/<?php echo $group->slug ?>/<?php echo $bp->bp_docs->slug ?>/create"><?php _e( 'New Doc', 'bp-docs' ) ?></a></li>
+	<?php endif ?>	
 	
 	<?php if ( $bp->bp_docs->current_view == 'single' || $bp->bp_docs->current_view == 'edit' ) : ?>
 		<li class="current"><a href="<?php echo $bp->root_domain . '/' . $groups_slug ?>/<?php echo $group->slug ?>/<?php echo $bp->bp_docs->slug ?>/<?php echo $post->post_name ?>"><?php the_title() ?></a></li>		
