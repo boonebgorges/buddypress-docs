@@ -4,7 +4,7 @@ Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.1, BuddyPress 1.3
 Tested up to: WordPress 3.1, BuddyPress 1.3
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 
 Adds collaborative Docs to BuddyPress.
 
@@ -35,6 +35,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 == Changelog ==
 
 = 1.0.4 =
+* Adds controls to allow group admins to limit Doc creation based on group role
 * Better performance on MS (plugin is not loaded on non-root-blogs by default)
 * Fixes TinyMCE link button in WP 3.1.x by removing wplink internal linking plugin in Docs context
 
