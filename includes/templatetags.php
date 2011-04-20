@@ -800,4 +800,28 @@ function bp_docs_get_total_docs_num() {
 	return apply_filters( 'bp_docs_get_total_docs_num', $total_doc_count );
 }
 
+/**
+ * Display a Doc's comments
+ *
+ * This function was introduced to make sure that the comment display callback function can be
+ * filtered by site admins. Originally, wp_list_comments() was called directly from the template 
+ * with the callback bp_dtheme_blog_comments, but this caused problems for sites not running a
+ * child theme of bp-default.
+ *
+ * Filter bp_docs_list_comments_args to provide your own comment-formatting function.
+ *
+ * @package BuddyPress Docs
+ * @since 1.0.5
+ */
+function bp_docs_list_comments() {
+	$args = array();
+	
+	if ( function_exists( 'bp_dtheme_blog_comments' ) )
+		$args['callback'] = 'bp_dtheme_blog_comments';
+		
+	$args = apply_filters( 'bp_docs_list_comments_args', $args );
+
+	wp_list_comments( $args );
+}
+
 ?>

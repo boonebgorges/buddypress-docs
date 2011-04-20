@@ -27,7 +27,7 @@ foreach ( (array)$comments as $comment ) {
 		<?php if ( have_comments() ) : ?>
 	
 			<ol class="commentlist">
-				<?php wp_list_comments( array( 'callback' => 'bp_dtheme_blog_comments' ) ) ?>
+				<?php bp_docs_list_comments() ?>
 			</ol><!-- .comment-list -->
 	
 			<?php do_action( 'bp_after_blog_comment_list' ) ?>
