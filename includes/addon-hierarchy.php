@@ -70,7 +70,7 @@ class BP_Docs_Hierarchy {
 		
 		$args = array(
 			'ID' => $query->doc_id,
-			'post_parent' => (int) $_POST['parent_id']
+			'post_parent' => $post_parent
 		);
 		
 		if ( $post_id = wp_update_post( $args ) )
