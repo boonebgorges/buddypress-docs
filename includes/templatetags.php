@@ -824,4 +824,34 @@ function bp_docs_list_comments() {
 	wp_list_comments( $args );
 }
 
+/**
+ * Get the absolute path of a given template.
+ *
+ * Looks first for a template in [theme-dir]/docs/, and falls back on the provided templates.
+ *
+ * Ideally, I would not need this function. But WP's locate_template() plays funny with directory
+ * paths, and bp_core_load_template() does not have an option that will let you locate but not load
+ * the found template.
+ *
+ * @package BuddyPress Docs
+ * @since 1.0.5
+ *
+ * @param str $template This string should be of the format 'edit-docs.php'. Ie, you need '.php',
+ *                      but you don't need the leading '/docs/'
+ * @return str $template_path The absolute path of the located template file.
+ */
+function bp_docs_locate_template( $template = '' ) {
+	if ( empty( $template ) )
+		return false;
+		
+	// Try to load custom templates first
+	$stylesheet_path = STYLESHEETPATH . DIRECTORY_SEPARATOR . 'docs' . DIRECTORY_SEPARATOR;
+	
+	if ( file_exists( $stylesheet_path . $template ) )
+		$template_path = $stylesheet_path . $template;
+	else
+		$template_path = BP_DOCS_INSTALL_PATH . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'docs' . DIRECTORY_SEPARATOR . $template;
+	
+	return apply_filters( 'bp_docs_locate_template', $template_path, $template );
+}
 ?>
