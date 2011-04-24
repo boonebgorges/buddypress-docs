@@ -36,6 +36,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 = 1.0.5 =
 * Abstracts out the comment format callback for use with non-bp-default themes
+* Fixes bug that prevented some templates from being overridden by child themes
 * Fixes bug that limited the number of docs visible in the Parent dropdown
 
 = 1.0.4 =

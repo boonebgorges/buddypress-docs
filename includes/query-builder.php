@@ -273,8 +273,6 @@ class BP_Docs_Query {
 	function load_template() {
 		global $bp, $post;
 		
-		$template_path = BP_DOCS_INSTALL_PATH . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'docs' . DIRECTORY_SEPARATOR;
-		
 		// Docs are stored on the root blog
 		if ( !bp_is_root_blog() )
 			switch_to_blog( BP_ROOT_BLOG );
@@ -288,7 +286,7 @@ class BP_Docs_Query {
 				 */
 				 require BP_DOCS_INSTALL_PATH . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'templatetags-edit.php';
 				
-				$template = $template_path . 'edit-doc.php';
+				$template = 'edit-doc.php';
 				break;
 			case 'list' :
 				$args = $this->build_query();
@@ -301,7 +299,7 @@ class BP_Docs_Query {
 				*/
 				
 				query_posts( $args );
-				$template = $template_path . 'docs-loop.php';				
+				$template = 'docs-loop.php';				
 				break;
 			case 'category' :
 				// Check to make sure the category exists
@@ -338,9 +336,9 @@ class BP_Docs_Query {
 				}
 
 				if ( $this->current_view == 'single' )
-					$template = $template_path . 'single-doc.php';	
+					$template = 'single-doc.php';	
 				else
-					$template = $template_path . 'edit-doc.php';
+					$template = 'edit-doc.php';
 				
 				// Todo: Maybe some sort of error if there is no edit permission?
 	
@@ -351,8 +349,10 @@ class BP_Docs_Query {
 		if ( !bp_is_root_blog() )
 			restore_current_blog();
 		
+		$template_path = bp_docs_locate_template( $template );
+		
 		if ( !empty( $template ) )
-			include( apply_filters( 'bp_docs_template', $template, $this ) );
+			include( apply_filters( 'bp_docs_template', $template_path, $this ) );
 	}
 
 	/**
