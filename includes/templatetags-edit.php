@@ -78,6 +78,14 @@ function bp_docs_edit_parent_dropdown() {
 	$q 			= new BP_Docs_Query;
 	$q->current_view 	= 'list';
 	$qt 			= $q->build_query();
+	
+	// Make sure we don't limit the posts displayed
+	$qt['showposts']	= -1;
+	
+	// Order them by name, no matter what
+	$qt['orderby'] 		= 'post_title';
+	$qt['order']		= 'ASC';
+	
 	$include_posts		= new WP_Query( $qt );
 	
 	$include = array();
