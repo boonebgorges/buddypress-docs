@@ -850,7 +850,7 @@ function bp_docs_locate_template( $template = '' ) {
 	if ( file_exists( $stylesheet_path . $template ) )
 		$template_path = $stylesheet_path . $template;
 	else
-		$template_path = BP_DOCS_INSTALL_PATH . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'docs' . DIRECTORY_SEPARATOR . $template;
+		$template_path = BP_DOCS_INSTALL_PATH . 'includes' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'docs' . DIRECTORY_SEPARATOR . $template;
 	
 	return apply_filters( 'bp_docs_locate_template', $template_path, $template );
 }

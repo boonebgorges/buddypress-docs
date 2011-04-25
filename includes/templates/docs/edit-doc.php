@@ -1,5 +1,4 @@
-
-<?php include( apply_filters( 'bp_docs_header_template', $template_path . 'docs-header.php' ) ) ?>
+<?php include( apply_filters( 'bp_docs_header_template', bp_docs_locate_template( 'docs-header.php' ) ) ) ?>
 
 <?php
 // No media support at the moment. Want to integrate with something like BP Group Documents
