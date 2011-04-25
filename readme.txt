@@ -34,6 +34,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.0.6 =
+* Fixes bug from previous release that prevented certain templates from loading correctly
+
 = 1.0.5 =
 * Abstracts out the comment format callback for use with non-bp-default themes
 * Fixes bug that prevented some templates from being overridden by child themes
