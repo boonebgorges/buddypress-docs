@@ -418,6 +418,10 @@ class BP_Docs_BP_Integration {
 		if ( empty( $doc ) )
 			return false;
 		
+		// Only continue if this is a BP Docs post
+		if ( $doc->post_type != $bp->bp_docs->post_type_name )
+			return;
+		
 		$doc_id 	= !empty( $doc->ID ) ? $doc->ID : false;
 		
 		if ( !$doc_id )

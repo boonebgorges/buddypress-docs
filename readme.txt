@@ -34,6 +34,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.0.7 =
+* Fixes bug that prevented blog comments from being posted to the activity stream
+
 = 1.0.6 =
 * Fixes bug from previous release that prevented certain templates from loading correctly
 
