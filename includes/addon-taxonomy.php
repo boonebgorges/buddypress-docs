@@ -340,7 +340,7 @@ class BP_Docs_Taxonomy {
 	function tags_th() {
 		?>
 		
-		<th scope="column" class="tags-cell"><?php _e( 'Tags', 'bpsp' ); ?></th>
+		<th scope="column" class="tags-cell"><?php _e( 'Tags', 'bp-docs' ); ?></th>
 		
 		<?php
 	}
@@ -558,7 +558,7 @@ function bp_docs_post_categories_meta_box( $post ) {
 	<div id="taxonomy-<?php echo $taxonomy; ?>" class="categorydiv">
 		<ul id="<?php echo $taxonomy; ?>-tabs" class="category-tabs">
 			<li class="tabs"><a href="#<?php echo $taxonomy; ?>-all" tabindex="3"><?php echo $tax->labels->all_items; ?></a></li>
-			<li class="hide-if-no-js"><a href="#<?php echo $taxonomy; ?>-pop" tabindex="3"><?php _e( 'Most Used' ); ?></a></li>
+			<li class="hide-if-no-js"><a href="#<?php echo $taxonomy; ?>-pop" tabindex="3"><?php _e( 'Most Used', 'bp-docs' ); ?></a></li>
 		</ul>
 
 		<div id="<?php echo $taxonomy; ?>-pop" class="tabs-panel" style="display: none;">
