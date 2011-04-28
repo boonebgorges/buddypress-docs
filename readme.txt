@@ -36,6 +36,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 = 1.0.7 =
 * Fixes bug that prevented blog comments from being posted to the activity stream
+* Fixes incorrect textdomain in some strings
 
 = 1.0.6 =
 * Fixes bug from previous release that prevented certain templates from loading correctly
