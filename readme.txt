@@ -34,6 +34,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.0.8 =
+* Added Italian translation - Props Luca Camellini
+
 = 1.0.7 =
 * Fixes bug that prevented blog comments from being posted to the activity stream
 * Fixes incorrect textdomain in some strings
