@@ -35,6 +35,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 == Changelog ==
 
 = 1.0.8 =
+* Added group Doc count to group tab
 * Added Italian translation - Props Luca Camellini
 
 = 1.0.7 =
