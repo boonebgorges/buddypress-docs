@@ -471,7 +471,6 @@ class BP_Docs_Query {
 		// todo: abstract this out so I don't have to call group permalink here
 		$redirect_url = bp_get_group_permalink( $bp->groups->current_group ) . $bp->bp_docs->slug . '/';
 		
-	
 		if ( $result['redirect'] == 'single' ) {
 			$redirect_url .= $this->doc_slug;
 		} else if ( $result['redirect'] == 'edit' ) {

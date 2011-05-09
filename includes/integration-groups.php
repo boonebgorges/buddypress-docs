@@ -64,6 +64,14 @@ class BP_Docs_Groups_Integration {
 		
 		// Filter the activity hide_sitewide parameter to respect group privacy levels
 		add_filter( 'bp_docs_hide_sitewide',		array( $this, 'hide_sitewide' ) );
+		
+		// These functions are used to keep the group Doc count up to date
+		add_filter( 'bp_docs_doc_saved',		array( $this, 'update_doc_count' )  );
+		add_filter( 'bp_docs_doc_deleted',		array( $this, 'update_doc_count' ) );
+		
+		// Sneak into the nav before it's rendered to insert the group Doc count. Hooking
+		// to bp_actions because of the craptastic nature of the BP_Group_Extension loader
+		add_action( 'bp_actions',			array( $this, 'show_doc_count_in_tab' ), 9 );
 	}
 	
 	/**
@@ -448,6 +456,83 @@ class BP_Docs_Groups_Integration {
 		}
 		
 		return apply_filters( 'bp_docs_groups_hide_sitewide', $hide_sitewide, $group_status );
+	}
+	
+	/**
+	 * Update the groupmeta containing the current group's Docs count.
+	 *
+	 * Instead of incrementing, which has the potential to be error-prone, I do a fresh query
+	 * on each Doc save to get an accurate count. This adds some overhead, but Doc editing is
+	 * rare enough that it shouldn't be a huge issue.
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0.8
+	 */
+	function update_doc_count() {
+		global $bp;
+		
+		// If this is not a group Doc, skip it
+		if ( !bp_is_group() )
+			return;
+		
+		// Get a fresh doc count for the group
+		
+		// Set up the arguments
+		$doc_count 		= new BP_Docs_Query;
+		$query 			= $doc_count->build_query();
+
+		// Fire the query
+		$this_group_docs 	= new WP_Query( $query );
+		$this_group_docs_count  = $this_group_docs->found_posts;
+		
+		// BP has a stupid bug that makes it delete groupmeta when it equals 0. We'll save
+		// a string instead of zero to work around this
+		if ( !$this_group_docs_count )
+			$this_group_docs_count = '0';
+		
+		// Save the count
+		groups_update_groupmeta( $bp->groups->current_group->id, 'bp-docs-count', $this_group_docs_count );
+	}
+
+	/**
+	 * Show the Doc count in the group tab
+	 *
+	 * Because of a few annoying facts about the BuddyPress Group Extension API (the way it's
+	 * hooked into WP's load order, the fact that it doesn't differentiate between regular
+	 * group tabs and Admin subtabs, etc), the only way to do this is through some ugly hackery.
+	 * 
+	 * The function contains a backward compatibility clause, which should only be invoked when
+	 * you're coming from an instance of BP Docs that didn't have this feature (or a new group).
+	 *
+	 * The way that the nav item is keyed in bp_options_nav (i.e. by group slug rather than by
+	 * BP_GROUPS_SLUG) means that it probably won't work for BP 1.2.x. It should degrade
+	 * gracefully.
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0.8
+	 */
+	function show_doc_count_in_tab() {
+		global $bp;
+		
+		// Get the group slug, which will be the key for the nav item
+		if ( !empty( $bp->groups->current_group->slug ) ) {
+			$group_slug = $bp->groups->current_group->slug;	
+		} else {
+			return;
+		}
+		
+		// This will probably only work on BP 1.3+
+		if ( !empty( $bp->bp_options_nav[$group_slug] ) ) {
+			$doc_count = groups_get_groupmeta( $bp->groups->current_group->id, 'bp-docs-count' );
+			
+			// For backward compatibility
+			if ( '' === $doc_count ) {
+				BP_Docs_Groups_Integration::update_doc_count();
+				$doc_count = groups_get_groupmeta( $bp->groups->current_group->id, 'bp-docs-count' );	
+			}
+			
+			$bp->bp_options_nav[$group_slug][BP_DOCS_SLUG]['name'] = sprintf( __( 'Docs (%d)', 'bp-docs' ), $doc_count );	
+		}
 	}
 }
 

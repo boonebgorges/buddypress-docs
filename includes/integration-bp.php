@@ -214,6 +214,8 @@ class BP_Docs_BP_Integration {
 				);
 				
 				wp_update_post( $delete_args );
+				
+				do_action( 'bp_docs_doc_deleted', $delete_args );
 								
 				bp_core_add_message( __( 'Doc successfully deleted!', 'bp-docs' ) );
 			} else {
