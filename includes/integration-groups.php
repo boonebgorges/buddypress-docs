@@ -522,7 +522,7 @@ class BP_Docs_Groups_Integration {
 		}
 		
 		// This will probably only work on BP 1.3+
-		if ( !empty( $bp->bp_options_nav[$group_slug] ) ) {
+		if ( !empty( $bp->bp_options_nav[$group_slug] ) && !empty( $bp->bp_options_nav[$group_slug][BP_DOCS_SLUG] ) ) {
 			$doc_count = groups_get_groupmeta( $bp->groups->current_group->id, 'bp-docs-count' );
 			
 			// For backward compatibility
