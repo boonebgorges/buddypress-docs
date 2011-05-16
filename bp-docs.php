@@ -188,7 +188,7 @@ class BP_Docs {
 			'labels' => $post_type_labels,
 			'public' => false,
 			'_builtin' => false,
-			'show_ui' => true,
+			'show_ui' => $this->show_cpt_ui(),
 			'hierarchical' => false,
 			'supports' => array( 'title', 'editor', 'revisions', 'excerpt', 'comments' ),
 			'query_var' => true,
@@ -217,6 +217,22 @@ class BP_Docs {
 		// Only register on the root blog
 		if ( !bp_is_root_blog() )
 			restore_current_blog();
+	}
+	
+	/**
+	 * Show the CPT Dashboard UI to the current user?
+	 *
+	 * Defaults to is_super_admin(), but is filterable
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0.8
+	 *
+	 * @return bool $show_ui
+	 */
+	function show_cpt_ui() {
+		$show_ui = is_super_admin();
+		
+		return apply_filters( 'bp_docs_show_cpt_ui', $show_ui );
 	}
 	
 	/**
