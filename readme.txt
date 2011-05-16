@@ -35,6 +35,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 == Changelog ==
 
 = 1.0.8 =
+* Limited access to custom post type on the Dashboard to admins
 * Added group Doc count to group tab
 * Added Italian translation - Props Luca Camellini
 
