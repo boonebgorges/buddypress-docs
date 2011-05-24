@@ -34,6 +34,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.0.9 =
+* Fixed bug that caused an error message to appear when saving unchanged settings in the group admin
+
 = 1.0.8 =
 * Limited access to custom post type on the Dashboard to admins
 * Added group Doc count to group tab
