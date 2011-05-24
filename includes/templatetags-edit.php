@@ -157,11 +157,14 @@ function bp_docs_remove_tinymce_more_button( $buttons ) {
 add_filter( 'mce_buttons', 'bp_docs_remove_tinymce_more_button' );
 
 /**
- * Disables the wplink plugin from the bp_docs editor
+ * Disables incompatible plugins in the bp_docs editor
  *
  * WP 3.1 introduced a fancy wplink plugin for TinyMCE, which allows for internal linking. It's not
  * playing nice with BuddyPress Docs, so I'm removing it for the moment and falling back on
  * TinyMCE's default link button.
+ *
+ * For BuddyPress Docs 1.0.9, I'm doing the same thing with the new distraction-free writing in WP
+ * 3.2.
  *
  * @package BuddyPress Docs
  * @since 1.0.4
@@ -169,19 +172,27 @@ add_filter( 'mce_buttons', 'bp_docs_remove_tinymce_more_button' );
  * @param array $initArray The default TinyMCE init array as set by WordPress
  * @return array $initArray The init array with the wplink plugin removed
  */
-function bp_docs_remove_tinymce_wplink_plugin( $initArray ) {
+function bp_docs_remove_tinymce_plugins( $initArray ) {
 	if ( bp_docs_is_bp_docs_page() ) {
 		$plugins 	= explode( ',', $initArray['plugins'] );		
-		$wplink_key	= array_search( 'wplink', $plugins );
+
+		// Internal linking
+		$wplink_key = array_search( 'wplink', $plugins );
 		if ( $wplink_key ) {
 			unset( $plugins[$wplink_key] );
-			$plugins = array_values( $plugins );
-			$initArray['plugins'] = implode( ',', $plugins );
 		}
+		
+		$wpfullscreen_key = array_search( 'wpfullscreen', $plugins );
+		if ( $wpfullscreen_key ) {
+			unset( $plugins[$wpfullscreen_key] );
+		}
+		
+		$plugins = array_values( $plugins );	
+		$initArray['plugins'] = implode( ',', $plugins );
 	}
 	
 	return $initArray;
 }
-add_filter( 'tiny_mce_before_init', 'bp_docs_remove_tinymce_wplink_plugin' );
+add_filter( 'tiny_mce_before_init', 'bp_docs_remove_tinymce_plugins' );
 
 ?>
