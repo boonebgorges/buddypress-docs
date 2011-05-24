@@ -677,8 +677,14 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 		
 		$settings = !empty( $_POST['bp-docs'] ) ? $_POST['bp-docs'] : array();
 
-		if ( groups_update_groupmeta( $group_id, 'bp-docs', $settings ) )
+		$old_settings = groups_get_groupmeta( $group_id, 'bp-docs' );
+		
+		if ( $old_settings == $settings ) {
+			// No need to resave settings if they're the same
 			$success = true;
+		} else if ( groups_update_groupmeta( $group_id, 'bp-docs', $settings ) ) {
+			$success = true;
+		}
 			
 		return $success;
 	}
