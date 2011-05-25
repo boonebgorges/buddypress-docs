@@ -55,10 +55,8 @@
 </table>
 
 <br class="clear" />
-
-<h3><?php _e( 'Revision History', 'bp-docs' ) ?></h3>
 	
-	<?php bp_docs_list_post_revisions( get_the_ID() ) ?>
+<?php bp_docs_list_post_revisions( get_the_ID() ) ?>
 	
 </div>
 

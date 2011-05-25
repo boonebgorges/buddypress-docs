@@ -98,11 +98,14 @@ class BP_Docs_History {
 				$redirect = 'edit.php?post_type=' . $post->post_type;
 				break;
 			}
-		
-			check_admin_referer( "restore-post_$post->ID|$revision->ID" );
+			
+			$referer = 'restore-post_' . $post->ID . '|' . $this->revision->ID;
+			check_admin_referer( $referer );
 		
 			wp_restore_post_revision( $this->revision->ID );
-			$redirect = add_query_arg( array( 'message' => 5, 'revision' => $this->revision->ID ), get_edit_post_link( $post->ID, 'url' ) );
+			
+			bp_core_add_message( sprintf( __( 'You have successfully restored the Doc to the revision from %s.', 'bp-docs' ), $this->revision->post_date ) );
+			$redirect = bp_docs_get_doc_link( $post->ID ) . '/' . BP_DOCS_HISTORY_SLUG . '/';
 			break;
 		case 'diff' :
 			if ( !$this->left_revision  = get_post( $this->left ) )
@@ -333,7 +336,7 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
 			$class = $class ? '' : " class='alternate'";
 
 			if ( $post->ID != $revision->ID && $can_edit_post )
-				$actions = '<a href="' . wp_nonce_url( add_query_arg( array( 'revision' => $revision->ID, 'action' => 'restore' ) ), "restore-post_$post->ID|$revision->ID" ) . '">' . __( 'Restore' ) . '</a>';
+				$actions = '<a class="confirm" href="' . wp_nonce_url( add_query_arg( array( 'revision' => $revision->ID, 'action' => 'restore' ), $base_url ), "restore-post_$post->ID|$revision->ID" ) . '">' . __( 'Restore' ) . '</a>';
 			else
 				$actions = '';
 
