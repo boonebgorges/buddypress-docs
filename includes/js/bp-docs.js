@@ -51,6 +51,26 @@ jQuery(document).ready(function($){
 			$('#doc-form').append(is_auto);
 			$('#doc-edit-submit').click();
 		}
+		
+		/* Remove the edit lock when the user clicks away */
+		$("a").click(function(){
+			var doc_id = $("#existing-doc-id").val();
+			var data = {action:'remove_edit_lock', doc_id:doc_id};
+			$.ajax({
+				url: ajaxurl,
+				type: 'POST',
+				async: false,
+				timeout: 10000,
+				dataType:'json',
+				data: data,
+				success: function(response){
+					return true;
+				},
+				complete: function(){
+					return true;
+				}
+			});
+		});
 	}
 
 	/* On some setups, it helps TinyMCE to load if we fire the switchEditors event on load */
