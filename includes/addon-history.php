@@ -51,6 +51,8 @@ class BP_Docs_History {
 	 * @since 1.1
 	 */
 	function setup_params() {
+		global $bp;
+		
 		$actions = array(
 			'restore',
 			'diff',
@@ -61,7 +63,11 @@ class BP_Docs_History {
 		
 		$this->left = !empty( $_GET['left'] ) ? (int)$_GET['left'] : false;
 		$this->right = !empty( $_GET['right'] ) ? (int)$_GET['right'] : false;
-		$this->revision_id = !empty( $_GET['revision'] ) ? (int)$_GET['revision'] : false;
+		
+		if ( empty( $bp->bp_docs->current_post ) )
+			$bp->bp_docs->current_post = bp_docs_get_current_doc();
+		
+		$this->revision_id = !empty( $bp->bp_docs->current_post->ID ) ? $bp->bp_docs->current_post->ID : false;	
 	}
 	
 	function setup_action() {
@@ -92,7 +98,6 @@ class BP_Docs_History {
 			$redirect = add_query_arg( array( 'message' => 5, 'revision' => $this->revision->ID ), get_edit_post_link( $post->ID, 'url' ) );
 			break;
 		case 'diff' :
-		
 			if ( !$this->left_revision  = get_post( $this->left ) )
 				break;
 			if ( !$this->right_revision = get_post( $this->right ) )
@@ -156,8 +161,11 @@ class BP_Docs_History {
 			break;
 		case 'view' :
 		default :
+
 			if ( !$this->revision = wp_get_post_revision( $this->revision_id ) )
-				break;
+				if ( $this->revision = get_post( $this->revision_id ) )
+					break;
+
 			if ( !$post = get_post( $this->revision->post_parent ) )
 				break;
 		
@@ -178,6 +186,10 @@ class BP_Docs_History {
 			// Sets up the diff radio buttons
 			$this->left  = $this->revision->ID;
 			$this->right = $post->ID;
+		
+			// Being lazy here and dumping the revision into the left_revision slot, to
+			// make template tags easier
+			$this->left_revision = $this->revision;
 		
 			$redirect = false;
 			break;
@@ -215,12 +227,17 @@ function bp_docs_history_action() {
 	return apply_filters( 'bp_docs_history_action', $action );
 }
 
-function bp_docs_history_post_revision_field( $side = 'left', $field = 'post_title' ) {
+function bp_docs_history_post_revision_field( $side = false, $field = 'post_title' ) {
 	global $bp;
 	
-	$side = $side && 'right' == $side ? 'right_revision' : 'left_revision';
+	if ( $side ) {
+		$side = 'right' == $side ? 'right_revision' : 'left_revision';
+		$data = $bp->bp_docs->history->{$side}->{$field};
+	} else {
+		$data = $bp->bp_docs->history->revision->{$field};
+	}
 	
-	return apply_filters( 'bp_docs_history_post_revision_title', $bp->bp_docs->history->{$side}->{$field} );
+	return apply_filters( 'bp_docs_history_post_revision_title', $data );
 }
 
 function bp_docs_history_revisions_are_identical() {
