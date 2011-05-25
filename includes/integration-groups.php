@@ -221,6 +221,10 @@ class BP_Docs_Groups_Integration {
 			// Manage settings don't always get set on doc creation, so we need a default
 			if ( empty( $doc_settings['manage'] ) )
 				$doc_settings['manage'] = 'creator';
+			
+			// Likewise with view_history
+			if ( empty( $doc_settings['view_history'] ) )
+				$doc_settings['view_history'] = 'anyone';
 		}
 
 		$group_id =  $bp->groups->current_group->id;
@@ -313,6 +317,8 @@ class BP_Docs_Groups_Integration {
 				$read_comments = bp_group_is_visible() ? 'anyone' : 'group-members';
 			}
 			
+			$view_history   = !empty( $doc_settings['view_history'] ) ? $doc_settings['view_history'] : 'anyone';
+			
 			$manage 	= !empty( $doc_settings['manage'] ) ? $doc_settings['manage'] : 'creator';
 			
 			// Set the text of the 'creator only' label
@@ -376,6 +382,26 @@ class BP_Docs_Groups_Integration {
 					<?php endif ?>
 					
 					<input name="settings[read_comments]" type="radio" value="no-one" <?php checked( $read_comments, 'no-one' ) ?>/> <?php _e( 'No one', 'bp-docs' ) ?><br />
+				</td>
+			</tr>
+			
+			<?php /* VIEWING HISTORY */ ?>
+			<tr>
+				<td class="desc-column">
+					<label for="settings[view_history]"><?php _e( 'Who can view this doc\'s history?', 'bp-docs' ) ?></label>
+				</td>
+				
+				<td class="content-column">
+				
+					<input name="settings[view_history]" type="radio" value="anyone" <?php checked( $view_history, 'anyone' ) ?>/> <?php _e( 'Anyone', 'bp-docs' ) ?><br />
+					
+					<input name="settings[view_history]" type="radio" value="group-members" <?php checked( $view_history, 'group-members' ) ?>/> <?php _e( 'All members of the group', 'bp-docs' ) ?><br />
+					
+					<?php if ( bp_group_is_admin() || bp_group_is_mod() ) : ?>
+						<input name="settings[view_history]" type="radio" value="admins-mods" <?php checked( $view_history, 'admins-mods' ) ?>/> <?php _e( 'Only admins and mods of this group', 'bp-docs' ) ?><br />
+					<?php endif ?>
+					
+					<input name="settings[view_history]" type="radio" value="no-one" <?php checked( $view_history, 'no-one' ) ?>/> <?php _e( 'No one', 'bp-docs' ) ?><br />
 				</td>
 			</tr>
 			

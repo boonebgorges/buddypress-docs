@@ -15,14 +15,16 @@
 			</li>
 			
 			<?php if ( bp_docs_current_user_can( 'edit' ) ) : ?>
-			<li<?php if ( 'edit' == bp_docs_current_view() ) : ?> class="current"<?php endif ?>>	
-				<a href="<?php echo bp_docs_get_group_doc_permalink() . '/' . BP_DOCS_EDIT_SLUG ?>"><?php _e( 'Edit', 'bp-docs' ) ?></a> 
-			</li>
+				<li<?php if ( 'edit' == bp_docs_current_view() ) : ?> class="current"<?php endif ?>>	
+					<a href="<?php echo bp_docs_get_group_doc_permalink() . '/' . BP_DOCS_EDIT_SLUG ?>"><?php _e( 'Edit', 'bp-docs' ) ?></a> 
+				</li>
 			<?php endif ?>
 			
-			<li<?php if ( 'history' == bp_docs_current_view() ) : ?> class="current"<?php endif ?>>	
-				<a href="<?php echo bp_docs_get_group_doc_permalink() . '/' . BP_DOCS_HISTORY_SLUG ?>"><?php _e( 'History', 'bp-docs' ) ?></a> 
-			</li>
+			<?php if ( bp_docs_current_user_can( 'view_history' ) ) : ?>
+				<li<?php if ( 'history' == bp_docs_current_view() ) : ?> class="current"<?php endif ?>>	
+					<a href="<?php echo bp_docs_get_group_doc_permalink() . '/' . BP_DOCS_HISTORY_SLUG ?>"><?php _e( 'History', 'bp-docs' ) ?></a> 
+				</li>
+			<?php endif ?>
 		</ul>
 	</div>
 
