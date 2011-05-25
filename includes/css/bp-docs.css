@@ -312,3 +312,7 @@ table.diff {
 #att-info {
 	background-color: #E4F2FD;
 }
+
+table#post-revisions {
+	margin-top: 20px;
+}
