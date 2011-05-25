@@ -4,7 +4,7 @@ Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.1, BuddyPress 1.3
 Tested up to: WordPress 3.2 beta, BuddyPress 1.3
-Stable tag: 1.0.8
+Stable tag: 1.1
  
 Adds collaborative Docs to BuddyPress.
 
@@ -37,8 +37,6 @@ This plugin is in active development. For feature requests and bug reports, visi
 = 1.1 =
 * 'History' tab added, giving full access to a Doc's revision history
 * UI improvements to make tabs more wiki-like (Read, Edit, History)
-
-= 1.0.9 =
 * Fixed bug that caused an error message to appear when saving unchanged settings in the group admin
 
 = 1.0.8 =
