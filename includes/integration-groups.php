@@ -146,8 +146,11 @@ class BP_Docs_Groups_Integration {
 				// This is an edit page
 				$view = 'edit';
 			} else if ( !empty( $bp->action_variables[1] ) && $bp->action_variables[1] == BP_DOCS_DELETE_SLUG ) {
-				// This is an edit page
+				// This is an delete request
 				$view = 'delete';
+			} else if ( !empty( $bp->action_variables[1] ) && $bp->action_variables[1] == BP_DOCS_HISTORY_SLUG ) {
+				// This is an delete request
+				$view = 'history';
 			}
 		}
 		
@@ -831,7 +834,7 @@ function bp_docs_group_tabs( $group = false ) {
 		<li<?php if ( 'create' == $bp->bp_docs->current_view ) : ?> class="current"<?php endif; ?>><a href="<?php echo $bp->root_domain . '/' . $groups_slug ?>/<?php echo $group->slug ?>/<?php echo $bp->bp_docs->slug ?>/create"><?php _e( 'New Doc', 'bp-docs' ) ?></a></li>
 	<?php endif ?>	
 	
-	<?php if ( $bp->bp_docs->current_view == 'single' || $bp->bp_docs->current_view == 'edit' ) : ?>
+	<?php if ( bp_docs_is_existing_doc() ) : ?>
 		<li class="current"><a href="<?php echo $bp->root_domain . '/' . $groups_slug ?>/<?php echo $group->slug ?>/<?php echo $bp->bp_docs->slug ?>/<?php echo $post->post_name ?>"><?php the_title() ?></a></li>		
 	<?php endif ?>
 	

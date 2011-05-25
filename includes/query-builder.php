@@ -46,7 +46,7 @@ class BP_Docs_Query {
 		$this->current_view 		= $this->get_current_view();
 		
 		// Get the item slug, if there is one available
-		if ( $this->current_view == 'single' || $this->current_view == 'edit' || $this->current_view == 'delete' )
+		if ( $this->current_view == 'single' || $this->current_view == 'edit' || $this->current_view == 'delete' || $this->current_view == 'history' )
 			$this->doc_slug = $this->get_doc_slug();		
 	}
 
@@ -310,6 +310,7 @@ class BP_Docs_Query {
 			case 'single' :
 			case 'edit' :
 			case 'delete' :
+			case 'history' :
 				
 				$args = $this->build_query();
 				
@@ -335,11 +336,18 @@ class BP_Docs_Query {
 					 require BP_DOCS_INSTALL_PATH . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'templatetags-edit.php';
 				}
 
-				if ( $this->current_view == 'single' )
-					$template = 'single-doc.php';	
-				else
-					$template = 'edit-doc.php';
+				switch ( $this->current_view ) {
+					case 'single' :
+						$template = 'single-doc.php';	
+						break;
+					case 'edit' :
+						$template = 'edit-doc.php';
+						break;
+					case 'history' :
+						$template = 'history-doc.php';
+						break;
 				
+				}
 				// Todo: Maybe some sort of error if there is no edit permission?
 	
 				break;
