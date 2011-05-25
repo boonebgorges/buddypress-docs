@@ -181,8 +181,8 @@ class BP_Docs_History {
 				break;
 		
 			$post_title = '<a href="' . get_edit_post_link() . '">' . get_the_title() . '</a>';
-			$h2 = sprintf( __( 'Compare Revisions of &#8220;%1$s&#8221;' ), $post_title );
-			$title = __( 'Revisions' );
+			$h2 = sprintf( __( 'Compare Revisions of &#8220;%1$s&#8221;', 'bp-docs' ), $post_title );
+			$title = __( 'Revisions', 'bp-docs' );
 		
 			$this->left  = $this->left_revision->ID;
 			$this->right = $this->right_revision->ID;
@@ -213,8 +213,8 @@ class BP_Docs_History {
 		
 			$post_title = '<a href="' . get_edit_post_link() . '">' . get_the_title() . '</a>';
 			$revision_title = wp_post_revision_title( $this->revision, false );
-			$h2 = sprintf( __( 'Revision for &#8220;%1$s&#8221; created on %2$s' ), $post_title, $revision_title );
-			$title = __( 'Revisions' );
+			$h2 = sprintf( __( 'Revision for &#8220;%1$s&#8221; created on %2$s', 'bp-docs' ), $post_title, $revision_title );
+			$title = __( 'Revisions', 'bp-docs' );
 		
 			// Sets up the diff radio buttons
 			$this->left  = $this->revision->ID;
@@ -408,7 +408,7 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
 			$class = $class ? '' : " class='alternate'";
 
 			if ( $post->ID != $revision->ID && $can_edit_post )
-				$actions = '<a class="confirm" href="' . wp_nonce_url( add_query_arg( array( 'revision' => $revision->ID, 'action' => 'restore' ), $base_url ), "restore-post_$post->ID|$revision->ID" ) . '">' . __( 'Restore' ) . '</a>';
+				$actions = '<a class="confirm" href="' . wp_nonce_url( add_query_arg( array( 'revision' => $revision->ID, 'action' => 'restore' ), $base_url ), "restore-post_$post->ID|$revision->ID" ) . '">' . __( 'Restore', 'bp-docs' ) . '</a>';
 			else
 				$actions = '';
 
@@ -431,7 +431,7 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
 
 <div class="tablenav">
 	<div class="alignleft">
-		<input type="submit" class="button-secondary" value="<?php esc_attr_e( 'Compare Revisions' ); ?>" />
+		<input type="submit" class="button-secondary" value="<?php esc_attr_e( 'Compare Revisions', 'bp-docs' ); ?>" />
 		<input type="hidden" name="action" value="diff" />
 		<input type="hidden" name="post_type" value="<?php echo esc_attr($post->post_type); ?>" />
 	</div>
@@ -447,11 +447,11 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
 	<col style="width: 33%" />
 <thead>
 <tr>
-	<th scope="col"><?php /* translators: column name in revisons */ _ex( 'Old', 'revisions column name' ); ?></th>
-	<th scope="col"><?php /* translators: column name in revisons */ _ex( 'New', 'revisions column name' ); ?></th>
-	<th scope="col"><?php /* translators: column name in revisons */ _ex( 'Date Created', 'revisions column name' ); ?></th>
-	<th scope="col"><?php _e( 'Author' ); ?></th>
-	<th scope="col" class="action-links"><?php _e( 'Actions' ); ?></th>
+	<th scope="col"><?php /* translators: column name in revisons */ _e( 'Old', 'bp-docs' ); ?></th>
+	<th scope="col"><?php /* translators: column name in revisons */ _e( 'New', 'bp-docs' ); ?></th>
+	<th scope="col"><?php /* translators: column name in revisons */ _e( 'Date Created', 'bp-docs' ); ?></th>
+	<th scope="col"><?php _e( 'Author', 'bp-docs' ); ?></th>
+	<th scope="col" class="action-links"><?php _e( 'Actions', 'bp-docs' ); ?></th>
 </tr>
 </thead>
 <tbody>

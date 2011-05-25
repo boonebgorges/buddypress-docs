@@ -19,15 +19,15 @@
 		<tr id="revision">
 			<th scope="row"></th>
 			<th scope="col" class="th-full">
-				<span class="alignleft"><?php printf( __( 'Older: %s' ), bp_docs_history_post_revision_field( 'left', 'post_title' ) ); ?></span>
-				<span class="alignright"><?php printf( __( 'Newer: %s' ), bp_docs_history_post_revision_field( 'right', 'post_title' ) ); ?></span>
+				<span class="alignleft"><?php printf( __( 'Older: %s', 'bp-docs' ), bp_docs_history_post_revision_field( 'left', 'post_title' ) ); ?></span>
+				<span class="alignright"><?php printf( __( 'Newer: %s', 'bp-docs' ), bp_docs_history_post_revision_field( 'right', 'post_title' ) ); ?></span>
 			</th>
 		</tr>
 	<?php elseif ( !bp_docs_history_is_latest() ) : ?>
 		<tr id="revision">
 			<th scope="row"></th>
 			<th scope="col" class="th-full">
-				<span class="alignleft"><?php printf( __( 'You are currently viewing a revision titled "%1$s", saved on %2$s by %3$s' ), bp_docs_history_post_revision_field( false, 'post_title' ), bp_format_time( strtotime( bp_docs_history_post_revision_field( false, 'post_date' ) ) ), bp_core_get_userlink( bp_docs_history_post_revision_field( false, 'post_author' ) ) ); ?></span>
+				<span class="alignleft"><?php printf( __( 'You are currently viewing a revision titled "%1$s", saved on %2$s by %3$s', 'bp-docs' ), bp_docs_history_post_revision_field( false, 'post_title' ), bp_format_time( strtotime( bp_docs_history_post_revision_field( false, 'post_date' ) ) ), bp_core_get_userlink( bp_docs_history_post_revision_field( false, 'post_author' ) ) ); ?></span>
 			</th>
 		</tr>	
 	<?php endif ?>
@@ -49,7 +49,7 @@
 	<?php endforeach ?>
 
 	<?php if ( 'diff' == bp_docs_history_action() && bp_docs_history_revisions_are_identical() ) : ?>
-		<tr><td colspan="2"><div class="updated"><p><?php _e( 'These revisions are identical.' ); ?></p></div></td></tr>
+		<tr><td colspan="2"><div class="updated"><p><?php _e( 'These revisions are identical.', 'bp-docs' ); ?></p></div></td></tr>
 	<?php endif ?>
 
 </table>
