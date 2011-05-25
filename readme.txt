@@ -34,6 +34,10 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.1 =
+* 'History' tab added, giving full access to a Doc's revision history
+* UI improvements to make tabs more wiki-like (Read, Edit, History)
+
 = 1.0.9 =
 * Fixed bug that caused an error message to appear when saving unchanged settings in the group admin
 
