@@ -60,10 +60,4 @@
 	
 </div>
 
-<div class="doc-meta">
-	<?php do_action( 'bp_docs_single_doc_meta' ) ?>
-</div>
-
-<?php comments_template( '/docs/comments.php' ) ?>
-
 <?php endwhile; endif ?>
