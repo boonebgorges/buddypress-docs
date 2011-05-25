@@ -2,14 +2,6 @@
 
 <?php include( apply_filters( 'bp_docs_header_template', bp_docs_locate_template( 'docs-header.php' ) ) ) ?>
 
-<h2><?php the_title() ?> 
-	<?php if ( bp_docs_current_user_can( 'edit' ) ) : ?>
-		
-		<a class="button" href="<?php echo bp_docs_get_group_doc_permalink() . '/' . BP_DOCS_EDIT_SLUG ?>"><?php _e( 'Edit', 'bp-docs' ) ?></a> 
-
-	<?php endif ?>
-</h2> 
-
 <?php if ( bp_docs_is_doc_edit_locked() && bp_docs_current_user_can( 'edit' ) ) : ?>
 	<div class="toggleable doc-is-locked">
 		<span class="toggle-switch"><?php _e( 'Locked', 'bp-docs' ) ?></span>

@@ -62,7 +62,6 @@ function bp_docs_is_wiki_edit_page() {
 	$item_type = BP_Docs_Query::get_item_type();
 	$current_view = BP_Docs_Query::get_current_view( $item_type );
 	
-	
 	return apply_filters( 'bp_docs_is_wiki_edit_page', $is_wiki_edit_page );
 }
 
@@ -822,6 +821,42 @@ function bp_docs_list_comments() {
 	$args = apply_filters( 'bp_docs_list_comments_args', $args );
 
 	wp_list_comments( $args );
+}
+
+/**
+ * Are we looking at an existing doc?
+ *
+ * @package BuddyPress Docs
+ * @since 1.0-beta
+ *
+ * @return bool True if it's an existing doc
+ */
+function bp_docs_is_existing_doc() {
+	global $bp;
+	
+	if ( empty( $bp->bp_docs->current_post ) )
+		$bp->bp_docs->current_post = bp_docs_get_current_doc();
+	
+	if ( empty( $bp->bp_docs->current_post ) )
+		return false;
+	
+	return true;
+}
+
+/**
+ * What's the current view?
+ *
+ * @package BuddyPress Docs
+ * @since 1.1
+ *
+ * @return str $current_view The current view
+ */
+function bp_docs_current_view() {
+	global $bp;
+	
+	$view = !empty( $bp->bp_docs->current_view ) ? $bp->bp_docs->current_view : false;
+	
+	return apply_filters( 'bp_docs_current_view', $view );
 }
 
 /**

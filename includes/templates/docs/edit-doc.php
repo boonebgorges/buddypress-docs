@@ -9,19 +9,14 @@ wp_tiny_mce();
 
 ?>
 
+<div class="doc-content">
+
 <div id="idle-warning" style="display:none">
 	<p><?php _e( 'You have been idle for <span id="idle-warning-time"></span>', 'bp-docs' ) ?></p>
 </div>
 
 <form action="" method="post" class="standard-form" id="doc-form">
-    <div class="doc-header">
-    
-	<?php if ( bp_docs_is_existing_doc() ) : ?>
-		<h4><?php the_title() ?></h4>
-	<?php else : ?>
-		<h4><?php _e( 'New Doc', 'bp-docs' ); ?></h4>
-	<?php endif ?>
-	
+    <div class="doc-header">	
 	<?php if ( bp_docs_is_existing_doc() ) : ?>
 		<input type="hidden" id="existing-doc-id" value="<?php the_ID() ?>" />
 	<?php endif ?>
@@ -117,6 +112,8 @@ wp_tiny_mce();
         <div style="clear: both"> </div>
     </div>
 </form>
+
+</div><!-- .doc-content -->
 
 <?php bp_docs_inline_toggle_js() ?>
 
