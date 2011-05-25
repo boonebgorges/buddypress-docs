@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * The History tab add-on for BuddyPress Docs
+ *
+ * @package BuddyPress Docs
+ * @subpackage History
+ * @since 1.1
+ */
 class BP_Docs_History {
 	var $action;
 	var $left;
@@ -77,6 +84,19 @@ class BP_Docs_History {
 		}
 	}
 	
+	/**
+	 * Determines what the user is trying to do on this page view.
+	 *
+	 * This determination is made mostly on the basis of the information passed in the URL
+	 * parameters. This function is also responsible for some of the object setup (getting the
+	 * revision post(s), etc). 
+	 *
+	 * This is cribbed nearly wholesale from wp-admin/revision.php. In the future I would like
+	 * to clean it up to be less WordPressy and more pluginish.
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.1
+	 */
 	function setup_action() {
 		global $bp, $post;
 		
@@ -210,6 +230,15 @@ class BP_Docs_History {
 		$this->setup_is_identical();
 	}
 	
+	/**
+	 * Determines whether left and right revisions are identical.
+	 *
+	 * This is cribbed nearly wholesale from wp-admin/revision.php. In the future I would like
+	 * to clean it up to be less WordPressy and more pluginish.
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.1
+	 */
 	function setup_is_identical() {
 		$this->revisions_are_identical = true;
 		
@@ -228,6 +257,14 @@ class BP_Docs_History {
 	}
 }
 
+/**
+ * Returns the current revision action.
+ *
+ * @package BuddyPress Docs
+ * @since 1.1
+ *
+ * @return str $action The current revision action ('view', 'diff', 'restore')
+ */
 function bp_docs_history_action() {
 	global $bp;
 	
@@ -236,6 +273,21 @@ function bp_docs_history_action() {
 	return apply_filters( 'bp_docs_history_action', $action );
 }
 
+/**
+ * Returns the data from a revision field.
+ *
+ * This is seriously cobbled together. WP uses specific functions to get template data out of the
+ * right and left revisions, and specific functions for title vs content, etc. That seems like
+ * overkill to me. I also added a default null $side, so that you can also use this function to
+ * get the field of a single revision ($history->revision) instead of $history->left_revision, etc.
+ *
+ * @package BuddyPress Docs
+ * @since 1.1
+ *
+ * @param str $side 'left', 'right', or false to show the main revision
+ * @param str $field Which property of the revision do you want?
+ * @return str $data The field data
+ */
 function bp_docs_history_post_revision_field( $side = false, $field = 'post_title' ) {
 	global $bp;
 	
@@ -249,12 +301,32 @@ function bp_docs_history_post_revision_field( $side = false, $field = 'post_titl
 	return apply_filters( 'bp_docs_history_post_revision_title', $data );
 }
 
+/**
+ * Returns whether the revisions are identical.
+ *
+ * @package BuddyPress Docs
+ * @since 1.1
+ *
+ * @return bool True when left and right are the same
+ */
 function bp_docs_history_revisions_are_identical() {
 	global $bp;
 
 	return apply_filters( 'bp_docs_history_post_revision_title', $bp->bp_docs->history->revisions_are_identical );
 }
 
+/**
+ * Returns whether the revision being viewed is the most recent (ie the current) rev of the Doc.
+ *
+ * I need this function in order to decide whether to show the revision content above the revision
+ * history selector. That's because I don't like WP's default behavior, which is to show the most
+ * recent revision.
+ *
+ * @package BuddyPress Docs
+ * @since 1.1
+ *
+ * @return bool True when the current revision is the latest revision
+ */
 function bp_docs_history_is_latest() {
 	global $bp;
 
