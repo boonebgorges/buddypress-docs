@@ -148,7 +148,7 @@ class BP_Docs {
 		$this->hierarchy = new BP_Docs_Hierarchy;
 		
 		require_once( BP_DOCS_INCLUDES_PATH . 'addon-history.php' );
-		//$this->hierarchy = new BP_Docs_Hierarchy;
+		$this->history = new BP_Docs_History;
 
 		do_action( 'bp_docs_load_doc_extras' );
 	}
@@ -221,6 +221,8 @@ class BP_Docs {
 			'query_var' => true,
 			'rewrite' => array( 'slug' => 'item' ),
 		));
+		
+		do_action( 'bp_docs_registered_post_type' );
 		
 		// Only register on the root blog
 		if ( !bp_is_root_blog() )
