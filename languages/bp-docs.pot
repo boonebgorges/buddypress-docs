@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  \n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/buddypress-docs\n"
-"POT-Creation-Date: 2011-05-25 13:22:16+00:00\n"
+"POT-Creation-Date: 2011-05-25 13:29:40+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -441,19 +441,16 @@ msgstr ""
 
 #. translators: column name in revisons
 #: includes/addon-history.php:450
-msgctxt "revisions column name"
 msgid "Old"
 msgstr ""
 
 #. translators: column name in revisons
 #: includes/addon-history.php:451
-msgctxt "revisions column name"
 msgid "New"
 msgstr ""
 
 #. translators: column name in revisons
 #: includes/addon-history.php:452
-msgctxt "revisions column name"
 msgid "Date Created"
 msgstr ""
 
