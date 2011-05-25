@@ -276,3 +276,39 @@ div.hidden {
 table.group-docs-options td.label {
 	width: 200px;
 }
+
+/* HISTORY */
+
+table.diff {
+	width: 100%;
+}
+	table.diff col.content {
+		width: 50%;
+	}	
+	table.diff tr {
+		background-color: transparent;
+	}
+	table.diff td, table.diff th {
+		padding: .5em;
+		font-family: Consolas, Monaco, Courier, monospace;
+		border: none;
+	}
+	table.diff .diff-deletedline del, table.diff .diff-addedline ins {
+		text-decoration: none;
+	}
+	table.diff .diff-deletedline {
+		background-color: #fdd;
+	}
+		table.diff .diff-deletedline del {
+			background-color: #f99;
+		}	
+	table.diff .diff-addedline {
+		background-color: #dfd;
+	}
+		table.diff .diff-addedline ins {
+			background-color: #9f9;
+		}
+
+#att-info {
+	background-color: #E4F2FD;
+}
