@@ -60,6 +60,9 @@ class BP_Docs_BP_Integration {
 		// Keep comment notifications from being sent
 		add_filter( 'comment_post', 		array( $this, 'check_comment_type' 	) );
 		
+		// AJAX handler for removing the edit lock when a user clicks away from Edit mode
+		add_action( 'wp_ajax_remove_edit_lock', array( $this, 'remove_edit_lock'        ) );
+		
 		add_action( 'bp_loaded', 		array( $this, 'set_includes_url' 	) );
 		add_action( 'init', 			array( $this, 'enqueue_scripts' 	) );
 		add_action( 'wp_print_styles', 		array( $this, 'enqueue_styles' 		) );
@@ -576,6 +579,23 @@ class BP_Docs_BP_Integration {
 		if ( $bp->bp_docs->post_type_name == $post->post_type ) {
 			add_filter( 'pre_option_comments_notify', create_function( false, 'return 0;' ) );
 		}
+	}
+	
+	/**
+	 * AJAX handler for remove_edit_lock option
+	 *
+	 * This function is called when a user is editing a Doc and clicks a link to leave the page
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.1
+	 */
+	function remove_edit_lock() {
+		$doc_id = isset( $_POST['doc_id'] ) ? $_POST['doc_id'] : false;
+		
+		if ( !$doc_id )
+			return false;
+		
+		delete_post_meta( $doc_id, '_edit_lock' );
 	}
 	
 	/**
