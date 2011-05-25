@@ -88,7 +88,7 @@ class BP_Docs_History {
 		case 'restore' :
 			if ( !$this->revision = wp_get_post_revision( $this->revision_id ) )
 				break;
-			if ( !current_user_can( 'edit_post', $this->revision->post_parent ) )
+			if ( !bp_docs_current_user_can( 'edit' ) )
 				break;
 			if ( !$post = get_post( $this->revision->post_parent ) )
 				break;
@@ -314,7 +314,7 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
 
 	$rows = $right_checked = '';
 	$class = false;
-	$can_edit_post = current_user_can( 'edit_post', $post->ID );
+	$can_edit_post = bp_docs_current_user_can( 'edit' );
 	foreach ( $revisions as $revision ) {
 		if ( !current_user_can( 'read_post', $revision->ID ) )
 			continue;
