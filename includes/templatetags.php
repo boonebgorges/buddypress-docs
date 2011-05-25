@@ -484,13 +484,21 @@ function bp_docs_doc_settings_markup() {
 	do_action( 'bp_docs_doc_settings_markup', $doc_settings );
 }
 
+/**
+ * Outputs the links that appear under each Doc in the Doc listing
+ *
+ * @package BuddyPress Docs
+ */
 function bp_docs_doc_action_links() {
 	$links 		= array();
 	
-	$links[] 	= '<a href="' . bp_docs_get_group_doc_permalink() . '">' . __( 'View', 'bp-docs' ) . '</a>';
+	$links[] 	= '<a href="' . bp_docs_get_group_doc_permalink() . '">' . __( 'Read', 'bp-docs' ) . '</a>';
 	
 	if ( bp_docs_user_can( 'edit', bp_loggedin_user_id() ) )
 		$links[] 	= '<a href="' . bp_docs_get_group_doc_permalink() . '/' . BP_DOCS_EDIT_SLUG . '">' . __( 'Edit', 'bp-docs' ) . '</a>';
+	
+	if ( bp_docs_user_can( 'view_history', bp_loggedin_user_id() ) )
+		$links[] 	= '<a href="' . bp_docs_get_group_doc_permalink() . '/' . BP_DOCS_HISTORY_SLUG . '">' . __( 'History', 'bp-docs' ) . '</a>';
 	
 	echo implode( ' &#124; ', $links );
 }
