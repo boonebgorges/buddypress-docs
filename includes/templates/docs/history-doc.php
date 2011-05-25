@@ -18,11 +18,18 @@
 	<?php endif ?>
 
 	<?php foreach ( _wp_post_revision_fields() as $field => $field_title ) : ?>
-
-		<tr id="revision-field-<?php echo $field; ?>">
-			<th scope="row"><?php echo esc_html( $field_title ); ?></th>
-			<td><div class="pre"><?php echo wp_text_diff( bp_docs_history_post_revision_field( 'left', $field ), bp_docs_history_post_revision_field( 'right', $field ) ) ?></div></td>
-		</tr>
+		<?php if ( 'diff' == bp_docs_history_action() ) : ?>
+			<tr id="revision-field-<?php echo $field; ?>">
+				<th scope="row"><?php echo esc_html( $field_title ); ?></th>
+				<td><div class="pre"><?php echo wp_text_diff( bp_docs_history_post_revision_field( 'left', $field ), bp_docs_history_post_revision_field( 'right', $field ) ) ?></div></td>
+			</tr>
+		<?php else : ?>
+			<tr id="revision-field-<?php echo $field; ?>">
+				<th scope="row"><?php echo esc_html( $field_title ); ?></th>
+				<td><div class="pre"><?php echo bp_docs_history_post_revision_field( false, $field ) ?></div></td>
+			</tr>
+		
+		<?php endif ?>
 
 	<?php endforeach ?>
 
