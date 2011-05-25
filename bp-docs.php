@@ -141,12 +141,16 @@ class BP_Docs {
 	 */
 	function load_doc_extras() {
 		// Todo: make this conditional with a filter or a constant
-		require_once( BP_DOCS_INSTALL_PATH . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'addon-taxonomy.php' );
+		require_once( BP_DOCS_INCLUDES_PATH . 'addon-taxonomy.php' );
 		$this->taxonomy = new BP_Docs_Taxonomy;
 		
-		require_once( BP_DOCS_INSTALL_PATH . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'addon-hierarchy.php' );
+		require_once( BP_DOCS_INCLUDES_PATH . 'addon-hierarchy.php' );
 		$this->hierarchy = new BP_Docs_Hierarchy;
 		
+		require_once( BP_DOCS_INCLUDES_PATH . 'addon-history.php' );
+		//$this->hierarchy = new BP_Docs_Hierarchy;
+
+		do_action( 'bp_docs_load_doc_extras' );
 	}
 	
 	/**
