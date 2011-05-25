@@ -12,6 +12,8 @@ class BP_Docs_History {
 	var $right_revision;
 	var $revisions_are_identical;
 	
+	var $is_latest;
+	
 	/**
 	 * PHP 4 constructor
 	 *
@@ -64,10 +66,15 @@ class BP_Docs_History {
 		$this->left = !empty( $_GET['left'] ) ? (int)$_GET['left'] : false;
 		$this->right = !empty( $_GET['right'] ) ? (int)$_GET['right'] : false;
 		
-		if ( empty( $bp->bp_docs->current_post ) )
-			$bp->bp_docs->current_post = bp_docs_get_current_doc();
-		
-		$this->revision_id = !empty( $bp->bp_docs->current_post->ID ) ? $bp->bp_docs->current_post->ID : false;	
+		// Try to get the revision id out of the URL. If it's not provided, default to the
+		// current post
+		$this->revision_id = !empty( $_GET['revision'] ) ? (int)$_GET['revision'] : false;
+		if ( !$this->revision_id ) {
+			if ( empty( $bp->bp_docs->current_post ) )
+				$bp->bp_docs->current_post = bp_docs_get_current_doc();
+			
+			$this->revision_id = !empty( $bp->bp_docs->current_post->ID ) ? $bp->bp_docs->current_post->ID : false;	
+		}
 	}
 	
 	function setup_action() {
@@ -161,10 +168,13 @@ class BP_Docs_History {
 			break;
 		case 'view' :
 		default :
-
-			if ( !$this->revision = wp_get_post_revision( $this->revision_id ) )
-				if ( $this->revision = get_post( $this->revision_id ) )
+			if ( !$this->revision = wp_get_post_revision( $this->revision_id ) ) {
+				if ( $this->revision = get_post( $this->revision_id ) ) {
+					$this->is_latest = true;
+				} else {
 					break;
+				}
+			}
 
 			if ( !$post = get_post( $this->revision->post_parent ) )
 				break;
@@ -186,10 +196,6 @@ class BP_Docs_History {
 			// Sets up the diff radio buttons
 			$this->left  = $this->revision->ID;
 			$this->right = $post->ID;
-		
-			// Being lazy here and dumping the revision into the left_revision slot, to
-			// make template tags easier
-			$this->left_revision = $this->revision;
 		
 			$redirect = false;
 			break;
@@ -244,6 +250,12 @@ function bp_docs_history_revisions_are_identical() {
 	global $bp;
 
 	return apply_filters( 'bp_docs_history_post_revision_title', $bp->bp_docs->history->revisions_are_identical );
+}
+
+function bp_docs_history_is_latest() {
+	global $bp;
+
+	return apply_filters( 'bp_docs_history_post_revision_title', $bp->bp_docs->history->is_latest );
 }
 
 /**
@@ -305,10 +317,12 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
 			continue;
 		if ( 'revision' === $type && wp_is_post_autosave( $revision ) )
 			continue;
+		
+		$base_url = bp_docs_get_doc_link( get_the_ID() ) . '/' . BP_DOCS_HISTORY_SLUG . '/';
 
-		$date = wp_post_revision_title( $revision );
-		$name = get_the_author_meta( 'display_name', $revision->post_author );
-
+		$date = '<a href="' . add_query_arg( 'revision', $revision->ID ) . '">' . bp_format_time( strtotime( $revision->post_date ) ) . '</a>';
+		$name = bp_core_get_userlink( $revision->post_author );
+		
 		if ( 'form-table' == $format ) {
 			if ( $left )
 				$left_checked = $left == $revision->ID ? ' checked="checked"' : '';
