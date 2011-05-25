@@ -215,6 +215,10 @@ class BP_Docs_Groups_Integration {
 		if ( empty( $post->ID ) )
 			$post = !empty( $bp->bp_docs->current_post ) ? $bp->bp_docs->current_post : false;
 		
+		// Keep on trying to set up a post
+		if ( empty( $post->ID ) )
+			$post = bp_docs_get_current_doc();
+		
 		if ( !empty( $post->ID ) ) {
 			$doc_settings = get_post_meta( $post->ID, 'bp_docs_settings', true );
 	
