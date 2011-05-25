@@ -1,3 +1,27 @@
+.doc-tabs {
+	overflow: hidden;
+}
+	.doc-tabs li {
+		float: left;
+		margin: 0 5px;
+	}
+	.doc-tabs li:first-child {
+		margin-left: 0;
+	}
+	.doc-tabs li a {
+		background: #f1f1f1;
+		text-decoration: none;
+		display: block;
+		padding: 4px 10px;
+		font-size: 1.2em;
+		border-radius: 5px 5px 0 0;
+	}
+	.doc-tabs li.current a {
+		background: #eaeaea;
+		color: #555;
+		font-weight: bold;
+	}
+
 .doc-header h4 {
 	margin-bottom: 15px !important;
 }
@@ -191,7 +215,6 @@ div#bp-docs-pagination {
 div.doc-content {
 	padding: 20px;
 	border: 3px solid #eaeaea;
-	margin-top: 20px;
 }
 
 div.doc-is-locked .toggle-switch {

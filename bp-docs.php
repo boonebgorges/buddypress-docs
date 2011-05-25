@@ -111,6 +111,10 @@ class BP_Docs {
 		// The slug used when editing a doc
 		if ( !defined( 'BP_DOCS_EDIT_SLUG' ) )
 			define( 'BP_DOCS_EDIT_SLUG', 'edit' );
+			
+		// The slug used when viewing doc histor
+		if ( !defined( 'BP_DOCS_HISTORY_SLUG' ) )
+			define( 'BP_DOCS_HISTORY_SLUG', 'history' );
 		
 		// The slug used when viewing a single doc
 		if ( !defined( 'BP_DOCS_SINGLE_SLUG' ) )
