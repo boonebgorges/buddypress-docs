@@ -34,7 +34,7 @@ wp_tiny_mce();
 			    <?php  echo bpsp_media_buttons(); ?>
 			</div>
 			*/ ?>
-			<?php the_editor( bp_docs_get_edit_doc_content(), 'doc[content]' ); ?>
+			<?php the_editor( bp_docs_get_edit_doc_content(), 'doc[content]', 'doc[title]', false ); ?>
 		</div>
         </div>
         
