@@ -550,7 +550,7 @@ class BP_Docs_BP_Integration {
 			if ( file_exists( TEMPLATEPATH . $file ) )
 				$path = TEMPLATEPATH .  $file;
 			else 
-				$path = BP_DOCS_INSTALL_PATH . 'includes' . DIRECTORY_SEPARATOR . 'templates' . $file;
+				$path = BP_DOCS_INSTALL_PATH . 'includes/templates' . $file;
 		}
 		
 		return apply_filters( 'bp_docs_comment_template_path', $path, $original_path );
@@ -649,12 +649,12 @@ class BP_Docs_BP_Integration {
 		
 		// Load the main CSS only on the proper pages
 		if ( in_array( BP_DOCS_SLUG, $this->slugstocheck ) ) {
-			wp_enqueue_style( 'bp-docs-css', $this->includes_url . 'css' . DIRECTORY_SEPARATOR . 'bp-docs.css' );
+			wp_enqueue_style( 'bp-docs-css', $this->includes_url . 'css/bp-docs.css' );
 		}
 		
 		if ( !empty( $this->query->current_view ) && ( 'edit' == $this->query->current_view || 'create' == $this->query->current_view ) ) {
 			wp_enqueue_style( 'thickbox' );
-			wp_enqueue_style( 'bpd-edit-css', $this->includes_url . 'css' . DIRECTORY_SEPARATOR . 'edit.css' );
+			wp_enqueue_style( 'bpd-edit-css', $this->includes_url . 'css/edit.css' );
 			wp_enqueue_style( 'bp-docs-fullscreen-css', $this->includes_url . 'css/fullscreen.css' );
 		}
 	}

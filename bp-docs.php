@@ -94,11 +94,11 @@ class BP_Docs {
 	function load_constants() {
 		// You should never really need to override this bad boy
 		if ( !defined( 'BP_DOCS_INSTALL_PATH' ) )
-			define( 'BP_DOCS_INSTALL_PATH', dirname(__FILE__) . DIRECTORY_SEPARATOR );
+			define( 'BP_DOCS_INSTALL_PATH', dirname(__FILE__) . '/' );
 		
 		// Ditto
 		if ( !defined( 'BP_DOCS_INCLUDES_PATH' ) )
-			define( 'BP_DOCS_INCLUDES_PATH', BP_DOCS_INSTALL_PATH . 'includes' . DIRECTORY_SEPARATOR );
+			define( 'BP_DOCS_INCLUDES_PATH', BP_DOCS_INSTALL_PATH . 'includes/' );
 		
 		// The main slug
 		if ( !defined( 'BP_DOCS_SLUG' ) )
