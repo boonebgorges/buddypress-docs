@@ -512,7 +512,7 @@ class BP_Docs_BP_Integration {
 			'item_id'		=> $item, // Set to the group/user/etc id, for better consistency with other BP components
 			'secondary_item_id'	=> $comment_id, // The id of the doc itself. Note: limitations in the BP activity API mean I don't get to store the doc_id, but at least it can be abstracted from the comment_id
 			'recorded_time'		=> bp_core_current_time(),
-			'hide_sitewide'		=> apply_filters( 'bp_docs_hide_sitewide', false ) // Filtered to allow plugins and integration pieces to dictate
+			'hide_sitewide'		=> apply_filters( 'bp_docs_hide_sitewide', false, $comment, $doc, $item, $component ) // Filtered to allow plugins and integration pieces to dictate
 		);
 		
 		do_action( 'bp_docs_before_comment_activity_save', $args );
