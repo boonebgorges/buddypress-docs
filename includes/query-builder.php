@@ -284,7 +284,7 @@ class BP_Docs_Query {
 				/** 
 				 * Load the template tags for the edit screen
 				 */
-				 require BP_DOCS_INSTALL_PATH . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'templatetags-edit.php';
+				 require BP_DOCS_INCLUDES_PATH . 'templatetags-edit.php';
 				
 				$template = 'edit-doc.php';
 				break;
@@ -333,7 +333,7 @@ class BP_Docs_Query {
 					/** 
 					 * Load the template tags for the edit screen
 					 */
-					 require BP_DOCS_INSTALL_PATH . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'templatetags-edit.php';
+					require BP_DOCS_INCLUDES_PATH . 'templatetags-edit.php';
 				}
 
 				switch ( $this->current_view ) {

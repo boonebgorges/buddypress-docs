@@ -38,6 +38,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Fixes bug related to group privacy settings and doc comments
 * Enables WP 3.2 distraction-free editing. Props Stas
 * Fixes markup error that prevented h2 tag from being closed on New Doc screen
+* Fixes problems with directory separators on some setups
 
 = 1.1.1 =
 * Updated textdomains and pot file for new strings
