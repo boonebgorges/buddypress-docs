@@ -63,7 +63,7 @@ class BP_Docs_Groups_Integration {
 		add_filter( 'bp_docs_comment_activity_action',	array( $this, 'comment_activity_action' ), 10, 5 );
 		
 		// Filter the activity hide_sitewide parameter to respect group privacy levels
-		add_filter( 'bp_docs_hide_sitewide',		array( $this, 'hide_sitewide' ) );
+		add_filter( 'bp_docs_hide_sitewide',		array( $this, 'hide_sitewide' ), 10, 5 );
 		
 		// These functions are used to keep the group Doc count up to date
 		add_filter( 'bp_docs_doc_saved',		array( $this, 'update_doc_count' )  );
@@ -475,12 +475,20 @@ class BP_Docs_Groups_Integration {
 	 * @since 1.0
 	 *
 	 * @param bool $hide_sitewide
+	 * @param obj $comment The comment object
+	 * @param obj $doc The doc object
+	 * @param int $item The id of the item associated with the doc (group_id, user_id, etc)
+	 * @param str $component 'groups', etc
 	 * @return bool $hide_sitewide
 	 */
-	function hide_sitewide( $hide_sitewide ) {
+	function hide_sitewide( $hide_sitewide, $comment, $doc, $item, $component ) {
 		global $bp;
 		
-		$group_status = !empty( $bp->groups->current_group->status ) ? $bp->groups->current_group->status : 'public';
+		if ( 'groups' != $component )
+			return $hide_sitewide;
+		
+		$group = new BP_Groups_Group( $item );
+		$group_status = !empty( $group->status ) ? $group->status : 'public';
 		
 		// BuddyPress only supports three statuses by default. I'll err on the side of
 		// caution, and let plugin authors use the filter provided.
@@ -488,7 +496,7 @@ class BP_Docs_Groups_Integration {
 			$hide_sitewide = true;
 		}
 		
-		return apply_filters( 'bp_docs_groups_hide_sitewide', $hide_sitewide, $group_status );
+		return apply_filters( 'bp_docs_groups_hide_sitewide', $hide_sitewide, $group_status, $group, $comment, $doc, $item, $component );
 	}
 	
 	/**

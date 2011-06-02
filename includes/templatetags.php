@@ -888,12 +888,12 @@ function bp_docs_locate_template( $template = '' ) {
 		return false;
 		
 	// Try to load custom templates first
-	$stylesheet_path = STYLESHEETPATH . DIRECTORY_SEPARATOR . 'docs' . DIRECTORY_SEPARATOR;
+	$stylesheet_path = STYLESHEETPATH . '/docs/';
 	
 	if ( file_exists( $stylesheet_path . $template ) )
 		$template_path = $stylesheet_path . $template;
 	else
-		$template_path = BP_DOCS_INSTALL_PATH . 'includes' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'docs' . DIRECTORY_SEPARATOR . $template;
+		$template_path = BP_DOCS_INCLUDES_PATH . 'templates/docs/' . $template;
 	
 	return apply_filters( 'bp_docs_locate_template', $template_path, $template );
 }

@@ -4,7 +4,7 @@ Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.1, BuddyPress 1.3
 Tested up to: WordPress 3.2 beta, BuddyPress 1.3
-Stable tag: 1.1.1
+Stable tag: 1.1.2
  
 Adds collaborative Docs to BuddyPress.
 
@@ -33,6 +33,12 @@ This plugin is in active development. For feature requests and bug reports, visi
 1. Sit back and watch the jack roll in
 
 == Changelog ==
+
+= 1.1.2 =
+* Fixes bug related to group privacy settings and doc comments
+* Enables WP 3.2 distraction-free editing. Props Stas
+* Fixes markup error that prevented h2 tag from being closed on New Doc screen
+* Fixes problems with directory separators on some setups
 
 = 1.1.1 =
 * Updated textdomains and pot file for new strings
