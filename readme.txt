@@ -34,6 +34,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.1.3 =
+* Fixes potential PHP notices related to hide_sitewide activity posting
+
 = 1.1.2 =
 * Fixes bug related to group privacy settings and doc comments
 * Enables WP 3.2 distraction-free editing. Props Stas
