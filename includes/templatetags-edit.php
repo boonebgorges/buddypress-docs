@@ -165,11 +165,6 @@ function bp_docs_remove_tinymce_plugins( $initArray ) {
 			unset( $plugins[$wplink_key] );
 		}
 		
-		$wpfullscreen_key = array_search( 'wpfullscreen', $plugins );
-		if ( $wpfullscreen_key ) {
-			unset( $plugins[$wpfullscreen_key] );
-		}
-		
 		$plugins = array_values( $plugins );	
 		$initArray['plugins'] = implode( ',', $plugins );
 	}

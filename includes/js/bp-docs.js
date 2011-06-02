@@ -84,4 +84,26 @@ jQuery(document).ready(function($){
 		$('#group-doc-options').slideToggle(400);
 	});
 	
+	/*
+		Distraction free writing compatibility
+	*/
+	var title_id = $("*[name='doc\\[title\\]']").attr('id');
+	var content_id = $("*[name='doc\\[content\\]']").attr('id');
+	
+	// Try to update the fullscreen variable settings
+	if ( typeof title_id != 'undefined' )
+		fullscreen.settings.title_id = title_id;
+	if ( typeof content_id != 'undefined' )
+		fullscreen.settings.editor_id = content_id;
+	
+	// Try to check for content_id, wp-fullscreen fails here
+	$("#wp-fullscreen-body").one("mousemove", function(){
+		var content_elem = document.getElementById( fullscreen.settings.editor_id );
+		var editor_mode = $(content_elem).is(':hidden') ? 'tinymce' : 'html';
+		fullscreen.switchmode(editor_mode);
+	});
+	
+	// Delete the loader, it won't load anyway
+	$('#wp-fullscreen-save img').remove();
+	
 },(jQuery));

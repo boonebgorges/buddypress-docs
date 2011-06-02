@@ -654,6 +654,7 @@ class BP_Docs_BP_Integration {
 		if ( !empty( $this->query->current_view ) && ( 'edit' == $this->query->current_view || 'create' == $this->query->current_view ) ) {
 			wp_enqueue_style( 'thickbox' );
 			wp_enqueue_style( 'bpd-edit-css', $this->includes_url . 'css' . DIRECTORY_SEPARATOR . 'edit.css' );
+			wp_enqueue_style( 'bp-docs-fullscreen-css', $this->includes_url . 'css/fullscreen.css' );
 		}
 	}
 }
