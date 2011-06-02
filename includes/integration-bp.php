@@ -389,6 +389,9 @@ class BP_Docs_BP_Integration {
 			$component = bp_current_component();
 		}
 		
+		// This is only temporary! This item business needs to be component-neutral
+		$item = isset( $bp->groups->current_group->id ) ? $bp->groups->current_group->id : false;
+		
 		// Set the type, to be used in activity filtering
 		$type = $query->is_new_doc ? 'bp_doc_created' : 'bp_doc_edited';
 	
@@ -401,7 +404,7 @@ class BP_Docs_BP_Integration {
 			'item_id'		=> $query->item_id, // Set to the group/user/etc id, for better consistency with other BP components
 			'secondary_item_id'	=> $doc_id, // The id of the doc itself
 			'recorded_time'		=> bp_core_current_time(),
-			'hide_sitewide'		=> apply_filters( 'bp_docs_hide_sitewide', false ) // Filtered to allow plugins and integration pieces to dictate
+			'hide_sitewide'		=> apply_filters( 'bp_docs_hide_sitewide', false, false, $doc, $item, $component ) // Filtered to allow plugins and integration pieces to dictate
 		);
 		
 		do_action( 'bp_docs_before_activity_save', $args );
