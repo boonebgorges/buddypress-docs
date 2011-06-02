@@ -34,6 +34,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.1.2 =
+* Fixes markup error that prevented h2 tag from being closed on New Doc screen
+
 = 1.1.1 =
 * Updated textdomains and pot file for new strings
 
