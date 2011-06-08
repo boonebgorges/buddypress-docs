@@ -340,6 +340,7 @@ class BP_Docs_BP_Integration {
 			$already_args = array(
 				'max'		=> 1,
 				'sort'		=> 'DESC',
+				'show_hidden'	=> 1, // We need to compare against all activity
 				'filter'	=> array(
 					'user_id'	=> $last_editor,
 					'action'	=> 'bp_doc_edited', // BP bug. 'action' is type
