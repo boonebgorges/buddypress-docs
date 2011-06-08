@@ -34,6 +34,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.1.4 =
+* Adds German translation
+
 = 1.1.3 =
 * Fixes potential PHP notices related to hide_sitewide activity posting
 
