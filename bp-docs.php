@@ -147,8 +147,11 @@ class BP_Docs {
 		require_once( BP_DOCS_INCLUDES_PATH . 'addon-hierarchy.php' );
 		$this->hierarchy = new BP_Docs_Hierarchy;
 		
-		require_once( BP_DOCS_INCLUDES_PATH . 'addon-history.php' );
-		$this->history = new BP_Docs_History;
+		// Don't load the History component if post revisions are disabled
+		if ( defined( 'WP_POST_REVISIONS' ) && WP_POST_REVISIONS ) {
+			require_once( BP_DOCS_INCLUDES_PATH . 'addon-history.php' );
+			$this->history = new BP_Docs_History;
+		}
 
 		do_action( 'bp_docs_load_doc_extras' );
 	}

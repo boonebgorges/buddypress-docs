@@ -400,7 +400,7 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
 		$user_id = bp_loggedin_user_id();
 	
 	// Only certain actions are checked against doc_ids
-	$need_doc_ids_actions = apply_filters( 'bp_docs_need_doc_ids_actions', array( 'edit', 'manage' ) );
+	$need_doc_ids_actions = apply_filters( 'bp_docs_need_doc_ids_actions', array( 'edit', 'manage', 'view_history' ) );
 	
 	if ( in_array( $action, $need_doc_ids_actions ) ) {		
 		if ( !$doc_id ) {
