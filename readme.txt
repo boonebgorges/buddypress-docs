@@ -4,7 +4,7 @@ Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.1, BuddyPress 1.3
 Tested up to: WordPress 3.2 beta, BuddyPress 1.3
-Stable tag: 1.1.3
+Stable tag: 1.1.4
  
 Adds collaborative Docs to BuddyPress.
 
@@ -19,6 +19,7 @@ Features include:
 * Fully sortable and filterable doc lists
 * TinyMCE front-end doc editing
 * One-editor-at-a-time prevention against overwrites, plus idle detection/autosave
+* Full access to revision history
 * Dashboard access and management of Docs for the site admin
 
 <strong>NOTE</strong> This plugin <em>REQUIRES</em> WordPress 3.1 or higher. Lower versions of WP may appear to work, but <em>will</em> compromise the privacy of your Docs.
