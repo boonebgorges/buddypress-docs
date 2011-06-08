@@ -35,6 +35,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 == Changelog ==
 
 = 1.1.4 =
+* Fixes activity throttle for private and hidden groups
 * Adds German translation
 
 = 1.1.3 =
