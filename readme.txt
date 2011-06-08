@@ -35,6 +35,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 == Changelog ==
 
 = 1.1.4 =
+* Don't show History section if WP_POST_REVISIONS are disabled
 * Fixes activity throttle for private and hidden groups
 * Fixes PHP warning related to read_comments permissions
 * Adds German translation

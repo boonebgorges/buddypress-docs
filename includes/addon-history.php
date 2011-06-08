@@ -467,5 +467,23 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
 
 }
 
+/**
+ * Echo the History header tab.
+ *
+ * This is hooked to bp_docs_header_tabs, so that it only loads if the History addon is
+ * enabled.
+ *
+ * @package BuddyPress Docs
+ * @since 1.1.4
+ */
+function bp_docs_history_tab() {
+	if ( bp_docs_current_user_can( 'view_history' ) ) : ?>
+		<li<?php if ( 'history' == bp_docs_current_view() ) : ?> class="current"<?php endif ?>>	
+			<a href="<?php echo bp_docs_get_group_doc_permalink() . '/' . BP_DOCS_HISTORY_SLUG ?>"><?php _e( 'History', 'bp-docs' ) ?></a> 
+		</li>
+	<?php endif;
+}	
+add_action( 'bp_docs_header_tabs', 'bp_docs_history_tab' );
+
 
 ?>
