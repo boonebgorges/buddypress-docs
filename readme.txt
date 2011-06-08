@@ -36,6 +36,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 = 1.1.4 =
 * Fixes activity throttle for private and hidden groups
+* Fixes PHP warning related to read_comments permissions
 * Adds German translation
 
 = 1.1.3 =

@@ -229,6 +229,10 @@ class BP_Docs_Groups_Integration {
 			// Likewise with view_history
 			if ( empty( $doc_settings['view_history'] ) )
 				$doc_settings['view_history'] = 'anyone';
+			
+			// Likewise with read_comments
+			if ( empty( $doc_settings['read_comments'] ) )
+				$doc_settings['read_comments'] = 'anyone';
 		}
 
 		$group_id =  $bp->groups->current_group->id;
