@@ -72,6 +72,9 @@ class BP_Docs_Groups_Integration {
 		// Sneak into the nav before it's rendered to insert the group Doc count. Hooking
 		// to bp_actions because of the craptastic nature of the BP_Group_Extension loader
 		add_action( 'bp_actions',			array( $this, 'show_doc_count_in_tab' ), 9 );
+		
+		// Prettify the page title
+		add_filter( 'bp_page_title',			array( $this, 'page_title' ) );
 	}
 	
 	/**
@@ -578,6 +581,50 @@ class BP_Docs_Groups_Integration {
 			
 			$bp->bp_options_nav[$group_slug][BP_DOCS_SLUG]['name'] = sprintf( __( 'Docs (%d)', 'bp-docs' ), $doc_count );	
 		}
+	}
+	
+	/**
+	 * Make the page title nice and pretty
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.1.4
+	 *
+	 * @param str The title string passed by bp_page_title
+	 * @return str The Doc-ified title
+	 */
+	function page_title( $title ) {
+		global $bp;
+		
+		if ( !empty( $bp->action_variables ) ) {
+			$title = explode( ' &#124; ', $title );
+			
+			// Get rid of the Docs title with Doc count (see buggy
+			// show_doc_count_in_tab()) and replace with Docs
+			array_pop( $title );
+			$title[] = __( 'Docs', 'bp-docs' );
+			
+			$doc = bp_docs_get_current_doc();
+			
+			if ( empty( $doc->post_title ) ) {
+				// If post_title is empty, this is a New Doc screen
+				$title[] = __( 'New Doc', 'bp-docs' );
+			} else {
+				// Add the post title
+				$title[] = $doc->post_title;
+				
+				if ( isset( $bp->action_variables[1] ) ) {
+					if ( BP_DOCS_EDIT_SLUG == $bp->action_variables[1] ) {
+						$title[] = __( 'Edit', 'bp-docs' );	
+					} else if ( BP_DOCS_HISTORY_SLUG == $bp->action_variables[1] ) {
+						$title[] = __( 'History', 'bp-docs' );
+					}
+				}
+			}
+			
+			$title = implode( ' &#124; ', $title );
+		}
+		
+		return apply_filters( 'bp_docs_page_title', $title );
 	}
 }
 
