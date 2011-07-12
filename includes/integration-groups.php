@@ -75,6 +75,10 @@ class BP_Docs_Groups_Integration {
 		
 		// Prettify the page title
 		add_filter( 'bp_page_title',			array( $this, 'page_title' ) );
+		
+		// Prevent comments from being posted on expired logins (see
+		// https://github.com/boonebgorges/buddypress-docs/issues/108)
+		add_filter( 'pre_comment_on_post',	array( $this, 'check_comment_perms'     ) );
 	}
 	
 	/**
@@ -627,6 +631,58 @@ class BP_Docs_Groups_Integration {
 		}
 		
 		return apply_filters( 'bp_docs_page_title', $title );
+	}
+	
+	/**
+	 * Prevents users from commenting who do not have the correct permissions
+	 *
+	 * Typically, this problem is taken care of in the UI. But there are certain edge cases 
+	 * (where a user has opened a comment panel, logged out and in as a different user in a 
+	 * separate tab, and posts - see github.com/boonebgorges/buddypress-docs/issues/108 -
+	 * or when a user attempts to post a comment directly through a POST event) where the lack
+	 * of a visible comment form is not enough protection. This catches the comment post
+	 * and does a manual check on the server side.
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.1.5
+	 *
+	 * @param int $comment_post_ID The ID of the Doc being commented on
+	 */
+	function check_comment_perms( $comment_post_ID ) {
+		global $bp;
+		
+		// Get the group associated with the Doc
+		// Todo: move some of this crap into an API function
+		
+		// Get the associated item terms
+		$post_terms = wp_get_post_terms( $comment_post_ID, $bp->bp_docs->associated_item_tax_name );
+		
+		$can_post_comment = false;
+		
+		foreach( $post_terms as $post_term ) {
+			// Make sure this is a group term
+			$parent_term = get_term( $post_term->parent, $bp->bp_docs->associated_item_tax_name );
+			
+			if ( 'group' == $parent_term->slug ) {
+				// Cheating. bp_docs_user_can() requires a current group, which has
+				// not been set yet
+				$bp->groups->current_group = new BP_Groups_Group( $post_term->name );
+			
+				// Check to see that the user is in the group
+				if ( bp_docs_user_can( 'post_comments', bp_loggedin_user_id(), $post_term->name ) ) {
+					$can_post_comment = true;
+				
+					// We only need a single match
+					break;
+				}
+			}
+		}
+		
+		if ( !$can_post_comment ) {
+			bp_core_add_message( __( 'You do not have permission to post comments on this doc.', 'bp-docs' ), 'error' );
+			
+			bp_core_redirect( bp_docs_get_doc_link( $comment_post_ID ) );
+		}
 	}
 }
 
