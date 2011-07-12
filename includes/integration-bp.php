@@ -48,7 +48,7 @@ class BP_Docs_BP_Integration {
 		add_action( 'bp_docs_doc_saved',	array( $this, 'post_activity' 		) );
 		
 		// Doc comments are always from trusted members (for the moment), so approve them
-		add_action( 'pre_comment_approved',	create_function( '', 'return 1;' 	) );
+		add_action( 'pre_comment_approved',	create_function( '', 'return 1;' 	), 999 );
 		
 		// Hook the doc comment activity function
 		add_action( 'comment_post',		array( $this, 'post_comment_activity'	), 8 );
