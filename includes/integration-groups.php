@@ -78,7 +78,10 @@ class BP_Docs_Groups_Integration {
 		
 		// Prevent comments from being posted on expired logins (see
 		// https://github.com/boonebgorges/buddypress-docs/issues/108)
-		add_filter( 'pre_comment_on_post',	array( $this, 'check_comment_perms'     ) );
+		add_filter( 'pre_comment_on_post',		array( $this, 'check_comment_perms'     ) );
+	
+		// Add settings to the BuddyPress settings admin panel
+		add_action( 'bp_core_admin_screen_fields', 	array( $this, 'admin_screen_fields' ) );
 	}
 	
 	/**
@@ -684,6 +687,39 @@ class BP_Docs_Groups_Integration {
 			bp_core_redirect( bp_docs_get_doc_link( $comment_post_ID ) );
 		}
 	}
+	
+	/**
+	 * Adds admin fields to Dashboard > BuddyPress > Settings
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.1.6
+	 */
+	function admin_screen_fields() {
+		$bp_docs_tab_name = get_option( 'bp-docs-tab-name' );
+		
+		if ( empty( $bp_docs_tab_name ) )
+			$bp_docs_tab_name = __( 'Docs', 'bp-docs' );
+		
+		if ( !bp_is_active( 'groups' ) )
+			return;
+		
+		?>
+		
+		<tr>
+			<td class="label">
+				<label for="bp-admin[bp-docs-tab-name]"><?php _e( 'BuddyPress Docs group tab name:', 'bp-docs' ) ?></label>
+			</td>
+			
+			<td>
+				<input name="bp-admin[bp-docs-tab-name]" id="bp-docs-tab-name" type="text" value="<?php echo esc_html( $bp_docs_tab_name ) ?>" />
+				<p class="description">Change the word on the BuddyPress group tab from 'Docs' to whatever you'd like. Keep in mind that this will not change the text anywhere else on the page. For a more thorough text change, create a <a href="http://codex.buddypress.org/extending-buddypress/customizing-labels-messages-and-urls/">language file</a> for BuddyPress Docs.</p>
+				
+				<p class="description">To change the URL slug for Docs, put <code>define( 'BP_DOCS_SLUG', 'collaborations' );</code> in your wp-config.php file, replacing 'collaborations' with your custom slug.</p>
+			</td>
+		</tr>
+		
+		<?php
+	}
 }
 
 
@@ -714,6 +750,8 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	function bp_docs_group_extension() {
 		global $bp;
 		
+		$bp_docs_tab_name = get_option( 'bp-docs-tab-name' );
+		
 		if ( !empty( $bp->groups->current_group->id ) )
 			$this->maybe_group_id	= $bp->groups->current_group->id;
 		else if ( !empty( $bp->groups->new_group_id ) )
@@ -725,7 +763,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 		$this->settings			= groups_get_groupmeta( $this->maybe_group_id, 'bp-docs' );
 		$this->group_enable		= !empty( $this->settings['group-enable'] ) ? true : false;
 		
-		$this->name 			= isset( $this->settings['tab-name'] ) ? $this->settings['tab-name'] : __( 'Docs', 'bp-docs' );
+		$this->name 			= isset( $bp_docs_tab_name ) ? $bp_docs_tab_name : __( 'Docs', 'bp-docs' );
 		
 		$this->slug 			= BP_DOCS_SLUG;
 
@@ -875,20 +913,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 		<div id="group-doc-options" <?php if ( !$group_enable ) : ?>class="hidden"<?php endif ?>>
 			<h3>Options</h3>
 			
-			<table class="group-docs-options">
-				<tr>
-					<td class="label">
-						<label for="bp-docs[tab-name]"><?php _e( 'Tab name:', 'bp-docs' ) ?></label>
-					</td>
-					
-					<td>
-						<input name="bp-docs[tab-name]" id="bp-docs-tab-name" type="text" value="<?php echo esc_html( $this->name ) ?>" />
-						<p class="description">Change the word on the group tab from 'Docs' to whatever you'd like. Keep in mind that this will not change the text anywhere else on the page. For a more thorough text change, create a <a href="http://codex.buddypress.org/extending-buddypress/customizing-labels-messages-and-urls/">language file</a> for BuddyPress Docs.</p>
-						
-						<p class="description">To change the URL slug for Docs, put <code>define( 'BP_DOCS_SLUG', 'collaborations' );</code> in your wp-config.php file, replacing 'collaborations' with your custom slug.</p>
-					</td>
-				</tr>
-				
+			<table class="group-docs-options">				
 				<tr>
 					<td class="label">
 						<label for="bp-docs[can-create-admins]"><?php _e( 'Minimum role to create new Docs:', 'bp-docs' ) ?></label>

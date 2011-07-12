@@ -35,6 +35,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.1.6 =
+* Rolls back group-specific Tab names and puts it in Dashboard > BuddyPress > Settings
+
 = 1.1.5 =
 * Better redirect handling using bp_core_no_access(), when available
 * Added TinyMCE table plugin
