@@ -219,6 +219,9 @@ div.doc-content {
 	div.doc-content img {
 		margin: 10px;
 	}
+	div.doc-content img.mceIcon {
+		margin: 0;
+	}
 
 div.doc-is-locked .toggle-switch {
 	display: block;

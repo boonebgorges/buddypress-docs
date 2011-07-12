@@ -168,7 +168,7 @@ function bp_docs_remove_tinymce_plugins( $initArray ) {
 		
 		$initArray['plugins'] = implode( ',', $plugins );
 	}
-	//var_dump( $initArray );
+	
 	return $initArray;
 }
 add_filter( 'tiny_mce_before_init', 'bp_docs_remove_tinymce_plugins' );
@@ -178,6 +178,7 @@ add_filter( 'tiny_mce_before_init', 'bp_docs_remove_tinymce_plugins' );
  *
  * Includes:
  *   - table
+ *   - tabindent
  *
  * @package BuddyPress Docs
  * @since 1.1.5
@@ -188,12 +189,59 @@ add_filter( 'tiny_mce_before_init', 'bp_docs_remove_tinymce_plugins' );
 function bp_docs_add_external_tinymce_plugins( $plugins ) {
 	if ( bp_docs_is_bp_docs_page() ) {
 		$plugins['table'] = WP_PLUGIN_URL . '/buddypress-docs/lib/js/tinymce/plugins/table/editor_plugin.js';
+		$plugins['tabindent'] = WP_PLUGIN_URL . '/buddypress-docs/lib/js/tinymce/plugins/tabindent/editor_plugin.js';
 	}
 	
 	return $plugins;
 }
 add_filter( 'mce_external_plugins', 'bp_docs_add_external_tinymce_plugins' );
 
+/**
+ * Adds BuddyPress Docs-specific TinyMCE plugin buttons to row 1 of the editor
+ *
+ * Does some funny business to get things in a nice order
+ *
+ * Includes:
+ *   - tabindent
+ *
+ * @package BuddyPress Docs
+ * @since 1.1.5
+ * 
+ * @param array $buttons TinyMCE buttons
+ * @return array $buttons Button list, with BP Docs buttons added
+ */
+function bp_docs_add_external_tinymce_buttons_row1( $buttons ) {
+	$justify_right_key = array_search( 'justifyright', $buttons );
+	
+	if ( $justify_right_key !== 0 ) {
+		// Shift the buttons one to the right and remove from original array
+		$count = count( $buttons );
+		$new_buttons = array();
+		for ( $i = $justify_right_key + 1; $i < $count; $i++ ) {
+			$new_buttons[] = $buttons[$i];
+			unset( $buttons[$i] );
+		}
+		
+		// Put the three pieces together
+		$buttons = array_merge( $buttons, array( 'tabindent' ), $new_buttons );
+	}
+	
+	return $buttons;
+}
+add_filter( 'mce_buttons', 'bp_docs_add_external_tinymce_buttons_row1' );
+
+/**
+ * Adds BuddyPress Docs-specific TinyMCE plugin buttons to row 2 of the editor
+ *
+ * Includes:
+ *   - tablecontrols
+ *
+ * @package BuddyPress Docs
+ * @since 1.1.5
+ * 
+ * @param array $buttons TinyMCE buttons
+ * @return array $buttons Button list, with BP Docs buttons added
+ */
 function bp_docs_add_external_tinymce_buttons_row2( $buttons ) {
 	$buttons[] = 'tablecontrols';
 	
