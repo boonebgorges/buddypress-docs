@@ -4,7 +4,7 @@ Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.1, BuddyPress 1.3
 Tested up to: WordPress 3.2 beta, BuddyPress 1.3
-Stable tag: 1.1.6
+Stable tag: 1.1.7
  
 Adds collaborative Docs to BuddyPress.
 
@@ -34,6 +34,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 1. Sit back and watch the jack roll in
 
 == Changelog ==
+
+= 1.1.7 =
+* Fixes Tab name bug in 1.1.6 that may cause tab to disappear
 
 = 1.1.6 =
 * Rolls back group-specific Tab names and puts it in Dashboard > BuddyPress > Settings

@@ -763,7 +763,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 		$this->settings			= groups_get_groupmeta( $this->maybe_group_id, 'bp-docs' );
 		$this->group_enable		= !empty( $this->settings['group-enable'] ) ? true : false;
 		
-		$this->name 			= isset( $bp_docs_tab_name ) ? $bp_docs_tab_name : __( 'Docs', 'bp-docs' );
+		$this->name 			= !empty( $bp_docs_tab_name ) ? $bp_docs_tab_name : __( 'Docs', 'bp-docs' );
 		
 		$this->slug 			= BP_DOCS_SLUG;
 
