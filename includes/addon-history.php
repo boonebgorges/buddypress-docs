@@ -298,7 +298,7 @@ function bp_docs_history_post_revision_field( $side = false, $field = 'post_titl
 		$data = $bp->bp_docs->history->revision->{$field};
 	}
 	
-	return apply_filters( 'bp_docs_history_post_revision_title', $data );
+	return apply_filters( 'bp_docs_history_post_revision_field', $data, $side );
 }
 
 /**
@@ -312,7 +312,7 @@ function bp_docs_history_post_revision_field( $side = false, $field = 'post_titl
 function bp_docs_history_revisions_are_identical() {
 	global $bp;
 
-	return apply_filters( 'bp_docs_history_post_revision_title', $bp->bp_docs->history->revisions_are_identical );
+	return apply_filters( 'bp_docs_history_revisions_are_identical', $bp->bp_docs->history->revisions_are_identical );
 }
 
 /**
@@ -330,7 +330,7 @@ function bp_docs_history_revisions_are_identical() {
 function bp_docs_history_is_latest() {
 	global $bp;
 
-	return apply_filters( 'bp_docs_history_post_revision_title', $bp->bp_docs->history->is_latest );
+	return apply_filters( 'bp_docs_history_is_latest', $bp->bp_docs->history->is_latest );
 }
 
 /**
