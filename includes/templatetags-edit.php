@@ -140,14 +140,13 @@ function bp_docs_remove_tinymce_more_button( $buttons ) {
 add_filter( 'mce_buttons', 'bp_docs_remove_tinymce_more_button' );
 
 /**
- * Disables incompatible plugins in the bp_docs editor
+ * Modifies TinyMCE init parameters to include and exclude plugins
  *
  * WP 3.1 introduced a fancy wplink plugin for TinyMCE, which allows for internal linking. It's not
  * playing nice with BuddyPress Docs, so I'm removing it for the moment and falling back on
  * TinyMCE's default link button.
  *
- * For BuddyPress Docs 1.0.9, I'm doing the same thing with the new distraction-free writing in WP
- * 3.2.
+ * This function also adds the 
  *
  * @package BuddyPress Docs
  * @since 1.0.4
@@ -159,18 +158,47 @@ function bp_docs_remove_tinymce_plugins( $initArray ) {
 	if ( bp_docs_is_bp_docs_page() ) {
 		$plugins 	= explode( ',', $initArray['plugins'] );		
 
-		// Internal linking
+		// Remove internal linking
 		$wplink_key = array_search( 'wplink', $plugins );
 		if ( $wplink_key ) {
 			unset( $plugins[$wplink_key] );
 		}
 		
 		$plugins = array_values( $plugins );	
+		
 		$initArray['plugins'] = implode( ',', $plugins );
 	}
-	
+	//var_dump( $initArray );
 	return $initArray;
 }
 add_filter( 'tiny_mce_before_init', 'bp_docs_remove_tinymce_plugins' );
+
+/**
+ * Adds BuddyPress Docs-specific TinyMCE plugins
+ *
+ * Includes:
+ *   - table
+ *
+ * @package BuddyPress Docs
+ * @since 1.1.5
+ * 
+ * @param array $plugins TinyMCE external plugins registered in WP
+ * @return array $plugins Plugin list, with BP Docs plugins added
+ */
+function bp_docs_add_external_tinymce_plugins( $plugins ) {
+	if ( bp_docs_is_bp_docs_page() ) {
+		$plugins['table'] = WP_PLUGIN_URL . '/buddypress-docs/lib/js/tinymce/plugins/table/editor_plugin.js';
+	}
+	
+	return $plugins;
+}
+add_filter( 'mce_external_plugins', 'bp_docs_add_external_tinymce_plugins' );
+
+function bp_docs_add_external_tinymce_buttons_row2( $buttons ) {
+	$buttons[] = 'tablecontrols';
+	
+	return $buttons;
+}
+add_filter( 'mce_buttons_2', 'bp_docs_add_external_tinymce_buttons_row2' );
 
 ?>
