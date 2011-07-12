@@ -6,6 +6,11 @@
 	font-weight: normal;
 	font-style: italic;
 }
+	.description code {
+		font-style: normal;
+		background: #eee;
+		padding: 2px 4px;
+	}
 
 .doc-tabs {
 	overflow: hidden;
