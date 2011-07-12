@@ -35,6 +35,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.1.7 =
+* Fixes Tab name bug in 1.1.6 that may cause tab to disappear
+
 = 1.1.6 =
 * Rolls back group-specific Tab names and puts it in Dashboard > BuddyPress > Settings
 
