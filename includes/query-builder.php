@@ -394,10 +394,11 @@ class BP_Docs_Query {
 		} else {
 			// If both the title and content fields are filled in, we can proceed
 			$defaults = array(
-				'post_type' => $this->post_type_name,
-				'post_title' => $_POST['doc']['title'],
+				'post_type'    => $this->post_type_name,
+				'post_title'   => $_POST['doc']['title'],
+				'post_name'    => isset( $_POST['doc']['permalink'] ) ? sanitize_title( $_POST['doc']['permalink'] ) : sanitize_title( $_POST['doc']['title'] ),
 				'post_content' => stripslashes( sanitize_post_field( 'post_content', $_POST['doc']['content'], 0, 'db' ) ),
-				'post_status' => 'publish'
+				'post_status'  => 'publish'
 			);
 			
 			$r = wp_parse_args( $args, $defaults );
@@ -438,6 +439,15 @@ class BP_Docs_Query {
 					
 				$r['ID'] 		= $this->doc_id;
 				$r['post_author'] 	= $the_docs[0]->post_author; 
+				
+				// Make sure the post_name is set
+				if ( empty( $r['post_name'] ) )
+					$r['post_name'] = sanitize_title( $r['post_title'] );
+				
+				// Make sure the post_name is unique
+				$r['post_name'] = wp_unique_post_slug( $r['post_name'], $this->doc_id, $r['post_status'], $this->post_type_name, $the_docs[0]->post_parent );
+				
+				$this->doc_slug = $r['post_name'];
 				
 				if ( !wp_update_post( $r ) ) {
 					$result['message'] = __( 'There was an error when saving the doc.', 'bp-doc' );

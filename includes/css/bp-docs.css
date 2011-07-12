@@ -1,3 +1,17 @@
+.hide-if-no-js {
+	display: none;
+}
+
+.description {
+	font-weight: normal;
+	font-style: italic;
+}
+	.description code {
+		font-style: normal;
+		background: #eee;
+		padding: 2px 4px;
+	}
+
 .doc-tabs {
 	overflow: hidden;
 }
@@ -142,6 +156,9 @@ div.docs-info-header {
 		height: 100%;
 		color: #fff;
 	}
+	.toggle-switch a:hover {
+		color: #eee;
+	}
 	.standard-form label.toggle-switch {
 		margin: 16px 0 0;
 	}
@@ -219,10 +236,13 @@ div.doc-content {
 	div.doc-content img {
 		margin: 10px;
 	}
+	div.doc-content img.mceIcon {
+		margin: 0;
+	}
 
 div.doc-is-locked .toggle-switch {
 	display: block;
-	background: url(../images/padlock.gif) no-repeat;
+	background: #bbb url(../images/padlock.gif) no-repeat;
 	text-indent: 25px;
 	padding-top: 3px;
 }

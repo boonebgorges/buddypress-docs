@@ -75,6 +75,10 @@ class BP_Docs_Groups_Integration {
 		
 		// Prettify the page title
 		add_filter( 'bp_page_title',			array( $this, 'page_title' ) );
+		
+		// Prevent comments from being posted on expired logins (see
+		// https://github.com/boonebgorges/buddypress-docs/issues/108)
+		add_filter( 'pre_comment_on_post',	array( $this, 'check_comment_perms'     ) );
 	}
 	
 	/**
@@ -570,7 +574,9 @@ class BP_Docs_Groups_Integration {
 		}
 		
 		// This will probably only work on BP 1.3+
-		if ( !empty( $bp->bp_options_nav[$group_slug] ) && !empty( $bp->bp_options_nav[$group_slug][BP_DOCS_SLUG] ) ) {
+		if ( !empty( $bp->bp_options_nav[$group_slug] ) && !empty( $bp->bp_options_nav[$group_slug][BP_DOCS_SLUG] ) ) {			
+			$current_tab_name = $bp->bp_options_nav[$group_slug][BP_DOCS_SLUG]['name'];
+			
 			$doc_count = groups_get_groupmeta( $bp->groups->current_group->id, 'bp-docs-count' );
 			
 			// For backward compatibility
@@ -579,7 +585,7 @@ class BP_Docs_Groups_Integration {
 				$doc_count = groups_get_groupmeta( $bp->groups->current_group->id, 'bp-docs-count' );	
 			}
 			
-			$bp->bp_options_nav[$group_slug][BP_DOCS_SLUG]['name'] = sprintf( __( 'Docs (%d)', 'bp-docs' ), $doc_count );	
+			$bp->bp_options_nav[$group_slug][BP_DOCS_SLUG]['name'] = sprintf( __( '%s (%d)', 'bp-docs' ), $current_tab_name, $doc_count );	
 		}
 	}
 	
@@ -626,6 +632,58 @@ class BP_Docs_Groups_Integration {
 		
 		return apply_filters( 'bp_docs_page_title', $title );
 	}
+	
+	/**
+	 * Prevents users from commenting who do not have the correct permissions
+	 *
+	 * Typically, this problem is taken care of in the UI. But there are certain edge cases 
+	 * (where a user has opened a comment panel, logged out and in as a different user in a 
+	 * separate tab, and posts - see github.com/boonebgorges/buddypress-docs/issues/108 -
+	 * or when a user attempts to post a comment directly through a POST event) where the lack
+	 * of a visible comment form is not enough protection. This catches the comment post
+	 * and does a manual check on the server side.
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.1.5
+	 *
+	 * @param int $comment_post_ID The ID of the Doc being commented on
+	 */
+	function check_comment_perms( $comment_post_ID ) {
+		global $bp;
+		
+		// Get the group associated with the Doc
+		// Todo: move some of this crap into an API function
+		
+		// Get the associated item terms
+		$post_terms = wp_get_post_terms( $comment_post_ID, $bp->bp_docs->associated_item_tax_name );
+		
+		$can_post_comment = false;
+		
+		foreach( $post_terms as $post_term ) {
+			// Make sure this is a group term
+			$parent_term = get_term( $post_term->parent, $bp->bp_docs->associated_item_tax_name );
+			
+			if ( 'group' == $parent_term->slug ) {
+				// Cheating. bp_docs_user_can() requires a current group, which has
+				// not been set yet
+				$bp->groups->current_group = new BP_Groups_Group( $post_term->name );
+			
+				// Check to see that the user is in the group
+				if ( bp_docs_user_can( 'post_comments', bp_loggedin_user_id(), $post_term->name ) ) {
+					$can_post_comment = true;
+				
+					// We only need a single match
+					break;
+				}
+			}
+		}
+		
+		if ( !$can_post_comment ) {
+			bp_core_add_message( __( 'You do not have permission to post comments on this doc.', 'bp-docs' ), 'error' );
+			
+			bp_core_redirect( bp_docs_get_doc_link( $comment_post_ID ) );
+		}
+	}
 }
 
 
@@ -656,23 +714,24 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	function bp_docs_group_extension() {
 		global $bp;
 		
-		$this->name 			= __( 'Docs', 'bp-docs' );
-		$this->slug 			= BP_DOCS_SLUG;
-
-		$this->enable_create_step	= true;
-		$this->create_step_position 	= 45;
-		$this->nav_item_position 	= 45;
-		
 		if ( !empty( $bp->groups->current_group->id ) )
 			$this->maybe_group_id	= $bp->groups->current_group->id;
 		else if ( !empty( $bp->groups->new_group_id ) )
 			$this->maybe_group_id	= $bp->groups->new_group_id;
 		else
 			$this->maybe_group_id	= false;
-			
+		
 		// Load the bp-docs setting for the group, for easy access
 		$this->settings			= groups_get_groupmeta( $this->maybe_group_id, 'bp-docs' );
 		$this->group_enable		= !empty( $this->settings['group-enable'] ) ? true : false;
+		
+		$this->name 			= isset( $this->settings['tab-name'] ) ? $this->settings['tab-name'] : __( 'Docs', 'bp-docs' );
+		
+		$this->slug 			= BP_DOCS_SLUG;
+
+		$this->enable_create_step	= true;
+		$this->create_step_position 	= 45;
+		$this->nav_item_position 	= 45;
 		
 		$this->visibility		= 'public';
 		$this->enable_nav_item		= $this->enable_nav_item();
@@ -819,7 +878,20 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 			<table class="group-docs-options">
 				<tr>
 					<td class="label">
-						<label for="bp-docs[can-create-admins]"><?php _e( 'Minimum role to create new Docs:', 'bp-docs' ) ?>
+						<label for="bp-docs[tab-name]"><?php _e( 'Tab name:', 'bp-docs' ) ?></label>
+					</td>
+					
+					<td>
+						<input name="bp-docs[tab-name]" id="bp-docs-tab-name" type="text" value="<?php echo esc_html( $this->name ) ?>" />
+						<p class="description">Change the word on the group tab from 'Docs' to whatever you'd like. Keep in mind that this will not change the text anywhere else on the page. For a more thorough text change, create a <a href="http://codex.buddypress.org/extending-buddypress/customizing-labels-messages-and-urls/">language file</a> for BuddyPress Docs.</p>
+						
+						<p class="description">To change the URL slug for Docs, put <code>define( 'BP_DOCS_SLUG', 'collaborations' );</code> in your wp-config.php file, replacing 'collaborations' with your custom slug.</p>
+					</td>
+				</tr>
+				
+				<tr>
+					<td class="label">
+						<label for="bp-docs[can-create-admins]"><?php _e( 'Minimum role to create new Docs:', 'bp-docs' ) ?></label>
 					</td>
 					
 					<td>
@@ -964,5 +1036,33 @@ function bp_docs_group_doc_permalink() {
 			
 		return apply_filters( 'bp_docs_get_doc_permalink', $group_permalink . $bp->bp_docs->slug . '/' . $doc_slug );
 	}
+
+/**
+ * Is Docs enabled for this group?
+ *
+ * @package BuddyPress Docs
+ * @since 1.1.5
+ *
+ * @param int $group_id Optional. Defaults to current group, if there is one.
+ * @return bool $docs_is_enabled True if Docs is enabled for the group
+ */
+function bp_docs_is_docs_enabled_for_group( $group_id = false ) {
+	global $bp;
+	
+	$docs_is_enabled = false;
+	
+	// If no group_id is provided, use the current group
+	if ( !$group_id )
+		$group_id = isset( $bp->groups->current_group->id ) ? $bp->groups->current_group->id : false;
+	
+	if ( $group_id ) {
+		$group_settings = groups_get_groupmeta( $group_id, 'bp-docs' );
+		
+		if ( isset( $group_settings['group-enable'] ) )
+			$docs_is_enabled = true;
+	}
+	
+	return apply_filters( 'bp_docs_is_docs_enabled_for_group', $docs_is_enabled, $group_id );
+}
 
 ?>

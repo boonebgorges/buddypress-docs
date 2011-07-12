@@ -26,6 +26,14 @@ wp_tiny_mce();
 		<label for="doc[title]"><?php _e( 'Title', 'bp-docs' ) ?></label>        	
 		<input type="text" id="doc-title" name="doc[title]" class="long" value="<?php bp_docs_edit_doc_title() ?>" />
         </div>
+        
+        <?php if ( bp_docs_is_existing_doc() ) : ?>
+		<div id="doc-content-permalink">
+			<label for="doc[permalink]"><?php _e( 'Permalink', 'bp-docs' ) ?></label>        	
+			<code><?php echo trailingslashit( bp_get_group_permalink() ) . BP_DOCS_SLUG . '/' ?><input type="text" id="doc-permalink" name="doc[permalink]" class="long" value="<?php bp_docs_edit_doc_slug() ?>" />
+		</div>
+	<?php endif ?>
+        
         <div id="doc-content-textarea">
 		<label id="content-label" for="doc[content]"><?php _e( 'Content', 'bp-docs' ) ?></label>        
 		<div id="editor-toolbar">

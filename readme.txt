@@ -4,7 +4,7 @@ Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.1, BuddyPress 1.3
 Tested up to: WordPress 3.2 beta, BuddyPress 1.3
-Stable tag: 1.1.4
+Stable tag: 1.1.5
  
 Adds collaborative Docs to BuddyPress.
 
@@ -34,6 +34,18 @@ This plugin is in active development. For feature requests and bug reports, visi
 1. Sit back and watch the jack roll in
 
 == Changelog ==
+
+= 1.1.5 =
+* Better redirect handling using bp_core_no_access(), when available
+* Added TinyMCE table plugin
+* Added admin field for customizing group tab name
+* Added UI for changing the slug of an existing Doc
+* Security enhancement regarding comment posting in hidden/private groups
+* Fixed issue that may have prevented some users from viewing History tab on some setups
+* Clarified force-cancel edit lock interface
+* Introduces bp_docs_is_docs_enabled_for_group() for easy checks
+* French translation added
+* Swedish translation added
 
 = 1.1.4 =
 * Make the page title prettier and more descriptive

@@ -37,6 +37,35 @@ function bp_docs_edit_doc_title() {
 	}
 
 /**
+ * Echoes the output of bp_docs_get_edit_doc_slug()
+ *
+ * @package BuddyPress Docs
+ * @since 1.0-beta
+ */
+function bp_docs_edit_doc_slug() {
+	echo bp_docs_get_edit_doc_slug();
+}
+	/**
+	 * Returns the slug of the doc currently being edited, when it exists
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0-beta
+	 *
+	 * @return string Doc slug
+	 */
+	function bp_docs_get_edit_doc_slug() {
+		global $bp;
+		
+		if ( empty( $bp->bp_docs->current_post ) || empty( $bp->bp_docs->current_post->post_name ) ) {
+			$slug = '';
+		} else {
+			$slug = $bp->bp_docs->current_post->post_name;
+		}
+			
+		return apply_filters( 'bp_docs_get_edit_doc_slug', $slug );
+	}
+
+/**
  * Echoes the output of bp_docs_get_edit_doc_content()
  *
  * @package BuddyPress Docs
@@ -140,14 +169,13 @@ function bp_docs_remove_tinymce_more_button( $buttons ) {
 add_filter( 'mce_buttons', 'bp_docs_remove_tinymce_more_button' );
 
 /**
- * Disables incompatible plugins in the bp_docs editor
+ * Modifies TinyMCE init parameters to include and exclude plugins
  *
  * WP 3.1 introduced a fancy wplink plugin for TinyMCE, which allows for internal linking. It's not
  * playing nice with BuddyPress Docs, so I'm removing it for the moment and falling back on
  * TinyMCE's default link button.
  *
- * For BuddyPress Docs 1.0.9, I'm doing the same thing with the new distraction-free writing in WP
- * 3.2.
+ * This function also adds the 
  *
  * @package BuddyPress Docs
  * @since 1.0.4
@@ -159,18 +187,95 @@ function bp_docs_remove_tinymce_plugins( $initArray ) {
 	if ( bp_docs_is_bp_docs_page() ) {
 		$plugins 	= explode( ',', $initArray['plugins'] );		
 
-		// Internal linking
+		// Remove internal linking
 		$wplink_key = array_search( 'wplink', $plugins );
 		if ( $wplink_key ) {
 			unset( $plugins[$wplink_key] );
 		}
 		
 		$plugins = array_values( $plugins );	
+		
 		$initArray['plugins'] = implode( ',', $plugins );
 	}
 	
 	return $initArray;
 }
 add_filter( 'tiny_mce_before_init', 'bp_docs_remove_tinymce_plugins' );
+
+/**
+ * Adds BuddyPress Docs-specific TinyMCE plugins
+ *
+ * Includes:
+ *   - table
+ *   - tabindent
+ *
+ * @package BuddyPress Docs
+ * @since 1.1.5
+ * 
+ * @param array $plugins TinyMCE external plugins registered in WP
+ * @return array $plugins Plugin list, with BP Docs plugins added
+ */
+function bp_docs_add_external_tinymce_plugins( $plugins ) {
+	if ( bp_docs_is_bp_docs_page() ) {
+		$plugins['table'] = WP_PLUGIN_URL . '/buddypress-docs/lib/js/tinymce/plugins/table/editor_plugin.js';
+		$plugins['tabindent'] = WP_PLUGIN_URL . '/buddypress-docs/lib/js/tinymce/plugins/tabindent/editor_plugin.js';
+	}
+	
+	return $plugins;
+}
+add_filter( 'mce_external_plugins', 'bp_docs_add_external_tinymce_plugins' );
+
+/**
+ * Adds BuddyPress Docs-specific TinyMCE plugin buttons to row 1 of the editor
+ *
+ * Does some funny business to get things in a nice order
+ *
+ * Includes:
+ *   - tabindent
+ *
+ * @package BuddyPress Docs
+ * @since 1.1.5
+ * 
+ * @param array $buttons TinyMCE buttons
+ * @return array $buttons Button list, with BP Docs buttons added
+ */
+function bp_docs_add_external_tinymce_buttons_row1( $buttons ) {
+	$justify_right_key = array_search( 'justifyright', $buttons );
+	
+	if ( $justify_right_key !== 0 ) {
+		// Shift the buttons one to the right and remove from original array
+		$count = count( $buttons );
+		$new_buttons = array();
+		for ( $i = $justify_right_key + 1; $i < $count; $i++ ) {
+			$new_buttons[] = $buttons[$i];
+			unset( $buttons[$i] );
+		}
+		
+		// Put the three pieces together
+		$buttons = array_merge( $buttons, array( 'tabindent' ), $new_buttons );
+	}
+	
+	return $buttons;
+}
+add_filter( 'mce_buttons', 'bp_docs_add_external_tinymce_buttons_row1' );
+
+/**
+ * Adds BuddyPress Docs-specific TinyMCE plugin buttons to row 2 of the editor
+ *
+ * Includes:
+ *   - tablecontrols
+ *
+ * @package BuddyPress Docs
+ * @since 1.1.5
+ * 
+ * @param array $buttons TinyMCE buttons
+ * @return array $buttons Button list, with BP Docs buttons added
+ */
+function bp_docs_add_external_tinymce_buttons_row2( $buttons ) {
+	$buttons[] = 'tablecontrols';
+	
+	return $buttons;
+}
+add_filter( 'mce_buttons_2', 'bp_docs_add_external_tinymce_buttons_row2' );
 
 ?>
