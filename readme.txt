@@ -38,6 +38,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 = 1.1.5 =
 * Better redirect handling using bp_core_no_access(), when available
 * Added TinyMCE table plugin
+* French translation added
 
 = 1.1.4 =
 * Make the page title prettier and more descriptive
