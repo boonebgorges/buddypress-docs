@@ -41,6 +41,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Added admin field for customizing group tab name
 * Added UI for changing the slug of an existing Doc
 * Security enhancement regarding comment posting in hidden/private groups
+* Fixed issue that may have prevented some users from viewing History tab on some setups
 * Clarified force-cancel edit lock interface
 * Introduces bp_docs_is_docs_enabled_for_group() for easy checks
 * French translation added
