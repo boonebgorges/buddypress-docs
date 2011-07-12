@@ -15,3 +15,4 @@ Huge thanks go out to the individuals who donate their translations, making plug
 - Italian: Luca Camellini
 - German: Birgit
 - French: stbouvier
+- Swedish: Thomas Schneider
