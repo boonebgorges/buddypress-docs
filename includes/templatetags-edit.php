@@ -37,6 +37,35 @@ function bp_docs_edit_doc_title() {
 	}
 
 /**
+ * Echoes the output of bp_docs_get_edit_doc_slug()
+ *
+ * @package BuddyPress Docs
+ * @since 1.0-beta
+ */
+function bp_docs_edit_doc_slug() {
+	echo bp_docs_get_edit_doc_slug();
+}
+	/**
+	 * Returns the slug of the doc currently being edited, when it exists
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0-beta
+	 *
+	 * @return string Doc slug
+	 */
+	function bp_docs_get_edit_doc_slug() {
+		global $bp;
+		
+		if ( empty( $bp->bp_docs->current_post ) || empty( $bp->bp_docs->current_post->post_name ) ) {
+			$slug = '';
+		} else {
+			$slug = $bp->bp_docs->current_post->post_name;
+		}
+			
+		return apply_filters( 'bp_docs_get_edit_doc_slug', $slug );
+	}
+
+/**
  * Echoes the output of bp_docs_get_edit_doc_content()
  *
  * @package BuddyPress Docs
