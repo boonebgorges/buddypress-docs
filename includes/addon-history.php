@@ -133,9 +133,6 @@ class BP_Docs_History {
 			if ( !$this->right_revision = get_post( $this->right ) )
 				break;
 		
-			if ( !current_user_can( 'read_post', $this->left_revision->ID ) || !current_user_can( 'read_post', $this->right_revision->ID ) )
-				break;
-		
 			// If we're comparing a revision to itself, redirect to the 'view' page for that revision or the edit page for that post
 			if ( $this->left_revision->ID == $this->right_revision->ID ) {
 				$redirect = get_edit_post_link( $this->left_revision->ID );
@@ -200,9 +197,6 @@ class BP_Docs_History {
 			}
 
 			if ( !$post = get_post( $this->revision->post_parent ) )
-				break;
-		
-			if ( !current_user_can( 'read_post', $this->revision->ID ) || !current_user_can( 'read_post', $post->ID ) )
 				break;
 		
 			// Revisions disabled and we're not looking at an autosave
@@ -388,8 +382,6 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
 	$class = false;
 	$can_edit_post = bp_docs_current_user_can( 'edit' );
 	foreach ( $revisions as $revision ) {
-		if ( !current_user_can( 'read_post', $revision->ID ) )
-			continue;
 		if ( 'revision' === $type && wp_is_post_autosave( $revision ) )
 			continue;
 		
