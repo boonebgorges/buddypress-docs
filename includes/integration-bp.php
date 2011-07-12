@@ -144,6 +144,9 @@ class BP_Docs_BP_Integration {
 					bp_core_redirect( $group_permalink . $bp->bp_docs->slug . '/' . $doc_slug ); 
 				}
 			} else {
+				if ( function_exists( 'bp_core_no_access' ) && !is_user_logged_in() )
+					bp_core_no_access();
+					
 				// The user does not have edit permission. Redirect.
 				bp_core_add_message( __( 'You do not have permission to edit the doc.', 'bp-docs' ), 'error' );
 			
@@ -158,6 +161,9 @@ class BP_Docs_BP_Integration {
 		if ( !empty( $bp->bp_docs->current_view ) && 'create' == $bp->bp_docs->current_view ) {
 			if ( !bp_docs_current_user_can( 'create' ) ) {
 				// The user does not have edit permission. Redirect.
+				if ( function_exists( 'bp_core_no_access' ) && !is_user_logged_in() )
+					bp_core_no_access();
+				
 				bp_core_add_message( __( 'You do not have permission to create a Doc in this group.', 'bp-docs' ), 'error' );
 			
 				$group_permalink = bp_get_group_permalink( $bp->groups->current_group );
@@ -169,15 +175,20 @@ class BP_Docs_BP_Integration {
 		
 		if ( !empty( $bp->bp_docs->current_view ) && 'history' == $bp->bp_docs->current_view ) {
 			if ( !bp_docs_current_user_can( 'view_history' ) ) {
-				// The user does not have edit permission. Redirect.
-				bp_core_add_message( __( 'You do not have permission to view this Doc\'s history.', 'bp-docs' ), 'error' );
-			
-				$doc = bp_docs_get_current_doc();
+				if ( !bp_docs_current_user_can( 'view_history' ) ) {					
+					// The user does not have edit permission. Redirect.					
+					if ( function_exists( 'bp_core_no_access' ) && !is_user_logged_in() )
+						bp_core_no_access();
+					
+					bp_core_add_message( __( 'You do not have permission to view this Doc\'s history.', 'bp-docs' ), 'error' );
 				
-				$redirect = bp_docs_get_doc_link( $doc->ID );
-				
-				// Redirect back to the Doc list view
-				bp_core_redirect( $redirect ); 
+					$doc = bp_docs_get_current_doc();
+					
+					$redirect = bp_docs_get_doc_link( $doc->ID );
+					
+					// Redirect back to the Doc list view
+					bp_core_redirect( $redirect ); 
+				}
 			}
 		}
 		
