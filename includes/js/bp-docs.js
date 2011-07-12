@@ -1,4 +1,7 @@
 jQuery(document).ready(function($){
+	/* Unhide JS content */
+	$('.hide-if-no-js').show();
+	
 	/* When a toggle is clicked, show the toggle-content */
 	$('.toggle-link').click(function(){
 		// Traverse for some items

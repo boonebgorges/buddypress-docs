@@ -4,7 +4,7 @@
 
 <?php if ( bp_docs_is_doc_edit_locked() && bp_docs_current_user_can( 'edit' ) ) : ?>
 	<div class="toggleable doc-is-locked">
-		<span class="toggle-switch"><?php _e( 'Locked', 'bp-docs' ) ?></span>
+		<span class="toggle-switch" id="toggle-doc-is-locked"><?php _e( 'Locked', 'bp-docs' ) ?> <span class="hide-if-no-js description"><?php _e( '(click for more info)', 'bp-docs' ) ?></span></span>
 		<div class="toggle-content">
 			<p><?php printf( __( 'This doc is currently being edited by %1$s. In order to prevent edit conflicts, only one user can edit a doc at a time.', 'bp-docs' ), bp_docs_get_current_doc_locker_name() ) ?></p>
 			

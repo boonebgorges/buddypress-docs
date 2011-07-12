@@ -1,3 +1,12 @@
+.hide-if-no-js {
+	display: none;
+}
+
+.description {
+	font-weight: normal;
+	font-style: italic;
+}
+
 .doc-tabs {
 	overflow: hidden;
 }
@@ -142,6 +151,9 @@ div.docs-info-header {
 		height: 100%;
 		color: #fff;
 	}
+	.toggle-switch a:hover {
+		color: #eee;
+	}
 	.standard-form label.toggle-switch {
 		margin: 16px 0 0;
 	}
@@ -225,7 +237,7 @@ div.doc-content {
 
 div.doc-is-locked .toggle-switch {
 	display: block;
-	background: url(../images/padlock.gif) no-repeat;
+	background: #bbb url(../images/padlock.gif) no-repeat;
 	text-indent: 25px;
 	padding-top: 3px;
 }
