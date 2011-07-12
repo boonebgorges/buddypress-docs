@@ -965,4 +965,32 @@ function bp_docs_group_doc_permalink() {
 		return apply_filters( 'bp_docs_get_doc_permalink', $group_permalink . $bp->bp_docs->slug . '/' . $doc_slug );
 	}
 
+/**
+ * Is Docs enabled for this group?
+ *
+ * @package BuddyPress Docs
+ * @since 1.1.5
+ *
+ * @param int $group_id Optional. Defaults to current group, if there is one.
+ * @return bool $docs_is_enabled True if Docs is enabled for the group
+ */
+function bp_docs_is_docs_enabled_for_group( $group_id = false ) {
+	global $bp;
+	
+	$docs_is_enabled = false;
+	
+	// If no group_id is provided, use the current group
+	if ( !$group_id )
+		$group_id = isset( $bp->groups->current_group->id ) ? $bp->groups->current_group->id : false;
+	
+	if ( $group_id ) {
+		$group_settings = groups_get_groupmeta( $group_id, 'bp-docs' );
+		
+		if ( isset( $group_settings['group-enable'] ) )
+			$docs_is_enabled = true;
+	}
+	
+	return apply_filters( 'bp_docs_is_docs_enabled_for_group', $docs_is_enabled, $group_id );
+}
+
 ?>
