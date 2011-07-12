@@ -570,7 +570,9 @@ class BP_Docs_Groups_Integration {
 		}
 		
 		// This will probably only work on BP 1.3+
-		if ( !empty( $bp->bp_options_nav[$group_slug] ) && !empty( $bp->bp_options_nav[$group_slug][BP_DOCS_SLUG] ) ) {
+		if ( !empty( $bp->bp_options_nav[$group_slug] ) && !empty( $bp->bp_options_nav[$group_slug][BP_DOCS_SLUG] ) ) {			
+			$current_tab_name = $bp->bp_options_nav[$group_slug][BP_DOCS_SLUG]['name'];
+			
 			$doc_count = groups_get_groupmeta( $bp->groups->current_group->id, 'bp-docs-count' );
 			
 			// For backward compatibility
@@ -579,7 +581,7 @@ class BP_Docs_Groups_Integration {
 				$doc_count = groups_get_groupmeta( $bp->groups->current_group->id, 'bp-docs-count' );	
 			}
 			
-			$bp->bp_options_nav[$group_slug][BP_DOCS_SLUG]['name'] = sprintf( __( 'Docs (%d)', 'bp-docs' ), $doc_count );	
+			$bp->bp_options_nav[$group_slug][BP_DOCS_SLUG]['name'] = sprintf( __( '%s (%d)', 'bp-docs' ), $current_tab_name, $doc_count );	
 		}
 	}
 	
@@ -656,23 +658,24 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	function bp_docs_group_extension() {
 		global $bp;
 		
-		$this->name 			= __( 'Docs', 'bp-docs' );
-		$this->slug 			= BP_DOCS_SLUG;
-
-		$this->enable_create_step	= true;
-		$this->create_step_position 	= 45;
-		$this->nav_item_position 	= 45;
-		
 		if ( !empty( $bp->groups->current_group->id ) )
 			$this->maybe_group_id	= $bp->groups->current_group->id;
 		else if ( !empty( $bp->groups->new_group_id ) )
 			$this->maybe_group_id	= $bp->groups->new_group_id;
 		else
 			$this->maybe_group_id	= false;
-			
+		
 		// Load the bp-docs setting for the group, for easy access
 		$this->settings			= groups_get_groupmeta( $this->maybe_group_id, 'bp-docs' );
 		$this->group_enable		= !empty( $this->settings['group-enable'] ) ? true : false;
+		
+		$this->name 			= isset( $this->settings['tab-name'] ) ? $this->settings['tab-name'] : __( 'Docs', 'bp-docs' );
+		
+		$this->slug 			= BP_DOCS_SLUG;
+
+		$this->enable_create_step	= true;
+		$this->create_step_position 	= 45;
+		$this->nav_item_position 	= 45;
 		
 		$this->visibility		= 'public';
 		$this->enable_nav_item		= $this->enable_nav_item();
@@ -819,7 +822,20 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 			<table class="group-docs-options">
 				<tr>
 					<td class="label">
-						<label for="bp-docs[can-create-admins]"><?php _e( 'Minimum role to create new Docs:', 'bp-docs' ) ?>
+						<label for="bp-docs[tab-name]"><?php _e( 'Tab name:', 'bp-docs' ) ?></label>
+					</td>
+					
+					<td>
+						<input name="bp-docs[tab-name]" id="bp-docs-tab-name" type="text" value="<?php echo esc_html( $this->name ) ?>" />
+						<p class="description">Change the word on the group tab from 'Docs' to whatever you'd like. Keep in mind that this will not change the text anywhere else on the page. For a more thorough text change, create a <a href="http://codex.buddypress.org/extending-buddypress/customizing-labels-messages-and-urls/">language file</a> for BuddyPress Docs.</p>
+						
+						<p class="description">To change the URL slug for Docs, put <code>define( 'BP_DOCS_SLUG', 'collaborations' );</code> in your wp-config.php file, replacing 'collaborations' with your custom slug.</p>
+					</td>
+				</tr>
+				
+				<tr>
+					<td class="label">
+						<label for="bp-docs[can-create-admins]"><?php _e( 'Minimum role to create new Docs:', 'bp-docs' ) ?></label>
 					</td>
 					
 					<td>
