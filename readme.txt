@@ -35,6 +35,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.1.8 =
+* Adds Brazilian Portuguese localization.
+
 = 1.1.7 =
 * Fixes Tab name bug in 1.1.6 that may cause tab to disappear
 
