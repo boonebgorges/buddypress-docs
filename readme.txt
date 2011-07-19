@@ -36,6 +36,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 == Changelog ==
 
 = 1.1.8 =
+* Adds Print button to TinyMCE
 * Adds Brazilian Portuguese localization.
 
 = 1.1.7 =
