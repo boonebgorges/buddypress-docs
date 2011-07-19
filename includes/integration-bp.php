@@ -60,6 +60,9 @@ class BP_Docs_BP_Integration {
 		// Keep comment notifications from being sent
 		add_filter( 'comment_post', 		array( $this, 'check_comment_type' 	) );
 		
+		// Make sure that comment links are correct. Can't use $wp_rewrite bc of assoc items
+		add_filter( 'post_type_link',		array( $this, 'filter_permalinks'	), 10, 4 );
+		
 		// AJAX handler for removing the edit lock when a user clicks away from Edit mode
 		add_action( 'wp_ajax_remove_edit_lock', array( $this, 'remove_edit_lock'        ) );
 		
@@ -594,6 +597,35 @@ class BP_Docs_BP_Integration {
 		if ( $bp->bp_docs->post_type_name == $post->post_type ) {
 			add_filter( 'pre_option_comments_notify', create_function( false, 'return 0;' ) );
 		}
+	}
+	
+	/**
+	 * Display the proper permalink for Docs
+	 *
+	 * This function filters 'post_type_link', which in turn powers get_permalink() and related
+	 * functions. 
+	 *
+	 * In brief, the purpose is to make sure that Doc permalinks point to the proper place.
+	 * Ideally I would use a rewrite rule to accomplish this, but it's impossible to write
+	 * regex that will be able to tell which group/user a Doc should be associated with.
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.1.8
+	 *
+	 * @param str $link The permalink
+	 * @param obj $post The post object
+	 * @param bool $leavename
+	 * @param bool $sample See get_post_permalink() for an explanation of these two params
+	 * @return str $link The filtered permalink
+	 */
+	function filter_permalinks( $link, $post, $leavename, $sample ) {
+		global $bp;
+		
+		if ( $bp->bp_docs->post_type_name == $post->post_type ) {
+			$link = bp_docs_get_doc_link( $post->ID );
+		}
+		
+		return $link;
 	}
 	
 	/**

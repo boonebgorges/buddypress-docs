@@ -36,6 +36,8 @@ This plugin is in active development. For feature requests and bug reports, visi
 == Changelog ==
 
 = 1.1.8 =
+* Filters get_post_permalink() so that Doc permalinks in the Admin point to the proper place
+* Modifies Recent Comments dashboard widget in order to prevent non-allowed people from seeing certain Doc comments
 * Adds Print button to TinyMCE
 * Adds Brazilian Portuguese localization.
 
