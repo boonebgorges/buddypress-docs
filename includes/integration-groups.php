@@ -53,7 +53,7 @@ class BP_Docs_Groups_Integration {
 		add_action( 'bp_docs_taxonomy_save_item_terms', array( $this, 'save_group_terms' ) );
 		
 		// Filter the core user_can_edit function for group-specific functionality
-		add_filter( 'bp_docs_user_can',			array( $this, 'user_can' ), 10, 3 );
+		add_filter( 'bp_docs_user_can',			array( $this, 'user_can' ), 10, 4 );
 		
 		// Add group-specific settings to the doc settings box
 		add_filter( 'bp_docs_doc_settings_markup',	array( $this, 'doc_settings_markup' ) );
@@ -208,29 +208,39 @@ class BP_Docs_Groups_Integration {
 	}
 	
 	/**
-	 * Determine whether a user can edit the group doc is question
+	 * Determine whether a user can edit the group doc in question
 	 *
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param bool $user_can The default perms passed from bp_docs_user_can_edit()
-	 * @param str $action At the moment, 'edit', 'manage', 'create'
+	 * @param str $action At the moment, 'edit', 'manage', 'create', 'read'
 	 * @param int $user_id The user id whose perms are being tested
+	 * @param int $doc_id Optional. The id of the doc being checked. Defaults to current
 	 */	
-	function user_can( $user_can, $action, $user_id ) {
+	function user_can( $user_can, $action, $user_id, $doc_id = false ) {
 		global $bp, $post;
 		
 		$user_can = false;
 		
+		// If a doc_id is provided, check it against the current post before querying
+		if ( $doc_id && isset( $post->ID ) && $doc_id == $post->ID ) {
+			$doc = $post;
+		}
+		
 		if ( empty( $post->ID ) )
-			$post = !empty( $bp->bp_docs->current_post ) ? $bp->bp_docs->current_post : false;
+			$doc = !empty( $bp->bp_docs->current_post ) ? $bp->bp_docs->current_post : false;
 		
 		// Keep on trying to set up a post
-		if ( empty( $post->ID ) )
-			$post = bp_docs_get_current_doc();
+		if ( empty( $doc ) )
+			$doc = bp_docs_get_current_doc();
 		
-		if ( !empty( $post->ID ) ) {
-			$doc_settings = get_post_meta( $post->ID, 'bp_docs_settings', true );
+		// If we still haven't got a post by now, query based on doc id
+		if ( empty( $doc ) )
+			$doc = get_post( $doc_id );
+		
+		if ( !empty( $doc ) ) {
+			$doc_settings = get_post_meta( $doc->ID, 'bp_docs_settings', true );
 	
 			// Manage settings don't always get set on doc creation, so we need a default
 			if ( empty( $doc_settings['manage'] ) )
@@ -245,9 +255,33 @@ class BP_Docs_Groups_Integration {
 				$doc_settings['read_comments'] = 'anyone';
 		}
 
-		$group_id =  $bp->groups->current_group->id;
+		// Default to the current group, but get the associated doc if not
+		if ( isset( $bp->groups->current_group->id ) ) {
+			$group_id = $bp->groups->current_group->id;
+			$group = $bp->groups->current_group;
+		} else {
+			$group_id = bp_docs_get_associated_group_id( $doc->ID, $doc );
+			
+			if ( is_array( $group_id ) ) {
+				$group_id = $group_id[0]; // todo: make this a loop
+				$group = new BP_Groups_Group( $group_id );
+			}
+		}
 		
 		switch ( $action ) {
+			case 'read' :
+				// At the moment, read permissions are entirely based on group
+				// membership and privacy level
+				if ( 'public' != $group->status ) {
+					if ( groups_is_user_member( $user_id, $group_id ) ) {
+						$user_can = true;
+					}
+				} else {
+					$user_can = true;
+				}
+				
+				break;
+				
 			case 'create' :
 				$group_settings = groups_get_groupmeta( $group_id, 'bp-docs' );
 				
@@ -1088,6 +1122,55 @@ function bp_docs_is_docs_enabled_for_group( $group_id = false ) {
 	}
 	
 	return apply_filters( 'bp_docs_is_docs_enabled_for_group', $docs_is_enabled, $group_id );
+}
+
+/**
+ * Get the group associated with a Doc
+ *
+ * In order to be forward-compatible, this function will return an array when more than one group
+ * is found.
+ *
+ * @package BuddyPress Docs
+ * @since 1.1.8
+ *
+ * @param int $doc_id The id of the Doc
+ * @param obj $doc The Doc post object. If you've already got this, send it along to avoid another
+ *    query
+ * @param bool $single_array This is a funky one. If only a single group_id is found, should it be
+ *    returned as a singleton array, or as an int? Defaults to the latter.
+ * @return mixed $group_id Either an array or a string of the group id(s)
+ */
+function bp_docs_get_associated_group_id( $doc_id, $doc = false, $single_array = false ) {
+	global $bp;
+	
+	if ( !$doc ) {
+		$doc = get_post( $doc_id );
+	}
+	
+	if ( !$doc ) {
+		return false;
+	}
+	
+	$post_terms = wp_get_post_terms( $doc_id, $bp->bp_docs->associated_item_tax_name );
+		
+	$group_ids = array();	
+	
+	foreach( $post_terms as $post_term ) {
+		// Make sure this is a group term
+		$parent_term = get_term( $post_term->parent, $bp->bp_docs->associated_item_tax_name );
+		
+		if ( 'group' == $parent_term->slug ) {
+			$group_ids[] = $post_term->name;
+		}
+	}
+	
+	if ( !$single_array && ( count( $group_ids ) <= 1 ) ) {
+		$return = implode( ',', $group_ids );
+	} else {
+		$return = $group_ids;
+	}
+	
+	return apply_filters( 'bp_docs_get_associated_group_id', $group_ids, $doc_id, $doc, $single_array );
 }
 
 ?>
