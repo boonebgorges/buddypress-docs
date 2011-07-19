@@ -217,8 +217,9 @@ add_filter( 'tiny_mce_before_init', 'bp_docs_remove_tinymce_plugins' );
  */
 function bp_docs_add_external_tinymce_plugins( $plugins ) {
 	if ( bp_docs_is_bp_docs_page() ) {
-		$plugins['table'] = WP_PLUGIN_URL . '/buddypress-docs/lib/js/tinymce/plugins/table/editor_plugin.js';
-		$plugins['tabindent'] = WP_PLUGIN_URL . '/buddypress-docs/lib/js/tinymce/plugins/tabindent/editor_plugin.js';
+		$plugins['table'] 	= WP_PLUGIN_URL . '/buddypress-docs/lib/js/tinymce/plugins/table/editor_plugin.js';
+		$plugins['tabindent'] 	= WP_PLUGIN_URL . '/buddypress-docs/lib/js/tinymce/plugins/tabindent/editor_plugin.js';
+		$plugins['print'] 	= WP_PLUGIN_URL . '/buddypress-docs/lib/js/tinymce/plugins/print/editor_plugin.js'; 
 	}
 	
 	return $plugins;
@@ -232,6 +233,7 @@ add_filter( 'mce_external_plugins', 'bp_docs_add_external_tinymce_plugins' );
  *
  * Includes:
  *   - tabindent
+ *   - print
  *
  * @package BuddyPress Docs
  * @since 1.1.5
@@ -254,6 +256,10 @@ function bp_docs_add_external_tinymce_buttons_row1( $buttons ) {
 		// Put the three pieces together
 		$buttons = array_merge( $buttons, array( 'tabindent' ), $new_buttons );
 	}
+	
+	// Add the Print button just before the kitchen sink
+	$ks = array_pop( $buttons );
+	$buttons = array_merge( $buttons, array( 'print' ), array( $ks ) );
 	
 	return $buttons;
 }

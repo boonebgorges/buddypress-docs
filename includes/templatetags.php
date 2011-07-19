@@ -201,6 +201,9 @@ function bp_docs_doc_link( $doc_id ) {
 		
 		// Get the associated item
 		$ass_item 	= wp_get_post_terms( $doc_id, $bp->bp_docs->associated_item_tax_name );
+		
+		if ( empty( $ass_item ) )
+			return false;
 
 		// Get the associated item's doc link
 		// Default to 'group' for now. Todo: abstract (will take another query for tax parent)
@@ -400,7 +403,7 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
 		$user_id = bp_loggedin_user_id();
 	
 	// Only certain actions are checked against doc_ids
-	$need_doc_ids_actions = apply_filters( 'bp_docs_need_doc_ids_actions', array( 'edit', 'manage', 'view_history' ) );
+	$need_doc_ids_actions = apply_filters( 'bp_docs_need_doc_ids_actions', array( 'edit', 'manage', 'view_history', 'read' ) );
 	
 	if ( in_array( $action, $need_doc_ids_actions ) ) {		
 		if ( !$doc_id ) {

@@ -127,6 +127,10 @@ class BP_Docs {
 		// The slug used when deleting a doc
 		if ( !defined( 'BP_DOCS_DELETE_SLUG' ) )
 			define( 'BP_DOCS_DELETE_SLUG', 'delete' );
+			
+		// By default, BP Docs will replace the Recent Comments WP Dashboard Widget
+		if ( !defined( 'BP_DOCS_REPLACE_RECENT_COMMENTS_DASHBOARD_WIDGET' ) )
+			define( 'BP_DOCS_REPLACE_RECENT_COMMENTS_DASHBOARD_WIDGET', true );
 	}	
 	
 	/**
@@ -203,7 +207,6 @@ class BP_Docs {
 			'hierarchical' => false,
 			'supports' => array( 'title', 'editor', 'revisions', 'excerpt', 'comments' ),
 			'query_var' => true,
-			//'rewrite' => false
 			'rewrite' => false // Todo: This bites
 		) );
 	
@@ -277,6 +280,10 @@ class BP_Docs {
 		
 		// formatting.php contains filters and functions used to modify appearance only
 		require_once( BP_DOCS_INCLUDES_PATH . 'formatting.php' );
+		
+		// Dashboard-specific functions
+		if ( is_admin() )
+			require_once( BP_DOCS_INCLUDES_PATH . 'admin.php' );
 	}	
 	
 	/**
