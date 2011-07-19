@@ -69,6 +69,10 @@ class BP_Docs_Groups_Integration {
 		add_filter( 'bp_docs_doc_saved',		array( $this, 'update_doc_count' )  );
 		add_filter( 'bp_docs_doc_deleted',		array( $this, 'update_doc_count' ) );
 		
+		// Update group last active metadata when a doc is created, updated, or saved
+		add_filter( 'bp_docs_doc_saved',		array( $this, 'update_group_last_active' )  );
+		add_filter( 'bp_docs_doc_deleted',		array( $this, 'update_group_last_active' ) );
+		
 		// Sneak into the nav before it's rendered to insert the group Doc count. Hooking
 		// to bp_actions because of the craptastic nature of the BP_Group_Extension loader
 		add_action( 'bp_actions',			array( $this, 'show_doc_count_in_tab' ), 9 );
@@ -583,6 +587,18 @@ class BP_Docs_Groups_Integration {
 		groups_update_groupmeta( $bp->groups->current_group->id, 'bp-docs-count', $this_group_docs_count );
 	}
 
+	/**
+	 * Update the current group's last_activity metadata
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.1.8
+	 */
+	function update_group_last_active() {
+		global $bp;
+		
+		groups_update_groupmeta( $bp->groups->current_group->id, 'last_activity', bp_core_current_time() );
+	}
+	
 	/**
 	 * Show the Doc count in the group tab
 	 *
