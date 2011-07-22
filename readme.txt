@@ -35,6 +35,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.1.9 =
+* Closes code tag on Edit page.
+
 = 1.1.8 =
 * Filters get_post_permalink() so that Doc permalinks in the Admin point to the proper place
 * Ensures that a group's last activity is updated when a Doc is created, edited, or deleted
