@@ -704,6 +704,11 @@ class BP_Docs_Groups_Integration {
 	function check_comment_perms( $comment_post_ID ) {
 		global $bp;
 		
+		// Only check this for BP Docs
+		$post = get_post( $comment_post_ID );
+		if ( $post->post_type != $bp->bp_docs->post_type_name )
+			return true;
+		
 		// Get the group associated with the Doc
 		// Todo: move some of this crap into an API function
 		
