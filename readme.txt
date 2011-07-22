@@ -35,6 +35,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.1.10 =
+* Fixes bug that made BP Docs break WP commenting on some setups
+
 = 1.1.9 =
 * Closes code tag on Edit page.
 
