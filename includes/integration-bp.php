@@ -501,7 +501,7 @@ class BP_Docs_BP_Integration {
 		
 		// Set the action. Filterable so that other integration pieces can alter it
 		$action 	= '';
-		$commenter	= get_user_by_email( $comment->comment_author_email );
+		$commenter	= get_user_by( 'email', $comment->comment_author_email );
 		$commenter_id	= !empty( $commenter->ID ) ? $commenter->ID : false;
 		
 		// Since BP Docs only allows member comments, the following should never happen
