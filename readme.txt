@@ -35,6 +35,11 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.1.11 =
+* Replaces deprecated function calls
+* Internationalizes some missing gettext calls
+* Adds an error message when a non-existent Doc is requested
+
 = 1.1.10 =
 * Fixes bug that made BP Docs break WP commenting on some setups
 
