@@ -35,6 +35,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.1.12 =
+* Updates tabindent plugin for better browser support
+
 = 1.1.11 =
 * Replaces deprecated function calls
 * Internationalizes some missing gettext calls
