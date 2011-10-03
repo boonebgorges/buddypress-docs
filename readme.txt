@@ -36,6 +36,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 == Changelog ==
 
 = 1.1.12 =
+* Adds wiki-like bracket linking
 * Improves distraction-free editing JS
 * Updates tabindent plugin for better browser support
 
