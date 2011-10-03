@@ -1,7 +1,7 @@
 jQuery(document).ready(function($){
 	/* Unhide JS content */
 	$('.hide-if-no-js').show();
-	
+
 	/* When a toggle is clicked, show the toggle-content */
 	$('.toggle-link').click(function(){
 		// Traverse for some items
@@ -9,38 +9,38 @@ jQuery(document).ready(function($){
 		var tc = $(toggleable).find('.toggle-content');
 		var ts = $(toggleable).find('.toggle-switch');
 		var pom = $(this).find('.plus-or-minus');
-		
+
 		// Toggle the active-content class
 		if($(tc).hasClass('active-content')){
 			$(tc).removeClass('active-content');
 		}else{
 			$(tc).addClass('active-content');
 		}
-		
+
 		// Toggle the active-switch class
 		if($(ts).hasClass('active-switch')){
 			$(ts).removeClass('active-switch');
 		}else{
 			$(ts).addClass('active-switch');
 		}
-		
+
 		// Slide the tags up or down
 		$(tc).slideToggle(400, function(){
 			// Swap the +/- in the link
 			var c = $(pom).html();
-			
+
 			if ( c == '+' ) {
 				var mop = '-';
 			} else {
 				var mop = '+';
 			}
-			
+
 			$(pom).html(mop);
 		});
-		
+
 		return false;
 	});
-	
+
 	if($('#doc-form').length != 0 && $('#existing-doc-id').length != 0 ) {
 		/* Set away timeout for quasi-autosave */
 		setIdleTimeout(1000 * 60 * 25); // 25 minutes until the popup (ms * s * min)
@@ -54,7 +54,7 @@ jQuery(document).ready(function($){
 			$('#doc-form').append(is_auto);
 			$('#doc-edit-submit').click();
 		}
-		
+
 		/* Remove the edit lock when the user clicks away */
 		$("a").click(function(){
 			var doc_id = $("#existing-doc-id").val();
@@ -82,31 +82,37 @@ jQuery(document).ready(function($){
 			switchEditors.go('doc[content]', 'tinymce');
 		}
 	}
-	
+
 	$('#bp-docs-group-enable').click(function(){
 		$('#group-doc-options').slideToggle(400);
 	});
-	
-	/*
-		Distraction free writing compatibility
-	*/
-	var title_id = $("*[name='doc\\[title\\]']").attr('id');
-	var content_id = $("*[name='doc\\[content\\]']").attr('id');
-	
-	// Try to update the fullscreen variable settings
-	if ( typeof title_id != 'undefined' )
-		fullscreen.settings.title_id = title_id;
-	if ( typeof content_id != 'undefined' )
-		fullscreen.settings.editor_id = content_id;
-	
+
+	 // Components that use editor
+	var components = [ 'doc' ];
+
+	// Cycle through all the components and try to find the editor IDs
+	$(components).each( function(i,c) {
+		var title_id = $("*[name='" + c + "\\[title\\]']").attr('id');
+		var content_id = $("*[name='" + c + "\\[content\\]']").attr('id');
+
+		// Try to update the fullscreen variable settings
+		if ( typeof title_id != 'undefined' )
+		    fullscreen.settings.title_id = title_id;
+		if ( typeof content_id != 'undefined' )
+		    fullscreen.settings.editor_id = content_id;
+	})
+
 	// Try to check for content_id, wp-fullscreen fails here
 	$("#wp-fullscreen-body").one("mousemove", function(){
 		var content_elem = document.getElementById( fullscreen.settings.editor_id );
 		var editor_mode = $(content_elem).is(':hidden') ? 'tinymce' : 'html';
 		fullscreen.switchmode(editor_mode);
 	});
-	
+
 	// Delete the loader, it won't load anyway
 	$('#wp-fullscreen-save img').remove();
-	
+
+	// Make word counts work
+	$(document).triggerHandler('wpcountwords', [ $(edCanvas).val() ] );
+
 },(jQuery));
