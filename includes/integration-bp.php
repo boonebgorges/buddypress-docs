@@ -1,9 +1,9 @@
 <?php
 
-class BP_Docs_BP_Integration {	
+class BP_Docs_BP_Integration {
 	var $includes_url;
 	var $slugstocheck;
-	
+
 	/**
 	 * PHP 4 constructor
 	 *
@@ -19,21 +19,21 @@ class BP_Docs_BP_Integration {
 	 *
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta
-	 */	
+	 */
 	function __construct() {
 		add_action( 'bp_init', 			array( $this, 'do_query' 		), 90 );
-		
+
 		add_action( 'bp_setup_globals', 	array( $this, 'setup_globals' 		) );
-		
+
 		if ( bp_is_active( 'groups' ) ) {
 			require_once( BP_DOCS_INCLUDES_PATH . 'integration-groups.php' );
 			$this->groups_integration = new BP_Docs_Groups_Integration;
 		}
-		
+
 		add_action( 'wp', 			array( $this, 'catch_page_load' 	), 1 );
-		
+
 		add_action( 'comment_post_redirect', 	array( $this, 'comment_post_redirect' 	), 99, 2 );
-		
+
 		// Add BP Docs activity types to the activity filter dropdown
 		$dropdowns = apply_filters( 'bp_docs_activity_filter_locations', array(
 			'bp_activity_filter_options',
@@ -43,34 +43,34 @@ class BP_Docs_BP_Integration {
 		foreach( $dropdowns as $hook ) {
 			add_action( $hook, array( $this, 'activity_filter_options' ) );
 		}
-		
+
 		// Hook the create/edit activity function
 		add_action( 'bp_docs_doc_saved',	array( $this, 'post_activity' 		) );
-		
+
 		// Doc comments are always from trusted members (for the moment), so approve them
 		add_action( 'pre_comment_approved',	create_function( '', 'return 1;' 	), 999 );
-		
+
 		// Hook the doc comment activity function
 		add_action( 'comment_post',		array( $this, 'post_comment_activity'	), 8 );
-		
+
 		// Filter the location of the comments template to allow it to be included with
 		// the plugin
 		add_filter( 'comments_template',	array( $this, 'comments_template'	) );
-		
+
 		// Keep comment notifications from being sent
 		add_filter( 'comment_post', 		array( $this, 'check_comment_type' 	) );
-		
+
 		// Make sure that comment links are correct. Can't use $wp_rewrite bc of assoc items
 		add_filter( 'post_type_link',		array( $this, 'filter_permalinks'	), 10, 4 );
-		
+
 		// AJAX handler for removing the edit lock when a user clicks away from Edit mode
 		add_action( 'wp_ajax_remove_edit_lock', array( $this, 'remove_edit_lock'        ) );
-		
+
 		add_action( 'bp_loaded', 		array( $this, 'set_includes_url' 	) );
 		add_action( 'init', 			array( $this, 'enqueue_scripts' 	) );
 		add_action( 'wp_print_styles', 		array( $this, 'enqueue_styles' 		) );
 	}
-	
+
 	/**
 	 * Loads the Docs query.
 	 *
@@ -80,16 +80,16 @@ class BP_Docs_BP_Integration {
 	function do_query() {
 		$this->query = new BP_Docs_Query;
 	}
-	
+
 	/**
 	 * Stores some handy information in the $bp global
 	 *
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta
-	 */	
+	 */
 	function setup_globals() {
 		global $bp;
-		
+
 		$bp->bp_docs->format_notification_function 	= 'bp_docs_format_notifications';
 		$bp->bp_docs->slug 				= BP_DOCS_SLUG;
 
@@ -102,10 +102,10 @@ class BP_Docs_BP_Integration {
 		// Todo: You only need this if you need top level access: example.com/docs
 		/* Register this in the active components array */
 		//$bp->active_components[ $bp->wiki->slug ] = $bp->wiki->id;
-		
+
 	}
-	
-		
+
+
 	/**
 	 * Catches page loads, determines what to do, and sends users on their merry way
 	 *
@@ -114,104 +114,104 @@ class BP_Docs_BP_Integration {
 	 */
 	function catch_page_load() {
 		global $bp;
-		
+
 		if ( !empty( $_POST['doc-edit-submit'] ) ) {
 			$this_doc = new BP_Docs_Query;
 			$this_doc->save();
 		}
-		
+
 		if ( !empty( $_POST['docs-filter-submit'] ) ) {
 			$this->handle_filters();
 		}
-		
+
 		// If this is the edit screen, ensure that the user can edit the
 		// doc before querying, and redirect if necessary
 		if ( !empty( $bp->bp_docs->current_view ) && 'edit' == $bp->bp_docs->current_view ) {
 			if ( bp_docs_current_user_can( 'edit' ) ) {
 				$doc = bp_docs_get_current_doc();
-				
+
 				// The user can edit, so we check for edit locks
 				// Because we're not using WP autosave at the moment, ensure that
 				// the lock interval always returns as in process
 				add_filter( 'wp_check_post_lock_window', create_function( false, 'return time();' ) );
-				
+
 				$lock = wp_check_post_lock( $doc->ID );
-				
+
 				if ( $lock ) {
 					bp_core_add_message( sprintf( __( 'This doc is currently being edited by %s. To prevent overwrites, you cannot edit until that user has finished. Please try again in a few minutes.', 'bp-docs' ), bp_core_get_user_displayname( $lock ) ), 'error' );
-				
+
 					$group_permalink = bp_get_group_permalink( $bp->groups->current_group );
 					$doc_slug = $bp->bp_docs->doc_slug;
-					
+
 					// Redirect back to the non-edit view of this document
-					bp_core_redirect( $group_permalink . $bp->bp_docs->slug . '/' . $doc_slug ); 
+					bp_core_redirect( $group_permalink . $bp->bp_docs->slug . '/' . $doc_slug );
 				}
 			} else {
 				if ( function_exists( 'bp_core_no_access' ) && !is_user_logged_in() )
 					bp_core_no_access();
-					
+
 				// The user does not have edit permission. Redirect.
 				bp_core_add_message( __( 'You do not have permission to edit the doc.', 'bp-docs' ), 'error' );
-			
+
 				$group_permalink = bp_get_group_permalink( $bp->groups->current_group );
 				$doc_slug = $bp->bp_docs->doc_slug;
-				
+
 				// Redirect back to the non-edit view of this document
-				bp_core_redirect( $group_permalink . $bp->bp_docs->slug . '/' . $doc_slug ); 
+				bp_core_redirect( $group_permalink . $bp->bp_docs->slug . '/' . $doc_slug );
 			}
 		}
-		
+
 		if ( !empty( $bp->bp_docs->current_view ) && 'create' == $bp->bp_docs->current_view ) {
 			if ( !bp_docs_current_user_can( 'create' ) ) {
 				// The user does not have edit permission. Redirect.
 				if ( function_exists( 'bp_core_no_access' ) && !is_user_logged_in() )
 					bp_core_no_access();
-				
+
 				bp_core_add_message( __( 'You do not have permission to create a Doc in this group.', 'bp-docs' ), 'error' );
-			
+
 				$group_permalink = bp_get_group_permalink( $bp->groups->current_group );
-				
+
 				// Redirect back to the Doc list view
-				bp_core_redirect( $group_permalink . $bp->bp_docs->slug . '/' ); 
+				bp_core_redirect( $group_permalink . $bp->bp_docs->slug . '/' );
 			}
 		}
-		
+
 		if ( !empty( $bp->bp_docs->current_view ) && 'history' == $bp->bp_docs->current_view ) {
 			if ( !bp_docs_current_user_can( 'view_history' ) ) {
-				if ( !bp_docs_current_user_can( 'view_history' ) ) {					
-					// The user does not have edit permission. Redirect.					
+				if ( !bp_docs_current_user_can( 'view_history' ) ) {
+					// The user does not have edit permission. Redirect.
 					if ( function_exists( 'bp_core_no_access' ) && !is_user_logged_in() )
 						bp_core_no_access();
-					
+
 					bp_core_add_message( __( 'You do not have permission to view this Doc\'s history.', 'bp-docs' ), 'error' );
-				
+
 					$doc = bp_docs_get_current_doc();
-					
+
 					$redirect = bp_docs_get_doc_link( $doc->ID );
-					
+
 					// Redirect back to the Doc list view
-					bp_core_redirect( $redirect ); 
+					bp_core_redirect( $redirect );
 				}
 			}
 		}
-		
+
 		// Cancel edit lock
 		if ( !empty( $_GET['bpd_action'] ) && $_GET['bpd_action'] == 'cancel_edit_lock' ) {
 			// Check the nonce
 			check_admin_referer( 'bp_docs_cancel_edit_lock' );
-			
+
 			// Todo: make this part of the perms system
 			if ( is_super_admin() || bp_group_is_admin() ) {
 				$doc = bp_docs_get_current_doc();
-				
+
 				// Todo: get this into a proper method as well, blech
 				delete_post_meta( $doc->ID, '_edit_lock' );
-				
+
 				bp_core_add_message( __( 'Lock successfully removed', 'bp-docs' ) );
 				bp_core_redirect( bp_docs_get_doc_link( $doc->ID ) );
 			}
 		}
-		
+
 		// Cancel edit
 		// Have to have a catcher for this so the edit lock can be removed
 		if ( !empty( $_GET['bpd_action'] ) && $_GET['bpd_action'] == 'cancel_edit' ) {
@@ -219,46 +219,46 @@ class BP_Docs_BP_Integration {
 
 			// Todo: get this into a proper method as well, blech
 			delete_post_meta( $doc->ID, '_edit_lock' );
-						
+
 			bp_core_redirect( bp_docs_get_doc_link( $doc->ID ) );
 		}
-		
+
 		// Todo: get this into a proper method
 		if ( $bp->bp_docs->current_view == 'delete' ) {
 			check_admin_referer( 'bp_docs_delete' );
-			
+
 			if ( bp_docs_current_user_can( 'manage' ) ) {
-			
+
 				$the_doc_args = array(
 					'name' 		=> $bp->action_variables[0],
 					'post_type' 	=> $bp->bp_docs->post_type_name
 				);
-				
-				$the_docs = get_posts( $the_doc_args );			
-				$doc_id = $the_docs[0]->ID;	
-				
+
+				$the_docs = get_posts( $the_doc_args );
+				$doc_id = $the_docs[0]->ID;
+
 				do_action( 'bp_docs_before_doc_delete', $doc_id );
-				
+
 				$delete_args = array(
 					'ID'		=> $doc_id,
 					'post_status'	=> 'trash'
 				);
-				
+
 				wp_update_post( $delete_args );
-				
+
 				do_action( 'bp_docs_doc_deleted', $delete_args );
-								
+
 				bp_core_add_message( __( 'Doc successfully deleted!', 'bp-docs' ) );
 			} else {
 				bp_core_add_message( __( 'You do not have permission to delete that doc.', 'bp-docs' ), 'error' );
 			}
-			
+
 			// todo: abstract this out so I don't have to call group permalink here
 			$redirect_url = bp_get_group_permalink( $bp->groups->current_group ) . $bp->bp_docs->slug . '/';
-			bp_core_redirect( $redirect_url );					
+			bp_core_redirect( $redirect_url );
 		}
 	}
-	
+
 	/**
 	 * Handles doc filters from a form post and translates to $_GET arguments before redirect
 	 *
@@ -268,9 +268,9 @@ class BP_Docs_BP_Integration {
 	function handle_filters() {
 		$redirect_url = apply_filters( 'bp_docs_handle_filters', bp_docs_get_item_docs_link() );
 
-		bp_core_redirect( $redirect_url );		
+		bp_core_redirect( $redirect_url );
 	}
-	
+
 	/**
 	 * Sets the includes URL for use when loading scripts and styles
 	 *
@@ -280,7 +280,7 @@ class BP_Docs_BP_Integration {
 	function set_includes_url() {
 		$this->includes_url = plugins_url() . '/buddypress-docs/includes/';
 	}
-	
+
 	/**
 	 * Filters the comment_post_direct URL so that the user gets sent back to the true
 	 * comment URL after posting
@@ -294,18 +294,18 @@ class BP_Docs_BP_Integration {
 	 */
 	function comment_post_redirect( $location, $comment ) {
 		global $bp;
-		
+
 		// Check to see whether this is a BP Doc
 		$post = get_post( $comment->comment_post_ID );
-		
+
 		if ( $bp->bp_docs->post_type_name != $post->post_type )
 			return $location;
-		
+
 		$location = bp_docs_get_doc_link( $comment->comment_post_ID ) . '#comment-' . $comment->comment_ID;
-		
+
 		return $location;
 	}
-	
+
 	/**
 	 * Adds BP Docs options to activity filter dropdowns
 	 *
@@ -314,14 +314,14 @@ class BP_Docs_BP_Integration {
 	 */
 	function activity_filter_options() {
 		?>
-		
+
 		<option value="bp_doc_created"><?php _e( 'Show New Docs', 'buddypress' ); ?></option>
 		<option value="bp_doc_edited"><?php _e( 'Show Doc Edits', 'buddypress' ); ?></option>
 		<option value="bp_doc_comment"><?php _e( 'Show Doc Comments', 'buddypress' ); ?></option>
-		
+
 		<?php
 	}
-	
+
 	/**
 	 * Posts an activity item on doc save
 	 *
@@ -334,19 +334,19 @@ class BP_Docs_BP_Integration {
 	 */
 	function post_activity( $query ) {
 		global $bp;
-		
+
 		// todo: exception for autosave?
-		
+
 		if ( !bp_is_active( 'activity' ) )
 			return false;
-		
+
 		$doc_id	= !empty( $query->doc_id ) ? $query->doc_id : false;
-		
+
 		if ( !$doc_id )
 			return false;
-		
+
 		$last_editor	= get_post_meta( $doc_id, 'bp_docs_last_editor', true );
-		
+
 		// Throttle 'doc edited' posts. By default, one per user per hour
 		if ( !$query->is_new_doc ) {
 			// Look for an existing activity item corresponding to this user editing
@@ -361,9 +361,9 @@ class BP_Docs_BP_Integration {
 					'secondary_id'	=> $doc_id // We don't really care about the item_id for these purposes (it could have been changed)
 				),
 			);
-			
+
 			$already_activity = bp_activity_get( $already_args );
-			
+
 			// If any activity items are found, compare its date_recorded with time() to
 			// see if it's within the allotted throttle time. If so, don't record the
 			// activity item
@@ -374,26 +374,26 @@ class BP_Docs_BP_Integration {
 					return;
 			}
 		}
-		
+
 		$doc = get_post( $doc_id );
-		
+
 		// Set the action. Filterable so that other integration pieces can alter it
 		$action 	= '';
 		$user_link 	= bp_core_get_userlink( $last_editor );
 		$doc_url	= bp_docs_get_doc_link( $doc_id );
 		$doc_link	= '<a href="' . $doc_url . '">' . $doc->post_title . '</a>';
-		
+
 		if ( $query->is_new_doc ) {
 			$action = sprintf( __( '%1$s created the doc %2$s', 'bp-docs' ), $user_link, $doc_link );
 		} else {
 			$action = sprintf( __( '%1$s edited the doc %2$s', 'bp-docs' ), $user_link, $doc_link );
 		}
-		
+
 		$action	= apply_filters( 'bp_docs_activity_action', $action, $user_link, $doc_link, $query->is_new_doc, $query );
-		
+
 		// Get a canonical name for the component. This is a nightmare because of the way
 		// the current component and root slug relate in BP 1.3+
-		if ( function_exists( 'bp_is_current_component' ) ) {			
+		if ( function_exists( 'bp_is_current_component' ) ) {
 			foreach ( $bp->active_components as $comp => $value ) {
 				if ( bp_is_current_component( $comp ) ) {
 					$component = $comp;
@@ -403,13 +403,13 @@ class BP_Docs_BP_Integration {
 		} else {
 			$component = bp_current_component();
 		}
-		
+
 		// This is only temporary! This item business needs to be component-neutral
 		$item = isset( $bp->groups->current_group->id ) ? $bp->groups->current_group->id : false;
-		
+
 		// Set the type, to be used in activity filtering
 		$type = $query->is_new_doc ? 'bp_doc_created' : 'bp_doc_edited';
-	
+
 		$args = array(
 			'user_id'		=> $last_editor,
 			'action'		=> $action,
@@ -421,16 +421,16 @@ class BP_Docs_BP_Integration {
 			'recorded_time'		=> bp_core_current_time(),
 			'hide_sitewide'		=> apply_filters( 'bp_docs_hide_sitewide', false, false, $doc, $item, $component ) // Filtered to allow plugins and integration pieces to dictate
 		);
-		
+
 		do_action( 'bp_docs_before_activity_save', $args );
-		
+
 		$activity_id = bp_activity_add( apply_filters( 'bp_docs_activity_args', $args ) );
-		
+
 		do_action( 'bp_docs_after_activity_save', $activity_id, $args );
-		
+
 		return $activity_id;
 	}
-	
+
 	/**
 	 * Posts an activity item when a comment is posted to a doc
 	 *
@@ -442,84 +442,84 @@ class BP_Docs_BP_Integration {
 	 */
 	function post_comment_activity( $comment_id ) {
 		global $bp;
-		
+
 		if ( !bp_is_active( 'activity' ) )
 			return false;
-		
+
 		if ( empty( $comment_id ) )
 			return false;
-		
+
 		$comment 	= get_comment( $comment_id );
 		$doc 		= !empty( $comment->comment_post_ID ) ? get_post( $comment->comment_post_ID ) : false;
-	
+
 		if ( empty( $doc ) )
 			return false;
-		
+
 		// Only continue if this is a BP Docs post
 		if ( $doc->post_type != $bp->bp_docs->post_type_name )
 			return;
-		
+
 		$doc_id 	= !empty( $doc->ID ) ? $doc->ID : false;
-		
+
 		if ( !$doc_id )
 			return false;
-		
+
 		// Make sure that BP doesn't record this comment with its native functions
 		remove_action( 'comment_post', 'bp_blogs_record_comment', 10, 2 );
-		
+
 		// Until better individual activity item privacy controls are available in BP,
 		// comments will only be shown in the activity stream if "Who can read comments on
 		// this doc?" is set to "Anyone" or "Group members"
 		$doc_settings	= get_post_meta( $doc_id, 'bp_docs_settings', true );
-		
+
 		if ( !empty( $doc_settings['read_comments'] ) && ( 'admins-mods' == $doc_settings['read_comments'] || 'no-one' == $doc_settings['read_comments'] ) )
 			return false;
-		
+
 		// Get the associated item for this doc. Todo: abstract to standalone function
 		$items = wp_get_post_terms( $doc_id, $bp->bp_docs->associated_item_tax_name );
-		
+
 		// It's possible that there will be more than one item; for now, post only to the
 		// first one. Todo: make this extensible
 		$item = !empty( $items[0]->name ) ? $items[0]->name : false;
-		
+
 		// From the item, we can obtain the component (the parent tax of the item tax)
 		if ( !empty( $items[0]->parent ) ) {
 			$parent = get_term( (int)$items[0]->parent, $bp->bp_docs->associated_item_tax_name );
-			
+
 			// For some reason, I named them singularly. So we have to canonicalize
 			switch ( $parent->slug ) {
 				case 'user' :
 					$component = 'profile';
 					break;
-					
+
 				case 'group' :
 				default	:
 					$component = 'groups';
-					break;					
+					break;
 			}
-		}		
-		
+		}
+
 		// Set the action. Filterable so that other integration pieces can alter it
 		$action 	= '';
 		$commenter	= get_user_by( 'email', $comment->comment_author_email );
 		$commenter_id	= !empty( $commenter->ID ) ? $commenter->ID : false;
-		
+
 		// Since BP Docs only allows member comments, the following should never happen
 		if ( !$commenter_id )
 			return false;
-		
+
 		$user_link 	= bp_core_get_userlink( $commenter_id );
 		$doc_url	= bp_docs_get_doc_link( $doc_id );
 		$comment_url	= $doc_url . '#comment-' . $comment->comment_ID;
 		$comment_link	= '<a href="' . $comment_url . '">' . $doc->post_title . '</a>';
-		
+
 		$action = sprintf( __( '%1$s commented on the doc %2$s', 'bp-docs' ), $user_link, $comment_link );
-		
+
 		$action	= apply_filters( 'bp_docs_comment_activity_action', $action, $user_link, $comment_link, $component, $item );
 
 		// Set the type, to be used in activity filtering
 		$type = 'bp_doc_comment';
-		
+
 		$args = array(
 			'user_id'		=> $commenter_id,
 			'action'		=> $action,
@@ -532,16 +532,16 @@ class BP_Docs_BP_Integration {
 			'recorded_time'		=> bp_core_current_time(),
 			'hide_sitewide'		=> apply_filters( 'bp_docs_hide_sitewide', false, $comment, $doc, $item, $component ) // Filtered to allow plugins and integration pieces to dictate
 		);
-		
+
 		do_action( 'bp_docs_before_comment_activity_save', $args );
-		
+
 		$activity_id = bp_activity_add( apply_filters( 'bp_docs_comment_activity_args', $args ) );
-		
+
 		do_action( 'bp_docs_after_comment_activity_save', $activity_id, $args );
-		
+
 		return $activity_id;
 	}
-	
+
 	/**
 	 * Filter the location of the comments.php template
 	 *
@@ -559,27 +559,27 @@ class BP_Docs_BP_Integration {
 	function comments_template( $path ) {
 		if ( !bp_docs_is_bp_docs_page() )
 			return $path;
-		
+
 		$original_path = $path;
-		
-		if ( !file_exists( $path ) ) {	
+
+		if ( !file_exists( $path ) ) {
 			$file = str_replace( STYLESHEETPATH, '', $path );
-			
+
 			if ( file_exists( TEMPLATEPATH . $file ) )
 				$path = TEMPLATEPATH .  $file;
-			else 
+			else
 				$path = BP_DOCS_INSTALL_PATH . 'includes/templates' . $file;
 		}
-		
+
 		return apply_filters( 'bp_docs_comment_template_path', $path, $original_path );
 	}
-	
+
 	/**
 	 * Prevents comment notification emails from being sent on BP Docs comments
 	 *
 	 * For the moment, I'm shutting off WP's native email notifications on BP Docs comments.
 	 * They are better handled as part of the BP activity stream. This maneuver requires a
-	 * trick: when a comment is posted on a BP Doc type post, I hijack the get_option() call 
+	 * trick: when a comment is posted on a BP Doc type post, I hijack the get_option() call
 	 * for comments_notify and return 0 (rather than false, which would not stop the real
 	 * get_option operation from running).
 	 *
@@ -590,20 +590,20 @@ class BP_Docs_BP_Integration {
 	 */
 	function check_comment_type( $comment_id ) {
 		global $bp;
-		
+
 		$comment = get_comment( $comment_id );
 		$post = get_post( $comment->comment_post_ID );
-		
+
 		if ( $bp->bp_docs->post_type_name == $post->post_type ) {
 			add_filter( 'pre_option_comments_notify', create_function( false, 'return 0;' ) );
 		}
 	}
-	
+
 	/**
 	 * Display the proper permalink for Docs
 	 *
 	 * This function filters 'post_type_link', which in turn powers get_permalink() and related
-	 * functions. 
+	 * functions.
 	 *
 	 * In brief, the purpose is to make sure that Doc permalinks point to the proper place.
 	 * Ideally I would use a rewrite rule to accomplish this, but it's impossible to write
@@ -620,14 +620,14 @@ class BP_Docs_BP_Integration {
 	 */
 	function filter_permalinks( $link, $post, $leavename, $sample ) {
 		global $bp;
-		
+
 		if ( $bp->bp_docs->post_type_name == $post->post_type ) {
 			$link = bp_docs_get_doc_link( $post->ID );
 		}
-		
+
 		return $link;
 	}
-	
+
 	/**
 	 * AJAX handler for remove_edit_lock option
 	 *
@@ -638,42 +638,44 @@ class BP_Docs_BP_Integration {
 	 */
 	function remove_edit_lock() {
 		$doc_id = isset( $_POST['doc_id'] ) ? $_POST['doc_id'] : false;
-		
+
 		if ( !$doc_id )
 			return false;
-		
+
 		delete_post_meta( $doc_id, '_edit_lock' );
 	}
-	
+
 	/**
 	 * Loads JavaScript
 	 *
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta
-	 */	
-	function enqueue_scripts() {		
+	 */
+	function enqueue_scripts() {
 		wp_register_script( 'bp-docs-js', plugins_url( 'buddypress-docs/includes/js/bp-docs.js' ), array( 'jquery' ) );
-		
+
 		// This is for edit/create scripts
 		if ( !empty( $this->query->current_view ) && ( 'edit' == $this->query->current_view || 'create' == $this->query->current_view ) ) {
 			require_once( ABSPATH . '/wp-admin/includes/post.php' );
 			wp_enqueue_script( 'common' );
 			wp_enqueue_script( 'jquery-color' );
 			wp_enqueue_script( 'editor' );
-			if ( function_exists( 'add_thickbox' ) ) 
+			if ( function_exists( 'add_thickbox' ) )
 				add_thickbox();
 			wp_enqueue_script( 'utils' );
 			wp_enqueue_script( 'autosave' );
-			
+
 			wp_register_script( 'bp-docs-idle-js', plugins_url( 'buddypress-docs/includes/js/idle.js' ), array( 'jquery', 'bp-docs-js' ) );
 			wp_enqueue_script( 'bp-docs-idle-js' );
-		
+
 			// Edit mode requires bp-docs-js to be dependent on TinyMCE, so we must
 			// reregister bp-docs-js with the correct dependencies
 			wp_deregister_script( 'bp-docs-js' );
 			wp_register_script( 'bp-docs-js', plugins_url( 'buddypress-docs/includes/js/bp-docs.js' ), array( 'jquery', 'editor' ) );
+
+			wp_register_script( 'word-counter', site_url() . '/wp-admin/js/word-count.js', array( 'jquery' ) );
 		}
-		
+
 		// Only load our JS on the right sorts of pages. Generous to account for
 		// different item types
 		if ( in_array( BP_DOCS_SLUG, $this->slugstocheck ) ) {
@@ -684,7 +686,7 @@ class BP_Docs_BP_Integration {
 			) );
 		}
 	}
-	
+
 	/**
 	 * Loads styles
 	 *
@@ -693,12 +695,12 @@ class BP_Docs_BP_Integration {
 	 */
 	function enqueue_styles() {
 		global $bp;
-		
+
 		// Load the main CSS only on the proper pages
 		if ( in_array( BP_DOCS_SLUG, $this->slugstocheck ) ) {
 			wp_enqueue_style( 'bp-docs-css', $this->includes_url . 'css/bp-docs.css' );
 		}
-		
+
 		if ( !empty( $this->query->current_view ) && ( 'edit' == $this->query->current_view || 'create' == $this->query->current_view ) ) {
 			wp_enqueue_style( 'thickbox' );
 			wp_enqueue_style( 'bpd-edit-css', $this->includes_url . 'css/edit.css' );

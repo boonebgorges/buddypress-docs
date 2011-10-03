@@ -1,4 +1,132 @@
-/* Distraction Free Editor - Overlay Styles */
+div#container {
+	position: static !important; /* Needed to show the whole toolbar. Todo: figure out */
+}
+
+/**
+ * Editor Screens
+ */
+#editor-toolbar { margin: 10px 0 0; }
+#editorcontainer {
+    border: 1px solid #DDD;
+    border-collapse: separate;
+    -moz-border-radius: 6px 6px 0 0;
+    -webkit-border-top-right-radius: 6px;
+    -webkit-border-top-left-radius: 6px;
+    -khtml-border-top-right-radius: 6px;
+    -khtml-border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-top-left-radius: 6px;
+    clear: both;
+}
+#editorcontainer table *,
+#mce_fullscreen_container table * { padding: 0; }
+#editorcontainer textarea {
+    width: 99%; border: none;
+    border-radius: 0; -webkit-border-radius: 0; -moz-border-radius: 0; margin-top: -1px; }
+#edButtonHTML,
+#edButtonPreview {
+    background-color: #F1F1F1; padding: 2px 10px;
+    -moz-border-radius-topleft: 5px; -moz-border-radius-topright: 5px;
+    -webkit-border-top-left-radius: 5px; -webkit-border-top-right-radius: 5px;
+    border-top-left-radius: 5px; border-top-right-radius: 5px;
+    float: right; margin-right: 5px; cursor: pointer; border: 1px solid #DDD;
+    border-bottom: 0; margin-bottom: -1px; color: #999; }
+#edButtonHTML { margin-right: 10px; }
+#edButtonHTML.active,
+#edButtonPreview.active {
+    color: #444; cursor: pointer; font-weight: bold; background-color: #EEE; border-bottom: 1px solid #EEE; }
+#ed_toolbar {
+    clear: both; background-color: #EEE; padding: 2px; border: 1px solid #DDD;
+    border-radius: 5px 5px 0 0; -webkit-border-radius: 5px 5px 0 0; -moz-border-radius: 5px 5px 0 0; }
+#ed_toolbar input { padding: 2px 4px; margin: 1px; }
+.mceToolbar { padding: 2px; background: #EEE; }
+#mce_fullscreen_container .mceToolbar { padding: 4px 2px; background: #EEE; }
+#editorcontainer .mceStatusbar { border-top: 1px solid #DDD; background: #EEE; }
+#editorcontainer .mceStatusbar div { padding: 2px; }
+#mce_fullscreen_container .mceStatusbar { border-top: 1px solid #DDD; background: #EEE; }
+#mce_fullscreen_container .mceStatusbar div { padding: 2px; }
+#editorcontainer .mceButton,
+#editorcontainer .mceListBox td a,
+#editorcontainer .mceSplitButton td a { border: 1px solid #CACACA; color: #444; }
+#mce_fullscreen_container .mceButton,
+#mce_fullscreen_container .mceListBox td a,
+#mce_fullscreen_container .mceSplitButton td a { border: 1px solid #CACACA; color: #444; }
+.mceMenu,
+.mceColorSplitMenu { border: 1px solid #CACACA; background-color: #FFF; }
+.mceMenuItem a { color: #444; cursor: pointer; }
+.mceMenuItem:hover { background: #EEE; }
+.zerosize { display: none; }
+
+#mceModalBlocker { background: #000; }
+#mce_fullscreen_container { background: #fff; }
+
+/* Media Buttons */
+#media-toolbar { padding: 4px 4px 0; float: left; }
+#media-toolbar a { margin: 0 5px; }
+
+/* Modal windows */
+.clearlooks2 .mceFocus .mceTop .mceLeft {
+    background: #444;
+    border-left: 1px solid #999;
+    border-top: 1px solid #999;
+    -moz-border-radius: 4px 0 0 0;
+    -webkit-border-top-left-radius: 4px;
+    -khtml-border-top-left-radius: 4px;
+    border-top-left-radius: 4px;
+}
+
+.clearlooks2 .mceFocus .mceTop .mceRight {
+    background: #444;
+    border-right: 1px solid #999;
+    border-top: 1px solid #999;
+    border-top-right-radius: 4px;
+    -khtml-border-top-right-radius: 4px;
+    -webkit-border-top-right-radius: 4px;
+    -moz-border-radius: 0 4px 0 0;
+}
+
+.clearlooks2 .mceMiddle .mceLeft {
+    background: #f1f1f1;
+    border-left: 1px solid #999;
+}
+
+.clearlooks2 .mceMiddle .mceRight {
+    background: #f1f1f1;
+    border-right: 1px solid #999;
+}
+
+.clearlooks2 .mceBottom {
+    background: #f1f1f1;
+    border-bottom: 1px solid #999;
+}
+
+.clearlooks2 .mceBottom .mceLeft {
+    background: #f1f1f1;
+    border-bottom: 1px solid #999;
+    border-left: 1px solid #999;
+}
+
+.clearlooks2 .mceBottom .mceCenter {
+    background: #f1f1f1;
+    border-bottom: 1px solid #999;
+}
+
+.clearlooks2 .mceBottom .mceRight {
+    background: #f1f1f1;
+    border-bottom: 1px solid #999;
+    border-right: 1px solid #999;
+}
+
+.clearlooks2 .mceFocus .mceTop span {
+    color: #e5e5e5;
+}
+
+.clearlooks2 .mceMiddle .mceLeft,
+.clearlooks2 .mceMiddle .mceRight { background: #EEE !important; }
+
+/* Distraction Free Writing mode
+ * =Overlay Styles
+-------------------------------------------------------------- */
 .fullscreen-overlay {
     z-index: 149999;
     display: none;
@@ -7,8 +135,8 @@
     bottom: 0;
     left: 0;
     right: 0;
-    background: #f9f9f9;
     filter: inherit;
+    background: #f9f9f9;
 }
 
 .fullscreen-active .fullscreen-overlay,
@@ -24,7 +152,12 @@
     display: none;
 }
 
-/* Distraction Free Editor - Overlay Body */
+.fullscreen-active #header {
+    display: none;
+}
+
+/* =Overlay Body
+-------------------------------------------------------------- */
 #wp-fullscreen-body {
     width: 100%;
     z-index: 150005;
@@ -50,7 +183,8 @@
 }
 
 #wp-fullscreen-container {
-    padding: 4px 10px 50px;
+    padding: 4px 5px 50px 10px;
+    width: 100%;
 }
 
 #wp-fullscreen-title,
@@ -77,6 +211,7 @@
     min-height: 300px;
     border: 0;
     background: transparent;
+    font-family: Consolas, Monaco, monospace;
     line-height: 1.6em;
     padding: 0;
     overflow-y: hidden;
@@ -91,7 +226,8 @@
     padding-top: 5px;
 }
 
-/* Distraction Free Editor - Top bar */
+/* =Top bar
+-------------------------------------------------------------- */
 #fullscreen-topbar {
     position: fixed;
     top: 0;
@@ -130,6 +266,10 @@
 }
 
 #wp-fullscreen-save {
+    float: right;
+}
+
+#wp-fullscreen-save {
     padding: 2px 2px 0 5px;
 }
 
@@ -141,6 +281,10 @@
 #wp-fullscreen-central-toolbar {
     margin: auto;
     padding: 0;
+}
+
+#wp-fullscreen-buttons > div {
+    float: left;
 }
 
 #wp-fullscreen-mode-bar {
@@ -204,12 +348,17 @@
 }
 
 #wp-fullscreen-buttons .hidden,
-.wp-html-mode #wp-fullscreen-buttons div {
+.wp-html-mode #wp-fullscreen-buttons div,
+#wp-fullscreen-buttons .hidden {
     display: none;
 }
 
 #wp-fullscreen-buttons .disabled {
     opacity: 0.5;
+}
+
+.wp-html-mode #wp-fullscreen-buttons div {
+    display: none;
 }
 
 .wp-html-mode #wp-fullscreen-buttons div.wp-fullscreen-both {
@@ -231,7 +380,6 @@
 }
 
 #wp-fullscreen-buttons .mce_image .mce_image {
-    /* I know, it won't work */
     background-image: url("/wp-admin/images/menu.png");
     background-position: -124px -38px;
 }
@@ -240,7 +388,8 @@
     background-position: -124px -6px;
 }
 
-/* Thickbox Adjustments */
+/* =Thickbox Adjustments
+-------------------------------------------------------------- */
 .fullscreen-active #TB_overlay {
     z-index: 150100;
 }
@@ -249,7 +398,8 @@
     z-index: 150102;
 }
 
-/* TinyMCE Adjustments */
+/* =TinyMCE Adjustments
+-------------------------------------------------------------- */
 #wp_mce_fullscreen_ifr {
     background: transparent;
 }
@@ -279,7 +429,8 @@
     background-color: #FFF;
 }
 
-/* CSS 3 transitions */
+/* =CSS 3 transitions
+-------------------------------------------------------------- */
 .fade-1000 {
     opacity: 0;
     -moz-transition-property: opacity;
@@ -331,3 +482,11 @@
 .fade-trigger {
     opacity: 1;
 }
+
+/* Formbuilder things */
+.frmb .opt_group .fields > input,
+.frmb .opt_group .fields > label { display: none !important; }
+.frmb-submit { display: none; }
+.frm-elements >.frm-fld { display: none; }
+.formbuilder-control-box { margin-top: 10px; }
+.frm-elements .false-label { margin-left: 0; font-weight: bold; }
