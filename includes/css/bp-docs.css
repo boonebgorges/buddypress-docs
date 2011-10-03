@@ -106,11 +106,11 @@
 }
 
 .asc a {
-	background: url(../images/sort-col-asc.gif) no-repeat;	
+	background: url(../images/sort-col-asc.gif) no-repeat;
 }
 
 .desc a {
-	background: url(../images/sort-col-desc.gif) no-repeat;	
+	background: url(../images/sort-col-desc.gif) no-repeat;
 }
 
 .doc-edit-link {
@@ -142,7 +142,7 @@ div.docs-info-header {
 	padding: 3px 16px;
 	margin: 16px 0 0;
 }
-	.toggle-switch.active-switch {		
+	.toggle-switch.active-switch {
 		-moz-border-radius-bottomleft: 10px;
 		-webkit-border-bottom-left-radius: 10px;
 		-moz-border-radius-bottomright: 10px;
@@ -260,6 +260,10 @@ div.doc-meta p {
 	margin-bottom: 5px;
 }
 
+a.nonexistent-doc {
+	color: #f33;
+}
+
 /* Comment section */
 .comments-closed {
 	padding: 10px 20px;
@@ -307,7 +311,7 @@ table.diff {
 }
 	table.diff col.content {
 		width: 50%;
-	}	
+	}
 	table.diff tr {
 		background-color: transparent;
 	}
@@ -324,7 +328,7 @@ table.diff {
 	}
 		table.diff .diff-deletedline del {
 			background-color: #f99;
-		}	
+		}
 	table.diff .diff-addedline {
 		background-color: #dfd;
 	}
