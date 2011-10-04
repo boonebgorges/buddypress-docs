@@ -90,8 +90,10 @@ class BP_Docs_BP_Integration {
 	function setup_globals() {
 		global $bp;
 
-		$bp->bp_docs->format_notification_function 	= 'bp_docs_format_notifications';
-		$bp->bp_docs->slug 				= BP_DOCS_SLUG;
+		$bp->bp_docs->format_notification_function = 'bp_docs_format_notifications';
+		$bp->bp_docs->slug 			   = BP_DOCS_SLUG;
+		$bp->bp_docs->id			   = 'bp_docs';
+		$bp->bp_docs->name			   = __( 'BuddyPress Docs', 'bp-docs' );
 
 		// This info is loaded here because it needs to happen after BP core globals are
 		// set up
@@ -99,10 +101,31 @@ class BP_Docs_BP_Integration {
 		$this->slugstocheck[] 	= bp_current_component();
 		$this->slugstocheck[] 	= bp_current_action();
 
-		// Todo: You only need this if you need top level access: example.com/docs
-		/* Register this in the active components array */
-		//$bp->active_components[ $bp->wiki->slug ] = $bp->wiki->id;
+		$bp->active_components[$bp->bp_docs->id] = $bp->bp_docs->id;
 
+		// Doing my own implementation of bp_core_add_root_component() because it's broken
+		// and I'm not ready to use BP_Component
+		if ( empty( $bp->pages ) )
+			$bp->pages = bp_core_get_directory_pages();
+
+		$match = false;
+
+		// Check if the slug is registered in the $bp->pages global
+		foreach ( (array)$bp->pages as $key => $page ) {
+			if ( $key == $bp->bp_docs->id || $page->slug == $bp->bp_docs->slug )
+				$match = true;
+		}
+
+		// If there was no match, add a page for this root component
+		if ( empty( $match ) ) {
+			$bp->add_root[] = 'bp_docs';
+		}
+
+		// Make sure that this component is registered as requiring a top-level directory
+		if ( isset( $bp->{$bp->bp_docs->id} ) ) {
+			$bp->loaded_components['bp_docs'] = 'bp_docs';
+			$bp->bp_docs->has_directory = true;
+		}
 	}
 
 
