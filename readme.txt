@@ -5,7 +5,7 @@ Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.1, BuddyPress 1.5
 Tested up to: WordPress 3.3-bleeding, BuddyPress 1.5
 Stable tag: 1.1.12
- 
+
 Adds collaborative Docs to BuddyPress.
 
 == Description ==
@@ -34,6 +34,12 @@ This plugin is in active development. For feature requests and bug reports, visi
 1. Sit back and watch the jack roll in
 
 == Changelog ==
+
+= 1.2 =
+* Added support for a sitewide Docs directory
+* Added support for member Docs
+* Rewritten template/loop API. See dev-changelog.txt
+* Templates reorganized to better match BP's directory structure
 
 = 1.1.12 =
 * Adds wiki-like bracket linking
