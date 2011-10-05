@@ -147,6 +147,8 @@ class BP_Docs_BP_Integration {
 	 * @since 1.2
 	 */
 	function setup_nav() {
+		global $post;
+
 		// Group nav setup is handled in integration-groups.php
 		if ( bp_is_group() ) {
 			return;
@@ -171,9 +173,20 @@ class BP_Docs_BP_Integration {
 				'name'            => __( 'Create Doc', 'bp-docs' ),
 				'slug'            => 'docs/create',
 				'item_css_id'	  => 'bp_docs-create',
-				'position'        => 10,
+				'position'        => 20,
 				'link'		  => bp_loggedin_user_domain() . bp_docs_get_slug() . '/' . BP_DOCS_CREATE_SLUG,
 				'show_on'	  => array( 'profile', 'directory' )
+			) );
+		}
+
+		if ( bp_docs_is_existing_doc() ) {
+			bp_core_new_nav_item( array(
+				'name'		=> get_the_title(),
+				'slug'		=> $post->post_name,
+				'position'	=> 80,
+				'link'		=> get_permalink( $post->ID ),
+				'show_on'	=> array( 'profile', 'directory' )
+
 			) );
 		}
 	}

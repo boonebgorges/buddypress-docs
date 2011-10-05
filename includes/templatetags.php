@@ -97,21 +97,9 @@ function bp_docs_nav() {
 			return '';
 		}
 
-		return bp_get_directory_nav();
-
-		?>
-	<li<?php if ( $bp->bp_docs->current_view == 'list' ) : ?> class="current"<?php endif; ?>><a href="<?php echo $base_link ?>/"><?php _e( 'View Docs', 'bp-docs' ) ?></a></li>
-
-	<?php if ( bp_docs_current_user_can( 'create' ) ) : ?>
-		<li<?php if ( 'create' == $bp->bp_docs->current_view ) : ?> class="current"<?php endif; ?>><a href="<?php echo $base_link ?>/create"><?php _e( 'New Doc', 'bp-docs' ) ?></a></li>
-	<?php endif ?>
-
-	<?php if ( bp_docs_is_existing_doc() ) : ?>
-		<li class="current"><a href="<?php echo $base_link ?>/<?php echo $post->post_name ?>"><?php the_title() ?></a></li>
-	<?php endif ?>
-
-<?php
-		echo 'ok';
+		if ( bp_is_directory() ) {
+			return bp_get_directory_nav();
+		}
 	}
 
 /**
