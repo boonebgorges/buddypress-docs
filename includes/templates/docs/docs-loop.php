@@ -13,7 +13,7 @@
 
 <?php bp_docs_inline_toggle_js() ?>
 
-<?php if ( have_posts() ) : ?>
+<?php if ( bp_docs_has_docs() ) : ?>
 	<table class="doctable">
 
 	<thead>

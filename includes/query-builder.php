@@ -25,8 +25,8 @@ class BP_Docs_Query {
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
-	function bp_docs_query() {
-		$this->__construct();
+	function bp_docs_query( $args = array() ) {
+		$this->__construct( $args );
 	}
 
 	/**
@@ -35,8 +35,21 @@ class BP_Docs_Query {
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
-	function __construct() {
+	function __construct( $args = array() ) {
 		global $bp;
+
+		$defaults = array(
+			'doc_id'	 => array(),     // Array or comma-separated string
+			'group_id'	 => array(),     // Array or comma-separated string
+			'author_id'	 => array(),     // Array or comma-separated string
+			'tags'		 => array(),     // Array or comma-separated string
+			'order'		 => 'ASC',       // ASC or DESC
+			'orderby'	 => 'modified',  // 'modified', 'title', 'author', 'created'
+			'paged'		 => 1,
+			'posts_per_page' => 10,
+		);
+		$r = wp_parse_args( $args, $defaults );
+		extract( $r );
 
 		$this->post_type_name 		= $bp->bp_docs->post_type_name;
 		$this->associated_item_tax_name	= $bp->bp_docs->associated_item_tax_name;
