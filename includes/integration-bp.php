@@ -50,6 +50,9 @@ class BP_Docs_BP_Integration {
 		// Doc comments are always from trusted members (for the moment), so approve them
 		add_action( 'pre_comment_approved',	create_function( '', 'return 1;' 	), 999 );
 
+		// Hook the directory screen function. Works only with BP 1.5+
+		add_action( 'bp_screens',		array( $this, 'directory_screen' 	) );
+
 		// Hook the doc comment activity function
 		add_action( 'comment_post',		array( $this, 'post_comment_activity'	), 8 );
 
@@ -343,6 +346,16 @@ class BP_Docs_BP_Integration {
 		<option value="bp_doc_comment"><?php _e( 'Show Doc Comments', 'buddypress' ); ?></option>
 
 		<?php
+	}
+
+	function directory_screen() {
+		if ( !bp_is_group() && !bp_current_action() && bp_is_current_component( 'bp_docs' ) ) {
+			bp_update_is_directory( true, 'docs' );
+
+			do_action( 'bp_docs_screen_index' );
+
+			include( bp_docs_locate_template( apply_filters( 'bp_docs_screen_index', 'index.php' ) ) );
+		}
 	}
 
 	/**
