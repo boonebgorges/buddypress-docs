@@ -182,7 +182,7 @@ class BP_Docs_Groups_Integration {
 	 *
 	 * @return array $terms
 	 */
-	function get_group_terms() {
+	function get_group_terms( $terms ) {
 		global $bp;
 
 		if ( ! empty( $bp->groups->current_group->id ) ) {

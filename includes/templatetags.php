@@ -1008,4 +1008,12 @@ function bp_docs_locate_template( $template = '' ) {
 
 	return apply_filters( 'bp_docs_locate_template', $template_path, $template );
 }
+
+function bp_docs_doc_permalink() {
+	if ( bp_is_group() ) {
+		bp_docs_group_doc_permalink();
+	} else {
+		the_permalink();
+	}
+}
 ?>
