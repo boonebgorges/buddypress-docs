@@ -18,6 +18,8 @@
 
 		<?php do_action( 'bp_before_directory_docs' ); ?>
 
+		<h3><?php _e( 'Docs Directory', 'buddypress' ); ?></h3>
+
 		<?php include( bp_docs_locate_template( 'docs-loop.php' ) ) ?>
 
 		<?php do_action( 'bp_after_directory_docs' ); ?>

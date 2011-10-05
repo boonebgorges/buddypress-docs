@@ -24,6 +24,7 @@ class BP_Docs_BP_Integration {
 		add_action( 'bp_init', 			array( $this, 'do_query' 		), 90 );
 
 		add_action( 'bp_setup_globals', 	array( $this, 'setup_globals' 		) );
+		add_action( 'bp_setup_nav',		array( $this, 'setup_nav'		) );
 
 		if ( bp_is_active( 'groups' ) ) {
 			require_once( BP_DOCS_INCLUDES_PATH . 'integration-groups.php' );
@@ -98,6 +99,9 @@ class BP_Docs_BP_Integration {
 		$bp->bp_docs->id			   = 'bp_docs';
 		$bp->bp_docs->name			   = __( 'BuddyPress Docs', 'bp-docs' );
 
+		// We'll pull the root slug manually out of bp-pages
+		$bp->bp_docs->root_slug = isset( $bp->pages->bp_docs->slug ) ? $bp->pages->bp_docs->slug : '';
+
 		// This info is loaded here because it needs to happen after BP core globals are
 		// set up
 		$this->slugstocheck 	= bp_action_variables() ? bp_action_variables() : array();
@@ -129,7 +133,55 @@ class BP_Docs_BP_Integration {
 			$bp->loaded_components['bp_docs'] = 'bp_docs';
 			$bp->bp_docs->has_directory = true;
 		}
+
+		// If this is a directory page, set it as such
+		if ( bp_is_current_component( 'bp_docs' ) && !bp_is_single_item() ) {
+			bp_update_is_directory( true, 'bp_docs' );
+		}
 	}
+
+	/**
+	 * Sets up navigation elements
+	 *
+	 * @package BuddyPress_Docs
+	 * @since 1.2
+	 */
+	function setup_nav() {
+		// Group nav setup is handled in integration-groups.php
+		if ( bp_is_group() ) {
+			return;
+		}
+
+		// Future-proofing: I'm planning to send the directory nav stuff upstream
+		if ( !function_exists( 'bp_core_new_directory_nav_item' ) ) {
+			require( BP_DOCS_INSTALL_PATH . 'lib/bp-directory-nav.php' );
+		}
+
+		bp_core_new_nav_item( array(
+			'name'            => __( 'View Docs', 'bp-docs' ),
+			'slug'            => bp_is_user() ? bp_docs_get_slug() : bp_docs_get_root_slug(),
+			'item_css_id'	  => 'bp_docs',
+			'position'        => 10,
+			'screen_function' => array( &$this, 'directory_template' ),
+			'show_on'	  => array( 'profile', 'directory' )
+		) );
+
+		if ( bp_docs_current_user_can( 'create' ) ) {
+			bp_core_new_nav_item( array(
+				'name'            => __( 'Create Doc', 'bp-docs' ),
+				'slug'            => 'docs/create',
+				'item_css_id'	  => 'bp_docs-create',
+				'position'        => 10,
+				'link'		  => bp_loggedin_user_domain() . bp_docs_get_slug() . '/' . BP_DOCS_CREATE_SLUG,
+				'show_on'	  => array( 'profile', 'directory' )
+			) );
+		}
+	}
+
+	function directory_template() {
+		var_dump( 'hrhh' );
+	}
+
 
 
 	/**

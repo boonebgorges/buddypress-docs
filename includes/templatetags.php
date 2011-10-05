@@ -65,6 +65,54 @@ function bp_docs_is_wiki_edit_page() {
 	return apply_filters( 'bp_docs_is_wiki_edit_page', $is_wiki_edit_page );
 }
 
+/**
+ * Echoes the output of bp_docs_get_nav()
+ *
+ * For the moment, this function will simply call bp_docs_group_tabs() on a group.
+ *
+ * @package BuddyPress_Docs
+ * @since 1.2
+ * @todo Refactor bp_docs_group_tabs() for better integration
+ */
+function bp_docs_nav() {
+	if ( bp_is_group() ) {
+		bp_docs_group_tabs();
+	} else {
+		echo bp_docs_get_nav();
+	}
+}
+	/**
+	 * Get the Docs nav
+	 *
+	 * @package BuddyPress_Docs
+	 * @since 1.2
+	 *
+	 * @return str $nav
+	 */
+	function bp_docs_get_nav() {
+		global $bp;
+
+		// On user pages, we render the nav with BP's bp_get_options_nav(), etc
+		if ( bp_is_user() ) {
+			return '';
+		}
+
+		return bp_get_directory_nav();
+
+		?>
+	<li<?php if ( $bp->bp_docs->current_view == 'list' ) : ?> class="current"<?php endif; ?>><a href="<?php echo $base_link ?>/"><?php _e( 'View Docs', 'bp-docs' ) ?></a></li>
+
+	<?php if ( bp_docs_current_user_can( 'create' ) ) : ?>
+		<li<?php if ( 'create' == $bp->bp_docs->current_view ) : ?> class="current"<?php endif; ?>><a href="<?php echo $base_link ?>/create"><?php _e( 'New Doc', 'bp-docs' ) ?></a></li>
+	<?php endif ?>
+
+	<?php if ( bp_docs_is_existing_doc() ) : ?>
+		<li class="current"><a href="<?php echo $base_link ?>/<?php echo $post->post_name ?>"><?php the_title() ?></a></li>
+	<?php endif ?>
+
+<?php
+		echo 'ok';
+	}
 
 /**
  * Echoes the output of bp_docs_get_info_header()
@@ -170,6 +218,57 @@ function bp_docs_get_current_filters() {
 
 	return apply_filters( 'bp_docs_get_current_filters', $filters );
 }
+
+/**
+ * Echoes the output of bp_docs_get_slug()
+ *
+ * @package BuddyPress_Docs
+ * @since 1.2
+ */
+function bp_docs_slug() {
+	echo bp_docs_get_slug();
+}
+	/**
+	 * Get the Docs slug
+	 *
+	 * @package BuddyPress_Docs
+	 * @since 1.2
+	 *
+	 * @return str $slug
+	 */
+	function bp_docs_get_slug() {
+		global $bp;
+
+		$slug = isset( $bp->bp_docs->slug ) ? $bp->bp_docs->slug : BP_DOCS_SLUG;
+
+		return apply_filters( 'bp_docs_get_slug', $slug );
+	}
+
+/**
+ * Echoes the output of bp_docs_get_root_slug()
+ *
+ * @package BuddyPress_Docs
+ * @since 1.2
+ */
+function bp_docs_root_slug() {
+	echo bp_docs_get_root_slug();
+}
+	/**
+	 * Get the Docs root slug
+	 *
+	 * @package BuddyPress_Docs
+	 * @since 1.2
+	 *
+	 * @return str $root_slug
+	 */
+	function bp_docs_get_root_slug() {
+		global $bp;
+
+		// Fall back to the slug, for backpat with BP < 1.5
+		$root_slug = isset( $bp->bp_docs->root_slug ) ? $bp->bp_docs->root_slug : bp_docs_get_slug();
+
+		return apply_filters( 'bp_docs_get_slug', $root_slug );
+	}
 
 /**
  * Echoes the output of bp_docs_get_doc_link()
@@ -513,6 +612,13 @@ function bp_docs_current_group_is_public() {
 		return true;
 
 	return false;
+}
+
+/**
+ * The css id of the navigation div differs depending on where you are
+ */
+function bp_docs_header_nav_id() {
+	echo bp_is_directory() ? '' : ' id="subnav"';
 }
 
 /**
