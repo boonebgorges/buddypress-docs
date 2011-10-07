@@ -943,10 +943,10 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 
 		if ( bp_is_group_creation_step( $this->slug ) ) {
 			// Default settings
-			$settings = array(
-				'group-enable'	=> 0,
+			$settings = apply_filters( 'bp_docs_default_group_settings', array(
+				'group-enable'	=> 1,
 				'can-create' 	=> 'member'
-			);
+			) );
 		} else {
 			$settings = groups_get_groupmeta( $this->maybe_group_id, 'bp-docs' );
 		}
