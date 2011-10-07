@@ -4,7 +4,7 @@ Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.1, BuddyPress 1.5
 Tested up to: WordPress 3.3-bleeding, BuddyPress 1.5
-Stable tag: 1.1.12
+Stable tag: 1.1.13
  
 Adds collaborative Docs to BuddyPress.
 
@@ -34,6 +34,10 @@ This plugin is in active development. For feature requests and bug reports, visi
 1. Sit back and watch the jack roll in
 
 == Changelog ==
+
+= 1.1.13 =
+* Switches default setting during group creation so that Docs are enabled
+* Adds a filter to default group settings so that plugin authors can modify
 
 = 1.1.12 =
 * Adds wiki-like bracket linking
