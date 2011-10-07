@@ -35,6 +35,10 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.1.13 =
+* Switches default setting during group creation so that Docs are enabled
+* Adds a filter to default group settings so that plugin authors can modify
+
 = 1.1.12 =
 * Adds wiki-like bracket linking
 * Improves distraction-free editing JS
