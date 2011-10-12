@@ -35,6 +35,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.1.14 =
+* Fixed bug that prevented users from editing docs when no default settings were provided
+
 = 1.1.13 =
 * Switches default setting during group creation so that Docs are enabled
 * Adds a filter to default group settings so that plugin authors can modify
