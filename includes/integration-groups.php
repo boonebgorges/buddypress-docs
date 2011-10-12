@@ -315,6 +315,11 @@ class BP_Docs_Groups_Integration {
 				if ( groups_is_user_admin( $user_id, $group_id ) || groups_is_user_mod( $user_id, $group_id ) ) {
 					$user_can = true;
 				} else {
+					// Make sure there's a default
+					if ( empty( $doc_settings[$action] ) ) {
+						$doc_settings[$action] = 'group-members';
+					}
+
 					switch ( $doc_settings[$action] ) {
 						case 'anyone' :
 							$user_can = true;
