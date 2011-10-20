@@ -296,7 +296,7 @@ class BP_Docs_Groups_Integration {
 								$user_can = true;
 							break;
 						case 'mod' :
-							if ( groups_is_user_mod( $user_id, $group_id ) )
+							if ( groups_is_user_mod( $user_id, $group_id ) || groups_is_user_admin( $user_id, $group_id ) )
 								$user_can = true;
 							break;
 						case 'member' :

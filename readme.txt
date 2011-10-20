@@ -35,6 +35,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.1.15 =
+* Fixed bug that prevented group admins from creating a Doc when minimum role was set to Moderators
+
 = 1.1.14 =
 * Fixed bug that prevented users from editing docs when no default settings were provided
 
