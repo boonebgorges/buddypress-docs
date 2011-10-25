@@ -37,6 +37,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 = 1.1.15 =
 * Fixed bug that allowed doc content to be loaded by slug in the incorrect group
+* Limit wikitext linking to docs in the same group
 * Fixed bug that prevented group admins from creating a Doc when minimum role was set to Moderators
 * Disables buggy fullscreen word count for the moment
 
