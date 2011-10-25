@@ -68,6 +68,8 @@ class BP_Docs_Groups_Integration {
 		// These functions are used to keep the group Doc count up to date
 		add_filter( 'bp_docs_doc_saved',		array( $this, 'update_doc_count' )  );
 		add_filter( 'bp_docs_doc_deleted',		array( $this, 'update_doc_count' ) );
+		
+		add_filter( 'posts_clauses',		array( $this, 'protect_group_docs' ) );
 
 		// Update group last active metadata when a doc is created, updated, or saved
 		add_filter( 'bp_docs_doc_saved',		array( $this, 'update_group_last_active' )  );
@@ -86,6 +88,67 @@ class BP_Docs_Groups_Integration {
 
 		// Add settings to the BuddyPress settings admin panel
 		add_action( 'bp_core_admin_screen_fields', 	array( $this, 'admin_screen_fields' ) );
+	}
+
+	/**
+	 * Prevents single docs from being loaded in the wrong group
+	 *
+	 * This whole mess is necessary because of the fact that WP skips taxonomy checks when
+	 * is_singular(). Thus, the group check is skipped, and as a result any doc can be loaded
+	 * by slug in any group. This function works around it by getting a list of all docs in
+	 * a group, and then explicitly stating that any resulting docs on this page must be in
+	 * that list.
+	 *
+	 * @package BuddyPress_Docs
+	 * @since 1.1.15
+	 */
+	function protect_group_docs( $clauses ) {
+		global $bp, $wpdb;
+		
+		if ( !isset( $bp->bp_docs->current_view ) ) {
+			return $clauses;
+		}
+		
+		if ( 'single' != $bp->bp_docs->current_view && 'edit' != $bp->bp_docs->current_view && 'history' != $bp->bp_docs->current_view ) {
+			return $clauses;
+		}
+		
+		if ( false === strpos( $clauses['where'], $bp->bp_docs->post_type_name ) ) {
+			return $clauses;
+		}
+		
+		// Query for all the current group's docs
+		if ( isset( $bp->groups->current_group->id ) ) {
+			$query_args = array(
+				'tax_query' => array(
+					array(
+						'taxonomy' => $bp->bp_docs->associated_item_tax_name,
+						'terms' => array( $bp->groups->current_group->id ),
+						'field' => 'name',
+						'operator' => 'IN',
+						'include_children' => false
+					),
+				),
+				'post_type' => $bp->bp_docs->post_type_name,
+				'showposts' => '-1'
+			);
+		}
+		
+		// Don't recurse
+		remove_filter( 'posts_clauses', array( $this, 'protect_group_docs' ) );
+		
+		$this_group_docs = new WP_Query( $query_args );
+		
+		$this_group_doc_ids = array();
+		foreach( $this_group_docs->posts as $gpost ) {
+			$this_group_doc_ids[] = $gpost->ID;
+		}
+		
+		if ( !empty( $this_group_doc_ids ) ) {
+			$clauses['where'] .= " AND $wpdb->posts.ID IN (" . implode(',', $this_group_doc_ids ) . ")";
+		}
+		
+		return $clauses;
 	}
 
 	/**
@@ -296,7 +359,7 @@ class BP_Docs_Groups_Integration {
 								$user_can = true;
 							break;
 						case 'mod' :
-							if ( groups_is_user_mod( $user_id, $group_id ) )
+							if ( groups_is_user_mod( $user_id, $group_id ) || groups_is_user_admin( $user_id, $group_id ) )
 								$user_can = true;
 							break;
 						case 'member' :
