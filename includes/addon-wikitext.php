@@ -63,12 +63,45 @@ class BP_Docs_Wikitext {
 			$link_text = $link_page = $match[1];
 		}
 
+		// Exclude docs from other groups. Todo: move this out
+	
+		// Query for all the current group's docs
+		if ( isset( $bp->groups->current_group->id ) ) {
+			$query_args = array(
+				'tax_query' => array(
+					array(
+						'taxonomy' => $bp->bp_docs->associated_item_tax_name,
+						'terms' => array( $bp->groups->current_group->id ),
+						'field' => 'name',
+						'operator' => 'IN',
+						'include_children' => false
+					),
+				),
+				'post_type' => $bp->bp_docs->post_type_name,
+				'showposts' => '-1'
+			);
+		}
+		
+		$this_group_docs = new WP_Query( $query_args );
+		
+		$this_group_doc_ids = array();
+		foreach( $this_group_docs->posts as $gpost ) {
+			$this_group_doc_ids[] = $gpost->ID;
+		}
+		
+		if ( !empty( $this_group_doc_ids ) ) {
+			$in_clause = " AND $wpdb->posts.ID IN (" . implode(',', $this_group_doc_ids ) . ")";
+		} else {
+			$in_clause = '';
+		}
+		
+
 		// Look for a page with this title. WP_Query does not allow this for some reason
-		$docs = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->posts WHERE post_title = %s AND post_type = %s", $link_page, bp_docs_get_post_type_name() ) );
+		$docs = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->posts WHERE post_title = %s AND post_type = %s {$in_clause}", $link_page, bp_docs_get_post_type_name() ) );
 
 		// If none were found, do the same query with page slugs
 		if ( empty( $docs ) ) {
-			$docs = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->posts WHERE post_name = %s AND post_type = %s", sanitize_title_with_dashes( $link_page ), bp_docs_get_post_type_name() ) );
+			$docs = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->posts WHERE post_name = %s AND post_type = %s {$in_clause}", sanitize_title_with_dashes( $link_page ), bp_docs_get_post_type_name() ) );
 		}
 
 		// Filter the docs. This will be used to exclude docs that do not belong to a group

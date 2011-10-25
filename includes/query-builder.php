@@ -236,6 +236,8 @@ class BP_Docs_Query {
 	 * @return array $args The query_posts args
 	 */
 	function build_query() {
+		global $bp;
+		
 		// Only call this here to reduce database calls on other pages
 		$this->setup_terms();
 
@@ -273,7 +275,9 @@ class BP_Docs_Query {
 		// Page number, posts per page
 		$args['paged'] = !empty( $_GET['paged'] ) ? absint( $_GET['paged'] ) : 1;
 		$args['posts_per_page'] = !empty( $_GET['posts_per_page'] ) ? absint( $_GET['posts_per_page'] ) : 10;
-
+		
+		$bp->bp_docs->query_args = $args;
+		
 		return $args;
 	}
 
