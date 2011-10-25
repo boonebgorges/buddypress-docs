@@ -160,6 +160,10 @@ class BP_Docs {
 		// Load the wikitext addon
 		require_once( BP_DOCS_INCLUDES_PATH . 'addon-wikitext.php' );
 		$this->wikitext = new BP_Docs_Wikitext;
+		
+		// Load the table of contents addon
+		require_once( BP_DOCS_INCLUDES_PATH . 'addon-toc.php' );
+		$this->toc = new BP_Docs_TOC;
 
 		do_action( 'bp_docs_load_doc_extras' );
 	}
