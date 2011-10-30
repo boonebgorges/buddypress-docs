@@ -306,6 +306,9 @@ class BP_Docs_Groups_Integration {
 		if ( empty( $doc ) )
 			$doc = get_post( $doc_id );
 
+		if ( empty( $doc ) )
+			return false;
+
 		if ( !empty( $doc ) ) {
 			$doc_settings = get_post_meta( $doc->ID, 'bp_docs_settings', true );
 

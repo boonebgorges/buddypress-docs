@@ -41,7 +41,7 @@
         </thead>
 
         <tbody>
-	<?php while ( have_posts() ) : the_post() ?>
+	<?php while ( bp_docs_has_docs() ) : bp_docs_the_doc() ?>
 		<tr>
 			<td> </td>
 
