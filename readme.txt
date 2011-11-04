@@ -4,7 +4,7 @@ Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.1, BuddyPress 1.5
 Tested up to: WordPress 3.3-bleeding, BuddyPress 1.5
-Stable tag: 1.1.15
+Stable tag: 1.1.16
  
 Adds collaborative Docs to BuddyPress.
 
@@ -34,6 +34,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 1. Sit back and watch the jack roll in
 
 == Changelog ==
+
+= 1.1.16 =
+* Fixed bug that caused comments to be posted to the incorrect blog when using parent and child Docs
 
 = 1.1.15 =
 * Fixed bug that allowed doc content to be loaded by slug in the incorrect group
