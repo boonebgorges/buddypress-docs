@@ -86,7 +86,7 @@ class BP_Docs_Hierarchy {
 	 * @since 1.0-beta
 	 */	
 	 function show_parent() {
-	 	global $post;
+	 	global $post, $wp_query;
 	 	
 	 	$html = '';
 	 	$parent = false;
@@ -111,7 +111,7 @@ class BP_Docs_Hierarchy {
 	  * @since 1.0
 	  */
 	 function show_children() {
-	 	global $bp;
+	 	global $bp, $wp_query, $post;
 	 	
 	 	// Get the child posts
 	 	$child_posts_args = array(
@@ -120,6 +120,10 @@ class BP_Docs_Hierarchy {
 	 	);
 	 	
 	 	$child_posts = new WP_Query( $child_posts_args );
+	 	
+	 	// Workaround for WP funniness
+	 	$wp_query_stash = $wp_query;
+	 	$post_stash	= $post;
 	 	
 	 	// Assemble the link data out of the query
 	 	$child_data = array();
@@ -134,6 +138,10 @@ class BP_Docs_Hierarchy {
 	 			);
 	 		}
 	 	}
+	 	
+	 	// Workaround for WP funniness
+	 	$wp_query = $wp_query_stash;
+	 	$post     = $post_stash;
 	 	
 	 	$child_data = apply_filters( 'bp_docs_hierarchy_child_data', $child_data );
 	 	
