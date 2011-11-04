@@ -56,7 +56,7 @@ foreach ( (array)$comments as $comment ) {
 <?php endif; ?>
 
 <?php if ( comments_open() && bp_docs_current_user_can( 'post_comments' ) ) : ?>
-	<?php comment_form() ?>
+	<?php comment_form( array(), get_the_ID() ) ?>
 <?php else : ?>
 	<p class="comments-closed comment-posting-disabled">
 		<?php _e( 'Comment posting has been disabled on this doc.', 'bp-docs' ) ?>
