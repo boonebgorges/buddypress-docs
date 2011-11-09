@@ -35,6 +35,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.1.17 =
+* Added Portuguese translation (pt_PT)
+
 = 1.1.16 =
 * Fixed bug that caused comments to be posted to the incorrect blog when using parent and child Docs
 
