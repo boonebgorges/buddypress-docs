@@ -36,6 +36,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 == Changelog ==
 
 = 1.1.17 =
+* Forced BP Docs activity items to respect bp-disable-blogforum-comments in BP 1.5+
 * Added Portuguese translation (pt_PT)
 
 = 1.1.16 =

@@ -62,6 +62,9 @@ class BP_Docs_BP_Integration {
 
 		// Make sure that comment links are correct. Can't use $wp_rewrite bc of assoc items
 		add_filter( 'post_type_link',		array( $this, 'filter_permalinks'	), 10, 4 );
+		
+		// Respect $activities_template->disable_blogforum_replies
+		add_filter( 'bp_activity_can_comment',	array( $this, 'activity_can_comment'	) );
 
 		// AJAX handler for removing the edit lock when a user clicks away from Edit mode
 		add_action( 'wp_ajax_remove_edit_lock', array( $this, 'remove_edit_lock'        ) );
@@ -626,6 +629,42 @@ class BP_Docs_BP_Integration {
 		}
 
 		return $link;
+	}
+	
+	/**
+	 * Repsect disable_blogforum_replies
+	 *
+	 * BuddyPress allows you to disable activity commenting on items related to blog posts or
+	 * to forums, content types that have their own reply/comment mechanisms. Since BuddyPress
+	 * Docs are similar in this respect, they should respect this setting as well.
+	 *
+	 * In the future, I may add a separate toggle for this. I may also build a filter that
+	 * redirects the Comment/Reply link so that it goes to the Doc's Comment section, or so that
+	 * this setting reflects the individual Doc's can_comment settings. (For now, this would
+	 * require too many additional queries.)
+	 *
+	 * This function filters bp_activity_can_comment, which was introduced in BP 1.5. It is
+	 * therefore not backward compatible with BP < 1.5.
+	 *
+	 * @package BuddyPress_Docs
+	 * @since 1.1.17
+	 *
+	 * @param bool $can_comment Whether the current user can comment. Comes from
+	 *             bp_activity_can_comment()
+	 * @return bool $can_comment
+	 */
+	function activity_can_comment( $can_comment ) {
+		global $activities_template;
+		
+		if ( 'bp_doc_created' == bp_get_activity_action_name() ||
+		     'bp_doc_edited' == bp_get_activity_action_name() ||
+		     'bp_doc_comment' == bp_get_activity_action_name()
+		   ) {
+		   	// Flip the 'disable'
+			$can_comment = !(bool)$activities_template->disable_blogforum_replies; 
+		}
+		
+		return apply_filters( 'bp_docs_activity_can_comment', $can_comment );
 	}
 
 	/**
