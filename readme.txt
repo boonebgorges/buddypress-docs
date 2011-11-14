@@ -4,7 +4,7 @@ Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.1, BuddyPress 1.5
 Tested up to: WordPress 3.3-bleeding, BuddyPress 1.5
-Stable tag: 1.1.16
+Stable tag: 1.1.17
  
 Adds collaborative Docs to BuddyPress.
 
@@ -34,6 +34,10 @@ This plugin is in active development. For feature requests and bug reports, visi
 1. Sit back and watch the jack roll in
 
 == Changelog ==
+
+= 1.1.17 =
+* Forced BP Docs activity items to respect bp-disable-blogforum-comments in BP 1.5+
+* Added Portuguese translation (pt_PT)
 
 = 1.1.16 =
 * Fixed bug that caused comments to be posted to the incorrect blog when using parent and child Docs
