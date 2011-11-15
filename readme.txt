@@ -35,6 +35,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.1.18 =
+* Adds filters to allow site admins and plugin authors to force-enable Docs at group creation, or to remove the Docs step from the group creation process
+
 = 1.1.17 =
 * Forced BP Docs activity items to respect bp-disable-blogforum-comments in BP 1.5+
 * Added Portuguese translation (pt_PT)
