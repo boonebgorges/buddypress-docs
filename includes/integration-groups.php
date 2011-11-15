@@ -890,12 +890,53 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 
 		$this->slug 			= BP_DOCS_SLUG;
 
-		$this->enable_create_step	= true;
+		$this->enable_create_step	= $this->enable_create_step();
 		$this->create_step_position 	= 45;
 		$this->nav_item_position 	= 45;
 
 		$this->visibility		= 'public';
 		$this->enable_nav_item		= $this->enable_nav_item();
+		
+		// Create some default settings if the create step is skipped
+		if ( apply_filters( 'bp_docs_force_enable_at_group_creation', false ) ) {
+			add_action( 'groups_created_group', array( &$this, 'enable_at_group_creation' ) );
+		}
+	}
+	
+	/**
+	 * Show the Create step?
+	 *
+	 * The main purpose here is to provide a filtered value, so that plugins can choose to
+	 * skip the creation step, mainly so that the Docs tab will be enabled by default.
+	 *
+	 * bp_docs_force_enable_at_group_creation is a more general filter. When true, the creation
+	 * step will be disabled AND Docs will be turned off on new group creation.
+	 * 
+	 * @package BuddyPress_Docs
+	 * @since 1.1.18
+	 *
+	 * @return bool
+	 */
+	function enable_create_step() {
+		$enable_step = apply_filters( 'bp_docs_force_enable_at_group_creation', false ) ? false : true;
+		return apply_filters( 'bp_docs_enable_group_create_step', $enable_step );
+	}
+	
+	/**
+	 * Set some default settings for a group
+	 *
+	 * This function is only called if you're forcing Docs enabling on group creation
+	 *
+	 * @package BuddyPress_Docs
+	 * @since 1.1.18
+	 */
+	function enable_at_group_creation( $group_id ) {
+		$settings = apply_filters( 'bp_docs_default_group_settings', array(
+			'group-enable'	=> 1,
+			'can-create' 	=> 'member'
+		) );
+		
+		groups_update_groupmeta( $group_id, 'bp-docs', $settings );
 	}
 
 	/**
