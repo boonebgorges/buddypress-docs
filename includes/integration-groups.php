@@ -352,6 +352,11 @@ class BP_Docs_Groups_Integration {
 			case 'create' :
 				$group_settings = groups_get_groupmeta( $group_id, 'bp-docs' );
 
+				// Provide a default value for legacy backpat
+				if ( empty( $group_settings['can-create'] ) ) {
+					$group_settings['can-create'] = 'member';
+				}
+
 				if ( !empty( $group_settings['can-create'] ) ) {
 					switch ( $group_settings['can-create'] ) {
 						case 'admin' :

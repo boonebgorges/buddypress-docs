@@ -35,6 +35,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.1.19 =
+* Ensure that groups' can-delete setting defaults to 'member' when not present, to account for legacy groups
+
 = 1.1.18 =
 * Adds filters to allow site admins and plugin authors to force-enable Docs at group creation, or to remove the Docs step from the group creation process
 
