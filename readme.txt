@@ -36,6 +36,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 == Changelog ==
 
 = 1.1.19 =
+* Fixed bug that may have caused TinyMCE problems on WP 3.3
 * Ensure that groups' can-delete setting defaults to 'member' when not present, to account for legacy groups
 
 = 1.1.18 =
