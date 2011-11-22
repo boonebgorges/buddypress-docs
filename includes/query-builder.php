@@ -288,7 +288,11 @@ class BP_Docs_Query {
 				/** 
 				 * Load the template tags for the edit screen
 				 */
-				 require BP_DOCS_INCLUDES_PATH . 'templatetags-edit.php';
+				if ( !function_exists( 'wp_tiny_mce' ) ) {
+					$this->define_wp_tiny_mce();
+				}
+				
+				require BP_DOCS_INCLUDES_PATH . 'templatetags-edit.php';
 				
 				$template = 'edit-doc.php';
 				break;
@@ -503,6 +507,19 @@ class BP_Docs_Query {
 		
 		bp_core_redirect( $redirect_url );
 	}	
+	
+	/**
+	 * In WP 3.3, wp_tiny_mce() was deprecated, with its JS loading handled by the_editor. So we just
+	 * provide a dummy function, for backward template support.
+	 *
+	 * @package BuddyPress_Docs
+	 * @since 1.1.19
+	 */
+	function define_wp_tiny_mce() {
+		function wp_tiny_mce() {
+			return;
+		}
+	}
 
 
 }
