@@ -132,12 +132,6 @@ class BP_Docs_History {
 				break;
 			if ( !$this->right_revision = get_post( $this->right ) )
 				break;
-		
-			// If we're comparing a revision to itself, redirect to the 'view' page for that revision or the edit page for that post
-			if ( $this->left_revision->ID == $this->right_revision->ID ) {
-				$redirect = get_edit_post_link( $this->left_revision->ID );
-				break;
-			}
 			
 			// Don't allow reverse diffs?
 			if ( strtotime( $this->right_revision->post_modified_gmt) < strtotime( $this->left_revision->post_modified_gmt ) ) {
