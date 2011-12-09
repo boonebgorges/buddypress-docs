@@ -38,6 +38,8 @@ This plugin is in active development. For feature requests and bug reports, visi
 = 1.1.19 =
 * Fixed bug that may have caused TinyMCE problems on WP 3.3
 * Ensure that groups' can-delete setting defaults to 'member' when not present, to account for legacy groups
+* Moved to groups_get_group() for greater efficiency under BP 1.6
+* Fixed bug that redirected users to wp-admin when comparing a revision to itself
 
 = 1.1.18 =
 * Adds filters to allow site admins and plugin authors to force-enable Docs at group creation, or to remove the Docs step from the group creation process
