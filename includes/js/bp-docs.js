@@ -76,13 +76,6 @@ jQuery(document).ready(function($){
 		});
 	}
 
-	/* On some setups, it helps TinyMCE to load if we fire the switchEditors event on load */
-	if ( typeof(switchEditors) == 'object' ) {
-		if ( !$("#edButtonPreview").hasClass('active') ) {
-			switchEditors.go('doc[content]', 'tinymce');
-		}
-	}
-
 	$('#bp-docs-group-enable').click(function(){
 		$('#group-doc-options').slideToggle(400);
 	});

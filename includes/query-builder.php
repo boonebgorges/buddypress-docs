@@ -387,8 +387,12 @@ class BP_Docs_Query {
 				/**
 				 * Load the template tags for the edit screen
 				 */
+				if ( !function_exists( 'wp_tiny_mce' ) ) {
+					$this->define_wp_tiny_mce();
+				}
+				
 				require BP_DOCS_INCLUDES_PATH . 'templatetags-edit.php';
-
+				
 				$template = 'edit-doc.php';
 				break;
 			case 'list' :
