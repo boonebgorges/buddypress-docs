@@ -331,7 +331,7 @@ class BP_Docs_Groups_Integration {
 
 			if ( is_array( $group_id ) ) {
 				$group_id = $group_id[0]; // todo: make this a loop
-				$group = new BP_Groups_Group( $group_id );
+				$group = groups_get_group( array( 'group_id' => $group_id ) );
 			}
 		}
 
@@ -351,6 +351,11 @@ class BP_Docs_Groups_Integration {
 
 			case 'create' :
 				$group_settings = groups_get_groupmeta( $group_id, 'bp-docs' );
+
+				// Provide a default value for legacy backpat
+				if ( empty( $group_settings['can-create'] ) ) {
+					$group_settings['can-create'] = 'member';
+				}
 
 				if ( !empty( $group_settings['can-create'] ) ) {
 					switch ( $group_settings['can-create'] ) {
@@ -548,7 +553,7 @@ class BP_Docs_Groups_Integration {
 	 */
 	function activity_action( $action, $user_link, $doc_link, $is_new_doc, $query ) {
 		if ( $query->item_type == 'group' ) {
-			$group 		= new BP_Groups_Group( $query->item_id );
+			$group 		= groups_get_group( array( 'group_id' => $query->item_id ) );
 			$group_url	= bp_get_group_permalink( $group );
 			$group_link	= '<a href="' . $group_url . '">' . $group->name . '</a>';
 
@@ -578,7 +583,7 @@ class BP_Docs_Groups_Integration {
 	 */
 	function comment_activity_action( $action, $user_link, $comment_link, $component, $item ) {
 		if ( 'groups' == $component ) {
-			$group		= new BP_Groups_Group( $item );
+			$group		= groups_get_group( array( 'group_id' => $item ) );
 			$group_url	= bp_get_group_permalink( $group );
 			$group_link	= '<a href="' . $group_url . '">' . $group->name . '</a>';
 
@@ -607,7 +612,7 @@ class BP_Docs_Groups_Integration {
 		if ( 'groups' != $component )
 			return $hide_sitewide;
 
-		$group = new BP_Groups_Group( $item );
+		$group = groups_get_group( array( 'group_id' => $item ) );
 		$group_status = !empty( $group->status ) ? $group->status : 'public';
 
 		// BuddyPress only supports three statuses by default. I'll err on the side of
@@ -792,7 +797,7 @@ class BP_Docs_Groups_Integration {
 			if ( 'group' == $parent_term->slug ) {
 				// Cheating. bp_docs_user_can() requires a current group, which has
 				// not been set yet
-				$bp->groups->current_group = new BP_Groups_Group( $post_term->name );
+				$bp->groups->current_group = groups_get_group( array( 'group_id' => $post_term->name ) );
 
 				// Check to see that the user is in the group
 				if ( bp_docs_user_can( 'post_comments', bp_loggedin_user_id(), $post_term->name ) ) {

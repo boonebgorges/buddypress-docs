@@ -249,7 +249,7 @@ function bp_docs_item_docs_link() {
 		switch ( $item_type ) {
 			case 'group' :
 				if ( !$group = $bp->groups->current_group )
-					$group = new BP_Groups_Group( $item_id );
+					$group = groups_get_group( array( 'group_id' => $item_id ) );
 
 				$base_url = bp_get_group_permalink( $group );
 				break;

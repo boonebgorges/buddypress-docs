@@ -4,8 +4,10 @@
 // No media support at the moment. Want to integrate with something like BP Group Documents
 // include_once ABSPATH . '/wp-admin/includes/media.php' ;
 
-require_once ABSPATH . '/wp-admin/includes/post.php' ;
-wp_tiny_mce();
+if ( !function_exists( 'wp_editor' ) ) {
+	require_once ABSPATH . '/wp-admin/includes/post.php' ;
+	wp_tiny_mce();
+}
 
 ?>
 
@@ -42,7 +44,16 @@ wp_tiny_mce();
 			    <?php  echo bpsp_media_buttons(); ?>
 			</div>
 			*/ ?>
-			<?php the_editor( bp_docs_get_edit_doc_content(), 'doc[content]', 'doc[title]', false ); ?>
+			<?php 
+				if ( function_exists( 'wp_editor' ) ) {
+					wp_editor( bp_docs_get_edit_doc_content(), 'doc[content]', array(
+						'media_buttons' => false,
+						'dfw'		=> false
+					) );
+				} else {
+					the_editor( bp_docs_get_edit_doc_content(), 'doc[content]', 'doc[title]', false ); 
+				}
+			?>
 		</div>
         </div>
         
@@ -124,6 +135,19 @@ wp_tiny_mce();
 </div><!-- .doc-content -->
 
 <?php bp_docs_inline_toggle_js() ?>
+
+<?php if ( !function_exists( 'wp_editor' ) ) : ?>
+<script type="text/javascript">
+jQuery(document).ready(function($){
+	/* On some setups, it helps TinyMCE to load if we fire the switchEditors event on load */
+	if ( typeof(switchEditors) == 'object' ) {
+		if ( !$("#edButtonPreview").hasClass('active') ) {
+			switchEditors.go('doc[content]', 'tinymce');
+		}
+	}
+},(jQuery));
+</script>
+<?php endif ?>
 
 <script type="text/javascript" >
     var tb_closeImage = "<?php bp_root_domain() ?>/wp-includes/js/thickbox/tb-close.png";
