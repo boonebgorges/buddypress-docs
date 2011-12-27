@@ -35,6 +35,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.1.20 =
+* Fixes potential PHP warnings on the Dashboard
+
 = 1.1.19 =
 * Improved WP 3.3 support
 * Ensure that groups' can-delete setting defaults to 'member' when not present, to account for legacy groups
