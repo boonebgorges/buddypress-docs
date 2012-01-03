@@ -36,7 +36,7 @@ class BP_Docs_Admin {
 		
 		// Find the recent comments widget
 		foreach ( $wp_meta_boxes['dashboard'] as $context => $widgets ) {
-			if ( array_key_exists( 'dashboard_recent_comments', $widgets['core'] ) ) {
+			if ( !empty( $widgets ) && !empty( $widgets['core'] ) && is_array( $widgets['core'] ) && array_key_exists( 'dashboard_recent_comments', $widgets['core'] ) ) {
 				// Take note of the context for when we add our widget
 				$drc_widget_context = $context;				
 				

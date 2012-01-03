@@ -383,7 +383,7 @@ function bp_docs_current_user_can( $action = 'edit' ) {
 	// Stash in the $bp global to reduce future lookups
 	$bp->bp_docs->current_user_can[$action] = $user_can ? 'yes' : 'no';
 
-	return apply_filters( 'bp_docs_current_user_can', $user_can );
+	return apply_filters( 'bp_docs_current_user_can', $user_can, $action );
 }
 
 /**
