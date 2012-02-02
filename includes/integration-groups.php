@@ -896,7 +896,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 		$this->slug 			= BP_DOCS_SLUG;
 
 		$this->enable_create_step	= $this->enable_create_step();
-		$this->create_step_position 	= 45;
+		$this->create_step_position 	= 18;
 		$this->nav_item_position 	= 45;
 
 		$this->visibility		= 'public';
