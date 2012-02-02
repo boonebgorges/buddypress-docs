@@ -391,16 +391,7 @@ class BP_Docs_Query {
 				$template = 'edit-doc.php';
 				break;
 			case 'list' :
-				$args = $this->build_query();
 				
-				/* Todo: Get this into its own 'tree' view */
-				/*
-				$the_docs = get_posts( $args );
-				$f = walk_page_tree($the_docs, 0, 0, array( 'walker' => new Walker_Page ) );
-				print_r( $f );
-				*/
-				
-				query_posts( $args );
 				$template = 'docs-loop.php';				
 				break;
 			case 'category' :
@@ -414,18 +405,11 @@ class BP_Docs_Query {
 			case 'delete' :
 			case 'history' :
 				
-				$args = $this->build_query();
-				
-				// Add a 'name' argument so that we only get the specific post
-				$args['name'] = $this->doc_slug;
-				
 				// If this is the edit screen, we won't really be able to use a 
 				// regular have_posts() loop in the template, so we'll stash the
 				// post in the $bp global for the edit-specific template tags
 				if ( $this->current_view == 'edit' ) {
-					$edit_post = new WP_Query( $args );
-					
-					if ( $edit_post->have_posts() ) : while ( $edit_post->have_posts() ) : $edit_post->the_post();
+					if ( bp_docs_has_docs() ) : while ( bp_docs_has_docs() ) : bp_docs_the_doc();
 						$bp->bp_docs->current_post = $post;
 										
 						// Set an edit lock

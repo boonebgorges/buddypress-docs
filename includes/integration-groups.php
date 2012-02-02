@@ -645,11 +645,11 @@ class BP_Docs_Groups_Integration {
 
 		// Set up the arguments
 		$doc_count 		= new BP_Docs_Query;
-		$query 			= $doc_count->build_query();
-
-		// Fire the query
-		$this_group_docs 	= new WP_Query( $query );
-		$this_group_docs_count  = $this_group_docs->found_posts;
+		
+		$this_group_docs_count  = 0;
+		if ( bp_docs_has_docs() ) {
+			$this_group_docs_count = $bp->bp_docs->doc_query->found_posts;
+		}
 
 		// BP has a stupid bug that makes it delete groupmeta when it equals 0. We'll save
 		// a string instead of zero to work around this
