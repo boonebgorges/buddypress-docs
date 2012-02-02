@@ -100,6 +100,11 @@ class BP_Docs {
 		if ( !defined( 'BP_DOCS_INCLUDES_PATH' ) )
 			define( 'BP_DOCS_INCLUDES_PATH', BP_DOCS_INSTALL_PATH . 'includes/' );
 
+		// Ditto^2. For deprecated files, we need a non-system path. Note: doesn't work
+		// right with symlinks
+		if ( !defined( 'BP_DOCS_INCLUDES_PATH_ABS' ) )
+			define( 'BP_DOCS_INCLUDES_PATH_ABS', str_replace( ABSPATH, '', BP_DOCS_INCLUDES_PATH ) );
+
 		// The main slug
 		if ( !defined( 'BP_DOCS_SLUG' ) )
 			define( 'BP_DOCS_SLUG', 'docs' );
