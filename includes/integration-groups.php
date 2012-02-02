@@ -1141,9 +1141,9 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	 * @since 1.0-beta
 	 */
 	function display() {
-		global $bp_docs;
+		global $bp;
 
-		$bp_docs->bp_integration->query->load_template();
+		$bp->bp_docs->query->load_template();
 	}
 
 	/**

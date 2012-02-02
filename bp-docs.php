@@ -21,15 +21,10 @@ class BP_Docs {
 	 * @since 1.0-beta
 	 */
 	function __construct() {
-		global $bp;
-
+	
 		// Define post type and taxonomy names for use in the register functions
 		$this->post_type_name 		= apply_filters( 'bp_docs_post_type_name', 'bp_doc' );
 		$this->associated_item_tax_name = apply_filters( 'bp_docs_associated_item_tax_name', 'bp_docs_associated_item' );
-
-		// Then stash them in the $bp global for use in template tags
-		$bp->bp_docs->post_type_name		= $this->post_type_name;
-		$bp->bp_docs->associated_item_tax_name	= $this->associated_item_tax_name;
 
 		// Load predefined constants first thing
 		add_action( 'bp_docs_init', 	array( $this, 'load_constants' ), 2 );
@@ -46,7 +41,7 @@ class BP_Docs {
 		// Includes necessary files
 		add_action( 'bp_docs_init', 	array( $this, 'includes' ), 4 );
 
-		// Load the BP integration functions
+		// Load the BP Component extension
 		add_action( 'bp_docs_init', 	array( $this, 'do_integration' ), 6 );
 
 		// Let plugins know that BP Docs has started loading
@@ -277,12 +272,12 @@ class BP_Docs {
 	 * @since 1.0-beta
 	 */
 	function includes() {
+	
+		// component.php extends BP_Component, and does most of the basic setup for BP Docs
+		require_once( BP_DOCS_INCLUDES_PATH . 'component.php' );
 
 		// query-builder.php contains the class that fetches the content for each view
 		require_once( BP_DOCS_INCLUDES_PATH . 'query-builder.php' );
-
-		// bp-integration.php provides the hooks necessary to hook into BP navigation
-		require_once( BP_DOCS_INCLUDES_PATH . 'integration-bp.php' );
 
 		// templatetags.php has all functions in the global space available to templates
 		require_once( BP_DOCS_INCLUDES_PATH . 'templatetags.php' );
@@ -296,13 +291,15 @@ class BP_Docs {
 	}
 
 	/**
-	 * Initiates the BP integration functions
+	 * Initiates the BP Component extension
 	 *
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function do_integration() {
-		$this->bp_integration = new BP_Docs_BP_Integration;
+		global $bp;
+		
+		$bp->bp_docs = new BP_Docs_Component;
 	}
 }
 
