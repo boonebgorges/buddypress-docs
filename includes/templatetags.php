@@ -50,6 +50,7 @@ function bp_docs_has_docs( $args = array() ) {
 	if ( empty( $bp->bp_docs->doc_query ) ) {
 		$defaults = array(
 			'doc_id'	 => array(),      // Array or comma-separated string
+			'doc_slug'	 => '',		  // String (post_name/slug)
 			'group_id'	 => $d_group_id,  // Array or comma-separated string
 			'author_id'	 => $d_author_id, // Array or comma-separated string
 			'tags'		 => $d_tags,      // Array or comma-separated string
