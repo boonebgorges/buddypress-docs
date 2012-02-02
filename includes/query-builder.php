@@ -65,6 +65,7 @@ class BP_Docs_Query {
 			'orderby'	 => 'modified',  // 'modified', 'title', 'author', 'created'
 			'paged'		 => 1,
 			'posts_per_page' => 10,
+			'search_terms'   => ''
 		);
 		$r = wp_parse_args( $args, $defaults );
 		
@@ -243,7 +244,7 @@ class BP_Docs_Query {
 		$wp_query_args = array(
 			'post_type'  => $this->post_type_name,
 			'tax_query'  => array(),
-			'meta_query' => array()
+			'meta_query' => array(),
 		);
 		
 		// Skip everything else if this is a single doc query
@@ -252,11 +253,30 @@ class BP_Docs_Query {
 		} else if ( $doc_slug = $this->query_args['doc_slug'] ) {
 			$wp_query_args['name'] = $doc_slug;
 		} else {
+				
+			// Only call this here to reduce database calls on other pages
+			$this->setup_terms();
+		
 			// Pagination and order args carry over directly
 			foreach ( array( 'order', 'orderby', 'paged', 'posts_per_page' ) as $key ) {
 				$wp_query_args[$key] = $this->query_args[$key];
 			}
 			
+			// Only add a search parameter if it's been passed
+			if ( !empty( $this->query_args['search_terms'] ) ) {
+				$wp_query_args['s'] = $this->query_args['search_terms'];
+			}
+			
+			// Set the taxonomy query. Filtered so that plugins can alter the query
+			$wp_query_args['tax_query'] = apply_filters( 'bp_docs_tax_query', array(
+				array( 
+					'taxonomy'	=> $this->associated_item_tax_name,
+					'terms' 	=> array( $this->term_id ),
+					'slug'		=> 'slug'
+				),
+			) );
+			
+			/*
 			// If specific group ids have been passed, process them.
 			// Otherwise, ensure that no items appear from private groups of which the
 			// user is not a member.
@@ -307,7 +327,7 @@ class BP_Docs_Query {
 				} else {
 				
 				}
-			}
+			}*/
 		}
 		
 		$this->query = new WP_Query( $wp_query_args );
@@ -326,43 +346,10 @@ class BP_Docs_Query {
 	function build_query() {
 		global $bp;
 		
-		// Only call this here to reduce database calls on other pages
-		$this->setup_terms();
-		
 		// The post type must be set for every query
 		$args = array(
 			'post_type' 		=> $this->post_type_name
 		);
-		
-		// Set the taxonomy query. Filtered so that plugins can alter the query
-		$args['tax_query'] = apply_filters( 'bp_docs_tax_query', array(
-			array( 
-				'taxonomy'	=> $this->associated_item_tax_name,
-				'terms' 	=> array( $this->term_id ),
-				'slug'		=> 'slug'
-			),
-		) );
-		
-		// Order and orderby arguments
-		$args['orderby'] = !empty( $_GET['orderby'] ) ? urldecode( $_GET['orderby'] ) : apply_filters( 'bp_docs_default_sort_order', 'modified' ) ;
-		
-		if ( empty( $_GET['order'] ) ) {
-			// If no order is explicitly stated, we must provide one.
-			// It'll be different for date fields (should be DESC)
-			if ( 'modified' == $args['orderby'] || 'date' == $args['orderby'] )
-				$args['order'] = 'DESC';
-			else
-				$args['order'] = 'ASC';
-		} else {
-			$args['order'] = $_GET['order'];
-		}
-		
-		// Search
-		$args['s'] = !empty( $_GET['s'] ) ? urldecode( $_GET['s'] ) : ''; 
-		
-		// Page number, posts per page
-		$args['paged'] = !empty( $_GET['paged'] ) ? absint( $_GET['paged'] ) : 1;
-		$args['posts_per_page'] = !empty( $_GET['posts_per_page'] ) ? absint( $_GET['posts_per_page'] ) : 10;
 		
 		$bp->bp_docs->query_args = $args;
 		

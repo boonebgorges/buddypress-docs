@@ -43,6 +43,30 @@ function bp_docs_has_docs( $args = array() ) {
 
 	// Default to the tags in the URL string, if available
 	$d_tags	     = isset( $_REQUEST['bpd_tag'] ) ? explode( ',', urldecode( $_REQUEST['bpd_tag'] ) ) : array();
+			
+	// Order and orderby arguments
+	$d_orderby = !empty( $_GET['orderby'] ) ? urldecode( $_GET['orderby'] ) : apply_filters( 'bp_docs_default_sort_order', 'modified' ) ;
+	
+	if ( empty( $_GET['order'] ) ) {
+		// If no order is explicitly stated, we must provide one.
+		// It'll be different for date fields (should be DESC)
+		if ( 'modified' == $d_orderby || 'date' == $d_orderby )
+			$d_order = 'DESC';
+		else
+			$d_order = 'ASC';
+	} else {
+		$d_order = $_GET['order'];
+	}
+	
+	// Search
+	$d_search_terms = !empty( $_GET['s'] ) ? urldecode( $_GET['s'] ) : ''; 
+		
+	// Page number, posts per page
+	$d_paged          = !empty( $_GET['paged'] ) ? absint( $_GET['paged'] ) : 1;
+	$d_posts_per_page = !empty( $_GET['posts_per_page'] ) ? absint( $_GET['posts_per_page'] ) : 10;
+	
+	// Note that the doc_slug default is determined in the query class itself. It works this 
+	// way because of load order. Not ideal, but that's the best I can do at the moment.
 
 	// The if-empty is because, like with WP itself, we use bp_docs_has_docs() both for the
 	// initial 'if' of the loop, as well as for the 'while' iterator. Don't want infinite
@@ -54,10 +78,11 @@ function bp_docs_has_docs( $args = array() ) {
 			'group_id'	 => $d_group_id,  // Array or comma-separated string
 			'author_id'	 => $d_author_id, // Array or comma-separated string
 			'tags'		 => $d_tags,      // Array or comma-separated string
-			'order'		 => 'ASC',        // ASC or DESC
-			'orderby'	 => 'modified',   // 'modified', 'title', 'author', 'created'
-			'paged'		 => 1,
-			'posts_per_page' => 10,
+			'order'		 => $d_order,        // ASC or DESC
+			'orderby'	 => $d_orderby,   // 'modified', 'title', 'author', 'created'
+			'paged'		 => $d_paged,
+			'posts_per_page' => $d_posts_per_page,
+			'search_terms'   => $d_search_terms
 		);
 		$r = wp_parse_args( $args, $defaults );
 
