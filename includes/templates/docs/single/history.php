@@ -1,4 +1,4 @@
-<?php if ( have_posts() ) : while ( have_posts() ) : the_post() ?>
+<?php if ( bp_docs_has_docs() ) : while ( bp_docs_has_docs() ) : bp_docs_the_doc() ?>
 
 <?php include( apply_filters( 'bp_docs_header_template', bp_docs_locate_template( 'docs-header.php' ) ) ) ?>
 

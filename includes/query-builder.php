@@ -236,8 +236,8 @@ class BP_Docs_Query {
 	
 		// Set up the basic args
 		$wp_query_args = array(
-			'post_type' => $this->post_type_name,
-			'tax_query' => array(),
+			'post_type'  => $this->post_type_name,
+			'tax_query'  => array(),
 			'meta_query' => array()
 		);
 		
@@ -419,13 +419,13 @@ class BP_Docs_Query {
 				// Add a 'name' argument so that we only get the specific post
 				$args['name'] = $this->doc_slug;
 				
-				query_posts( $args );
-				
 				// If this is the edit screen, we won't really be able to use a 
 				// regular have_posts() loop in the template, so we'll stash the
 				// post in the $bp global for the edit-specific template tags
 				if ( $this->current_view == 'edit' ) {
-					if ( have_posts() ) : while ( have_posts() ) : the_post();
+					$edit_post = new WP_Query( $args );
+					
+					if ( $edit_post->have_posts() ) : while ( $edit_post->have_posts() ) : $edit_post->the_post();
 						$bp->bp_docs->current_post = $post;
 										
 						// Set an edit lock
