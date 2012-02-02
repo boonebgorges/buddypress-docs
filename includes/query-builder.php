@@ -19,6 +19,9 @@ class BP_Docs_Query {
 	
 	var $is_new_doc;
 	
+	var $query_args;
+	var $query;
+	
 	/**
 	 * PHP 4 constructor
 	 *
@@ -35,8 +38,22 @@ class BP_Docs_Query {
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */	
-	function __construct() {
+	function __construct( $args = array() ) {
 		global $bp;
+		
+		$defaults = array(
+			'doc_id'	 => array(),     // Array or comma-separated string
+			'group_id'	 => array(),     // Array or comma-separated string
+			'author_id'	 => array(),     // Array or comma-separated string
+			'tags'		 => array(),     // Array or comma-separated string
+			'order'		 => 'ASC',       // ASC or DESC
+			'orderby'	 => 'modified',  // 'modified', 'title', 'author', 'created'
+			'paged'		 => 1,
+			'posts_per_page' => 10,
+		);
+		$r = wp_parse_args( $args, $defaults );
+		
+		$this->query_args = $r;
 		
 		$this->post_type_name 		= $bp->bp_docs->post_type_name;
 		$this->associated_item_tax_name	= $bp->bp_docs->associated_item_tax_name;
@@ -212,6 +229,83 @@ class BP_Docs_Query {
 		$bp->bp_docs->current_view = $view;
 	
 		return $view;
+	}
+	
+	function get_wp_query() {
+		global $bp, $wpdb;
+	
+		// Set up the basic args
+		$wp_query_args = array(
+			'post_type' => $this->post_type_name,
+			'tax_query' => array(),
+			'meta_query' => array()
+		);
+		
+		// Skip everything else if this is a single doc query
+		if ( $doc_id = (int)$this->query_args['doc_id'] ) {
+			$wp_query_args['ID'] = $doc_id;
+		} else {
+			// Pagination and order args carry over directly
+			foreach ( array( 'order', 'orderby', 'paged', 'posts_per_page' ) as $key ) {
+				$wp_query_args[$key] = $this->query_args[$key];
+			}
+			
+			// If specific group ids have been passed, process them.
+			// Otherwise, ensure that no items appear from private groups of which the
+			// user is not a member.
+			// Todo: abstract into groups integration
+			if ( !empty( $this->query_args['group_id'] ) ) {
+				$wp_query_args['tax_query'][] = array(
+					'taxonomy'	=> $this->associated_item_tax_name,
+					'terms' 	=> array( $this->query_args['group_id'] ),
+					'field' 	=> 'name',
+					'operator' 	=> 'IN'
+				);
+			} else {
+				// todo - no reason to do this on one's own profile?
+				if ( is_user_logged_in() ) {
+					// Method: Get my non-public groups; then get all non-public
+					// groups; subtract my groups from them; exclude the
+					// remainder from the query. There *has* to be a better way
+					$my_non_public_group_ids = array( 0 ); // Add a dummy number to avoid a conditional later
+					$my_non_public_group_args = array(
+						'user_id'         => bp_loggedin_user_id(),
+						'populate_extras' => false,
+						'per_page'	  => 100000 // Hack. Group query object doesn't allow unlimited search. Todo: patch BP
+					);
+					
+					if ( bp_has_groups( $my_non_public_group_args ) ) {
+						while ( bp_groups() ) {
+							bp_the_group();
+							
+							if ( 'public' != bp_get_group_status() ) {
+								$my_non_public_group_ids[] = bp_get_group_id();
+							}
+						}
+					}
+					
+					// Now get all the non-public groups other than this. Have
+					// to do a direct query
+					$other_non_public_group_ids = $wpdb->get_col( $wpdb->prepare( "SELECT id FROM {$bp->groups->table_name} WHERE status != 'public' AND id NOT IN (" . implode( ',', $my_non_public_group_ids ) . ")" ) );
+					
+					// Exclude these groups. Todo: Even this is not enough, if
+					// the Doc is associated with more than one group in the
+					// future
+					$wp_query_args['tax_query'][] = array(
+							'taxonomy'	=> $this->associated_item_tax_name,
+							'terms' 	=> $other_non_public_group_ids,
+							'field' 	=> 'name',
+							'operator' 	=> 'NOT IN'
+					);
+				} else {
+				
+				}
+			}
+		}
+		
+		$this->query = new WP_Query( $wp_query_args );
+		
+		return $this->query;
 	}
 	
 	/**

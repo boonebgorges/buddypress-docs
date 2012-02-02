@@ -25,6 +25,61 @@ if ( !function_exists( 'bp_is_root_blog' ) ) :
 	}
 endif;
 
+/**
+ * Initiates a BuddyPress Docs query
+ *
+ * @since 1.2
+ */
+function bp_docs_has_docs( $args = array() ) {
+	global $bp;
+
+	// Build some intelligent defaults
+
+	// Default to current group id, if available
+	$d_group_id  = bp_is_group() ? bp_get_current_group_id() : array();
+
+	// Default to displayed user, if available
+	$d_author_id = bp_is_user() ? bp_displayed_user_id() : array();
+
+	// Default to the tags in the URL string, if available
+	$d_tags	     = isset( $_REQUEST['bpd_tag'] ) ? explode( ',', urldecode( $_REQUEST['bpd_tag'] ) ) : array();
+
+	// The if-empty is because, like with WP itself, we use bp_docs_has_docs() both for the
+	// initial 'if' of the loop, as well as for the 'while' iterator. Don't want infinite
+	// queries
+	if ( empty( $bp->bp_docs->doc_query ) ) {
+		$defaults = array(
+			'doc_id'	 => array(),      // Array or comma-separated string
+			'group_id'	 => $d_group_id,  // Array or comma-separated string
+			'author_id'	 => $d_author_id, // Array or comma-separated string
+			'tags'		 => $d_tags,      // Array or comma-separated string
+			'order'		 => 'ASC',        // ASC or DESC
+			'orderby'	 => 'modified',   // 'modified', 'title', 'author', 'created'
+			'paged'		 => 1,
+			'posts_per_page' => 10,
+		);
+		$r = wp_parse_args( $args, $defaults );
+
+		$doc_query_builder      = new BP_Docs_Query( $r );
+		$bp->bp_docs->doc_query = $doc_query_builder->get_wp_query();
+	}
+
+	return $bp->bp_docs->doc_query->have_posts();
+}
+
+/**
+ * Part of the bp_docs_has_docs() loop
+ *
+ * @since 1.2
+ */
+function bp_docs_the_doc() {
+	global $bp;
+
+	return $bp->bp_docs->doc_query->the_post();
+}
+
+
+
 
 /**
  * Determine whether you are viewing a BuddyPress Docs page
