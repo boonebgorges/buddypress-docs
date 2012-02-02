@@ -3,7 +3,7 @@
 Plugin Name: BuddyPress Docs
 Plugin URI: http://github.com/boonebgorges/buddypress-docs
 Description: Adds collaborative Docs to BuddyPress
-Version: 1.1.19
+Version: 1.2-bleeding
 Author: Boone B Gorges
 Author URI: http://boone.gorg.es
 Licence: GPLv3
