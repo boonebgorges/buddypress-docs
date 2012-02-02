@@ -41,8 +41,23 @@ class BP_Docs_Query {
 	function __construct( $args = array() ) {
 		global $bp;
 		
+		$this->post_type_name 		= $bp->bp_docs->post_type_name;
+		$this->associated_item_tax_name	= $bp->bp_docs->associated_item_tax_name;
+	
+		$this->item_type 		= $this->get_item_type();
+		$this->setup_item();
+		$this->current_view 		= $this->get_current_view();
+		
+		// Get the item slug, if there is one available
+		if ( $this->current_view == 'single' || $this->current_view == 'edit' || $this->current_view == 'delete' || $this->current_view == 'history' ) {
+			$this->doc_slug = $this->get_doc_slug();
+		} else {
+			$this->doc_slug = '';
+		}
+		
 		$defaults = array(
 			'doc_id'	 => array(),     // Array or comma-separated string
+			'doc_slug'	 => $this->doc_slug, // String
 			'group_id'	 => array(),     // Array or comma-separated string
 			'author_id'	 => array(),     // Array or comma-separated string
 			'tags'		 => array(),     // Array or comma-separated string
@@ -55,16 +70,6 @@ class BP_Docs_Query {
 		
 		$this->query_args = $r;
 		
-		$this->post_type_name 		= $bp->bp_docs->post_type_name;
-		$this->associated_item_tax_name	= $bp->bp_docs->associated_item_tax_name;
-	
-		$this->item_type 		= $this->get_item_type();
-		$this->setup_item();
-		$this->current_view 		= $this->get_current_view();
-		
-		// Get the item slug, if there is one available
-		if ( $this->current_view == 'single' || $this->current_view == 'edit' || $this->current_view == 'delete' || $this->current_view == 'history' )
-			$this->doc_slug = $this->get_doc_slug();		
 	}
 
 	/**
@@ -244,6 +249,8 @@ class BP_Docs_Query {
 		// Skip everything else if this is a single doc query
 		if ( $doc_id = (int)$this->query_args['doc_id'] ) {
 			$wp_query_args['ID'] = $doc_id;
+		} else if ( $doc_slug = $this->query_args['doc_slug'] ) {
+			$wp_query_args['name'] = $doc_slug;
 		} else {
 			// Pagination and order args carry over directly
 			foreach ( array( 'order', 'orderby', 'paged', 'posts_per_page' ) as $key ) {
