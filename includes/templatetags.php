@@ -577,13 +577,13 @@ function bp_docs_doc_settings_markup() {
 function bp_docs_doc_action_links() {
 	$links 		= array();
 
-	$links[] 	= '<a href="' . bp_docs_get_group_doc_permalink() . '">' . __( 'Read', 'bp-docs' ) . '</a>';
+	$links[] 	= '<a href="' . get_permalink() . '">' . __( 'Read', 'bp-docs' ) . '</a>';
 
 	if ( bp_docs_user_can( 'edit', bp_loggedin_user_id() ) )
-		$links[] 	= '<a href="' . bp_docs_get_group_doc_permalink() . '/' . BP_DOCS_EDIT_SLUG . '">' . __( 'Edit', 'bp-docs' ) . '</a>';
+		$links[] 	= '<a href="' . get_permalink() . '/' . BP_DOCS_EDIT_SLUG . '">' . __( 'Edit', 'bp-docs' ) . '</a>';
 
 	if ( bp_docs_user_can( 'view_history', bp_loggedin_user_id() ) )
-		$links[] 	= '<a href="' . bp_docs_get_group_doc_permalink() . '/' . BP_DOCS_HISTORY_SLUG . '">' . __( 'History', 'bp-docs' ) . '</a>';
+		$links[] 	= '<a href="' . get_permalink() . '/' . BP_DOCS_HISTORY_SLUG . '">' . __( 'History', 'bp-docs' ) . '</a>';
 
 	echo implode( ' &#124; ', $links );
 }
@@ -823,11 +823,11 @@ function bp_docs_delete_doc_link() {
  * @since 1.0-beta-2
  */
 function bp_docs_paginate_links() {
-	global $wp_query;
-
+	global $bp;
+	
 	$cur_page = isset( $_GET['paged'] ) ? absint( $_GET['paged'] ) : 1;
 
-        $page_links_total = $wp_query->max_num_pages;
+        $page_links_total = $bp->bp_docs->doc_query->max_num_pages;
 
         $page_links = paginate_links( array(
 		'base' 		=> add_query_arg( 'paged', '%#%' ),
@@ -853,11 +853,11 @@ function bp_docs_paginate_links() {
  * @return int $start The start number
  */
 function bp_docs_get_current_docs_start() {
-	global $wp_query;
+	global $bp;
 
-	$paged = !empty( $wp_query->query_vars['paged'] ) ? $wp_query->query_vars['paged'] : 1;
+	$paged = !empty( $bp->bp_docs->doc_query->query_vars['paged'] ) ? $bp->bp_docs->doc_query->query_vars['paged'] : 1;
 
-	$posts_per_page = !empty( $wp_query->query_vars['posts_per_page'] ) ? $wp_query->query_vars['posts_per_page'] : 10;
+	$posts_per_page = !empty( $bp->bp_docs->doc_query->query_vars['posts_per_page'] ) ? $bp->bp_docs->doc_query->query_vars['posts_per_page'] : 10;
 
 	$start = ( ( $paged - 1 ) * $posts_per_page ) + 1;
 
@@ -876,11 +876,11 @@ function bp_docs_get_current_docs_start() {
  * @return int $end The start number
  */
 function bp_docs_get_current_docs_end() {
-	global $wp_query;
+	global $bp;
 
-	$paged = !empty( $wp_query->query_vars['paged'] ) ? $wp_query->query_vars['paged'] : 1;
+	$paged = !empty( $bp->bp_docs->doc_query->query_vars['paged'] ) ? $bp->bp_docs->doc_query->query_vars['paged'] : 1;
 
-	$posts_per_page = !empty( $wp_query->query_vars['posts_per_page'] ) ? $wp_query->query_vars['posts_per_page'] : 10;
+	$posts_per_page = !empty( $bp->bp_docs->doc_query->query_vars['posts_per_page'] ) ? $bp->bp_docs->doc_query->query_vars['posts_per_page'] : 10;
 
 	$end = $paged * $posts_per_page;
 
@@ -899,9 +899,9 @@ function bp_docs_get_current_docs_end() {
  * @return int $total_doc_count The start number
  */
 function bp_docs_get_total_docs_num() {
-	global $wp_query;
+	global $bp;
 
-	$total_doc_count = !empty( $wp_query->found_posts ) ? $wp_query->found_posts : 0;
+	$total_doc_count = !empty( $bp->bp_docs->doc_query->found_posts ) ? $bp->bp_docs->doc_query->found_posts : 0;
 
 	return apply_filters( 'bp_docs_get_total_docs_num', $total_doc_count );
 }
