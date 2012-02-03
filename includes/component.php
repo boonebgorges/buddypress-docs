@@ -217,7 +217,8 @@ class BP_Docs_Component extends BP_Component {
 				break;
 			
 			case BP_DOCS_CREATE_SLUG :
-				$template = 'create.php';
+				require BP_DOCS_INCLUDES_PATH . 'templatetags-edit.php';
+				$template = 'edit-doc.php';
 				break;
 		}
 		include bp_docs_locate_template( apply_filters( 'bp_docs_select_template', $template ) );

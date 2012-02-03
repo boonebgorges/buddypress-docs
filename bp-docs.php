@@ -276,22 +276,25 @@ class BP_Docs {
 	 * @since 1.0-beta
 	 */
 	function includes() {
+		
+		// functions.php includes miscellaneous utility functions used throughout
+		require( BP_DOCS_INCLUDES_PATH . 'functions.php' );
 	
 		// component.php extends BP_Component, and does most of the basic setup for BP Docs
-		require_once( BP_DOCS_INCLUDES_PATH . 'component.php' );
+		require( BP_DOCS_INCLUDES_PATH . 'component.php' );
 
 		// query-builder.php contains the class that fetches the content for each view
-		require_once( BP_DOCS_INCLUDES_PATH . 'query-builder.php' );
+		require( BP_DOCS_INCLUDES_PATH . 'query-builder.php' );
 
 		// templatetags.php has all functions in the global space available to templates
-		require_once( BP_DOCS_INCLUDES_PATH . 'templatetags.php' );
+		require( BP_DOCS_INCLUDES_PATH . 'templatetags.php' );
 
 		// formatting.php contains filters and functions used to modify appearance only
-		require_once( BP_DOCS_INCLUDES_PATH . 'formatting.php' );
+		require( BP_DOCS_INCLUDES_PATH . 'formatting.php' );
 
 		// Dashboard-specific functions
 		if ( is_admin() )
-			require_once( BP_DOCS_INCLUDES_PATH . 'admin.php' );
+			require( BP_DOCS_INCLUDES_PATH . 'admin.php' );
 	}
 
 	/**

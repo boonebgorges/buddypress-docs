@@ -69,13 +69,12 @@ function bp_docs_has_docs( $args = array() ) {
 		$d_paged          = !empty( $_GET['paged'] ) ? absint( $_GET['paged'] ) : 1;
 		$d_posts_per_page = !empty( $_GET['posts_per_page'] ) ? absint( $_GET['posts_per_page'] ) : 10;
 		
-		// Note that the doc_slug default is determined in the query class itself. It works
-		// this way because of load order. Not ideal, but that's the best I can do at the
-		// moment.
+		// doc_slug
+		$d_doc_slug = !empty( $bp->bp_docs->query->doc_slug ) ? $bp->bp_docs->query->doc_slug : '';
 	
 		$defaults = array(
 			'doc_id'	 => array(),      // Array or comma-separated string
-			'doc_slug'	 => '',		  // String (post_name/slug)
+			'doc_slug'	 => $d_doc_slug,  // String (post_name/slug)
 			'group_id'	 => $d_group_id,  // Array or comma-separated string
 			'author_id'	 => $d_author_id, // Array or comma-separated string
 			'tags'		 => $d_tags,      // Array or comma-separated string
@@ -86,7 +85,7 @@ function bp_docs_has_docs( $args = array() ) {
 			'search_terms'   => $d_search_terms
 		);
 		$r = wp_parse_args( $args, $defaults );
-
+		
 		$doc_query_builder      = new BP_Docs_Query( $r );
 		$bp->bp_docs->doc_query = $doc_query_builder->get_wp_query();
 	}
@@ -606,24 +605,22 @@ function bp_docs_current_group_is_public() {
  * @return obj Current doc
  */
 function bp_docs_get_current_doc() {
-	global $bp;
+	global $bp, $post;
 
 	if ( empty( $bp->bp_docs->doc_slug ) )
 		return false;
 
+	$doc = false;
+
 	if ( empty( $bp->bp_docs->current_post ) ) {
 
-		$posts = get_posts( array(
-			'post_type' => $bp->bp_docs->post_type_name,
-			'name' => $bp->bp_docs->doc_slug
-		) );
-
-		if ( empty( $posts ) )
-			return false;
-
-		$doc = $posts[0];
-
-		$bp->bp_docs->current_post = $posts[0];
+		if ( bp_docs_has_docs( array( 'doc_slug' => $bp->bp_docs->doc_slug ) ) ) {
+			while ( bp_docs_has_docs() ) {
+				bp_docs_the_doc();
+				$doc = $bp->bp_docs->current_post = $post;
+				break;
+			}
+		}
 
 	} else {
 		$doc = $bp->bp_docs->current_post;
@@ -635,7 +632,7 @@ function bp_docs_get_current_doc() {
 /**
  * Return the bp_doc post type name
  *
- * @package BuddyPress Docs
+ * @package BuddyPress_Docs
  * @since 1.2
  *
  * @return str The name of the bp_doc post type
@@ -644,6 +641,18 @@ function bp_docs_get_post_type_name() {
 	global $bp;
 
 	return $bp->bp_docs->post_type_name;
+}
+
+/**
+ * Return the associated_item taxonomy name
+ *
+ * @package BuddyPress_Docs
+ * @since 1.2
+ */
+function bp_docs_get_associated_item_tax_name() {
+	global $bp;
+	
+	return $bp->bp_docs->associated_item_tax_name;
 }
 
 /**

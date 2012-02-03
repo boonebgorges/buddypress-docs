@@ -71,6 +71,10 @@ class BP_Docs_Groups_Integration {
 		
 		add_filter( 'posts_clauses',		array( $this, 'protect_group_docs' ) );
 
+		// On non-group Doc directories, add a Groups column
+		add_filter( 'bp_docs_loop_additional_th', array( $this, 'groups_th' ), 5 );
+		add_filter( 'bp_docs_loop_additional_td', array( $this, 'groups_td' ), 5 );
+
 		// Update group last active metadata when a doc is created, updated, or saved
 		add_filter( 'bp_docs_doc_saved',		array( $this, 'update_group_last_active' )  );
 		add_filter( 'bp_docs_doc_deleted',		array( $this, 'update_group_last_active' ) );
@@ -660,6 +664,83 @@ class BP_Docs_Groups_Integration {
 
 		// Save the count
 		groups_update_groupmeta( $bp->groups->current_group->id, 'bp-docs-count', $this_group_docs_count );
+	}
+	
+	/**
+	 * Markup for the Groups <th> on the docs loop
+	 *
+	 * @package BuddyPress_Docs
+	 * @subpackage Groups
+	 * @since 1.2
+	 */	
+	function groups_th() {
+		// Don't show on single group pages
+		// @todo - When multiple group associations are supported, this should be added
+		if ( bp_is_group() ) {
+			return;
+		}
+	
+		?>
+		
+		<th scope="column" class="groups-cell"><?php _e( 'Groups', 'bp-docs' ); ?></th>
+		
+		<?php
+	}
+	
+	/**
+	 * Markup for the Groups <td> on the docs loop
+	 *
+	 * @package BuddyPress_Docs
+	 * @subpackage Groups
+	 * @since 1.2
+	 */	
+	function groups_td() {
+		global $bp;
+		
+		// Don't show on single group pages
+		// @todo - When multiple group associations are supported, this should be added
+		if ( bp_is_group() ) {
+			return;
+		}
+		
+		$items  = wp_get_post_terms( get_the_ID(), bp_docs_get_associated_item_tax_name() );
+		$groups = array();
+	
+		foreach( $items as $item ) {
+			// Only add groups
+			if ( $group_id = bp_docs_get_associated_item_id_from_term_slug( $item->slug, 'group' ) ) {
+				$groups[] = $group_id;
+			}
+		}
+		
+		?>
+		
+		<td class="groups-cell">
+			<?php if ( !empty( $groups ) ) : ?>
+				<ul>
+				<?php foreach( $groups as $group_id ) : ?>
+					<?php 
+					$group = groups_get_group( array( 'group_id' => $group_id ) );
+					$group_permalink = bp_get_group_permalink( $group ) ?> 
+					
+					<li><a href="<?php echo $group_permalink ?>">
+						<?php echo bp_core_fetch_avatar( array( 
+							'item_id'    => $group_id, 
+							'object'     => 'group', 
+							'type'       => 'thumb', 
+							'avatar_dir' => 'group-avatars',
+							'width'      => '30',
+							'height'     => '30',
+							'title'      => $group->name
+						) ) ?>
+						<?php echo $group->name ?>
+					</a></li>
+				<?php endforeach ?>
+				</ul>
+			<?php endif ?>
+		</td>
+	
+		<?php
 	}
 
 	/**

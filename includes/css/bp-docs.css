@@ -208,6 +208,14 @@ p#filter-by-tag {
 	padding-left: 10px;
 }
 
+.groups-cell ul li img.avatar {
+	float: none;
+}
+
+.groups-cell ul li a {
+	vertical-align: middle;
+}
+
 div#bp-docs-pagination {
 	position: relative;
 	height: 30px;

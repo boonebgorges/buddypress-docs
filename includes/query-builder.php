@@ -246,7 +246,7 @@ class BP_Docs_Query {
 			if ( !empty( $this->query_args['user_id'] ) ) {
 				$wp_query_args['tax_query'][] = array(
 					'taxonomy'	=> $this->associated_item_tax_name,
-					'terms'		=> $this->query_args['user_id'] . '-user', // NO! Look up the right term
+					'terms'		=> $this->query_args['user_id'] . '-user',
 					'field'		=> 'slug'
 				);
 			}
@@ -412,7 +412,7 @@ class BP_Docs_Query {
 					$result['redirect'] = 'create';
 				} else {
 					// If the doc was saved successfully, place it in the proper tax
-					wp_set_post_terms( $post_id, $this->term_id, $this->associated_item_tax_name );
+					wp_set_post_terms( $post_id, $this->term_id, $this->associated_item_tax_name, true );
 					
 					$this->doc_id = $post_id;
 					
@@ -464,10 +464,12 @@ class BP_Docs_Query {
 					}
 					$result['redirect'] = 'single';
 				}
+				
+				$post_id = $this->doc_id;
 			}
 			
 			// Make sure the current user is added as one of the authors
-			wp_set_post_terms( $post_id, $this->user_term_id, $this->associated_item_tax_name );
+			wp_set_post_terms( $post_id, $this->user_term_id, $this->associated_item_tax_name, true );
 			
 			// Save the last editor id. We'll use this to create an activity item
 			update_post_meta( $this->doc_id, 'bp_docs_last_editor', bp_loggedin_user_id() );

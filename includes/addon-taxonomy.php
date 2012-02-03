@@ -204,7 +204,7 @@ class BP_Docs_Taxonomy {
 	 	foreach( $this->taxonomies as $tax_name ) {
 	 		$tagtext 	= array();
 	 		$tags 		= wp_get_post_terms( get_the_ID(), $tax_name );
-	 		
+	 	
 	 		foreach( $tags as $tag ) {
 	 			$tagtext[] = bp_docs_get_tag_link( array( 'tag' => $tag->name ) );
 	 		}	 		
