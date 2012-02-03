@@ -495,7 +495,7 @@ class BP_Docs_Query {
 		bp_core_add_message( $result['message'], $message_type );
 		
 		// todo: abstract this out so I don't have to call group permalink here
-		$redirect_url = bp_get_group_permalink( $bp->groups->current_group ) . $bp->bp_docs->slug . '/';
+		$redirect_url = trailingslashit( bp_is_group() ? bp_get_group_permalink( $bp->groups->current_group ) . $bp->bp_docs->slug : bp_displayed_user_domain() . bp_docs_get_slug() );
 		
 		if ( $result['redirect'] == 'single' ) {
 			$redirect_url .= $this->doc_slug;

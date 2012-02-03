@@ -52,6 +52,9 @@ class BP_Docs_Component extends BP_Component {
 	function setup_hooks() {
 		add_action( 'bp_init', array( &$this, 'do_query' ), 90 );
 		
+		require( BP_DOCS_INCLUDES_PATH . 'integration-users.php' );
+		$this->users_integration = new BP_Docs_Users_Integration;
+		
 		if ( bp_is_active( 'groups' ) ) {
 			require( BP_DOCS_INCLUDES_PATH . 'integration-groups.php' );
 			$this->groups_integration = new BP_Docs_Groups_Integration;
@@ -141,7 +144,7 @@ class BP_Docs_Component extends BP_Component {
 		// Let BP_Component::setup_globals() do its work.
 		parent::setup_globals( $globals );
 		
-		// Then stash them in the $bp global for use in template tags
+		// Stash tax and post type names in the $bp global for use in template tags
 		$this->post_type_name		= $bp_docs->post_type_name;
 		$this->associated_item_tax_name = $bp_docs->associated_item_tax_name;
 		
@@ -218,8 +221,18 @@ class BP_Docs_Component extends BP_Component {
 			
 			case BP_DOCS_CREATE_SLUG :
 				require BP_DOCS_INCLUDES_PATH . 'templatetags-edit.php';
-				$template = 'edit-doc.php';
+				$template = 'single/edit.php';
 				break;
+			
+			default :
+				if ( bp_is_action_variable( BP_DOCS_EDIT_SLUG, 0 ) ) {					
+					require BP_DOCS_INCLUDES_PATH . 'templatetags-edit.php';
+					$template = 'single/edit.php';
+				} else if ( bp_is_action_variable( BP_DOCS_HISTORY_SLUG, 0 ) ) {
+					$template = 'single/history.php';
+				} else {
+					$template = 'single/index.php';
+				}
 		}
 		include bp_docs_locate_template( apply_filters( 'bp_docs_select_template', $template ) );
 	}
@@ -743,9 +756,7 @@ class BP_Docs_Component extends BP_Component {
 	 * @return str $link The filtered permalink
 	 */
 	function filter_permalinks( $link, $post, $leavename, $sample ) {
-		global $bp;
-
-		if ( $bp->bp_docs->post_type_name == $post->post_type ) {
+		if ( bp_docs_get_post_type_name() == $post->post_type ) {
 			$link = bp_docs_get_doc_link( $post->ID );
 		}
 

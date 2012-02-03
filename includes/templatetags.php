@@ -288,8 +288,10 @@ function bp_docs_doc_link( $doc_id ) {
 			return false;
 
 		// Get the associated item's doc link
-		// Default to 'group' for now. Todo: abstract (will take another query for tax parent)
-		$item_docs_link	= bp_docs_get_item_docs_link( array( 'item_id' => $ass_item[0]->name, 'item_type' => 'group' ) );
+		$item_type = array_pop( explode( '-', $ass_item[0]->slug ) );
+		$item_id   = bp_docs_get_associated_item_id_from_term_slug( $ass_item[0]->slug, $item_type );
+		
+		$item_docs_link	= bp_docs_get_item_docs_link( array( 'item_id' => $item_id, 'item_type' => $item_type ) );
 
 		$post		= get_post( $doc_id );
 
@@ -334,6 +336,10 @@ function bp_docs_item_docs_link() {
 					$group = groups_get_group( array( 'group_id' => $item_id ) );
 
 				$base_url = bp_get_group_permalink( $group );
+				break;
+			
+			case 'user' :
+				$base_url = bp_core_get_user_domain( $item_id );
 				break;
 		}
 
@@ -866,6 +872,19 @@ function bp_docs_tabs() {
 		bp_docs_group_tabs();
 	} else {
 		
+	}
+}
+
+/**
+ * Blasts any previous queries stashed in the BP global
+ *
+ * @since 1.2
+ */
+function bp_docs_reset_query() {
+	global $bp;
+	
+	if ( isset( $bp->bp_docs->doc_query ) ) {
+		unset( $bp->bp_docs->doc_query );
 	}
 }
 

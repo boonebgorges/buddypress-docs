@@ -109,6 +109,10 @@ class BP_Docs_Groups_Integration {
 	function protect_group_docs( $clauses ) {
 		global $bp, $wpdb;
 		
+		if ( !bp_is_group() ) {
+			return $clauses;
+		}
+		
 		if ( !isset( $bp->bp_docs->current_view ) ) {
 			return $clauses;
 		}
@@ -750,9 +754,9 @@ class BP_Docs_Groups_Integration {
 	 * @since 1.1.8
 	 */
 	function update_group_last_active() {
-		global $bp;
-
-		groups_update_groupmeta( $bp->groups->current_group->id, 'last_activity', bp_core_current_time() );
+		if ( bp_is_group() ) {
+			groups_update_groupmeta( bp_get_current_group_id(), 'last_activity', bp_core_current_time() );
+		}
 	}
 
 	/**
