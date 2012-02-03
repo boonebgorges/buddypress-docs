@@ -25,6 +25,11 @@ class BP_Docs_Component extends BP_Component {
 	
 	var $current_view;
 	
+	/**
+	 * Constructor
+	 *
+	 * @since 1.2
+	 */
 	function __construct() {
 		global $bp;
 		
@@ -39,6 +44,11 @@ class BP_Docs_Component extends BP_Component {
 		$this->setup_hooks();
 	}
 	
+	/**
+	 * Sets up the hooks for the Component's custom methods
+	 *
+	 * @since 1.2
+	 */
 	function setup_hooks() {
 		add_action( 'bp_init', array( &$this, 'do_query' ), 90 );
 		
@@ -105,6 +115,17 @@ class BP_Docs_Component extends BP_Component {
 		
 	}
 
+	/**
+	 * Implementation of BP_Component::setup_globals()
+	 *
+	 * Creates globals required by BP_Component. 
+	 * Registers post_type and taxonomy names in component global.
+	 * Sets up the 'slugstocheck', which are used when enqueuing styles and scripts.
+	 *
+	 * @since 1.2
+	 * @see BP_Docs_Component::enqueue_scripts()
+	 * @see BP_Docs_Component::enqueue_styles()
+	 */
 	function setup_globals() {
 		global $bp_docs;
 		
@@ -131,6 +152,12 @@ class BP_Docs_Component extends BP_Component {
 		$this->slugstocheck[] 	= bp_current_action();
 	}
 	
+	/**
+	 * Creates component navigation (Member > Docs)
+	 *
+	 * @since 1.2
+	 * @todo Make the 'Docs' label customizable by the admin
+	 */
 	function setup_nav() {
 		
 		$main_nav = array(
@@ -167,11 +194,22 @@ class BP_Docs_Component extends BP_Component {
 		parent::setup_nav( $main_nav, $sub_nav );
 	}
 	
+	/**
+	 * Utility function for loading component template and hooking content
+	 *
+	 * @since 1.2
+	 * @see self::setup_nav()
+	 */
 	function template_loader() {
 		add_action( 'bp_template_content', array( &$this, 'select_template' ) );
 		bp_core_load_template( 'members/single/plugins' );
 	}
 	
+	/**
+	 * Utility function for selecting the correct Docs template to be loaded in the component
+	 *
+	 * @since 1.2
+	 */
 	function select_template() {
 		switch ( bp_current_action() ) {
 			case BP_DOCS_MY_DOCS_SLUG :
