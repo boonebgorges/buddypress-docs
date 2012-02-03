@@ -98,7 +98,7 @@ class BP_Docs_Users_Integration {
 	function setup_single_doc_subnav() {
 		global $bp;
 		
-		if ( bp_is_user() && !empty( $bp->bp_docs->current_view ) && 'single' == $bp->bp_docs->current_view ) {
+		if ( bp_is_user() && !empty( $bp->bp_docs->current_view ) && in_array( $bp->bp_docs->current_view, array( 'single', 'edit', 'history', 'delete' ) ) ) {
 			$doc = bp_docs_get_current_doc();
 			
 			if ( !empty( $doc ) ) {
