@@ -143,8 +143,10 @@ class BP_Docs_Component extends BP_Component {
 
 		$parent_url = trailingslashit( bp_loggedin_user_domain() . bp_docs_get_slug() );
 
+		$mydocs_label = bp_is_my_profile() ? __( 'My Docs', 'bp-docs' ) : sprintf( __( '%s&#8217;s Docs' ), bp_get_user_firstname( bp_get_displayed_user_fullname() ) );
+
 		$sub_nav[] = array(
-			'name'            =>  __( 'My Docs', 'bp-docs' ),
+			'name'            => $mydocs_label,
 			'slug'            => BP_DOCS_MY_DOCS_SLUG,
 			'parent_url'      => $parent_url,
 			'parent_slug'     => bp_docs_get_slug(),
@@ -158,7 +160,8 @@ class BP_Docs_Component extends BP_Component {
 			'parent_url'      => $parent_url,
 			'parent_slug'     => bp_docs_get_slug(),
 			'screen_function' => array( &$this, 'template_loader' ),
-			'position'        => 20
+			'position'        => 20,
+			'user_has_access' => bp_is_my_profile()
 		);
 
 		parent::setup_nav( $main_nav, $sub_nav );
