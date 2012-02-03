@@ -60,6 +60,7 @@ class BP_Docs_Query {
 			'doc_id'	 => array(),     // Array or comma-separated string
 			'doc_slug'	 => $this->doc_slug, // String
 			'group_id'	 => array(),     // Array or comma-separated string
+			'parent_id'	 => 0,		 // int
 			'author_id'	 => array(),     // Array or comma-separated string
 			'tags'		 => array(),     // Array or comma-separated string
 			'order'		 => 'ASC',       // ASC or DESC
@@ -249,6 +250,10 @@ class BP_Docs_Query {
 					'terms'		=> $this->query_args['user_id'] . '-user',
 					'field'		=> 'slug'
 				);
+			}
+			
+			if ( !empty( $this->query_args['parent_id'] ) ) {
+				$wp_query_args['post_parent'] = $this->query_args['parent_id'];
 			}
 		}
 		

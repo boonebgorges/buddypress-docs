@@ -103,25 +103,11 @@ function bp_docs_edit_doc_content() {
 function bp_docs_edit_parent_dropdown() {
 	global $bp;
 
-	// Get the item docs to use as Include arguments
-	$q 			= new BP_Docs_Query;
-	$q->current_view 	= 'list';
-	$qt 			= $q->build_query();
-
-	// Make sure we don't limit the posts displayed
-	$qt['showposts']	= -1;
-
-	// Order them by name, no matter what
-	$qt['orderby'] 		= 'post_title';
-	$qt['order']		= 'ASC';
-
-	$include_posts		= new WP_Query( $qt );
-
 	$include = array();
 
-	if ( $include_posts->have_posts() ) {
-		while ( $include_posts->have_posts() ) {
-			$include_posts->the_post();
+	if ( bp_docs_has_docs( array( 'posts_per_page' => -1 ) ) ) {
+		while ( bp_docs_has_docs() ) {
+			bp_docs_the_doc();
 			$include[] = get_the_ID();
 		}
 	}
