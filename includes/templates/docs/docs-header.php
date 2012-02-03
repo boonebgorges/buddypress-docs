@@ -1,8 +1,11 @@
-<div class="item-list-tabs no-ajax" id="subnav" role="navigation">
-	<ul>
-		<?php bp_docs_tabs() ?>
-	</ul>
-</div><!-- .item-list-tabs -->
+<?php /* Subnavigation on user pages is handled by BP's core functions */ ?>
+<?php if ( !bp_is_user() ) : ?>
+	<div class="item-list-tabs no-ajax" id="subnav" role="navigation">
+		<ul>
+			<?php bp_docs_tabs() ?>
+		</ul>
+	</div><!-- .item-list-tabs -->
+<?php endif ?>
 
 <?php if ( bp_docs_is_existing_doc() ) : ?>
 
