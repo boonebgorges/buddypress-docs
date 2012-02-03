@@ -127,6 +127,10 @@ class BP_Docs {
 		// The slug used when deleting a doc
 		if ( !defined( 'BP_DOCS_DELETE_SLUG' ) )
 			define( 'BP_DOCS_DELETE_SLUG', 'delete' );
+		
+		// The slug used for 'my-docs'
+		if ( !defined( 'BP_DOCS_MY_DOCS_SLUG' ) )
+			define( 'BP_DOCS_MY_DOCS_SLUG', 'my-docs' );
 
 		// By default, BP Docs will replace the Recent Comments WP Dashboard Widget
 		if ( !defined( 'BP_DOCS_REPLACE_RECENT_COMMENTS_DASHBOARD_WIDGET' ) )

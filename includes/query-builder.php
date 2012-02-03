@@ -16,6 +16,7 @@ class BP_Docs_Query {
 	
 	var $term_id;
 	var $item_type_term_id;
+	var $user_term_id;
 	
 	var $is_new_doc;
 	
@@ -84,7 +85,7 @@ class BP_Docs_Query {
 	function get_item_type() {
 		global $bp;
 		
-		$type = apply_filters( 'bp_docs_get_item_type', '', $this );
+		$type = apply_filters( 'bp_docs_get_item_type', 'user', $this );
 		
 		// Stuffing into the $bp global for later use. Barf.
 		$bp->bp_docs->current_item_type = $type;
@@ -129,16 +130,16 @@ class BP_Docs_Query {
 		switch ( $this->item_type ) {
 			case 'group' :
 				if ( !empty( $bp->groups->current_group->id ) ) {
-					$id = $bp->groups->current_group->id;
+					$id   = $bp->groups->current_group->id;
 					$name = $bp->groups->current_group->name;
 					$slug = $bp->groups->current_group->slug;
 				}
 				break;
 			case 'user' :
 				if ( !empty( $bp->displayed_user->id ) ) {
-					$id = $bp->displayed_user->id;
-					$id = $bp->displayed_user->display_name;
-					$id = $bp->displayed_user->userdata->user_nicename;
+					$id   = bp_displayed_user_id();
+					$name = bp_get_displayed_user_fullname();
+					$slug = bp_get_displayed_user_username();
 				}
 				break;
 		}
@@ -163,51 +164,14 @@ class BP_Docs_Query {
 	function setup_terms() {
 		global $bp;
 		
-		// Get the term id for the item type
-		$item_type_term = term_exists( $this->item_type, $this->associated_item_tax_name );
+		$this->term_id = bp_docs_get_item_term_id( $this->item_id, $this->item_type, $this->item_name );
 		
-		// If the item type term doesn't exist, then create it
-		if ( empty( $item_type_term ) ) {
-			// Filter this value to add your own item types, or to change slugs
-			$defaults = apply_filters( 'bp_docs_item_type_term_values', array(
-				'group' => array(
-					'description' => __( 'Groups that have docs associated with them', 'bp-docs' ),
-					'slug' => 'group'
-				),
-				'user' => array(
-					'description' => __( 'Users that have docs associated with them', 'bp-docs' ),
-					'slug' => 'user'
-				)
-			) );
-		
-			// Select the proper values from the defaults array
-			$item_type_term_args = !empty( $defaults[$this->item_type] ) ? $defaults[$this->item_type] : false;
-			
-			// Create the item type term
-			if ( !$item_type_term = wp_insert_term( __( 'Groups', 'buddypress' ), $this->associated_item_tax_name, $item_type_term_args ) )
-				return false;	
-		} 
-		
-		$this->item_type_term_id = apply_filters( 'bp_docs_get_item_type_term_id', $item_type_term['term_id'], $this );
-			
-		// Now, find the term associated with the item itself
-		$item_term = term_exists( $this->item_id, $this->associated_item_tax_name, $this->item_type_term_id );
-		
-		// If the item term doesn't exist, then create it
-		if ( empty( $item_term ) ) {
-			// Set up the arguments for creating the term. Filter this to set your own
-			$item_term_args = apply_filters( 'bp_docs_item_term_values', array(
-				'description' => $this->item_name,
-				'slug' => $this->item_slug,
-				'parent' => $this->item_type_term_id
-			) );
-			
-			// Create the item term
-			if ( !$item_term = wp_insert_term( $this->item_id, $this->associated_item_tax_name, $item_term_args ) )
-				return false;	
+		if ( bp_is_user() ) {
+			// If this is a User Doc, then the user_term_id is the same as the term_id
+			$this->user_term_id = $this->term_id;
+		} else {
+			$this->user_term_id = bp_docs_get_item_term_id( $this->item_id, 'user',  bp_get_loggedin_user_fullname() );
 		}
-		
-		$this->term_id = apply_filters( 'bp_docs_get_item_term_id', $item_term['term_id'], $this );
 	}
 
 	/**
@@ -268,68 +232,26 @@ class BP_Docs_Query {
 			}
 			
 			// Set the taxonomy query. Filtered so that plugins can alter the query
+			// Filtering by groups also happens in this way
 			$wp_query_args['tax_query'] = apply_filters( 'bp_docs_tax_query', array(
 				array( 
 					'taxonomy'	=> $this->associated_item_tax_name,
 					'terms' 	=> array( $this->term_id ),
-					'slug'		=> 'slug'
+					'field'		=> 'id'
 				),
-			) );
+			), &$this );
 			
-			/*
-			// If specific group ids have been passed, process them.
-			// Otherwise, ensure that no items appear from private groups of which the
-			// user is not a member.
-			// Todo: abstract into groups integration
-			if ( !empty( $this->query_args['group_id'] ) ) {
+			// Because the BP members component is required, we can check for user_id
+			// right here
+			if ( !empty( $this->query_args['user_id'] ) ) {
 				$wp_query_args['tax_query'][] = array(
 					'taxonomy'	=> $this->associated_item_tax_name,
-					'terms' 	=> array( $this->query_args['group_id'] ),
-					'field' 	=> 'name',
-					'operator' 	=> 'IN'
+					'terms'		=> $this->query_args['user_id'] . '-user', // NO! Look up the right term
+					'field'		=> 'slug'
 				);
-			} else {
-				// todo - no reason to do this on one's own profile?
-				if ( is_user_logged_in() ) {
-					// Method: Get my non-public groups; then get all non-public
-					// groups; subtract my groups from them; exclude the
-					// remainder from the query. There *has* to be a better way
-					$my_non_public_group_ids = array( 0 ); // Add a dummy number to avoid a conditional later
-					$my_non_public_group_args = array(
-						'user_id'         => bp_loggedin_user_id(),
-						'populate_extras' => false,
-						'per_page'	  => 100000 // Hack. Group query object doesn't allow unlimited search. Todo: patch BP
-					);
-					
-					if ( bp_has_groups( $my_non_public_group_args ) ) {
-						while ( bp_groups() ) {
-							bp_the_group();
-							
-							if ( 'public' != bp_get_group_status() ) {
-								$my_non_public_group_ids[] = bp_get_group_id();
-							}
-						}
-					}
-					
-					// Now get all the non-public groups other than this. Have
-					// to do a direct query
-					$other_non_public_group_ids = $wpdb->get_col( $wpdb->prepare( "SELECT id FROM {$bp->groups->table_name} WHERE status != 'public' AND id NOT IN (" . implode( ',', $my_non_public_group_ids ) . ")" ) );
-					
-					// Exclude these groups. Todo: Even this is not enough, if
-					// the Doc is associated with more than one group in the
-					// future
-					$wp_query_args['tax_query'][] = array(
-							'taxonomy'	=> $this->associated_item_tax_name,
-							'terms' 	=> $other_non_public_group_ids,
-							'field' 	=> 'name',
-							'operator' 	=> 'NOT IN'
-					);
-				} else {
-				
-				}
-			}*/
+			}
 		}
-		
+		var_dump( $wp_query_args );
 		$this->query = new WP_Query( $wp_query_args );
 		
 		return $this->query;
@@ -547,6 +469,9 @@ class BP_Docs_Query {
 					$result['redirect'] = 'single';
 				}
 			}
+			
+			// Make sure the current user is added as one of the authors
+			wp_set_post_terms( $post_id, $this->user_term_id, $this->associated_item_tax_name );
 			
 			// Save the last editor id. We'll use this to create an activity item
 			update_post_meta( $this->doc_id, 'bp_docs_last_editor', bp_loggedin_user_id() );

@@ -132,53 +132,54 @@ class BP_Docs_Component extends BP_Component {
 	}
 	
 	function setup_nav() {
-		return;
-		// Add 'Example' to the main navigation
+		
 		$main_nav = array(
-			'name' 		      => __( 'Example', 'bp-example' ),
-			'slug' 		      => bp_get_example_slug(),
+			'name' 		      => __( 'Docs', 'bp-docs' ),
+			'slug' 		      => bp_docs_get_slug(),
 			'position' 	      => 80,
-			'screen_function'     => 'bp_example_screen_one',
-			'default_subnav_slug' => 'screen-one'
+			'screen_function'     => array( &$this, 'template_loader' ),
+			'default_subnav_slug' => BP_DOCS_MY_DOCS_SLUG
 		);
 
-		$example_link = trailingslashit( bp_loggedin_user_domain() . bp_get_example_slug() );
+		$parent_url = trailingslashit( bp_loggedin_user_domain() . bp_docs_get_slug() );
 
-		// Add a few subnav items under the main Example tab
 		$sub_nav[] = array(
-			'name'            =>  __( 'Screen One', 'bp-example' ),
-			'slug'            => 'screen-one',
-			'parent_url'      => $example_link,
-			'parent_slug'     => bp_get_example_slug(),
-			'screen_function' => 'bp_example_screen_one',
+			'name'            =>  __( 'My Docs', 'bp-docs' ),
+			'slug'            => BP_DOCS_MY_DOCS_SLUG,
+			'parent_url'      => $parent_url,
+			'parent_slug'     => bp_docs_get_slug(),
+			'screen_function' => array( &$this, 'template_loader' ),
 			'position'        => 10
 		);
 
-		// Add the subnav items to the friends nav item
 		$sub_nav[] = array(
-			'name'            =>  __( 'Screen Two', 'bp-example' ),
-			'slug'            => 'screen-two',
-			'parent_url'      => $example_link,
-			'parent_slug'     => bp_get_example_slug(),
-			'screen_function' => 'bp_example_screen_two',
+			'name'            =>  __( 'New Doc', 'bp-docs' ),
+			'slug'            => BP_DOCS_CREATE_SLUG,
+			'parent_url'      => $parent_url,
+			'parent_slug'     => bp_docs_get_slug(),
+			'screen_function' => array( &$this, 'template_loader' ),
 			'position'        => 20
 		);
 
 		parent::setup_nav( $main_nav, $sub_nav );
-
-		// If your component needs additional navigation menus that are not handled by
-		// BP_Component::setup_nav(), you can register them manually here. For example,
-		// if your component needs a subsection under a user's Settings menu, add
-		// it like this. See bp_example_screen_settings_menu() for more info
-		bp_core_new_subnav_item( array(
-			'name' 		  => __( 'Example', 'bp-example' ),
-			'slug' 		  => 'example-admin',
-			'parent_slug'     => bp_get_settings_slug(),
-			'parent_url' 	  => trailingslashit( bp_loggedin_user_domain() . bp_get_settings_slug() ),
-			'screen_function' => 'bp_example_screen_settings_menu',
-			'position' 	  => 40,
-			'user_has_access' => bp_is_my_profile() // Only the logged in user can access this on his/her profile
-		) );
+	}
+	
+	function template_loader() {
+		add_action( 'bp_template_content', array( &$this, 'select_template' ) );
+		bp_core_load_template( 'members/single/plugins' );
+	}
+	
+	function select_template() {
+		switch ( bp_current_action() ) {
+			case BP_DOCS_MY_DOCS_SLUG :
+				$template = 'docs-loop.php';
+				break;
+			
+			case BP_DOCS_CREATE_SLUG :
+				$template = 'create.php';
+				break;
+		}
+		include bp_docs_locate_template( apply_filters( 'bp_docs_select_template', $template ) );
 	}
 	
 	/**

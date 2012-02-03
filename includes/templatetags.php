@@ -33,45 +33,46 @@ endif;
 function bp_docs_has_docs( $args = array() ) {
 	global $bp;
 
-	// Build some intelligent defaults
-
-	// Default to current group id, if available
-	$d_group_id  = bp_is_group() ? bp_get_current_group_id() : array();
-
-	// Default to displayed user, if available
-	$d_author_id = bp_is_user() ? bp_displayed_user_id() : array();
-
-	// Default to the tags in the URL string, if available
-	$d_tags	     = isset( $_REQUEST['bpd_tag'] ) ? explode( ',', urldecode( $_REQUEST['bpd_tag'] ) ) : array();
-			
-	// Order and orderby arguments
-	$d_orderby = !empty( $_GET['orderby'] ) ? urldecode( $_GET['orderby'] ) : apply_filters( 'bp_docs_default_sort_order', 'modified' ) ;
-	
-	if ( empty( $_GET['order'] ) ) {
-		// If no order is explicitly stated, we must provide one.
-		// It'll be different for date fields (should be DESC)
-		if ( 'modified' == $d_orderby || 'date' == $d_orderby )
-			$d_order = 'DESC';
-		else
-			$d_order = 'ASC';
-	} else {
-		$d_order = $_GET['order'];
-	}
-	
-	// Search
-	$d_search_terms = !empty( $_GET['s'] ) ? urldecode( $_GET['s'] ) : ''; 
-		
-	// Page number, posts per page
-	$d_paged          = !empty( $_GET['paged'] ) ? absint( $_GET['paged'] ) : 1;
-	$d_posts_per_page = !empty( $_GET['posts_per_page'] ) ? absint( $_GET['posts_per_page'] ) : 10;
-	
-	// Note that the doc_slug default is determined in the query class itself. It works this 
-	// way because of load order. Not ideal, but that's the best I can do at the moment.
-
 	// The if-empty is because, like with WP itself, we use bp_docs_has_docs() both for the
 	// initial 'if' of the loop, as well as for the 'while' iterator. Don't want infinite
 	// queries
 	if ( empty( $bp->bp_docs->doc_query ) ) {
+		// Build some intelligent defaults
+
+		// Default to current group id, if available
+		$d_group_id  = bp_is_group() ? bp_get_current_group_id() : array();
+	
+		// Default to displayed user, if available
+		$d_author_id = bp_is_user() ? bp_displayed_user_id() : array();
+	
+		// Default to the tags in the URL string, if available
+		$d_tags	     = isset( $_REQUEST['bpd_tag'] ) ? explode( ',', urldecode( $_REQUEST['bpd_tag'] ) ) : array();
+				
+		// Order and orderby arguments
+		$d_orderby = !empty( $_GET['orderby'] ) ? urldecode( $_GET['orderby'] ) : apply_filters( 'bp_docs_default_sort_order', 'modified' ) ;
+		
+		if ( empty( $_GET['order'] ) ) {
+			// If no order is explicitly stated, we must provide one.
+			// It'll be different for date fields (should be DESC)
+			if ( 'modified' == $d_orderby || 'date' == $d_orderby )
+				$d_order = 'DESC';
+			else
+				$d_order = 'ASC';
+		} else {
+			$d_order = $_GET['order'];
+		}
+		
+		// Search
+		$d_search_terms = !empty( $_GET['s'] ) ? urldecode( $_GET['s'] ) : ''; 
+			
+		// Page number, posts per page
+		$d_paged          = !empty( $_GET['paged'] ) ? absint( $_GET['paged'] ) : 1;
+		$d_posts_per_page = !empty( $_GET['posts_per_page'] ) ? absint( $_GET['posts_per_page'] ) : 10;
+		
+		// Note that the doc_slug default is determined in the query class itself. It works
+		// this way because of load order. Not ideal, but that's the best I can do at the
+		// moment.
+	
 		$defaults = array(
 			'doc_id'	 => array(),      // Array or comma-separated string
 			'doc_slug'	 => '',		  // String (post_name/slug)
@@ -1006,5 +1007,56 @@ function bp_docs_doc_permalink() {
 		the_permalink();
 	}
 }
+
+function bp_docs_slug() {
+	echo bp_docs_get_slug();
+}
+	function bp_docs_get_slug() {
+		global $bp;
+		return apply_filters( 'bp_docs_get_slug', $bp->bp_docs->slug );
+	}
+
+function bp_docs_tabs() {
+	if ( bp_is_group() ) {
+		bp_docs_group_tabs();
+	} else {
+		
+	}
+}
+
+/**
+ * Get the term_id for the associated_item term corresponding to a item_id
+ *
+ * Will create it if it's not found
+ *
+ * @since 1.2
+ *
+ * @param int $item_id Such as the group_id or user_id
+ * @param str $item_type Such as 'user' or 'group' (slug of the parent term)
+ * @param str $item_name Optional. This is the value that will be used to describe the term in the
+ *    Dashboard.
+ * @return int $item_term_id
+ */
+function bp_docs_get_item_term_id( $item_id, $item_type, $item_name = '' ) {
+	global $bp;
+	
+	$item_term = term_exists( $item_id . '-' . $item_type, $bp->bp_docs->associated_item_tax_name );
+	
+	// If the item term doesn't exist, then create it
+	if ( empty( $item_term ) ) {
+		// Set up the arguments for creating the term. Filter this to set your own
+		$item_term_args = apply_filters( 'bp_docs_item_term_values', array(
+			'description' => $item_name,
+			'slug'        => $item_id . '-' . $item_type
+		) );
+		
+		// Create the item term
+		if ( !$item_term = wp_insert_term( $item_id, $bp->bp_docs->associated_item_tax_name, $item_term_args ) )
+			return false;	
+	}
+	
+	return apply_filters( 'bp_docs_get_item_term_id', $item_term['term_id'], $item_id, $item_type, $item_name );
+}
+
 
 ?>

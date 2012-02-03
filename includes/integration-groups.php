@@ -247,6 +247,8 @@ class BP_Docs_Groups_Integration {
 	 */
 	function get_group_terms() {
 		global $bp;
+		
+		$terms = array();
 
 		if ( ! empty( $bp->groups->current_group->id ) ) {
 			$terms = groups_get_groupmeta( $bp->groups->current_group->id, 'bp_docs_terms' );
