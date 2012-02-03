@@ -253,10 +253,8 @@ class BP_Docs_Groups_Integration {
 	 *
 	 * @return array $terms
 	 */
-	function get_group_terms() {
+	function get_group_terms( $terms = array() ) {
 		global $bp;
-		
-		$terms = array();
 
 		if ( ! empty( $bp->groups->current_group->id ) ) {
 			$terms = groups_get_groupmeta( $bp->groups->current_group->id, 'bp_docs_terms' );

@@ -263,7 +263,7 @@ class BP_Docs_Query {
 		$wp_query_args = apply_filters( 'bp_docs_pre_query_args', $wp_query_args, &$this );
 		
 		$this->query = new WP_Query( $wp_query_args );
-		
+		//var_dump( $wp_query_args );
 		return $this->query;
 	}
 	

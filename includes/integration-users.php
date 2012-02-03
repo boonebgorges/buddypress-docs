@@ -85,7 +85,10 @@ class BP_Docs_Users_Integration {
 		global $bp;
 		
 		if ( bp_is_user() ) {
-			$slug = bp_current_action();
+			// Doc slug can't be my-docs or create
+			if ( !in_array( bp_current_action(), array( 'my-docs', 'create' ) ) ) {
+				$slug = bp_current_action();
+			}
 		}
 
 		// Cache in the $bp global
@@ -127,8 +130,7 @@ class BP_Docs_Users_Integration {
 	 *
 	 * @return array $terms
 	 */
-	function get_user_terms() {		
-		$terms = array();
+	function get_user_terms( $terms = array() ) {		
 
 		if ( bp_is_user() ) {
 			$terms = get_user_meta( bp_displayed_user_id(), 'bp_docs_terms', true );
@@ -149,7 +151,7 @@ class BP_Docs_Users_Integration {
 	 *
 	 * @param array $terms The terms to be saved to usermeta
 	 */
-	function save_group_terms( $terms ) {
+	function save_user_terms( $terms ) {
 		if ( bp_is_user() ) {
 			update_user_meta( bp_displayed_user_id(), 'bp_docs_terms', $terms );
 		}
