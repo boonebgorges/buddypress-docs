@@ -251,31 +251,27 @@ class BP_Docs_Query {
 				);
 			}
 		}
-		var_dump( $wp_query_args );
+		
+		// Filter these arguments just before they're sent to WP_Query
+		// Devs: This allows you to send any custom parameter you'd like, and modify the
+		// query appropriately
+		$wp_query_args = apply_filters( 'bp_docs_pre_query_args', $wp_query_args, &$this );
+		
 		$this->query = new WP_Query( $wp_query_args );
 		
 		return $this->query;
 	}
 	
 	/**
-	 * Builds the WP query
+	 * Used to be use to build the query_posts() query. Now handled by get_wp_query() and
+	 * bp_docs_has_docs()
 	 *
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta
-	 *
-	 * @return array $args The query_posts args
+	 * @deprecated 1.2
 	 */
 	function build_query() {
-		global $bp;
-		
-		// The post type must be set for every query
-		$args = array(
-			'post_type' 		=> $this->post_type_name
-		);
-		
-		$bp->bp_docs->query_args = $args;
-		
-		return $args;
+		_deprecated_function( __FUNCTION__, '1.2', 'No longer used. See bp_docs_has_docs() and BP_Docs_Query::get_wp_query().' );
 	}
 	
 	/**
