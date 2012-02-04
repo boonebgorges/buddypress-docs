@@ -10,12 +10,12 @@
 
 class BP_Docs_Users_Integration {
 	function __construct() {
-		// Set up the current view
 		// Filter some properties of the query object
 		add_filter( 'bp_docs_get_item_type',    array( $this, 'get_item_type' ) );
 		add_filter( 'bp_docs_get_current_view', array( &$this, 'get_current_view' ), 10, 2 );
 		add_filter( 'bp_docs_this_doc_slug',    array( $this, 'get_doc_slug' ) );
 	
+		// Add the approriate navigation item for single docs
 		add_action( 'wp', array( &$this, 'setup_single_doc_subnav' ), 1 );
 	
 		// Taxonomy helpers
@@ -97,7 +97,15 @@ class BP_Docs_Users_Integration {
 		return $slug;
 	}
 
-	
+	/**
+	 * When looking at a single doc, this adds the appropriate subnav item.
+	 *
+	 * Other navigation items are added in BP_Docs_Component. We add this item here because it's
+	 * not until later in the load order when we can be certain whether we're viewing a
+	 * single Doc.
+	 *
+	 * @since 1.2
+	 */
 	function setup_single_doc_subnav() {
 		global $bp;
 		
@@ -130,7 +138,7 @@ class BP_Docs_Users_Integration {
 	 *
 	 * @return array $terms
 	 */
-	function get_user_terms( $terms = array() ) {		
+	function get_user_terms( $terms = array() ) {
 
 		if ( bp_is_user() ) {
 			$terms = get_user_meta( bp_displayed_user_id(), 'bp_docs_terms', true );
