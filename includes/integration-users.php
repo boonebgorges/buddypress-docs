@@ -11,12 +11,16 @@
 class BP_Docs_Users_Integration {
 	function __construct() {
 		// Filter some properties of the query object
-		add_filter( 'bp_docs_get_item_type',    array( $this, 'get_item_type' ) );
+		add_filter( 'bp_docs_get_item_type',    array( &$this, 'get_item_type' ) );
 		add_filter( 'bp_docs_get_current_view', array( &$this, 'get_current_view' ), 10, 2 );
-		add_filter( 'bp_docs_this_doc_slug',    array( $this, 'get_doc_slug' ) );
+		add_filter( 'bp_docs_this_doc_slug',    array( &$this, 'get_doc_slug' ) );
 	
 		// Add the approriate navigation item for single docs
 		add_action( 'wp', array( &$this, 'setup_single_doc_subnav' ), 1 );
+	
+		// These functions are used to keep the user's Doc count up to date
+		add_filter( 'bp_docs_doc_saved',   array( $this, 'update_doc_count' )  );
+		add_filter( 'bp_docs_doc_deleted', array( $this, 'update_doc_count' ) );
 	
 		// Taxonomy helpers
 		add_filter( 'bp_docs_taxonomy_get_item_terms', 	array( &$this, 'get_user_terms' ) );
@@ -124,6 +128,15 @@ class BP_Docs_Users_Integration {
 				) );
 			}
 		}
+	}
+	
+	/**
+	 * Update's a user's Doc count
+	 *
+	 * @since 1.2
+	 */
+	function update_doc_count() {
+		bp_docs_update_doc_count( bp_loggedin_user_id(), 'user' );
 	}
 	
 	/**

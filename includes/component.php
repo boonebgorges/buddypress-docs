@@ -164,7 +164,7 @@ class BP_Docs_Component extends BP_Component {
 	function setup_nav() {
 		
 		$main_nav = array(
-			'name' 		      => __( 'Docs', 'bp-docs' ),
+			'name' 		      => sprintf( __( 'Docs <span>%d</span>', 'bp-docs' ), bp_docs_get_doc_count( bp_displayed_user_id(), 'user' ) ),
 			'slug' 		      => bp_docs_get_slug(),
 			'position' 	      => 80,
 			'screen_function'     => array( &$this, 'template_loader' ),
@@ -173,7 +173,7 @@ class BP_Docs_Component extends BP_Component {
 
 		$parent_url = trailingslashit( bp_loggedin_user_domain() . bp_docs_get_slug() );
 
-		$mydocs_label = bp_is_my_profile() ? __( 'My Docs', 'bp-docs' ) : sprintf( __( '%s&#8217;s Docs' ), bp_get_user_firstname( bp_get_displayed_user_fullname() ) );
+		$mydocs_label = bp_is_my_profile() ? __( 'My Docs ', 'bp-docs' ) : sprintf( __( '%s&#8217;s Docs' ), bp_get_user_firstname( bp_get_displayed_user_fullname() ) );
 
 		$sub_nav[] = array(
 			'name'            => $mydocs_label,
@@ -249,6 +249,7 @@ class BP_Docs_Component extends BP_Component {
 	 *       once here, and then once again during the post loop
 	 */
 	function do_query() {
+		
 		$this->query = new BP_Docs_Query;
 	}
 	

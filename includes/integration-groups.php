@@ -650,22 +650,7 @@ class BP_Docs_Groups_Integration {
 			return;
 
 		// Get a fresh doc count for the group
-
-		// Set up the arguments
-		$doc_count 		= new BP_Docs_Query;
-		
-		$this_group_docs_count  = 0;
-		if ( bp_docs_has_docs() ) {
-			$this_group_docs_count = $bp->bp_docs->doc_query->found_posts;
-		}
-
-		// BP has a stupid bug that makes it delete groupmeta when it equals 0. We'll save
-		// a string instead of zero to work around this
-		if ( !$this_group_docs_count )
-			$this_group_docs_count = '0';
-
-		// Save the count
-		groups_update_groupmeta( $bp->groups->current_group->id, 'bp-docs-count', $this_group_docs_count );
+		bp_docs_update_doc_count( bp_get_current_group_id(), 'group' );
 	}
 	
 	/**
@@ -704,8 +689,8 @@ class BP_Docs_Groups_Integration {
 		if ( bp_is_group() ) {
 			return;
 		}
-		
-		$items  = wp_get_post_terms( get_the_ID(), bp_docs_get_associated_item_tax_name() );
+				 		
+		$items  = get_object_term_cache( get_the_ID(), bp_docs_get_associated_item_tax_name() );
 		$groups = array();
 	
 		foreach( $items as $item ) {

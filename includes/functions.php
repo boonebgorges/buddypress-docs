@@ -245,6 +245,61 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
 	return $user_can;
 }
 
+/**
+ * Update the Doc count for a given item
+ *
+ * @since 1.2
+ */
+function bp_docs_update_doc_count( $item_id = 0, $item_type = '' ) {
+	global $bp;
+	
+	$doc_count = 0;
+	$docs_args = array( 'doc_slug' => '' );
 
+	switch ( $item_type ) {
+		case 'group' :
+			$docs_args['user_id']  = '';
+			$docs_args['group_id'] = $item_id;
+			break;
+		
+		case 'user' :
+			$docs_args['user_id']  = $item_id;
+			$docs_args['group_id'] = '';
+			break;
+		
+		default :
+			$docs_args['user_id']  = '';
+			$docs_args['group_id'] = '';
+			break;
+	}
+
+	$query = new BP_Docs_Query( $docs_args );
+	$query->get_wp_query();
+	if ( $query->query->have_posts() ) {
+		$doc_count = $query->query->found_posts;
+	}
+
+	// BP has a stupid bug that makes it delete groupmeta when it equals 0. We'll save
+	// a string instead of zero to work around this
+	if ( !$doc_count )
+		$doc_count = '0';
+
+	// Save the count
+	switch ( $item_type ) {
+		case 'group' :
+			groups_update_groupmeta( $item_id, 'bp-docs-count', $doc_count );
+			break;
+		
+		case 'user' :
+			update_user_meta( $item_id, 'bp_docs_count', $doc_count );
+			break;
+		
+		default :
+			bp_update_option( 'bp_docs_count', $doc_count );
+			break;
+	}
+	
+	return $doc_count;
+}
 
 ?>

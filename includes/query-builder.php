@@ -67,7 +67,8 @@ class BP_Docs_Query {
 			'orderby'	 => 'modified',  // 'modified', 'title', 'author', 'created'
 			'paged'		 => 1,
 			'posts_per_page' => 10,
-			'search_terms'   => ''
+			'search_terms'   => '',
+			'cache_tax'	 => true
 		);
 		$r = wp_parse_args( $args, $defaults );
 		
@@ -242,16 +243,6 @@ class BP_Docs_Query {
 				),
 			), &$this );
 			
-			// Because the BP members component is required, we can check for user_id
-			// right here
-			if ( !empty( $this->query_args['user_id'] ) ) {
-				$wp_query_args['tax_query'][] = array(
-					'taxonomy'	=> $this->associated_item_tax_name,
-					'terms'		=> $this->query_args['user_id'] . '-user',
-					'field'		=> 'slug'
-				);
-			}
-			
 			if ( !empty( $this->query_args['parent_id'] ) ) {
 				$wp_query_args['post_parent'] = $this->query_args['parent_id'];
 			}
@@ -263,8 +254,30 @@ class BP_Docs_Query {
 		$wp_query_args = apply_filters( 'bp_docs_pre_query_args', $wp_query_args, &$this );
 		
 		$this->query = new WP_Query( $wp_query_args );
-		//var_dump( $wp_query_args );
+			
+		// Cache taxonomy terms, if necessary
+		if ( $this->query_args['cache_tax'] ) {
+			$this->cache_tax();
+		}
+		
+		//echo $yes;var_dump( $wp_query_args ); die();
 		return $this->query;
+	}
+	
+	/**
+	 * Cache taxonomy terms
+	 *
+	 * @since 1.2
+	 */
+	function cache_tax() {
+		$object_ids = array();
+		foreach( (array)$this->query->posts as $post ) {
+			$object_ids[] = $post->ID;
+		}
+		$object_ids = implode( ',', $object_ids );
+		
+		update_object_term_cache( $object_ids, $this->post_type_name );
+		//var_dump( $object_ids ); die();
 	}
 	
 	/**

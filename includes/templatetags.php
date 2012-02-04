@@ -888,5 +888,39 @@ function bp_docs_reset_query() {
 	}
 }
 
+/**
+ * Get a total doc count, for a user, a group, or the whole site
+ *
+ * @since 1.2
+ * @todo Total sitewide doc count
+ *
+ * @param int $item_id The id of the item (user or group)
+ * @param str $item_type 'user' or 'group'
+ * @return int
+ */
+function bp_docs_get_doc_count( $item_id = 0, $item_type = '' ) {
+	$doc_count = 0;
+	
+	switch ( $item_type ) {
+		case 'user' :
+			$doc_count = get_user_meta( $item_id, 'bp_docs_count', true );
+			
+			if ( '' === $doc_count ) {
+				$doc_count = bp_docs_update_doc_count( $item_id, 'user' );
+			}
+			
+			break;
+		case 'group' :
+			$doc_count = groups_get_groupmeta( $item_id, 'bp-docs-count' );
+			
+			if ( '' === $doc_count ) {
+				$doc_count = bp_docs_update_doc_count( $item_id, 'group' );
+			}
+			break;
+	}
+	
+	return apply_filters( 'bp_docs_get_doc_count', (int)$doc_count, $item_id, $item_type );
+}
+
 
 ?>

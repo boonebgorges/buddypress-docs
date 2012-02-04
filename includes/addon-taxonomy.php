@@ -352,8 +352,9 @@ class BP_Docs_Taxonomy {
 	 * @since 1.0-beta
 	 */	
 	function tags_td() {
-		$tags 		= wp_get_post_terms( get_the_ID(), $this->docs_tag_tax_name );
-		$tagtext 	= array();
+			 		
+		$tags     = get_object_term_cache( get_the_ID(), $this->docs_tag_tax_name );
+		$tagtext  = array();
 	
 		foreach( $tags as $tag ) {
 			$tagtext[] = bp_docs_get_tag_link( array( 'tag' => $tag->name ) );
