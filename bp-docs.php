@@ -29,8 +29,8 @@ class BP_Docs {
 		// Load predefined constants first thing
 		add_action( 'bp_docs_init', 	array( $this, 'load_constants' ), 2 );
 
-		// Set up doc taxonomy
-		add_action( 'init', 		array( $this, 'load_doc_extras' ) );
+		// Set up doc taxonomy, etc
+		add_action( 'bp_docs_init',     array( $this, 'load_doc_extras' ), 8 );
 
 		// Hooks into the 'init' action to register our WP custom post type and tax
 		// Nice 'n' early

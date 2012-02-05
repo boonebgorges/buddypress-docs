@@ -277,7 +277,6 @@ class BP_Docs_Query {
 		$object_ids = implode( ',', $object_ids );
 		
 		update_object_term_cache( $object_ids, $this->post_type_name );
-		//var_dump( $object_ids ); die();
 	}
 	
 	/**

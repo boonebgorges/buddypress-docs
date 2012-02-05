@@ -37,10 +37,10 @@ class BP_Docs_Taxonomy {
 	 */	
 	function __construct() {
 		// Register our custom taxonomy
-		$this->register_taxonomy();
+		add_filter( 'init', array( &$this, 'register_taxonomy' ), 11 );
 		
 		// Make sure that the bp_docs post type supports our post taxonomies
-		add_filter( 'bp_docs_post_type_args', 	array( $this, 'register_with_post_type' ) );
+		add_filter( 'init', array( $this, 'register_with_post_type' ), 12 );
 	
 		// Hook into post saves to save any taxonomy terms. 
 		add_action( 'bp_docs_doc_saved', 	array( $this, 'save_post' ) );
@@ -106,15 +106,12 @@ class BP_Docs_Taxonomy {
 	 * @param array The $bp_docs_post_type_args array created in BP_Docs::register_post_type()
 	 * @return array $args The modified parameters
 	 */	
-	function register_with_post_type( $args ) {
+	function register_with_post_type() {
 		$this->taxonomies = array( /* 'category', */ $this->docs_tag_tax_name );
-	
-		// Todo: make this fine-grained for tags and/or categories
-		$args['taxonomies'] = array( $this->docs_tag_tax_name );
 		
-		//$args['taxonomies'] = array( 'category', 'post_tag' );
-		
-		return $args;		
+		foreach( $this->taxonomies as $tax ) {
+			register_taxonomy_for_object_type( $tax, bp_docs_get_post_type_name() );
+		}
 	}
 	
 	/**
@@ -356,8 +353,10 @@ class BP_Docs_Taxonomy {
 		$tags     = get_object_term_cache( get_the_ID(), $this->docs_tag_tax_name );
 		$tagtext  = array();
 	
-		foreach( $tags as $tag ) {
-			$tagtext[] = bp_docs_get_tag_link( array( 'tag' => $tag->name ) );
+		foreach( (array)$tags as $tag ) {
+			if ( !empty( $tag->name ) ) {
+				$tagtext[] = bp_docs_get_tag_link( array( 'tag' => $tag->name ) );
+			}
 		}
 		
 		?>

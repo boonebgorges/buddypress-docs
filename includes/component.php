@@ -372,7 +372,7 @@ class BP_Docs_Component extends BP_Component {
 		// Todo: get this into a proper method
 		if ( $bp->bp_docs->current_view == 'delete' ) {
 			check_admin_referer( 'bp_docs_delete' );
-bp_docs_get_item_docs_link();
+
 			if ( bp_docs_current_user_can( 'manage' ) ) {
 				$doc = bp_docs_get_current_doc();
 
