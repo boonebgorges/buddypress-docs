@@ -318,10 +318,25 @@ function bp_docs_item_docs_link() {
 	function bp_docs_get_item_docs_link( $args = array() ) {
 		global $bp;
 
-		// Defaulting to groups for now
+		$d_item_type = '';
+		if ( bp_is_user() ) {
+			$d_item_type = 'user';
+		} else if ( bp_is_active( 'groups' ) && bp_is_group() ) {
+			$d_item_type = 'group';
+		}
+		
+		switch ( $d_item_type ) {
+			case 'user' :
+				$d_item_id = bp_displayed_user_id();
+				break;
+			case 'group' :
+				$d_item_id = bp_get_current_group_id();
+				break;
+		}
+
 		$defaults = array(
-			'item_id'	=> !empty( $bp->groups->current_group->id ) ? $bp->groups->current_group->id : false,
-			'item_type'	=> !empty( $bp->groups->current_group->id ) ? 'group' : false
+			'item_id'	=> $d_item_id,
+			'item_type'	=> $d_item_type
 		);
 
 		$r = wp_parse_args( $args, $defaults );
@@ -342,7 +357,7 @@ function bp_docs_item_docs_link() {
 				$base_url = bp_core_get_user_domain( $item_id );
 				break;
 		}
-
+//var_dump( $base_url ); die();
 		return apply_filters( 'bp_docs_get_item_docs_link', $base_url . $bp->bp_docs->slug . '/', $base_url, $r );
 	}
 

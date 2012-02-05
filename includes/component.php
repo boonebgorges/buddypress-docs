@@ -249,7 +249,6 @@ class BP_Docs_Component extends BP_Component {
 	 *       once here, and then once again during the post loop
 	 */
 	function do_query() {
-		
 		$this->query = new BP_Docs_Query;
 	}
 	
@@ -373,21 +372,14 @@ class BP_Docs_Component extends BP_Component {
 		// Todo: get this into a proper method
 		if ( $bp->bp_docs->current_view == 'delete' ) {
 			check_admin_referer( 'bp_docs_delete' );
-
+bp_docs_get_item_docs_link();
 			if ( bp_docs_current_user_can( 'manage' ) ) {
+				$doc = bp_docs_get_current_doc();
 
-				$the_doc_args = array(
-					'name' 		=> $bp->action_variables[0],
-					'post_type' 	=> $bp->bp_docs->post_type_name
-				);
-
-				$the_docs = get_posts( $the_doc_args );
-				$doc_id = $the_docs[0]->ID;
-
-				do_action( 'bp_docs_before_doc_delete', $doc_id );
+				do_action( 'bp_docs_before_doc_delete', $doc->ID );
 
 				$delete_args = array(
-					'ID'		=> $doc_id,
+					'ID'		=> $doc->ID,
 					'post_status'	=> 'trash'
 				);
 
@@ -401,7 +393,7 @@ class BP_Docs_Component extends BP_Component {
 			}
 
 			// todo: abstract this out so I don't have to call group permalink here
-			$redirect_url = bp_get_group_permalink( $bp->groups->current_group ) . $bp->bp_docs->slug . '/';
+			$redirect_url = bp_docs_get_item_docs_link();
 			bp_core_redirect( $redirect_url );
 		}
 	}
