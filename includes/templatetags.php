@@ -507,11 +507,46 @@ function bp_docs_inline_toggle_js() {
  * @since 1.0-beta
  */
 function bp_docs_doc_settings_markup() {
+	global $bp;
+	
 	$doc = bp_docs_get_current_doc();
 
 	$doc_settings = !empty( $doc->ID ) ? get_post_meta( $doc->ID, 'bp_docs_settings', true ) : array();
+	
+	$doc_primary_item = 0;
+	if ( !empty( $doc->ID ) ) {
+		$doc_primary_item = get_post_meta( $doc->ID, 'bp_docs_primary_item', true );
+	}
+	
+	if ( !$doc_primary_item && !empty( $bp->bp_docs->current_item ) && !empty( $bp->bp_docs->current_item_type ) ) {
+		// Default to the current item
+		$doc_primary_item = $bp->bp_docs->current_item . '-' . $bp->bp_docs->current_item_type;
+	}
+	
+	?>
+	
+	<tr>
+		<td class="desc-column">
+			<label for="settings[edit]"><?php _e( 'Where is this Doc\'s primary home?', 'bp-docs' ) ?></label>
+			<p class="description">
+				<?php _e( 'uoehnteouthn' ) ?>
+			</p>
+		</td>
 
-	// For now, I'll hand off the creation of settings to individual integration pieces
+		<td class="content-column">
+			<input name="settings[edit]" type="radio" value="group-members" <?php checked( $edit, 'group-members' ) ?>/> <?php _e( 'All members of the group', 'bp-docs' ) ?><br />
+
+			<input name="settings[edit]" type="radio" value="creator" <?php checked( $edit, 'creator' ) ?>/> <?php echo esc_html( $creator_text ) ?><br />
+
+			<?php if ( bp_group_is_admin() || bp_group_is_mod() ) : ?>
+				<input name="settings[edit]" type="radio" value="admins-mods" <?php checked( $edit, 'admins-mods' ) ?>/> <?php _e( 'Only admins and mods of this group', 'bp-docs' ) ?><br />
+			<?php endif ?>
+		</td>
+	</tr>
+	
+	<?php
+
+	// Hand off the creation of additional settings to individual integration pieces
 	do_action( 'bp_docs_doc_settings_markup', $doc_settings );
 }
 

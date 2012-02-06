@@ -192,31 +192,32 @@ class BP_Docs {
 
 		// Define the labels to be used by the post type bp_doc
 		$post_type_labels = array(
-			'name' => _x( 'BuddyPress Docs', 'post type general name', 'bp-docs' ),
-			'singular_name' => _x( 'Doc', 'post type singular name', 'bp-docs' ),
-			'add_new' => _x( 'Add New', 'add new', 'bp-docs' ),
-			'add_new_item' => __( 'Add New Doc', 'bp-docs' ),
-			'edit_item' => __( 'Edit Doc', 'bp-docs' ),
-			'new_item' => __( 'New Doc', 'bp-docs' ),
-			'view_item' => __( 'View Doc', 'bp-docs' ),
-			'search_items' => __( 'Search Docs', 'bp-docs' ),
-			'not_found' =>  __( 'No Docs found', 'bp-docs' ),
+			'name' 		     => _x( 'BuddyPress Docs', 'post type general name', 'bp-docs' ),
+			'singular_name'      => _x( 'Doc', 'post type singular name', 'bp-docs' ),
+			'add_new' 	     => _x( 'Add New', 'add new', 'bp-docs' ),
+			'add_new_item' 	     => __( 'Add New Doc', 'bp-docs' ),
+			'edit_item' 	     => __( 'Edit Doc', 'bp-docs' ),
+			'new_item' 	     => __( 'New Doc', 'bp-docs' ),
+			'view_item' 	     => __( 'View Doc', 'bp-docs' ),
+			'search_items' 	     => __( 'Search Docs', 'bp-docs' ),
+			'not_found' 	     =>  __( 'No Docs found', 'bp-docs' ),
 			'not_found_in_trash' => __( 'No Docs found in Trash', 'bp-docs' ),
-			'parent_item_colon' => ''
+			'parent_item_colon'  => ''
 		);
 
 		// Set up the arguments to be used when the post type is registered
 		// Only filter this if you are hella smart and/or know what you're doing
 		$bp_docs_post_type_args = apply_filters( 'bp_docs_post_type_args', array(
-			'label' => __( 'BuddyPress Docs', 'bp-docs' ),
-			'labels' => $post_type_labels,
-			'public' => false,
-			'_builtin' => false,
-			'show_ui' => $this->show_cpt_ui(),
-			'hierarchical' => false,
-			'supports' => array( 'title', 'editor', 'revisions', 'excerpt', 'comments' ),
-			'query_var' => true,
-			'rewrite' => false // Todo: This bites
+			'label' 	=> __( 'BuddyPress Docs', 'bp-docs' ),
+			'labels' 	=> $post_type_labels,
+			'public' 	=> false,
+			'show_ui' 	=> $this->show_cpt_ui(),
+			'hierarchical' 	=> false,
+			'supports' 	=> array( 'title', 'editor', 'revisions', 'excerpt', 'comments' ),
+			'query_var' 	=> true,
+			'capability_type' => 'bp_doc',
+			//'capabilities'	=> bp_docs_get_bp_docs_caps(),
+			'rewrite' 	=> false // Todo: This bites
 		) );
 
 		// Register the bp_doc post type
@@ -238,7 +239,7 @@ class BP_Docs {
 		));
 
 		do_action( 'bp_docs_registered_post_type' );
-
+var_dump( $GLOBALS['wp_post_types']['bp_doc'] );
 		// Only register on the root blog
 		if ( !bp_is_root_blog() )
 			restore_current_blog();
@@ -283,6 +284,9 @@ class BP_Docs {
 	
 		// component.php extends BP_Component, and does most of the basic setup for BP Docs
 		require( BP_DOCS_INCLUDES_PATH . 'component.php' );
+		
+		// caps.php handles capabilities and roles
+		require( BP_DOCS_INCLUDES_PATH . 'caps.php' );
 
 		// query-builder.php contains the class that fetches the content for each view
 		require( BP_DOCS_INCLUDES_PATH . 'query-builder.php' );

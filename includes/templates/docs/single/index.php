@@ -1,5 +1,8 @@
 <?php bp_docs_reset_query() ?>
 <?php if ( bp_docs_has_docs() ) : while ( bp_docs_has_docs() ) : bp_docs_the_doc() ?>
+	<?php if ( current_user_can( 'read_bp_doc', get_the_ID() ) ) : ?>
+		yes
+	<?php endif ?>
 
 	<?php include( apply_filters( 'bp_docs_header_template', bp_docs_locate_template( 'docs-header.php' ) ) ) ?>
 	
