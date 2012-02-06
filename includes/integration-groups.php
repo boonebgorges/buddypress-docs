@@ -690,7 +690,7 @@ class BP_Docs_Groups_Integration {
 			return;
 		}
 				 		
-		$items  = get_object_term_cache( get_the_ID(), bp_docs_get_associated_item_tax_name() );
+		$items  = get_the_terms( get_the_ID(), bp_docs_get_associated_item_tax_name() );
 		$groups = array();
 	
 		foreach( $items as $item ) {

@@ -36,14 +36,14 @@ function bp_docs_map_meta_caps( $caps, $cap, $user_id, $args ) {
 			// Super admin can read anything
 			if ( !is_super_admin() ) {
 				if ( $doc = bp_docs_get_doc_for_caps( $args ) ) {
-					var_dump( $doc );
+					//var_dump( $doc );
 				}
 			}
 			
-			var_dump( $args );
-			var_dump( get_the_author_meta( 'ID' ) );
+			//var_dump( $args );
+			//var_dump( get_the_author_meta( 'ID' ) );
 			$caps = array( 'do_not_allow' );
-			var_dump( $caps );
+			//var_dump( $caps );
 			break;
 	}
 	

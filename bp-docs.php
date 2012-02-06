@@ -239,7 +239,7 @@ class BP_Docs {
 		));
 
 		do_action( 'bp_docs_registered_post_type' );
-var_dump( $GLOBALS['wp_post_types']['bp_doc'] );
+//var_dump( $GLOBALS['wp_post_types']['bp_doc'] );
 		// Only register on the root blog
 		if ( !bp_is_root_blog() )
 			restore_current_blog();

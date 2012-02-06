@@ -67,8 +67,7 @@ class BP_Docs_Query {
 			'orderby'	 => 'modified',  // 'modified', 'title', 'author', 'created'
 			'paged'		 => 1,
 			'posts_per_page' => 10,
-			'search_terms'   => '',
-			'cache_tax'	 => true
+			'search_terms'   => ''
 		);
 		$r = wp_parse_args( $args, $defaults );
 		
@@ -254,29 +253,9 @@ class BP_Docs_Query {
 		$wp_query_args = apply_filters( 'bp_docs_pre_query_args', $wp_query_args, &$this );
 		
 		$this->query = new WP_Query( $wp_query_args );
-			
-		// Cache taxonomy terms, if necessary
-		if ( $this->query_args['cache_tax'] ) {
-			$this->cache_tax();
-		}
 		
 		//echo $yes;var_dump( $wp_query_args ); die();
 		return $this->query;
-	}
-	
-	/**
-	 * Cache taxonomy terms
-	 *
-	 * @since 1.2
-	 */
-	function cache_tax() {
-		$object_ids = array();
-		foreach( (array)$this->query->posts as $post ) {
-			$object_ids[] = $post->ID;
-		}
-		$object_ids = implode( ',', $object_ids );
-		
-		update_object_term_cache( $object_ids, $this->post_type_name );
 	}
 	
 	/**

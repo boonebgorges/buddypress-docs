@@ -350,7 +350,7 @@ class BP_Docs_Taxonomy {
 	 */	
 	function tags_td() {
 			 		
-		$tags     = get_object_term_cache( get_the_ID(), $this->docs_tag_tax_name );
+		$tags     = get_the_terms( get_the_ID(), $this->docs_tag_tax_name );
 		$tagtext  = array();
 	
 		foreach( (array)$tags as $tag ) {
