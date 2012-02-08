@@ -216,7 +216,9 @@ class BP_Docs {
 			'supports' 	=> array( 'title', 'editor', 'revisions', 'excerpt', 'comments' ),
 			'query_var' 	=> true,
 			'capability_type' => 'bp_doc',
-			//'capabilities'	=> bp_docs_get_bp_docs_caps(),
+			'capabilities'	=> array(
+				'view_bp_doc_history' => 'view_bp_doc_history'
+			),
 			'rewrite' 	=> false // Todo: This bites
 		) );
 
