@@ -699,13 +699,14 @@ class BP_Docs_BP_Integration {
 			wp_enqueue_script( 'common' );
 			wp_enqueue_script( 'jquery-color' );
 			wp_enqueue_script( 'editor' );
-			if ( function_exists( 'add_thickbox' ) )
-				add_thickbox();
 			wp_enqueue_script( 'utils' );
 			wp_enqueue_script( 'autosave' );
 
 			wp_register_script( 'bp-docs-idle-js', plugins_url( 'buddypress-docs/includes/js/idle.js' ), array( 'jquery', 'bp-docs-js' ) );
 			wp_enqueue_script( 'bp-docs-idle-js' );
+
+			wp_register_script( 'jquery-colorbox', plugins_url( 'buddypress-docs/lib/js/colorbox/jquery.colorbox-min.js' ), array( 'jquery' ) );
+			wp_enqueue_script( 'jquery-colorbox' );
 
 			// Edit mode requires bp-docs-js to be dependent on TinyMCE, so we must
 			// reregister bp-docs-js with the correct dependencies
@@ -741,9 +742,7 @@ class BP_Docs_BP_Integration {
 		}
 
 		if ( !empty( $this->query->current_view ) && ( 'edit' == $this->query->current_view || 'create' == $this->query->current_view ) ) {
-			wp_enqueue_style( 'thickbox' );
 			wp_enqueue_style( 'bpd-edit-css', $this->includes_url . 'css/edit.css' );
-			wp_enqueue_style( 'bp-docs-fullscreen-css', $this->includes_url . 'css/fullscreen.css' );
 		}
 	}
 }
