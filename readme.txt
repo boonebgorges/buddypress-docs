@@ -2,8 +2,8 @@
 Contributors: boonebgorges, cuny-academic-commons
 Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
-Requires at least: WordPress 3.1, BuddyPress 1.5
-Tested up to: WordPress 3.3-bleeding, BuddyPress 1.5
+Requires at least: WordPress 3.3, BuddyPress 1.5
+Tested up to: WordPress 3.3.1, BuddyPress 1.5.3.1
 Stable tag: 1.1.19
  
 Adds collaborative Docs to BuddyPress.
@@ -36,7 +36,10 @@ This plugin is in active development. For feature requests and bug reports, visi
 == Changelog ==
 
 = 1.1.20 =
+* Fixes idle timeout javascript
+* Fixes bug with timezones on History tab
 * Improves data passed to filters
+* Cleans up references to WP's fullscreen editing mode
 * Fixes potential PHP warnings on the Dashboard
 
 = 1.1.19 =
