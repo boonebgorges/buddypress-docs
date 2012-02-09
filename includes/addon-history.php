@@ -381,7 +381,7 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
 		
 		$base_url = bp_docs_get_doc_link( get_the_ID() ) . '/' . BP_DOCS_HISTORY_SLUG . '/';
 
-		$date = '<a href="' . add_query_arg( 'revision', $revision->ID ) . '">' . bp_format_time( strtotime( $revision->post_date ) ) . '</a>';
+		$date = '<a href="' . add_query_arg( 'revision', $revision->ID ) . '">' . bp_format_time( strtotime( $revision->post_date ), false, false /* don't double localize time */ ) . '</a>';
 		$name = bp_core_get_userlink( $revision->post_author );
 		
 		if ( 'form-table' == $format ) {
