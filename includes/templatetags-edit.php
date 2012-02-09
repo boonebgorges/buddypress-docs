@@ -203,6 +203,43 @@ function bp_docs_remove_tinymce_plugins( $initArray ) {
 add_filter( 'tiny_mce_before_init', 'bp_docs_remove_tinymce_plugins' );
 
 /**
+ * Hook our idle function to the TinyMCE.onInit event
+ *
+ * @package BuddyPress_Docs
+ * @since 1.1.20
+ */
+function bp_docs_add_idle_function_to_tinymce( $initArray ) {
+	if ( bp_docs_is_bp_docs_page() ) {
+
+		//$initArray['setup'] = 'alert(\'hi\');';
+		$initArray['setup'] = 'function(ed) {
+			ed.onInit.add(
+				function(ed) {
+					_initJQuery();
+					
+					// Set up listeners
+					jQuery(\'#\' + ed.id + \'_parent\').bind(\'mousemove\',function (evt){
+						_active(evt);
+					});	
+					
+					bp_docs_load_idle();
+							
+				}
+			);
+			
+			ed.onKeyDown.add(
+				function(ed) {
+					_active();
+				}
+			);
+		}';
+	}
+	
+	return $initArray;
+}
+add_filter( 'tiny_mce_before_init', 'bp_docs_add_idle_function_to_tinymce' );
+
+/**
  * Adds BuddyPress Docs-specific TinyMCE plugins
  *
  * Includes:
