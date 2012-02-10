@@ -332,13 +332,13 @@ class BP_Docs_Query {
 
 				switch ( $this->current_view ) {
 					case 'single' :
-						$template = 'single-doc.php';	
+						$template = 'single/index.php';	
 						break;
 					case 'edit' :
-						$template = 'edit-doc.php';
+						$template = 'single/edit.php';
 						break;
 					case 'history' :
-						$template = 'history-doc.php';
+						$template = 'single/history.php';
 						break;
 				
 				}

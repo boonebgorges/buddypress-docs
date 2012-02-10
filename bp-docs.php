@@ -21,6 +21,7 @@ class BP_Docs {
 	 * @since 1.0-beta
 	 */
 	function __construct() {
+		add_action( 'activate_' . plugin_basename( __FILE__ ), array( &$this, 'activation' )  );
 	
 		// Define post type and taxonomy names for use in the register functions
 		$this->post_type_name 		= apply_filters( 'bp_docs_post_type_name', 'bp_doc' );

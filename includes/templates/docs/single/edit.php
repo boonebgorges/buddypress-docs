@@ -37,7 +37,7 @@ if ( !function_exists( 'wp_editor' ) ) {
 	<?php endif ?>
         
         <div id="doc-content-textarea">
-		<label id="content-label" for="doc[content]"><?php _e( 'Content', 'bp-docs' ) ?></label>        
+		<label id="content-label" for="doc_content"><?php _e( 'Content', 'bp-docs' ) ?></label>        
 		<div id="editor-toolbar">
 			<?php /* No media support for now
 			<div id="media-toolbar">
@@ -46,12 +46,12 @@ if ( !function_exists( 'wp_editor' ) ) {
 			*/ ?>
 			<?php 
 				if ( function_exists( 'wp_editor' ) ) {
-					wp_editor( bp_docs_get_edit_doc_content(), 'doc[content]', array(
+					wp_editor( bp_docs_get_edit_doc_content(), 'doc_content', array(
 						'media_buttons' => false,
 						'dfw'		=> false
 					) );
 				} else {
-					the_editor( bp_docs_get_edit_doc_content(), 'doc[content]', 'doc[title]', false ); 
+					the_editor( bp_docs_get_edit_doc_content(), 'doc_content', 'doc[title]', false ); 
 				}
 			?>
 		</div>
@@ -142,7 +142,7 @@ jQuery(document).ready(function($){
 	/* On some setups, it helps TinyMCE to load if we fire the switchEditors event on load */
 	if ( typeof(switchEditors) == 'object' ) {
 		if ( !$("#edButtonPreview").hasClass('active') ) {
-			switchEditors.go('doc[content]', 'tinymce');
+			switchEditors.go('doc_content', 'tinymce');
 		}
 	}
 },(jQuery));

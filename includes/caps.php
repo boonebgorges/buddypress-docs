@@ -14,6 +14,18 @@
 if ( !defined( 'ABSPATH' ) ) exit;
 
 /**
+ * Make sure caps are set
+ */
+function bp_docs_ensure_caps() {
+	global $wp_roles;
+	
+	if ( is_super_admin() && !isset( $wp_roles->roles['administrator']['capabilities']['read_bp_doc'] ) ) {
+		bp_docs_add_caps();
+	}
+}
+add_action( 'admin_init', 'bp_docs_ensure_caps' );
+
+/**
  * Adds capabilities to WordPress user roles.
  *
  * This is called on plugin activation.
@@ -42,7 +54,7 @@ function bp_docs_add_caps() {
 			$this_role->add_cap( $cap );
 		}
 	}
-
+	
 	do_action( 'bp_docs_add_caps' );
 }
 
@@ -57,52 +69,11 @@ function bp_docs_add_caps() {
  * @return array Capabilities for $role
  */
 function bp_docs_get_caps_for_role( $role = '' ) {
-
-	// Get new role names
-	$moderator_role   = bp_get_moderator_role();
-	$participant_role = bp_get_participant_role();
-
-	// Which role are we looking for?
-	switch ( $role ) {
-
-		// Administrator
-		case 'administrator' :
-
-			$caps = array(
-
-				// Misc
-				'bp_moderate',
-				'bp_throttle',
-				'bp_view_trash'
-			);
-
-			break;
-
-		// Moderator
-		case $moderator_role :
-
-			$caps = array(
-
-				// Misc
-				'bp_moderate',
-				'bp_throttle',
-				'bp_view_trash',
-			);
-
-			break;
-
-		// WordPress Core Roles
-		case 'editor'          :
-		case 'author'          :
-		case 'contributor'     :
-		case 'subscriber'      :
-		default                :
-
-			$caps = array();
-
-			break;
-	}
-
+	$caps = array(
+		'read_bp_doc',
+		'edit_bp_doc',
+		'view_bp_doc_history'
+	);
 	return apply_filters( 'bp_docs_get_caps_for_role', $caps, $role );
 }
 
@@ -145,45 +116,35 @@ function bp_docs_map_meta_caps( $caps, $cap, $user_id, $args ) {
 	
 	switch ( $cap ) {
 		case 'read_bp_doc' :
-			if ( !is_super_admin() ) {
-				
-			}
-			
-			//var_dump( $args );
-			//var_dump( get_the_author_meta( 'ID' ) );
-			$caps = array( 'do_not_allow' );
-			//var_dump( $caps );
+			$caps[] = $cap;
 			break;
 		
 		case 'edit_bp_doc' :
-			if ( !is_super_admin() ) {
-				if ( $user_id == $doc->post_author ) {
-					$caps[] = $cap;
-				} else if ( 'custom' == $doc_settings['edit'] && bp_docs_user_has_custom_access( $user_id, $doc_settings, 'edit' ) ) {
-					$caps[] = $cap;
-				} else {
-					$caps[] = 'do_not_allow';
-				}
-				var_dump( $caps );
+			if ( $user_id == $doc->post_author ) {
+				$caps[] = $cap;
+			} else if ( isset( $doc_settings['edit'] ) ) {
+				var_dump( $doc_settings['edit'] );
+			} else if ( bp_docs_user_has_custom_access( $user_id, $doc_settings, 'edit' ) ) {
+				$caps[] = $cap;
+			} else {
+				$caps[] = 'do_not_allow';
 			}
 			
 			break;
 		
 		case 'view_bp_doc_history' :
-			if ( !is_super_admin() ) {
-				if ( $user_id == $doc->post_author ) {
-					$caps[] = $cap;
-				} else if ( bp_docs_user_has_custom_access( $user_id, $doc_settings, 'view_history' ) ) {
-					$caps[] = $cap;
-				} else {
-					$caps[] = 'do_not_allow';
-				}
+			if ( $user_id == $doc->post_author ) {
+				$caps[] = $cap;
+			} else if ( bp_docs_user_has_custom_access( $user_id, $doc_settings, 'view_history' ) ) {
+				$caps[] = $cap;
+			} else {
+				$caps[] = 'do_not_allow';
 			}
 			
 			break;
 		
 	}
-	var_dump( $caps );
+	
 	return apply_filters( 'bp_docs_map_meta_caps', $caps, $cap, $user_id, $args );
 }
 add_filter( 'map_meta_cap', 'bp_docs_map_meta_caps', 10, 4 );
@@ -223,7 +184,7 @@ function bp_docs_user_has_custom_access( $user_id, $doc_settings, $key ) {
 	// Default to true, so that if it's not set to 'custom', you pass through
 	$has_access = true;
 	
-	if ( 'custom' == $doc_settings[$key] && is_array( $doc_settings[$key] ) ) {
+	if ( isset( $doc_settings[$key] ) && 'custom' == $doc_settings[$key] && is_array( $doc_settings[$key] ) ) {
 		$has_access = in_array( $user_id, $doc_settings[$key] );
 	}
 	

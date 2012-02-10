@@ -523,6 +523,9 @@ function bp_docs_doc_settings_markup() {
 		$doc_primary_item = $bp->bp_docs->current_item . '-' . $bp->bp_docs->current_item_type;
 	}
 	
+	$edit = isset( $doc_settings['edit'] ) ? $doc_settings['edit'] : '';
+	$creator_text = get_the_ID();
+	
 	?>
 	
 	<tr>
@@ -556,15 +559,17 @@ function bp_docs_doc_settings_markup() {
  * @package BuddyPress Docs
  */
 function bp_docs_doc_action_links() {
-	$links 		= array();
+	$links   = array();
 
-	$links[] 	= '<a href="' . get_permalink() . '">' . __( 'Read', 'bp-docs' ) . '</a>';
+	$links[] = '<a href="' . get_permalink() . '">' . __( 'Read', 'bp-docs' ) . '</a>';
+	
+	if ( current_user_can( 'edit_bp_doc', get_the_ID() ) ) {
+		$links[] = '<a href="' . get_permalink() . '/' . BP_DOCS_EDIT_SLUG . '">' . __( 'Edit', 'bp-docs' ) . '</a>';
+	}
 
-	if ( current_user_can( 'edit_bp_doc', get_the_ID() ) )
-		$links[] 	= '<a href="' . get_permalink() . '/' . BP_DOCS_EDIT_SLUG . '">' . __( 'Edit', 'bp-docs' ) . '</a>';
-
-	if ( current_user_can( 'view_bp_doc_history', get_the_ID() ) )
-		$links[] 	= '<a href="' . get_permalink() . '/' . BP_DOCS_HISTORY_SLUG . '">' . __( 'History', 'bp-docs' ) . '</a>';
+	if ( current_user_can( 'view_bp_doc_history', get_the_ID() ) ) {
+		$links[] = '<a href="' . get_permalink() . '/' . BP_DOCS_HISTORY_SLUG . '">' . __( 'History', 'bp-docs' ) . '</a>';
+	}
 
 	echo implode( ' &#124; ', $links );
 }
