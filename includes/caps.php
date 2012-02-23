@@ -86,7 +86,7 @@ function bp_docs_get_caps_for_role( $role = '' ) {
  * @param array $caps Capabilities for meta capability
  * @param string $cap Capability name
  * @param int $user_id User id
- * @param mixed $args Arguments
+ * @param mixed $args Arguments passed to map_meta_cap filter
  * @uses get_post() To get the post
  * @uses get_post_type_object() To get the post type object
  * @uses apply_filters() Calls 'bp_docs_map_meta_caps' with caps, cap, user id and
@@ -116,7 +116,7 @@ function bp_docs_map_meta_caps( $caps, $cap, $user_id, $args ) {
 	
 	switch ( $cap ) {
 		case 'read_bp_doc' :
-			$caps[] = $cap;
+			$caps[] = 'exist'; // anyone can read Docs by default
 			break;
 		
 		case 'edit_bp_doc' :
