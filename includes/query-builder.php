@@ -395,7 +395,15 @@ class BP_Docs_Query {
 			'redirect' => 'create'
 		);
 		
-		if ( empty( $_POST['doc']['title'] ) || empty( $_POST['doc_content'] ) ) {
+		// Backward compatibility. Had to change to doc_content to work with wp_editor
+		$doc_content = '';
+		if ( isset( $_POST['doc_content'] ) ) {
+			$doc_content = $_POST['doc_content'];
+		} else if ( isset( $_POST['doc']['content'] ) ) {
+			$doc_content = $_POST['doc']['content'];
+		}
+		
+		if ( empty( $_POST['doc']['title'] ) || empty( $doc_content ) ) {
 			// Both the title and the content fields are required
 			$result['message'] = __( 'Both the title and the content fields are required.', 'bp-doc' );
 			$result['redirect'] = $this->current_view;
@@ -405,7 +413,7 @@ class BP_Docs_Query {
 				'post_type'    => $this->post_type_name,
 				'post_title'   => $_POST['doc']['title'],
 				'post_name'    => isset( $_POST['doc']['permalink'] ) ? sanitize_title( $_POST['doc']['permalink'] ) : sanitize_title( $_POST['doc']['title'] ),
-				'post_content' => stripslashes( sanitize_post_field( 'post_content', $_POST['doc_content'], 0, 'db' ) ),
+				'post_content' => stripslashes( sanitize_post_field( 'post_content', $doc_content, 0, 'db' ) ),
 				'post_status'  => 'publish'
 			);
 			
