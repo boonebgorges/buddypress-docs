@@ -209,7 +209,7 @@ class BP_Docs {
 			'_builtin' => false,
 			'show_ui' => $this->show_cpt_ui(),
 			'hierarchical' => false,
-			'supports' => array( 'title', 'editor', 'revisions', 'excerpt', 'comments' ),
+			'supports' => array( 'title', 'editor', 'revisions', 'excerpt', 'comments', 'author' ),
 			'query_var' => true,
 			'rewrite' => false // Todo: This bites
 		) );

@@ -35,6 +35,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.1.21 =
+* Show the 'author' panel in the Dashboard
+
 = 1.1.20 =
 * Fixes idle timeout javascript
 * Fixes bug with timezones on History tab
