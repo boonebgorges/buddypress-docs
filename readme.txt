@@ -35,6 +35,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.1.22 =
+* Added Romanian translation
+
 = 1.1.21 =
 * Show the 'author' panel in the Dashboard
 
