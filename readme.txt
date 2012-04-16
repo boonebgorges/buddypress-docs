@@ -35,6 +35,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.1.23 =
+* Adds Delete links to doc actions row
+
 = 1.1.22 =
 * Added Romanian translation
 

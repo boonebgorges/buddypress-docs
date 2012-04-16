@@ -68,7 +68,7 @@ class BP_Docs_Groups_Integration {
 		// These functions are used to keep the group Doc count up to date
 		add_filter( 'bp_docs_doc_saved',		array( $this, 'update_doc_count' )  );
 		add_filter( 'bp_docs_doc_deleted',		array( $this, 'update_doc_count' ) );
-		
+
 		add_filter( 'posts_clauses',		array( $this, 'protect_group_docs' ) );
 
 		// Update group last active metadata when a doc is created, updated, or saved
@@ -104,19 +104,19 @@ class BP_Docs_Groups_Integration {
 	 */
 	function protect_group_docs( $clauses ) {
 		global $bp, $wpdb;
-		
+
 		if ( !isset( $bp->bp_docs->current_view ) ) {
 			return $clauses;
 		}
-		
+
 		if ( 'single' != $bp->bp_docs->current_view && 'edit' != $bp->bp_docs->current_view && 'history' != $bp->bp_docs->current_view ) {
 			return $clauses;
 		}
-		
+
 		if ( false === strpos( $clauses['where'], $bp->bp_docs->post_type_name ) ) {
 			return $clauses;
 		}
-		
+
 		// Query for all the current group's docs
 		if ( isset( $bp->groups->current_group->id ) ) {
 			$query_args = array(
@@ -133,21 +133,21 @@ class BP_Docs_Groups_Integration {
 				'showposts' => '-1'
 			);
 		}
-		
+
 		// Don't recurse
 		remove_filter( 'posts_clauses', array( $this, 'protect_group_docs' ) );
-		
+
 		$this_group_docs = new WP_Query( $query_args );
-		
+
 		$this_group_doc_ids = array();
 		foreach( $this_group_docs->posts as $gpost ) {
 			$this_group_doc_ids[] = $gpost->ID;
 		}
-		
+
 		if ( !empty( $this_group_doc_ids ) ) {
 			$clauses['where'] .= " AND $wpdb->posts.ID IN (" . implode(',', $this_group_doc_ids ) . ")";
 		}
-		
+
 		return $clauses;
 	}
 
@@ -377,12 +377,18 @@ class BP_Docs_Groups_Integration {
 
 				break;
 
+			case 'delete' : // Delete and Edit are the same for the time being
 			case 'edit' :
 			default :
 				// Group admins and mods always get to edit
 				if ( groups_is_user_admin( $user_id, $group_id ) || groups_is_user_mod( $user_id, $group_id ) ) {
 					$user_can = true;
 				} else {
+					// Delete defaults to Edit for now
+					if ( 'delete' == $action ) {
+						$action = 'edit';
+					}
+
 					// Make sure there's a default
 					if ( empty( $doc_settings[$action] ) ) {
 						$doc_settings[$action] = 'group-members';
@@ -394,7 +400,7 @@ class BP_Docs_Groups_Integration {
 							break;
 
 						case 'creator' :
-							if ( $post->post_author == $user_id )
+							if ( $doc->post_author == $user_id )
 								$user_can = true;
 							break;
 
@@ -901,13 +907,13 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 
 		$this->visibility		= 'public';
 		$this->enable_nav_item		= $this->enable_nav_item();
-		
+
 		// Create some default settings if the create step is skipped
 		if ( apply_filters( 'bp_docs_force_enable_at_group_creation', false ) ) {
 			add_action( 'groups_created_group', array( &$this, 'enable_at_group_creation' ) );
 		}
 	}
-	
+
 	/**
 	 * Show the Create step?
 	 *
@@ -916,7 +922,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	 *
 	 * bp_docs_force_enable_at_group_creation is a more general filter. When true, the creation
 	 * step will be disabled AND Docs will be turned off on new group creation.
-	 * 
+	 *
 	 * @package BuddyPress_Docs
 	 * @since 1.1.18
 	 *
@@ -926,7 +932,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 		$enable_step = apply_filters( 'bp_docs_force_enable_at_group_creation', false ) ? false : true;
 		return apply_filters( 'bp_docs_enable_group_create_step', $enable_step );
 	}
-	
+
 	/**
 	 * Set some default settings for a group
 	 *
@@ -940,7 +946,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 			'group-enable'	=> 1,
 			'can-create' 	=> 'member'
 		) );
-		
+
 		groups_update_groupmeta( $group_id, 'bp-docs', $settings );
 	}
 

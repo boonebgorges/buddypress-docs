@@ -403,7 +403,7 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
 		$user_id = bp_loggedin_user_id();
 
 	// Only certain actions are checked against doc_ids
-	$need_doc_ids_actions = apply_filters( 'bp_docs_need_doc_ids_actions', array( 'edit', 'manage', 'view_history', 'read' ) );
+	$need_doc_ids_actions = apply_filters( 'bp_docs_need_doc_ids_actions', array( 'edit', 'manage', 'view_history', 'read', 'delete' ) );
 
 	if ( in_array( $action, $need_doc_ids_actions ) ) {
 		if ( !$doc_id ) {
@@ -493,15 +493,21 @@ function bp_docs_doc_settings_markup() {
  * @package BuddyPress Docs
  */
 function bp_docs_doc_action_links() {
-	$links 		= array();
+	$links = array();
 
-	$links[] 	= '<a href="' . bp_docs_get_group_doc_permalink() . '">' . __( 'Read', 'bp-docs' ) . '</a>';
+	$links[] = '<a class="read" href="' . bp_docs_get_group_doc_permalink() . '">' . __( 'Read', 'bp-docs' ) . '</a>';
 
-	if ( bp_docs_user_can( 'edit', bp_loggedin_user_id() ) )
-		$links[] 	= '<a href="' . bp_docs_get_group_doc_permalink() . '/' . BP_DOCS_EDIT_SLUG . '">' . __( 'Edit', 'bp-docs' ) . '</a>';
+	if ( bp_docs_user_can( 'edit', bp_loggedin_user_id() ) ) {
+		$links[] = '<a class="edit" href="' . get_permalink() . '/' . BP_DOCS_EDIT_SLUG . '">' . __( 'Edit', 'bp-docs' ) . '</a>';
+	}
 
-	if ( bp_docs_user_can( 'view_history', bp_loggedin_user_id() ) )
-		$links[] 	= '<a href="' . bp_docs_get_group_doc_permalink() . '/' . BP_DOCS_HISTORY_SLUG . '">' . __( 'History', 'bp-docs' ) . '</a>';
+	if ( bp_docs_user_can( 'view_history', bp_loggedin_user_id() ) ) {
+		$links[] = '<a class="history" href="' . get_permalink() . '/' . BP_DOCS_HISTORY_SLUG . '">' . __( 'History', 'bp-docs' ) . '</a>';
+	}
+
+	if ( bp_docs_user_can( 'delete', bp_loggedin_user_id() ) ) {
+		$links[] = '<a class="delete confirm" href="' . wp_nonce_url( get_permalink() . '/' . BP_DOCS_DELETE_SLUG , 'bp_docs_delete' ) . '">' . __( 'Delete', 'bp-docs' ) . '</a>';
+	}
 
 	echo implode( ' &#124; ', $links );
 }
