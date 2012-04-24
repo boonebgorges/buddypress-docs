@@ -209,18 +209,15 @@ class BP_Docs {
 		// Set up the arguments to be used when the post type is registered
 		// Only filter this if you are hella smart and/or know what you're doing
 		$bp_docs_post_type_args = apply_filters( 'bp_docs_post_type_args', array(
-			'label' 	=> __( 'BuddyPress Docs', 'bp-docs' ),
-			'labels' 	=> $post_type_labels,
-			'public' 	=> false,
-			'show_ui' 	=> $this->show_cpt_ui(),
-			'hierarchical' 	=> false,
-			'supports' 	=> array( 'title', 'editor', 'revisions', 'excerpt', 'comments' ),
-			'query_var' 	=> true,
-			'capability_type' => 'bp_doc',
-			'capabilities'	=> array(
-				'view_bp_doc_history' => 'view_bp_doc_history'
-			),
-			'rewrite' 	=> false // Todo: This bites
+			'label' => __( 'BuddyPress Docs', 'bp-docs' ),
+			'labels' => $post_type_labels,
+			'public' => false,
+			'_builtin' => false,
+			'show_ui' => $this->show_cpt_ui(),
+			'hierarchical' => false,
+			'supports' => array( 'title', 'editor', 'revisions', 'excerpt', 'comments', 'author' ),
+			'query_var' => true,
+			'rewrite' => false // Todo: This bites
 		) );
 
 		// Register the bp_doc post type

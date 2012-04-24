@@ -14,7 +14,7 @@ Network: true
 It's on like Donkey Kong
 */
 
-define( 'BP_DOCS_VERSION', '1.1.19' );
+define( 'BP_DOCS_VERSION', '1.1.23' );
 
 // BuddyPress Docs introduces a lot of overhead. Unless otherwise specified, 
 // don't load the plugin on subsites of an MS install
