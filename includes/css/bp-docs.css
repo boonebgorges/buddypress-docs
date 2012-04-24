@@ -78,6 +78,9 @@
 	color: #999;
 	font-size: 11px;
 }
+	.row-actions a.delete {
+		color: #f00;
+	}
 
 .doctable tr:hover .row-actions {
 	visibility: visible;

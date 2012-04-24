@@ -3,7 +3,7 @@ Contributors: boonebgorges, cuny-academic-commons
 Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.3, BuddyPress 1.5
-Tested up to: WordPress 3.3.1, BuddyPress 1.5.4
+Tested up to: WordPress 3.3.2, BuddyPress 1.5.4
 Stable tag: 1.1.22
  
 Adds collaborative Docs to BuddyPress.
@@ -34,6 +34,10 @@ This plugin is in active development. For feature requests and bug reports, visi
 1. Sit back and watch the jack roll in
 
 == Changelog ==
+
+= 1.1.23 =
+* Adds Delete links to doc actions row
+* Fixes an invalid markup issue in a template file
 
 = 1.1.22 =
 * Added Romanian translation
