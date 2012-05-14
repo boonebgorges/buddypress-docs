@@ -37,6 +37,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 = 1.1.23 =
 * Adds Delete links to doc actions row
+* Adds Danish translation
 * Fixes an invalid markup issue in a template file
 
 = 1.1.22 =
