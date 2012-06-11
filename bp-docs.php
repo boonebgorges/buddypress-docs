@@ -22,7 +22,7 @@ class BP_Docs {
 	 */
 	function __construct() {
 		add_action( 'activate_' . plugin_basename( __FILE__ ), array( &$this, 'activation' )  );
-	
+
 		// Define post type and taxonomy names for use in the register functions
 		$this->post_type_name 		= apply_filters( 'bp_docs_post_type_name', 'bp_doc' );
 		$this->associated_item_tax_name = apply_filters( 'bp_docs_associated_item_tax_name', 'bp_docs_associated_item' );
@@ -129,7 +129,7 @@ class BP_Docs {
 		// The slug used when deleting a doc
 		if ( !defined( 'BP_DOCS_DELETE_SLUG' ) )
 			define( 'BP_DOCS_DELETE_SLUG', 'delete' );
-		
+
 		// The slug used for 'my-docs'
 		if ( !defined( 'BP_DOCS_MY_DOCS_SLUG' ) )
 			define( 'BP_DOCS_MY_DOCS_SLUG', 'my-docs' );
@@ -278,13 +278,13 @@ class BP_Docs {
 	 * @since 1.0-beta
 	 */
 	function includes() {
-		
+
 		// functions.php includes miscellaneous utility functions used throughout
 		require( BP_DOCS_INCLUDES_PATH . 'functions.php' );
-	
+
 		// component.php extends BP_Component, and does most of the basic setup for BP Docs
 		require( BP_DOCS_INCLUDES_PATH . 'component.php' );
-		
+
 		// caps.php handles capabilities and roles
 		require( BP_DOCS_INCLUDES_PATH . 'caps.php' );
 
@@ -310,7 +310,7 @@ class BP_Docs {
 	 */
 	function do_integration() {
 		global $bp;
-		
+
 		$bp->bp_docs = new BP_Docs_Component;
 	}
 }

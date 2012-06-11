@@ -41,16 +41,16 @@ function bp_docs_has_docs( $args = array() ) {
 
 		// Default to current group id, if available
 		$d_group_id  = bp_is_group() ? bp_get_current_group_id() : array();
-	
+
 		// Default to displayed user, if available
 		$d_author_id = bp_is_user() ? bp_displayed_user_id() : array();
-	
+
 		// Default to the tags in the URL string, if available
 		$d_tags	     = isset( $_REQUEST['bpd_tag'] ) ? explode( ',', urldecode( $_REQUEST['bpd_tag'] ) ) : array();
-				
+
 		// Order and orderby arguments
 		$d_orderby = !empty( $_GET['orderby'] ) ? urldecode( $_GET['orderby'] ) : apply_filters( 'bp_docs_default_sort_order', 'modified' ) ;
-		
+
 		if ( empty( $_GET['order'] ) ) {
 			// If no order is explicitly stated, we must provide one.
 			// It'll be different for date fields (should be DESC)
@@ -61,20 +61,20 @@ function bp_docs_has_docs( $args = array() ) {
 		} else {
 			$d_order = $_GET['order'];
 		}
-		
+
 		// Search
 		$d_search_terms = !empty( $_GET['s'] ) ? urldecode( $_GET['s'] ) : '';
-		
+
 		// Parent id
 		$d_parent_id = !empty( $_REQUEST['parent_doc'] ) ? (int)$_REQUEST['parent_doc'] : '';
-			
+
 		// Page number, posts per page
 		$d_paged          = !empty( $_GET['paged'] ) ? absint( $_GET['paged'] ) : 1;
 		$d_posts_per_page = !empty( $_GET['posts_per_page'] ) ? absint( $_GET['posts_per_page'] ) : 10;
-		
+
 		// doc_slug
 		$d_doc_slug = !empty( $bp->bp_docs->query->doc_slug ) ? $bp->bp_docs->query->doc_slug : '';
-	
+
 		$defaults = array(
 			'doc_id'	 => array(),      // Array or comma-separated string
 			'doc_slug'	 => $d_doc_slug,  // String (post_name/slug)
@@ -89,7 +89,7 @@ function bp_docs_has_docs( $args = array() ) {
 			'search_terms'   => $d_search_terms
 		);
 		$r = wp_parse_args( $args, $defaults );
-		
+
 		$doc_query_builder      = new BP_Docs_Query( $r );
 		$bp->bp_docs->doc_query = $doc_query_builder->get_wp_query();
 	}
@@ -290,7 +290,7 @@ function bp_docs_doc_link( $doc_id ) {
 		// Get the associated item's doc link
 		$item_type = array_pop( explode( '-', $ass_item[0]->slug ) );
 		$item_id   = bp_docs_get_associated_item_id_from_term_slug( $ass_item[0]->slug, $item_type );
-		
+
 		$item_docs_link	= bp_docs_get_item_docs_link( array( 'item_id' => $item_id, 'item_type' => $item_type ) );
 
 		$post		= get_post( $doc_id );
@@ -324,7 +324,7 @@ function bp_docs_item_docs_link() {
 		} else if ( bp_is_active( 'groups' ) && bp_is_group() ) {
 			$d_item_type = 'group';
 		}
-		
+
 		switch ( $d_item_type ) {
 			case 'user' :
 				$d_item_id = bp_displayed_user_id();
@@ -352,7 +352,7 @@ function bp_docs_item_docs_link() {
 
 				$base_url = bp_get_group_permalink( $group );
 				break;
-			
+
 			case 'user' :
 				$base_url = bp_core_get_user_domain( $item_id );
 				break;
@@ -508,26 +508,26 @@ function bp_docs_inline_toggle_js() {
  */
 function bp_docs_doc_settings_markup() {
 	global $bp;
-	
+
 	$doc = bp_docs_get_current_doc();
 
 	$doc_settings = !empty( $doc->ID ) ? get_post_meta( $doc->ID, 'bp_docs_settings', true ) : array();
-	
+
 	$doc_primary_item = 0;
 	if ( !empty( $doc->ID ) ) {
 		$doc_primary_item = get_post_meta( $doc->ID, 'bp_docs_primary_item', true );
 	}
-	
+
 	if ( !$doc_primary_item && !empty( $bp->bp_docs->current_item ) && !empty( $bp->bp_docs->current_item_type ) ) {
 		// Default to the current item
 		$doc_primary_item = $bp->bp_docs->current_item . '-' . $bp->bp_docs->current_item_type;
 	}
-	
+
 	$edit = isset( $doc_settings['edit'] ) ? $doc_settings['edit'] : '';
 	$creator_text = get_the_ID();
-	
+
 	?>
-	
+
 	<tr>
 		<td class="desc-column">
 			<label for="settings[edit]"><?php _e( 'Where is this Doc\'s primary home?', 'bp-docs' ) ?></label>
@@ -546,7 +546,7 @@ function bp_docs_doc_settings_markup() {
 			<?php endif ?>
 		</td>
 	</tr>
-	
+
 	<?php
 
 	// Hand off the creation of additional settings to individual integration pieces
@@ -562,7 +562,7 @@ function bp_docs_doc_action_links() {
 	$links   = array();
 
 	$links[] = '<a href="' . get_permalink() . '">' . __( 'Read', 'bp-docs' ) . '</a>';
-	
+
 	if ( current_user_can( 'edit_bp_doc', get_the_ID() ) ) {
 		$links[] = '<a href="' . get_permalink() . '/' . BP_DOCS_EDIT_SLUG . '">' . __( 'Edit', 'bp-docs' ) . '</a>';
 	}
@@ -761,7 +761,7 @@ function bp_docs_delete_doc_link() {
  */
 function bp_docs_paginate_links() {
 	global $bp;
-	
+
 	$cur_page = isset( $_GET['paged'] ) ? absint( $_GET['paged'] ) : 1;
 
         $page_links_total = $bp->bp_docs->doc_query->max_num_pages;
@@ -926,7 +926,7 @@ function bp_docs_tabs() {
 	if ( bp_is_group() ) {
 		bp_docs_group_tabs();
 	} else {
-		
+
 	}
 }
 
@@ -937,7 +937,7 @@ function bp_docs_tabs() {
  */
 function bp_docs_reset_query() {
 	global $bp;
-	
+
 	if ( isset( $bp->bp_docs->doc_query ) ) {
 		unset( $bp->bp_docs->doc_query );
 	}
@@ -955,25 +955,25 @@ function bp_docs_reset_query() {
  */
 function bp_docs_get_doc_count( $item_id = 0, $item_type = '' ) {
 	$doc_count = 0;
-	
+
 	switch ( $item_type ) {
 		case 'user' :
 			$doc_count = get_user_meta( $item_id, 'bp_docs_count', true );
-			
+
 			if ( '' === $doc_count ) {
 				$doc_count = bp_docs_update_doc_count( $item_id, 'user' );
 			}
-			
+
 			break;
 		case 'group' :
 			$doc_count = groups_get_groupmeta( $item_id, 'bp-docs-count' );
-			
+
 			if ( '' === $doc_count ) {
 				$doc_count = bp_docs_update_doc_count( $item_id, 'group' );
 			}
 			break;
 	}
-	
+
 	return apply_filters( 'bp_docs_get_doc_count', (int)$doc_count, $item_id, $item_type );
 }
 
