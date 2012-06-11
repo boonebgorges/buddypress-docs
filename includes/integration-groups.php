@@ -92,7 +92,7 @@ class BP_Docs_Groups_Integration {
 		// Prevent comments from being posted on expired logins (see
 		// https://github.com/boonebgorges/buddypress-docs/issues/108)
 		add_filter( 'pre_comment_on_post',		array( $this, 'check_comment_perms'     ) );
-		
+
 		// When object terms are set, delete the transient
 		add_action( 'set_object_terms', array( &$this, 'delete_transient' ), 10, 4 );
 
@@ -286,50 +286,50 @@ class BP_Docs_Groups_Integration {
 
 	function map_meta_caps( $caps, $cap, $user_id, $args ) {
 		global $post, $wp_post_types, $wpdb, $bp;
-		
+
 		$pt = bp_docs_get_post_type_name();
-		
+
 		if ( isset( $wp_post_types[$pt] ) && in_array( $cap, (array)$wp_post_types[$pt]->cap ) ) {
 			// Set up some data we'll need for these permission checks
 			$doc  	      = bp_docs_get_doc_for_caps( $args );
-			
+
 			// Nothing to check
 			if ( empty( $doc ) ) {
 				return $caps;
 			}
-			
+
 			$post_type    = get_post_type_object( $doc->post_type );
 			$doc_settings = get_post_meta( $doc->ID, 'bp_docs_settings', true );
-			
+
 			// Is this Doc associated with a group?
 			$groups = get_transient( 'associated_groups-' . $doc->ID );
-			
+
 			if ( false === $groups ) {
-				$terms = get_the_terms( $doc->ID, bp_docs_get_associated_item_tax_name() );	
+				$terms = get_the_terms( $doc->ID, bp_docs_get_associated_item_tax_name() );
 				$groups = array();
-				
+
 				foreach( (array)$terms as $t ) {
 					$s = explode( '-', $t->slug );
 					if ( 'group' == $s[1] ) {
 						$groups[] = $s[0];
 					}
 				}
-				
+
 				// Save somewhere for quicker lookups
 				set_transient( 'associated_groups-' . $doc->ID, $groups, 60*60 );
 			}
-			
+
 			// Get user group information in one fell swoop
 			// bp_has_groups() doesn't pull up is_admin or is_mod
 			$ugs = get_transient( 'user_groups-' . $user_id );
-			
+
 			if ( false === $ugs ) {
 				$ugs = $wpdb->get_results( $wpdb->prepare( "SELECT group_id, is_admin, is_mod FROM {$bp->groups->table_name_members} WHERE user_id = %d AND is_banned = 0 AND is_confirmed = 1", $user_id ) );
-				
+
 				// Set a very short expiration. This is really just for pageload
 				set_transient( 'user_groups-' . $ugs, 5 );
 			}
-			
+
 			$user_groups = array();
 			foreach( (array)$ugs as $ug ) {
 				if ( $ug->is_admin ) {
@@ -341,8 +341,8 @@ class BP_Docs_Groups_Integration {
 				}
 			}
 		}
-		
-		if ( !empty( $groups ) ) {		
+
+		if ( !empty( $groups ) ) {
 			switch ( $cap ) {
 				case 'read_bp_doc' :
 					// Group doc reading is set by group privacy
@@ -357,7 +357,7 @@ class BP_Docs_Groups_Integration {
 							break;
 						}
 					}
-					
+
 					if ( !$is_public ) {
 						$is_in_a_group = false;
 						foreach( $groups as $g ) {
@@ -366,24 +366,24 @@ class BP_Docs_Groups_Integration {
 								break;
 							}
 						}
-						
+
 						if ( !$is_in_a_group ) {
 							$caps = array( 'do_not_allow' );
 						}
 					}
-					
+
 					break;
-					
+
 				case 'edit_bp_doc' :
 					$edit_setting = isset( $doc_settings['edit'] ) ? $doc_settings['edit'] : 'group-members';
-					
-					switch ( $edit_setting ) {						
+
+					switch ( $edit_setting ) {
 						case 'creator' :
 							if ( $doc->post_author != $user_id ) {
 								$caps = array( 'do_not_allow' );
 							}
 							break;
-						
+
 						case 'admins-mods' :
 							$caps = array( 'do_not_allow' );
 							foreach( $groups as $g_id ) {
@@ -392,7 +392,7 @@ class BP_Docs_Groups_Integration {
 								}
 							}
 							break;
-						
+
 						case 'group-members' :
 							$caps = array( 'do_not_allow' );
 							foreach( $groups as $g_id ) {
@@ -401,30 +401,30 @@ class BP_Docs_Groups_Integration {
 									break;
 								}
 							}
-							
+
 							break;
-													
+
 						case 'anyone' :
 							// Keep default caps
-							break;							
+							break;
 					}
-						
+
 					break;
-				
+
 				case 'view_bp_doc_history' :
 					$history_setting = isset( $doc_settings['view_history'] ) ? $doc_settings['view_history'] : 'anyone';
-					
+
 					switch ( $history_setting ) {
 						case 'no-one' :
 							$caps = array( 'do_not_allow' );
 							break;
-						
+
 						case 'creator' :
 							if ( $doc->post_author != $user_id ) {
 								$caps = array( 'do_not_allow' );
 							}
 							break;
-						
+
 						case 'admins-mods' :
 							$caps = array( 'do_not_allow' );
 							foreach( $groups as $g_id ) {
@@ -433,7 +433,7 @@ class BP_Docs_Groups_Integration {
 								}
 							}
 							break;
-						
+
 						case 'group-members' :
 							$caps = array( 'do_not_allow' );
 							foreach( $groups as $g_id ) {
@@ -442,17 +442,17 @@ class BP_Docs_Groups_Integration {
 									break;
 								}
 							}
-							
+
 							break;
-													
+
 						case 'anyone' :
 							// Keep default caps
-							break;							
+							break;
 					}
-				
+
 			}
 		}
-		
+
 		return apply_filters( 'bp_docs_groups_map_meta_caps', $caps, $cap, $user_id, $args );
 	}
 
@@ -832,69 +832,69 @@ class BP_Docs_Groups_Integration {
 		// Get a fresh doc count for the group
 		bp_docs_update_doc_count( bp_get_current_group_id(), 'group' );
 	}
-	
+
 	/**
 	 * Markup for the Groups <th> on the docs loop
 	 *
 	 * @package BuddyPress_Docs
 	 * @subpackage Groups
 	 * @since 1.2
-	 */	
+	 */
 	function groups_th() {
 		// Don't show on single group pages
 		// @todo - When multiple group associations are supported, this should be added
 		if ( bp_is_group() ) {
 			return;
 		}
-	
+
 		?>
-		
+
 		<th scope="column" class="groups-cell"><?php _e( 'Group', 'bp-docs' ); ?></th>
-		
+
 		<?php
 	}
-	
+
 	/**
 	 * Markup for the Groups <td> on the docs loop
 	 *
 	 * @package BuddyPress_Docs
 	 * @subpackage Groups
 	 * @since 1.2
-	 */	
+	 */
 	function groups_td() {
 		global $bp;
-		
+
 		// Don't show on single group pages
 		// @todo - When multiple group associations are supported, this should be added
 		if ( bp_is_group() ) {
 			return;
 		}
-				 		
+
 		$items  = get_the_terms( get_the_ID(), bp_docs_get_associated_item_tax_name() );
 		$groups = array();
-	
+
 		foreach( $items as $item ) {
 			// Only add groups
 			if ( $group_id = bp_docs_get_associated_item_id_from_term_slug( $item->slug, 'group' ) ) {
 				$groups[] = $group_id;
 			}
 		}
-		
+
 		?>
-		
+
 		<td class="groups-cell">
 			<?php if ( !empty( $groups ) ) : ?>
 				<ul>
 				<?php foreach( $groups as $group_id ) : ?>
-					<?php 
+					<?php
 					$group = groups_get_group( array( 'group_id' => $group_id ) );
-					$group_permalink = bp_get_group_permalink( $group ) ?> 
-					
+					$group_permalink = bp_get_group_permalink( $group ) ?>
+
 					<li><a href="<?php echo $group_permalink ?>">
-						<?php echo bp_core_fetch_avatar( array( 
-							'item_id'    => $group_id, 
-							'object'     => 'group', 
-							'type'       => 'thumb', 
+						<?php echo bp_core_fetch_avatar( array(
+							'item_id'    => $group_id,
+							'object'     => 'group',
+							'type'       => 'thumb',
 							'avatar_dir' => 'group-avatars',
 							'width'      => '30',
 							'height'     => '30',
@@ -906,7 +906,7 @@ class BP_Docs_Groups_Integration {
 				</ul>
 			<?php endif ?>
 		</td>
-	
+
 		<?php
 	}
 
@@ -1065,7 +1065,7 @@ class BP_Docs_Groups_Integration {
 			bp_core_redirect( bp_docs_get_doc_link( $comment_post_ID ) );
 		}
 	}
-	
+
 	/**
 	 * Delete transient on doc save
 	 */
