@@ -15,16 +15,16 @@ if ( !class_exists( 'BP_Component' ) ) {
 
 class BP_Docs_Component extends BP_Component {
 	var $groups_integration;
-	
+
 	var $post_type_name;
 	var $associated_tax_name;
-	
+
 	var $slugtocheck = array();
 	var $query;
 	var $includes_url;
-	
+
 	var $current_view;
-	
+
 	/**
 	 * Constructor
 	 *
@@ -32,7 +32,7 @@ class BP_Docs_Component extends BP_Component {
 	 */
 	function __construct() {
 		global $bp;
-		
+
 		parent::start(
 			'bp_docs',
 			__( 'BuddyPress Docs', 'bp-docs' ),
@@ -40,10 +40,10 @@ class BP_Docs_Component extends BP_Component {
 		);
 
 		$bp->active_components[$this->id] = '1';
-		
+
 		$this->setup_hooks();
 	}
-	
+
 	/**
 	 * Sets up the hooks for the Component's custom methods
 	 *
@@ -51,24 +51,24 @@ class BP_Docs_Component extends BP_Component {
 	 */
 	function setup_hooks() {
 		add_action( 'bp_init', array( &$this, 'do_query' ), 90 );
-		
+
 		require( BP_DOCS_INCLUDES_PATH . 'integration-users.php' );
 		$this->users_integration = new BP_Docs_Users_Integration;
-		
+
 		if ( bp_is_active( 'groups' ) ) {
 			require( BP_DOCS_INCLUDES_PATH . 'integration-groups.php' );
 			$this->groups_integration = new BP_Docs_Groups_Integration;
 		}
-		
+
 		add_action( 'bp_actions', array( &$this, 'catch_page_load' ), 1 );
-		
+
 		/**
 		 * Methods related to comment behavior
 		 */
-		
+
 		// Redirect to the correct place after a comment
 		add_action( 'comment_post_redirect', array( &$this, 'comment_post_redirect' ), 99, 2 );
-		
+
 		// Doc comments are always from trusted members (for the moment), so approve them
 		add_action( 'pre_comment_approved', create_function( '', 'return 1;' ), 999 );
 
@@ -81,11 +81,11 @@ class BP_Docs_Component extends BP_Component {
 
 		// Keep comment notifications from being sent
 		add_filter( 'comment_post', array( $this, 'check_comment_type' ) );
-		
+
 		/**
 		 * Methods related to BuddyPress activity
 		 */
-		 
+
 		// Add BP Docs activity types to the activity filter dropdown
 		$dropdowns = apply_filters( 'bp_docs_activity_filter_locations', array(
 			'bp_activity_filter_options',
@@ -95,17 +95,17 @@ class BP_Docs_Component extends BP_Component {
 		foreach( $dropdowns as $hook ) {
 			add_action( $hook, array( &$this, 'activity_filter_options' ) );
 		}
-		
+
 		// Hook the create/edit activity function
 		add_action( 'bp_docs_doc_saved', array( &$this, 'post_activity' ) );
 
 		/**
 		 * MISC
 		 */
-		
+
 		// Make sure that comment links are correct. Can't use $wp_rewrite bc of assoc items
 		add_filter( 'post_type_link',		array( $this, 'filter_permalinks'	), 10, 4 );
-		
+
 		// Respect $activities_template->disable_blogforum_replies
 		add_filter( 'bp_activity_can_comment',	array( $this, 'activity_can_comment'	) );
 
@@ -115,13 +115,13 @@ class BP_Docs_Component extends BP_Component {
 		add_action( 'bp_loaded', 		array( $this, 'set_includes_url' 	) );
 		add_action( 'init', 			array( $this, 'enqueue_scripts' 	) );
 		add_action( 'wp_print_styles', 		array( $this, 'enqueue_styles' 		) );
-		
+
 	}
 
 	/**
 	 * Implementation of BP_Component::setup_globals()
 	 *
-	 * Creates globals required by BP_Component. 
+	 * Creates globals required by BP_Component.
 	 * Registers post_type and taxonomy names in component global.
 	 * Sets up the 'slugstocheck', which are used when enqueuing styles and scripts.
 	 *
@@ -131,7 +131,7 @@ class BP_Docs_Component extends BP_Component {
 	 */
 	function setup_globals() {
 		global $bp_docs;
-		
+
 		// Set up the $globals array to be passed along to parent::setup_globals()
 		$globals = array(
 			'slug'                  => BP_DOCS_SLUG,
@@ -143,18 +143,18 @@ class BP_Docs_Component extends BP_Component {
 
 		// Let BP_Component::setup_globals() do its work.
 		parent::setup_globals( $globals );
-		
+
 		// Stash tax and post type names in the $bp global for use in template tags
 		$this->post_type_name		= $bp_docs->post_type_name;
 		$this->associated_item_tax_name = $bp_docs->associated_item_tax_name;
-		
+
 		// This info is loaded here because it needs to happen after BP core globals are
 		// set up
 		$this->slugstocheck 	= bp_action_variables() ? bp_action_variables() : array();
 		$this->slugstocheck[] 	= bp_current_component();
 		$this->slugstocheck[] 	= bp_current_action();
 	}
-	
+
 	/**
 	 * Creates component navigation (Member > Docs)
 	 *
@@ -162,7 +162,7 @@ class BP_Docs_Component extends BP_Component {
 	 * @todo Make the 'Docs' label customizable by the admin
 	 */
 	function setup_nav() {
-		
+
 		$main_nav = array(
 			'name' 		      => sprintf( __( 'Docs <span>%d</span>', 'bp-docs' ), bp_docs_get_doc_count( bp_displayed_user_id(), 'user' ) ),
 			'slug' 		      => bp_docs_get_slug(),
@@ -196,7 +196,7 @@ class BP_Docs_Component extends BP_Component {
 
 		parent::setup_nav( $main_nav, $sub_nav );
 	}
-	
+
 	/**
 	 * Utility function for loading component template and hooking content
 	 *
@@ -207,7 +207,7 @@ class BP_Docs_Component extends BP_Component {
 		add_action( 'bp_template_content', array( &$this, 'select_template' ) );
 		bp_core_load_template( 'members/single/plugins' );
 	}
-	
+
 	/**
 	 * Utility function for selecting the correct Docs template to be loaded in the component
 	 *
@@ -218,14 +218,14 @@ class BP_Docs_Component extends BP_Component {
 			case BP_DOCS_MY_DOCS_SLUG :
 				$template = 'docs-loop.php';
 				break;
-			
+
 			case BP_DOCS_CREATE_SLUG :
 				require BP_DOCS_INCLUDES_PATH . 'templatetags-edit.php';
 				$template = 'single/edit.php';
 				break;
-			
+
 			default :
-				if ( bp_is_action_variable( BP_DOCS_EDIT_SLUG, 0 ) ) {					
+				if ( bp_is_action_variable( BP_DOCS_EDIT_SLUG, 0 ) ) {
 					require BP_DOCS_INCLUDES_PATH . 'templatetags-edit.php';
 					$template = 'single/edit.php';
 				} else if ( bp_is_action_variable( BP_DOCS_HISTORY_SLUG, 0 ) ) {
@@ -236,7 +236,7 @@ class BP_Docs_Component extends BP_Component {
 		}
 		include bp_docs_locate_template( apply_filters( 'bp_docs_select_template', $template ) );
 	}
-	
+
 	/**
 	 * Loads the Docs query.
 	 *
@@ -251,7 +251,7 @@ class BP_Docs_Component extends BP_Component {
 	function do_query() {
 		$this->query = new BP_Docs_Query;
 	}
-	
+
 	/**
 	 * Catches page loads, determines what to do, and sends users on their merry way
 	 *
@@ -397,11 +397,11 @@ class BP_Docs_Component extends BP_Component {
 			bp_core_redirect( $redirect_url );
 		}
 	}
-	
+
 	/**
 	 * METHODS RELATED TO DOC COMMENTS
 	 */
-	
+
 	/**
 	 * Filters the comment_post_direct URL so that the user gets sent back to the true
 	 * comment URL after posting
@@ -426,8 +426,8 @@ class BP_Docs_Component extends BP_Component {
 
 		return $location;
 	}
-	
-	
+
+
 	/**
 	 * Posts an activity item when a comment is posted to a doc
 	 *
@@ -538,7 +538,7 @@ class BP_Docs_Component extends BP_Component {
 
 		return $activity_id;
 	}
-	
+
 	/**
 	 * Filter the location of the comments.php template
 	 *
@@ -570,7 +570,7 @@ class BP_Docs_Component extends BP_Component {
 
 		return apply_filters( 'bp_docs_comment_template_path', $path, $original_path );
 	}
-	
+
 	/**
 	 * Prevents comment notification emails from being sent on BP Docs comments
 	 *
@@ -599,7 +599,7 @@ class BP_Docs_Component extends BP_Component {
 	/**
 	 * METHODS RELATED TO BUDDYPRESS ACTIVITY
 	 */
-		
+
 	/**
 	 * Adds BP Docs options to activity filter dropdowns
 	 *
@@ -615,7 +615,7 @@ class BP_Docs_Component extends BP_Component {
 
 		<?php
 	}
-	
+
 	/**
 	 * Posts an activity item on doc save
 	 *
@@ -724,11 +724,11 @@ class BP_Docs_Component extends BP_Component {
 
 		return $activity_id;
 	}
-	
+
 	/**
 	 * MISCELLANEOUS
 	 */
-	
+
 	/**
 	 * Display the proper permalink for Docs
 	 *
@@ -755,7 +755,7 @@ class BP_Docs_Component extends BP_Component {
 
 		return $link;
 	}
-	
+
 	/**
 	 * Repsect disable_blogforum_replies
 	 *
@@ -780,18 +780,18 @@ class BP_Docs_Component extends BP_Component {
 	 */
 	function activity_can_comment( $can_comment ) {
 		global $activities_template;
-		
+
 		if ( 'bp_doc_created' == bp_get_activity_action_name() ||
 		     'bp_doc_edited' == bp_get_activity_action_name() ||
 		     'bp_doc_comment' == bp_get_activity_action_name()
 		   ) {
 		   	// Flip the 'disable'
-			$can_comment = !(bool)$activities_template->disable_blogforum_replies; 
+			$can_comment = !(bool)$activities_template->disable_blogforum_replies;
 		}
-		
+
 		return apply_filters( 'bp_docs_activity_can_comment', $can_comment );
 	}
-		
+
 	/**
 	 * Handles doc filters from a form post and translates to $_GET arguments before redirect
 	 *
@@ -803,7 +803,7 @@ class BP_Docs_Component extends BP_Component {
 
 		bp_core_redirect( $redirect_url );
 	}
-	
+
 	/**
 	 * AJAX handler for remove_edit_lock option
 	 *
@@ -820,7 +820,7 @@ class BP_Docs_Component extends BP_Component {
 
 		delete_post_meta( $doc_id, '_edit_lock' );
 	}
-	
+
 	/**
 	 * Sets the includes URL for use when loading scripts and styles
 	 *

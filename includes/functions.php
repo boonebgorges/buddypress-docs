@@ -30,7 +30,7 @@ function bp_docs_get_post_type_name() {
  */
 function bp_docs_get_associated_item_tax_name() {
 	global $bp;
-	
+
 	return $bp->bp_docs->associated_item_tax_name;
 }
 
@@ -71,13 +71,13 @@ function bp_docs_get_current_doc() {
 /**
  * Get an item_id based on a taxonomy term slug
  *
- * BuddyPress Docs are associated with groups and users through a taxonomy called 
- * bp_docs_associated_item. Terms belonging to this taxonomy have slugs that look like this 
+ * BuddyPress Docs are associated with groups and users through a taxonomy called
+ * bp_docs_associated_item. Terms belonging to this taxonomy have slugs that look like this
  * (since 1.2):
  *   4-user
  *   103-group
  * (where 4-user corresponds to the user with the ID 4, and 103 is the group with group_id 103).
- * If you have a term slug, you can use this function to parse the item id out of it. Note that 
+ * If you have a term slug, you can use this function to parse the item id out of it. Note that
  * it will return 0 if you pass a slug that belongs to a different item type.
  *
  * @since 1.2
@@ -93,14 +93,14 @@ function bp_docs_get_associated_item_id_from_term_slug( $term_slug = '', $item_t
 	}
 
 	$item_id = 0;
-	
+
 	// The item_type should be hidden in the slug
 	$slug_array = explode( '-', $term_slug );
-	
-	if ( $item_type == $slug_array[1] ) {	
+
+	if ( $item_type == $slug_array[1] ) {
 		$item_id = $slug_array[0];
 	}
-	
+
 	return apply_filters( 'bp_docs_get_associated_item_id_from_term_slug', $item_id, $term_slug, $item_type );
 }
 
@@ -119,9 +119,13 @@ function bp_docs_get_associated_item_id_from_term_slug( $term_slug = '', $item_t
  */
 function bp_docs_get_item_term_id( $item_id, $item_type, $item_name = '' ) {
 	global $bp;
-	
+
+	if ( empty( $item_id ) ) {
+		return;
+	}
+
 	$item_term = term_exists( $item_id . '-' . $item_type, $bp->bp_docs->associated_item_tax_name );
-	
+
 	// If the item term doesn't exist, then create it
 	if ( empty( $item_term ) ) {
 		// Set up the arguments for creating the term. Filter this to set your own
@@ -129,12 +133,12 @@ function bp_docs_get_item_term_id( $item_id, $item_type, $item_name = '' ) {
 			'description' => $item_name,
 			'slug'        => $item_id . '-' . $item_type
 		) );
-		
+
 		// Create the item term
 		if ( !$item_term = wp_insert_term( $item_id, $bp->bp_docs->associated_item_tax_name, $item_term_args ) )
-			return false;	
+			return false;
 	}
-	
+
 	return apply_filters( 'bp_docs_get_item_term_id', $item_term['term_id'], $item_id, $item_type, $item_name );
 }
 
@@ -154,22 +158,29 @@ function bp_docs_get_item_term_id( $item_id, $item_type, $item_name = '' ) {
  *                      but you don't need the leading '/docs/'
  * @return str $template_path The absolute path of the located template file.
  */
-function bp_docs_locate_template( $template = '' ) {
+function bp_docs_locate_template( $template = '', $load = false, $require_once = true ) {
 	if ( empty( $template ) )
 		return false;
 
 	// Try to load custom templates first
 	$stylesheet_path = STYLESHEETPATH . '/docs/';
+	$template_path   = TEMPLATEPATH . '/docs/';
 
 	if ( file_exists( $stylesheet_path . $template ) )
 		$template_path = $stylesheet_path . $template;
+	elseif ( file_exists( $template_path . $template ) )
+		$template_path = $template_path . $template;
 	else
 		$template_path = BP_DOCS_INCLUDES_PATH . 'templates/docs/' . $template;
 
-	return apply_filters( 'bp_docs_locate_template', $template_path, $template );
+	$template_path = apply_filters( 'bp_docs_locate_template', $template_path, $template );
+
+	if ( $load ) {
+		load_template( $template_path, $require_once );
+	} else {
+		return $template_path;
+	}
 }
-
-
 
 /**
  * Determine whether the current user can do something the current doc
@@ -252,7 +263,7 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
  */
 function bp_docs_update_doc_count( $item_id = 0, $item_type = '' ) {
 	global $bp;
-	
+
 	$doc_count = 0;
 	$docs_args = array( 'doc_slug' => '' );
 
@@ -261,12 +272,12 @@ function bp_docs_update_doc_count( $item_id = 0, $item_type = '' ) {
 			$docs_args['user_id']  = '';
 			$docs_args['group_id'] = $item_id;
 			break;
-		
+
 		case 'user' :
 			$docs_args['user_id']  = $item_id;
 			$docs_args['group_id'] = '';
 			break;
-		
+
 		default :
 			$docs_args['user_id']  = '';
 			$docs_args['group_id'] = '';
@@ -289,16 +300,16 @@ function bp_docs_update_doc_count( $item_id = 0, $item_type = '' ) {
 		case 'group' :
 			groups_update_groupmeta( $item_id, 'bp-docs-count', $doc_count );
 			break;
-		
+
 		case 'user' :
 			update_user_meta( $item_id, 'bp_docs_count', $doc_count );
 			break;
-		
+
 		default :
 			bp_update_option( 'bp_docs_count', $doc_count );
 			break;
 	}
-	
+
 	return $doc_count;
 }
 

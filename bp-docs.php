@@ -46,6 +46,9 @@ class BP_Docs {
 		// Load the BP Component extension
 		add_action( 'bp_docs_init', 	array( $this, 'do_integration' ), 6 );
 
+		// Hook into the WP template loader
+		add_filter( 'template_include', array( $this, 'template_include' ) );
+
 		// Let plugins know that BP Docs has started loading
 		$this->init_hook();
 
@@ -91,7 +94,7 @@ class BP_Docs {
 	function load_constants() {
 		// You should never really need to override this bad boy
 		if ( !defined( 'BP_DOCS_INSTALL_PATH' ) )
-			define( 'BP_DOCS_INSTALL_PATH', dirname(__FILE__) . '/' );
+			define( 'BP_DOCS_INSTALL_PATH', WP_PLUGIN_DIR . '/buddypress-docs/' );
 
 		// Ditto
 		if ( !defined( 'BP_DOCS_INCLUDES_PATH' ) )
@@ -137,6 +140,10 @@ class BP_Docs {
 		// By default, BP Docs will replace the Recent Comments WP Dashboard Widget
 		if ( !defined( 'BP_DOCS_REPLACE_RECENT_COMMENTS_DASHBOARD_WIDGET' ) )
 			define( 'BP_DOCS_REPLACE_RECENT_COMMENTS_DASHBOARD_WIDGET', true );
+
+		// Rewrite endpoint mask
+		if ( !defined( 'EP_BP_DOC' ) )
+			define( 'EP_BP_DOC', 274877906944 ); // 2^38
 	}
 
 	/**
@@ -209,15 +216,19 @@ class BP_Docs {
 		// Set up the arguments to be used when the post type is registered
 		// Only filter this if you are hella smart and/or know what you're doing
 		$bp_docs_post_type_args = apply_filters( 'bp_docs_post_type_args', array(
-			'label' => __( 'BuddyPress Docs', 'bp-docs' ),
-			'labels' => $post_type_labels,
-			'public' => false,
-			'_builtin' => false,
-			'show_ui' => $this->show_cpt_ui(),
+			'label'        => __( 'BuddyPress Docs', 'bp-docs' ),
+			'labels'       => $post_type_labels,
+			'public'       => true,
+			'show_ui'      => $this->show_cpt_ui(),
 			'hierarchical' => false,
-			'supports' => array( 'title', 'editor', 'revisions', 'excerpt', 'comments', 'author' ),
-			'query_var' => true,
-			'rewrite' => false // Todo: This bites
+			'supports'     => array( 'title', 'editor', 'revisions', 'excerpt', 'comments', 'author' ),
+			'query_var'    => false,
+			'has_archive'  => true,
+			'rewrite'      => array(
+				'slug'       => 'docs',
+				'with_front' => false,
+				'ep_mask'    => EP_BP_DOC
+			)
 		) );
 
 		// Register the bp_doc post type
@@ -239,7 +250,9 @@ class BP_Docs {
 		));
 
 		do_action( 'bp_docs_registered_post_type' );
-//var_dump( $GLOBALS['wp_post_types']['bp_doc'] );
+
+		add_rewrite_endpoint( 'create', EP_BP_DOC );
+
 		// Only register on the root blog
 		if ( !bp_is_root_blog() )
 			restore_current_blog();
@@ -294,12 +307,74 @@ class BP_Docs {
 		// templatetags.php has all functions in the global space available to templates
 		require( BP_DOCS_INCLUDES_PATH . 'templatetags.php' );
 
+		require( BP_DOCS_INCLUDES_PATH . 'theme-bridge.php' );
+
 		// formatting.php contains filters and functions used to modify appearance only
 		require( BP_DOCS_INCLUDES_PATH . 'formatting.php' );
 
 		// Dashboard-specific functions
 		if ( is_admin() )
 			require( BP_DOCS_INCLUDES_PATH . 'admin.php' );
+	}
+
+	function template_include( $filter ) {
+		return $filter;
+	}
+
+	/**
+	 * Register bbPress-specific rewrite rules for uri's that are not
+	 * setup for us by way of custom post types or taxonomies. This includes:
+	 * - Front-end editing
+	 * - Topic views
+	 * - User profiles
+	 *
+	 * @since bbPress (r2688)
+	 * @param WP_Rewrite $wp_rewrite bbPress-sepecific rules are appended in
+	 *                                $wp_rewrite->rules
+	 */
+	public function generate_rewrite_rules( $wp_rewrite ) {
+
+		// Slugs
+		$user_slug = bbp_get_user_slug();
+		$view_slug = bbp_get_view_slug();
+
+		// Unique rewrite ID's
+		$user_id   = bbp_get_user_rewrite_id();
+		$view_id   = bbp_get_view_rewrite_id();
+		$edit_id   = bbp_get_edit_rewrite_id();
+
+		// Rewrite rule matches used repeatedly below
+		$root_rule = '/([^/]+)/?$';
+		$edit_rule = '/([^/]+)/edit/?$';
+		$feed_rule = '/([^/]+)/feed/?$';
+		$page_rule = '/([^/]+)/page/?([0-9]{1,})/?$';
+
+		// New bbPress specific rules to merge with existing that are not
+		// handled automatically by custom post types or taxonomy types
+		$bbp_rules = array(
+
+			// Edit Forum|Topic|Reply|Topic-tag
+			bbp_get_forum_slug()         . $edit_rule => 'index.php?' . bbp_get_forum_post_type()  . '=' . $wp_rewrite->preg_index( 1 ) . '&' . $edit_id . '=1',
+			bbp_get_topic_slug()         . $edit_rule => 'index.php?' . bbp_get_topic_post_type()  . '=' . $wp_rewrite->preg_index( 1 ) . '&' . $edit_id . '=1',
+			bbp_get_reply_slug()         . $edit_rule => 'index.php?' . bbp_get_reply_post_type()  . '=' . $wp_rewrite->preg_index( 1 ) . '&' . $edit_id . '=1',
+			bbp_get_topic_tag_tax_slug() . $edit_rule => 'index.php?' . bbp_get_topic_tag_tax_id() . '=' . $wp_rewrite->preg_index( 1 ) . '&' . $edit_id . '=1',
+
+			// User Pagination|Edit|View
+			$user_slug . $page_rule => 'index.php?' . $user_id  . '=' . $wp_rewrite->preg_index( 1 ) . '&paged=' . $wp_rewrite->preg_index( 2 ),
+			$user_slug . $edit_rule => 'index.php?' . $user_id  . '=' . $wp_rewrite->preg_index( 1 ) . '&' . $edit_id . '=1',
+			$user_slug . $root_rule => 'index.php?' . $user_id  . '=' . $wp_rewrite->preg_index( 1 ),
+
+			// Topic-View Pagination|Feed|View
+			$view_slug . $page_rule => 'index.php?' . $view_id . '=' . $wp_rewrite->preg_index( 1 ) . '&paged=' . $wp_rewrite->preg_index( 2 ),
+			$view_slug . $feed_rule => 'index.php?' . $view_id . '=' . $wp_rewrite->preg_index( 1 ) . '&feed='  . $wp_rewrite->preg_index( 2 ),
+			$view_slug . $root_rule => 'index.php?' . $view_id . '=' . $wp_rewrite->preg_index( 1 ),
+		);
+
+		// Merge bbPress rules with existing
+		$wp_rewrite->rules = array_merge( $bbp_rules, $wp_rewrite->rules );
+
+		// Return merged rules
+		return $wp_rewrite;
 	}
 
 	/**

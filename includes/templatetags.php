@@ -117,13 +117,13 @@ function bp_docs_the_doc() {
  * @return bool
  */
 function bp_docs_is_bp_docs_page() {
-	global $bp;
+	global $bp, $post;
 
 	$is_bp_docs_page = false;
 
 	// This is intentionally ambiguous and generous, to account for BP Docs is different
 	// components. Probably should be cleaned up at some point
-	if ( $bp->bp_docs->slug == bp_current_component() || $bp->bp_docs->slug == bp_current_action() )
+	if ( $bp->bp_docs->slug == bp_current_component() || $bp->bp_docs->slug == bp_current_action() || bp_docs_get_post_type_name() == $post->post_type )
 		$is_bp_docs_page = true;
 
 	return apply_filters( 'bp_docs_is_bp_docs_page', $is_bp_docs_page );
@@ -317,6 +317,9 @@ function bp_docs_item_docs_link() {
 	 */
 	function bp_docs_get_item_docs_link( $args = array() ) {
 		global $bp;
+
+		// @todo Disabling for now!!
+		return;
 
 		$d_item_type = '';
 		if ( bp_is_user() ) {
@@ -975,6 +978,30 @@ function bp_docs_get_doc_count( $item_id = 0, $item_type = '' ) {
 	}
 
 	return apply_filters( 'bp_docs_get_doc_count', (int)$doc_count, $item_id, $item_type );
+}
+
+/**
+ * Is the current page a single Doc?
+ *
+ * @since 1.2
+ * @return bool
+ */
+function bp_docs_is_single_doc() {
+	global $post;
+
+	return is_single() && isset( $post->post_type ) && bp_docs_get_post_type_name() == $post->post_type;
+}
+
+/**
+ * Is the current page a doc edit?
+ *
+ * @since 1.2
+ * @return bool
+ */
+function bp_docs_is_doc_edit() {
+	global $post, $wp_query;
+
+	return bp_docs_is_single_doc() && isset( $_GET['action'] ) && BP_DOCS_EDIT_SLUG == $_GET['action'];
 }
 
 
