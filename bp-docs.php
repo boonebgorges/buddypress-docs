@@ -33,9 +33,14 @@ class BP_Docs {
 		// Set up doc taxonomy, etc
 		add_action( 'bp_docs_init',     array( $this, 'load_doc_extras' ), 8 );
 
+		// Add rewrite rules
+		add_action( 'generate_rewrite_rules', array( &$this, 'generate_rewrite_rules' ) );
+
 		// Hooks into the 'init' action to register our WP custom post type and tax
 		// Nice 'n' early
 		add_action( 'init', 		array( $this, 'register_post_type' ), 1 );
+
+		add_action( 'init',             array( &$this, 'add_rewrite_tags' ) );
 
 		// Load textdomain
 		add_action( 'init',		array( $this, 'load_plugin_textdomain' ) );
@@ -143,7 +148,7 @@ class BP_Docs {
 
 		// Rewrite endpoint mask
 		if ( !defined( 'EP_BP_DOC' ) )
-			define( 'EP_BP_DOC', 274877906944 ); // 2^38
+			define( 'EP_BP_DOC', 536870912 ); // 2^29
 	}
 
 	/**
@@ -251,11 +256,61 @@ class BP_Docs {
 
 		do_action( 'bp_docs_registered_post_type' );
 
-		add_rewrite_endpoint( 'create', EP_BP_DOC );
-
 		// Only register on the root blog
 		if ( !bp_is_root_blog() )
 			restore_current_blog();
+	}
+
+	/**
+	 * Add rewrite tags
+	 *
+	 * @since 1.2
+	 */
+	function add_rewrite_tags() {
+		add_rewrite_tag( '%%' . BP_DOCS_EDIT_SLUG . '%%', '([1]{1,})' );
+		add_rewrite_tag( '%%' . BP_DOCS_HISTORY_SLUG . '%%', '([1]{1,})' );
+		add_rewrite_tag( '%%' . BP_DOCS_DELETE_SLUG . '%%', '([1]{1,})' );
+		add_rewrite_tag( '%%' . BP_DOCS_CREATE_SLUG . '%%', '([1]{1,})' );
+	}
+
+	/**
+	 * Generates custom rewrite rules
+	 *
+	 * @since 1.2
+	 */
+	function generate_rewrite_rules( $wp_rewrite ) {
+		$bp_docs_rules = array(
+			/**
+			 * Top level
+			 */
+
+			// Create
+			BP_DOCS_SLUG . '/' . BP_DOCS_CREATE_SLUG . '/?$' =>
+				'index.php?post_type=' . $this->post_type_name . '&name=' . $wp_rewrite->preg_index( 1 ) . '&' . BP_DOCS_CREATE_SLUG . '=1',
+
+			/**
+			 * Single Docs
+			 */
+
+			// Edit
+			BP_DOCS_SLUG . '/([^/]+)/' . BP_DOCS_EDIT_SLUG . '/?$' =>
+				'index.php?post_type=' . $this->post_type_name . '&name=' . $wp_rewrite->preg_index( 1 ) . '&' . BP_DOCS_EDIT_SLUG . '=1',
+
+			// History
+			BP_DOCS_SLUG . '/([^/]+)/' . BP_DOCS_HISTORY_SLUG . '/?$' =>
+				'index.php?post_type=' . $this->post_type_name . '&name=' . $wp_rewrite->preg_index( 1 ) . '&' . BP_DOCS_HISTORY_SLUG . '=1',
+
+			// Delete
+			BP_DOCS_SLUG . '/([^/]+)/' . BP_DOCS_DELETE_SLUG . '/?$' =>
+				'index.php?post_type=' . $this->post_type_name . '&name=' . $wp_rewrite->preg_index( 1 ) . '&' . BP_DOCS_HISTORY_SLUG . '=1'
+
+
+		);
+
+		// Merge bbPress rules with existing
+		$wp_rewrite->rules = array_merge( $bp_docs_rules, $wp_rewrite->rules );
+
+		return $wp_rewrite;
 	}
 
 	/**
@@ -319,62 +374,6 @@ class BP_Docs {
 
 	function template_include( $filter ) {
 		return $filter;
-	}
-
-	/**
-	 * Register bbPress-specific rewrite rules for uri's that are not
-	 * setup for us by way of custom post types or taxonomies. This includes:
-	 * - Front-end editing
-	 * - Topic views
-	 * - User profiles
-	 *
-	 * @since bbPress (r2688)
-	 * @param WP_Rewrite $wp_rewrite bbPress-sepecific rules are appended in
-	 *                                $wp_rewrite->rules
-	 */
-	public function generate_rewrite_rules( $wp_rewrite ) {
-
-		// Slugs
-		$user_slug = bbp_get_user_slug();
-		$view_slug = bbp_get_view_slug();
-
-		// Unique rewrite ID's
-		$user_id   = bbp_get_user_rewrite_id();
-		$view_id   = bbp_get_view_rewrite_id();
-		$edit_id   = bbp_get_edit_rewrite_id();
-
-		// Rewrite rule matches used repeatedly below
-		$root_rule = '/([^/]+)/?$';
-		$edit_rule = '/([^/]+)/edit/?$';
-		$feed_rule = '/([^/]+)/feed/?$';
-		$page_rule = '/([^/]+)/page/?([0-9]{1,})/?$';
-
-		// New bbPress specific rules to merge with existing that are not
-		// handled automatically by custom post types or taxonomy types
-		$bbp_rules = array(
-
-			// Edit Forum|Topic|Reply|Topic-tag
-			bbp_get_forum_slug()         . $edit_rule => 'index.php?' . bbp_get_forum_post_type()  . '=' . $wp_rewrite->preg_index( 1 ) . '&' . $edit_id . '=1',
-			bbp_get_topic_slug()         . $edit_rule => 'index.php?' . bbp_get_topic_post_type()  . '=' . $wp_rewrite->preg_index( 1 ) . '&' . $edit_id . '=1',
-			bbp_get_reply_slug()         . $edit_rule => 'index.php?' . bbp_get_reply_post_type()  . '=' . $wp_rewrite->preg_index( 1 ) . '&' . $edit_id . '=1',
-			bbp_get_topic_tag_tax_slug() . $edit_rule => 'index.php?' . bbp_get_topic_tag_tax_id() . '=' . $wp_rewrite->preg_index( 1 ) . '&' . $edit_id . '=1',
-
-			// User Pagination|Edit|View
-			$user_slug . $page_rule => 'index.php?' . $user_id  . '=' . $wp_rewrite->preg_index( 1 ) . '&paged=' . $wp_rewrite->preg_index( 2 ),
-			$user_slug . $edit_rule => 'index.php?' . $user_id  . '=' . $wp_rewrite->preg_index( 1 ) . '&' . $edit_id . '=1',
-			$user_slug . $root_rule => 'index.php?' . $user_id  . '=' . $wp_rewrite->preg_index( 1 ),
-
-			// Topic-View Pagination|Feed|View
-			$view_slug . $page_rule => 'index.php?' . $view_id . '=' . $wp_rewrite->preg_index( 1 ) . '&paged=' . $wp_rewrite->preg_index( 2 ),
-			$view_slug . $feed_rule => 'index.php?' . $view_id . '=' . $wp_rewrite->preg_index( 1 ) . '&feed='  . $wp_rewrite->preg_index( 2 ),
-			$view_slug . $root_rule => 'index.php?' . $view_id . '=' . $wp_rewrite->preg_index( 1 ),
-		);
-
-		// Merge bbPress rules with existing
-		$wp_rewrite->rules = array_merge( $bbp_rules, $wp_rewrite->rules );
-
-		// Return merged rules
-		return $wp_rewrite;
 	}
 
 	/**

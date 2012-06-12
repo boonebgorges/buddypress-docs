@@ -7,6 +7,9 @@
  * @since 1.2
  */
 
+global $wp_query;
+var_dump( $wp_query->query_vars );
+
 ?>
 
 <?php get_header( 'buddypress' ); ?>
@@ -17,8 +20,6 @@
 		<div class="padder">
 
 		<?php do_action( 'bp_before_single_doc' ); ?>
-
-		<h3><?php _e( 'DDD', 'buddypress' ); ?></h3>
 
 		<?php include( bp_docs_locate_template( 'single/index.php' ) ) ?>
 

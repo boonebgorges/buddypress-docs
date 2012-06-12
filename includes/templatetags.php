@@ -879,15 +879,8 @@ function bp_docs_list_comments() {
  * @return bool True if it's an existing doc
  */
 function bp_docs_is_existing_doc() {
-	global $bp;
-
-	if ( empty( $bp->bp_docs->current_post ) )
-		$bp->bp_docs->current_post = bp_docs_get_current_doc();
-
-	if ( empty( $bp->bp_docs->current_post ) )
-		return false;
-
-	return true;
+	$post_type_obj = get_queried_object();
+	return is_single() && isset( $post_type_obj->post_type ) && bp_docs_get_post_type_name() == $post_type_obj->post_type;
 }
 
 /**
@@ -929,7 +922,20 @@ function bp_docs_tabs() {
 	if ( bp_is_group() ) {
 		bp_docs_group_tabs();
 	} else {
+		global $bp, $post, $bp_version;
 
+		?>
+		<li<?php if ( $bp->bp_docs->current_view == 'list' ) : ?> class="current"<?php endif; ?>><a href="<?php echo get_post_type_archive_link( bp_docs_get_post_type_name() ) ?>"><?php _e( 'View Docs', 'bp-docs' ) ?></a></li>
+
+		<?php if ( bp_docs_current_user_can( 'create' ) ) : ?>
+			<li<?php if ( 'create' == $bp->bp_docs->current_view ) : ?> class="current"<?php endif; ?>><a href="<?php echo get_post_type_archive_link( bp_docs_get_post_type_name() ) ?>/create"><?php _e( 'New Doc', 'bp-docs' ) ?></a></li>
+		<?php endif ?>
+
+		<?php if ( bp_docs_is_existing_doc() ) : ?>
+			<li class="current"><a href="<?php the_permalink() ?>"><?php the_title() ?></a></li>
+		<?php endif ?>
+
+	<?php
 	}
 }
 

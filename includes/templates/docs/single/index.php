@@ -1,8 +1,5 @@
-
+<?php global $wp_query; ?>
 <?php if ( have_posts() ) : while ( have_posts() ) : the_post() ?>
-	<?php if ( current_user_can( 'read_bp_doc', get_the_ID() ) ) : ?>
-		yes
-	<?php endif ?>
 
 	<?php include( apply_filters( 'bp_docs_header_template', bp_docs_locate_template( 'docs-header.php' ) ) ) ?>
 

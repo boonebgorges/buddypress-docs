@@ -13,13 +13,13 @@
 
 	<div class="doc-tabs">
 		<ul>
-			<li<?php if ( 'single' == bp_docs_current_view() ) : ?> class="current"<?php endif ?>>	
-				<a href="<?php the_permalink() ?>"><?php _e( 'Read', 'bp-docs' ) ?></a> 
+			<li<?php if ( 'single' == bp_docs_current_view() ) : ?> class="current"<?php endif ?>>
+				<a href="<?php the_permalink() ?>"><?php _e( 'Read', 'bp-docs' ) ?></a>
 			</li>
 
 			<?php if ( bp_docs_current_user_can( 'edit' ) ) : ?>
-				<li<?php if ( 'edit' == bp_docs_current_view() ) : ?> class="current"<?php endif ?>>	
-					<a href="<?php echo the_permalink() . '/' . BP_DOCS_EDIT_SLUG ?>"><?php _e( 'Edit', 'bp-docs' ) ?></a> 
+				<li<?php if ( 'edit' == bp_docs_current_view() ) : ?> class="current"<?php endif ?>>
+					<a href="<?php echo get_permalink() . BP_DOCS_EDIT_SLUG ?>"><?php _e( 'Edit', 'bp-docs' ) ?></a>
 				</li>
 			<?php endif ?>
 

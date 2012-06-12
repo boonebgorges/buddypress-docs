@@ -313,4 +313,21 @@ function bp_docs_update_doc_count( $item_id = 0, $item_type = '' ) {
 	return $doc_count;
 }
 
+/**
+ * Is this the BP Docs component?
+ */
+function bp_docs_is_docs_component() {
+	$retval = false;
+
+	$p = get_queried_object();
+
+	if ( is_post_type_archive( bp_docs_get_post_type_name() ) ) {
+		$retval = true;
+	} else if ( isset( $p->post_type ) && bp_docs_get_post_type_name() == $p->post_type ) {
+		$retval = true;
+	}
+
+	return $retval;
+}
+
 ?>

@@ -103,9 +103,6 @@ class BP_Docs_Component extends BP_Component {
 		 * MISC
 		 */
 
-		// Make sure that comment links are correct. Can't use $wp_rewrite bc of assoc items
-		add_filter( 'post_type_link',		array( $this, 'filter_permalinks'	), 10, 4 );
-
 		// Respect $activities_template->disable_blogforum_replies
 		add_filter( 'bp_activity_can_comment',	array( $this, 'activity_can_comment'	) );
 
@@ -749,9 +746,7 @@ class BP_Docs_Component extends BP_Component {
 	 * @return str $link The filtered permalink
 	 */
 	function filter_permalinks( $link, $post, $leavename, $sample ) {
-		if ( bp_docs_get_post_type_name() == $post->post_type ) {
-			$link = bp_docs_get_doc_link( $post->ID );
-		}
+		_deprecated_function( __METHOD__, '1.2', 'No longer used' );
 
 		return $link;
 	}
@@ -883,7 +878,7 @@ class BP_Docs_Component extends BP_Component {
 		global $bp;
 
 		// Load the main CSS only on the proper pages
-		if ( in_array( BP_DOCS_SLUG, $this->slugstocheck ) ) {
+		if ( in_array( BP_DOCS_SLUG, $this->slugstocheck ) || bp_docs_is_docs_component() ) {
 			wp_enqueue_style( 'bp-docs-css', $this->includes_url . 'css/bp-docs.css' );
 		}
 
