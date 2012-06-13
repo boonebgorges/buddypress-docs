@@ -873,9 +873,9 @@ class BP_Docs_Groups_Integration {
 		$items  = get_the_terms( get_the_ID(), bp_docs_get_associated_item_tax_name() );
 		$groups = array();
 
-		foreach( $items as $item ) {
+		foreach( (array) $items as $item ) {
 			// Only add groups
-			if ( $group_id = bp_docs_get_associated_item_id_from_term_slug( $item->slug, 'group' ) ) {
+			if ( isset( $item->slug ) && $group_id = bp_docs_get_associated_item_id_from_term_slug( $item->slug, 'group' ) ) {
 				$groups[] = $group_id;
 			}
 		}

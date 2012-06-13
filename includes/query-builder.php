@@ -234,13 +234,7 @@ class BP_Docs_Query {
 
 			// Set the taxonomy query. Filtered so that plugins can alter the query
 			// Filtering by groups also happens in this way
-			$wp_query_args['tax_query'] = apply_filters( 'bp_docs_tax_query', array(
-				array(
-					'taxonomy'	=> $this->associated_item_tax_name,
-					'terms' 	=> array( $this->term_id ),
-					'field'		=> 'id'
-				),
-			), &$this );
+			$wp_query_args['tax_query'] = apply_filters( 'bp_docs_tax_query', array(), &$this );
 
 			if ( !empty( $this->query_args['parent_id'] ) ) {
 				$wp_query_args['post_parent'] = $this->query_args['parent_id'];

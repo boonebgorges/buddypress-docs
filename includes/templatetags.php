@@ -567,11 +567,11 @@ function bp_docs_doc_action_links() {
 	$links[] = '<a href="' . get_permalink() . '">' . __( 'Read', 'bp-docs' ) . '</a>';
 
 	if ( current_user_can( 'edit_bp_doc', get_the_ID() ) ) {
-		$links[] = '<a href="' . get_permalink() . '/' . BP_DOCS_EDIT_SLUG . '">' . __( 'Edit', 'bp-docs' ) . '</a>';
+		$links[] = '<a href="' . get_permalink() . BP_DOCS_EDIT_SLUG . '">' . __( 'Edit', 'bp-docs' ) . '</a>';
 	}
 
 	if ( current_user_can( 'view_bp_doc_history', get_the_ID() ) ) {
-		$links[] = '<a href="' . get_permalink() . '/' . BP_DOCS_HISTORY_SLUG . '">' . __( 'History', 'bp-docs' ) . '</a>';
+		$links[] = '<a href="' . get_permalink() . BP_DOCS_HISTORY_SLUG . '">' . __( 'History', 'bp-docs' ) . '</a>';
 	}
 
 	echo implode( ' &#124; ', $links );
