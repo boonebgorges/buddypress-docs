@@ -1,4 +1,4 @@
-<?php global $wp_query; ?>
+
 <?php if ( have_posts() ) : while ( have_posts() ) : the_post() ?>
 
 	<?php include( apply_filters( 'bp_docs_header_template', bp_docs_locate_template( 'docs-header.php' ) ) ) ?>

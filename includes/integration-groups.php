@@ -308,10 +308,12 @@ class BP_Docs_Groups_Integration {
 				$terms = get_the_terms( $doc->ID, bp_docs_get_associated_item_tax_name() );
 				$groups = array();
 
-				foreach( (array)$terms as $t ) {
-					$s = explode( '-', $t->slug );
-					if ( 'group' == $s[1] ) {
-						$groups[] = $s[0];
+				foreach( (array) $terms as $t ) {
+					if ( isset( $t->slug ) ) {
+						$s = explode( '-', $t->slug );
+						if ( 'group' == $s[1] ) {
+							$groups[] = $s[0];
+						}
 					}
 				}
 

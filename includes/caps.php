@@ -52,6 +52,17 @@ function bp_docs_map_meta_caps( $caps, $cap, $user_id, $args ) {
 	$caps = array();
 
 	switch ( $cap ) {
+		case 'create_bp_doc' :
+			// @todo This will probably need more thought
+			if ( !is_user_logged_in() ) {
+				$caps[] = 'do_not_allow';
+			} else {
+				// @todo - need to detect group membership
+				$caps[] = $cap;
+			}
+
+			break;
+
 		case 'read_bp_doc' :
 			$caps[] = 'exist'; // anyone can read Docs by default
 			break;

@@ -21,7 +21,6 @@ class BP_Docs {
 	 * @since 1.0-beta
 	 */
 	function __construct() {
-		add_action( 'activate_' . plugin_basename( __FILE__ ), array( &$this, 'activation' )  );
 
 		// Define post type and taxonomy names for use in the register functions
 		$this->post_type_name 		= apply_filters( 'bp_docs_post_type_name', 'bp_doc' );
@@ -362,18 +361,25 @@ class BP_Docs {
 		// templatetags.php has all functions in the global space available to templates
 		require( BP_DOCS_INCLUDES_PATH . 'templatetags.php' );
 
+		require( BP_DOCS_INCLUDES_PATH . 'templatetags-edit.php' );
+
 		require( BP_DOCS_INCLUDES_PATH . 'theme-bridge.php' );
 
 		// formatting.php contains filters and functions used to modify appearance only
 		require( BP_DOCS_INCLUDES_PATH . 'formatting.php' );
 
 		// Dashboard-specific functions
-		if ( is_admin() )
+		if ( is_admin() ) {
 			require( BP_DOCS_INCLUDES_PATH . 'admin.php' );
+		}
 	}
 
 	function template_include( $filter ) {
 		return $filter;
+	}
+
+	function activation() {
+		error_log('activating');
 	}
 
 	/**

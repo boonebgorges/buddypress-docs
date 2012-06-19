@@ -123,7 +123,14 @@ function bp_docs_is_bp_docs_page() {
 
 	// This is intentionally ambiguous and generous, to account for BP Docs is different
 	// components. Probably should be cleaned up at some point
-	if ( $bp->bp_docs->slug == bp_current_component() || $bp->bp_docs->slug == bp_current_action() || bp_docs_get_post_type_name() == $post->post_type )
+	if ( isset( $bp->bp_docs->slug ) && $bp->bp_docs->slug == bp_current_component()
+	     ||
+	     isset( $bp->bp_docs->slug ) && $bp->bp_docs->slug == bp_current_action()
+	     ||
+	     isset( $post->post_type ) && bp_docs_get_post_type_name() == $post->post_type
+	     ||
+	     is_post_type_archive( bp_docs_get_post_type_name() )
+	   )
 		$is_bp_docs_page = true;
 
 	return apply_filters( 'bp_docs_is_bp_docs_page', $is_bp_docs_page );
@@ -993,10 +1000,40 @@ function bp_docs_get_doc_count( $item_id = 0, $item_type = '' ) {
  * @return bool
  */
 function bp_docs_is_single_doc() {
-	global $post;
+	$is_single_doc = false;
 
-	return is_single() && isset( $post->post_type ) && bp_docs_get_post_type_name() == $post->post_type;
+	if ( is_single() ) {
+		$post = get_queried_object();
+
+		if ( isset( $post->post_type ) && bp_docs_get_post_type_name() == $post->post_type ) {
+			$is_single_doc = true;
+		}
+	}
+
+	return apply_filters( 'bp_docs_is_single_doc', $is_single_doc );
 }
+
+/**
+ * Is the current page a single Doc 'read' view?
+ *
+ * By process of elimination.
+ *
+ * @since 1.2
+ * @return bool
+ */
+function bp_docs_is_doc_read() {
+	$is_doc_read = false;
+
+	if ( bp_docs_is_single_doc() &&
+	     !bp_docs_is_doc_edit() &&
+	     ( !function_exists( 'bp_docs_is_doc_history' ) || !bp_docs_is_doc_history() )
+	   ) {
+	 	$is_doc_read = true;
+	}
+
+	return apply_filters( 'bp_docs_is_doc_read', $is_doc_read );
+}
+
 
 /**
  * Is the current page a doc edit?
@@ -1005,10 +1042,42 @@ function bp_docs_is_single_doc() {
  * @return bool
  */
 function bp_docs_is_doc_edit() {
-	global $post, $wp_query;
+	$is_doc_edit = false;
 
-	return bp_docs_is_single_doc() && isset( $_GET['action'] ) && BP_DOCS_EDIT_SLUG == $_GET['action'];
+	if ( bp_docs_is_single_doc() && 1 == get_query_var( BP_DOCS_EDIT_SLUG ) ) {
+		$is_doc_edit = true;
+	}
+
+	return apply_filters( 'bp_docs_is_doc_edit', $is_doc_edit );
 }
 
+/**
+ * Is this the Docs create screen?
+ *
+ * @since 1.2
+ * @return bool
+ */
+function bp_docs_is_doc_create() {
+	$is_doc_create = false;
+
+	if ( is_post_type_archive( bp_docs_get_post_type_name() ) && 1 == get_query_var( BP_DOCS_CREATE_SLUG ) ) {
+		$is_doc_create = true;
+	}
+
+	return apply_filters( 'bp_docs_is_doc_create', $is_doc_create );
+}
+
+/**
+ * Is this the global Docs directory?
+ */
+function bp_docs_is_global_directory() {
+	$is_global_directory = false;
+
+	if ( is_post_type_archive( bp_docs_get_post_type_name() ) && !get_query_var( BP_DOCS_CREATE_SLUG ) ) {
+		$is_global_directory = true;
+	}
+
+	return apply_filters( 'bp_docs_is_global_directory', $is_global_directory );
+}
 
 ?>

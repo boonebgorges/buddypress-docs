@@ -25,14 +25,7 @@ function bp_docs_edit_doc_title() {
 	 * @return string Doc title
 	 */
 	function bp_docs_get_edit_doc_title() {
-		global $bp;
-
-		if ( empty( $bp->bp_docs->current_post ) || empty( $bp->bp_docs->current_post->post_title ) ) {
-			$title = isset( $_GET['create_title'] ) ? urldecode( $_GET['create_title'] ) : '';
-		} else {
-			$title = $bp->bp_docs->current_post->post_title;
-		}
-
+		$title = esc_attr( get_the_title() );
 		return apply_filters( 'bp_docs_get_edit_doc_title', $title );
 	}
 
@@ -54,13 +47,9 @@ function bp_docs_edit_doc_slug() {
 	 * @return string Doc slug
 	 */
 	function bp_docs_get_edit_doc_slug() {
-		global $bp;
+		global $post;
 
-		if ( empty( $bp->bp_docs->current_post ) || empty( $bp->bp_docs->current_post->post_name ) ) {
-			$slug = '';
-		} else {
-			$slug = $bp->bp_docs->current_post->post_name;
-		}
+		$slug = isset( $post->post_name ) ? esc_attr( $post->post_name ) : '';
 
 		return apply_filters( 'bp_docs_get_edit_doc_slug', $slug );
 	}
@@ -83,13 +72,9 @@ function bp_docs_edit_doc_content() {
 	 * @return string Doc content
 	 */
 	function bp_docs_get_edit_doc_content() {
-		global $bp;
+		global $post;
 
-		if ( empty( $bp->bp_docs->current_post ) || empty( $bp->bp_docs->current_post->post_content ) ) {
-			$content = '';
-		} else {
-			$content = $bp->bp_docs->current_post->post_content;
-		}
+		$content = isset( $post->post_content ) ? esc_attr( $post->post_content ) : '';
 
 		return apply_filters( 'bp_docs_get_edit_doc_content', $content );
 	}
@@ -202,17 +187,17 @@ function bp_docs_add_idle_function_to_tinymce( $initArray ) {
 			ed.onInit.add(
 				function(ed) {
 					_initJQuery();
-					
+
 					// Set up listeners
 					jQuery(\'#\' + ed.id + \'_parent\').bind(\'mousemove\',function (evt){
 						_active(evt);
-					});	
-					
+					});
+
 					bp_docs_load_idle();
-							
+
 				}
 			);
-			
+
 			ed.onKeyDown.add(
 				function(ed) {
 					_active();
@@ -220,7 +205,7 @@ function bp_docs_add_idle_function_to_tinymce( $initArray ) {
 			);
 		}';
 	}
-	
+
 	return $initArray;
 }
 add_filter( 'tiny_mce_before_init', 'bp_docs_add_idle_function_to_tinymce' );

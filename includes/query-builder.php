@@ -50,7 +50,7 @@ class BP_Docs_Query {
 		$this->current_view 		= $this->get_current_view();
 
 		// Get the item slug, if there is one available
-		if ( $this->current_view == 'single' || $this->current_view == 'edit' || $this->current_view == 'delete' || $this->current_view == 'history' ) {
+		if ( bp_docs_is_single_doc() ) {
 			$this->doc_slug = $this->get_doc_slug();
 		} else {
 			$this->doc_slug = '';
@@ -86,7 +86,13 @@ class BP_Docs_Query {
 	function get_item_type() {
 		global $bp;
 
-		$type = apply_filters( 'bp_docs_get_item_type', 'user', $this );
+		$type = '';
+
+		if ( bp_is_user() ) {
+			$type = 'user';
+		}
+
+		$type = apply_filters( 'bp_docs_get_item_type', $type, &$this );
 
 		// Stuffing into the $bp global for later use. Barf.
 		$bp->bp_docs->current_item_type = $type;
@@ -103,11 +109,14 @@ class BP_Docs_Query {
 	 * @return str $view The current doc slug
 	 */
 	function get_doc_slug() {
-		global $bp;
+		$slug = '';
 
-		$slug = apply_filters( 'bp_docs_this_doc_slug', '', $this );
+		$obj = get_queried_object();
+		if ( isset( $obj->post_name ) ) {
+			$slug = $obj->post_name;
+		}
 
-		return $slug;
+		return apply_filters( 'bp_docs_this_doc_slug', $slug, $this );
 	}
 
 	/**
@@ -130,14 +139,15 @@ class BP_Docs_Query {
 
 		switch ( $this->item_type ) {
 			case 'group' :
-				if ( !empty( $bp->groups->current_group->id ) ) {
-					$id   = $bp->groups->current_group->id;
-					$name = $bp->groups->current_group->name;
-					$slug = $bp->groups->current_group->slug;
+				if ( bp_is_group() ) {
+					$group = groups_get_current_group();
+					$id    = $group->id;
+					$name  = $group->name;
+					$slug  = $group->slug;
 				}
 				break;
 			case 'user' :
-				if ( !empty( $bp->displayed_user->id ) ) {
+				if ( bp_is_user() ) {
 					$id   = bp_displayed_user_id();
 					$name = bp_get_displayed_user_fullname();
 					$slug = bp_get_displayed_user_username();
@@ -488,7 +498,7 @@ class BP_Docs_Query {
 		bp_core_add_message( $result['message'], $message_type );
 
 		// todo: abstract this out so I don't have to call group permalink here
-		$redirect_url = trailingslashit( bp_is_group() ? bp_get_group_permalink( $bp->groups->current_group ) . $bp->bp_docs->slug : bp_displayed_user_domain() . bp_docs_get_slug() );
+		$redirect_url = trailingslashit( bp_get_root_domain() . '/' . BP_DOCS_SLUG );
 
 		if ( $result['redirect'] == 'single' ) {
 			$redirect_url .= $this->doc_slug;
@@ -498,7 +508,7 @@ class BP_Docs_Query {
 			$redirect_url .= BP_DOCS_CREATE_SLUG;
 		}
 
-		bp_core_redirect( $redirect_url );
+		bp_core_redirect( trailingslashit( $redirect_url ) );
 	}
 
 	/**

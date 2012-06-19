@@ -7,7 +7,6 @@ Version: 1.2-bleeding
 Author: Boone B Gorges
 Author URI: http://boone.gorg.es
 Licence: GPLv3
-Network: true
 */
 
 /*
@@ -16,7 +15,7 @@ It's on like Donkey Kong
 
 define( 'BP_DOCS_VERSION', '1.1.23' );
 
-// BuddyPress Docs introduces a lot of overhead. Unless otherwise specified, 
+// BuddyPress Docs introduces a lot of overhead. Unless otherwise specified,
 // don't load the plugin on subsites of an MS install
 if ( !defined( 'BP_DOCS_LOAD_ON_NON_ROOT_BLOG' ) )
 	define( 'BP_DOCS_LOAD_ON_NON_ROOT_BLOG', false );
@@ -29,7 +28,7 @@ if ( !defined( 'BP_DOCS_LOAD_ON_NON_ROOT_BLOG' ) )
  */
 function bp_docs_init() {
 	global $bp_docs, $wpdb;
-	
+
 	if ( is_multisite() && BP_ROOT_BLOG != $wpdb->blogid && ( !BP_DOCS_LOAD_ON_NON_ROOT_BLOG ) )
 		return;
 
@@ -37,4 +36,5 @@ function bp_docs_init() {
 	$bp_docs = new BP_Docs;
 }
 add_action( 'bp_include', 'bp_docs_init' );
+
 ?>

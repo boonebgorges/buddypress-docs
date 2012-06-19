@@ -50,8 +50,6 @@ class BP_Docs_Component extends BP_Component {
 	 * @since 1.2
 	 */
 	function setup_hooks() {
-		add_action( 'bp_init', array( &$this, 'do_query' ), 90 );
-
 		require( BP_DOCS_INCLUDES_PATH . 'integration-users.php' );
 		$this->users_integration = new BP_Docs_Users_Integration;
 
@@ -109,9 +107,9 @@ class BP_Docs_Component extends BP_Component {
 		// AJAX handler for removing the edit lock when a user clicks away from Edit mode
 		add_action( 'wp_ajax_remove_edit_lock', array( $this, 'remove_edit_lock'        ) );
 
-		add_action( 'bp_loaded', 		array( $this, 'set_includes_url' 	) );
-		add_action( 'init', 			array( $this, 'enqueue_scripts' 	) );
-		add_action( 'wp_print_styles', 		array( $this, 'enqueue_styles' 		) );
+		add_action( 'bp_loaded',                array( $this, 'set_includes_url' 	) );
+		add_action( 'wp_enqueue_scripts',       array( $this, 'enqueue_scripts' 	) );
+		add_action( 'wp_print_styles',          array( $this, 'enqueue_styles' 		) );
 
 	}
 
@@ -684,15 +682,11 @@ class BP_Docs_Component extends BP_Component {
 
 		// Get a canonical name for the component. This is a nightmare because of the way
 		// the current component and root slug relate in BP 1.3+
-		if ( function_exists( 'bp_is_current_component' ) ) {
-			foreach ( $bp->active_components as $comp => $value ) {
-				if ( bp_is_current_component( $comp ) ) {
-					$component = $comp;
-					break;
-				}
-			}
-		} else {
-			$component = bp_current_component();
+		$component = bp_current_component();
+
+		// Temp
+		if ( !$component ) {
+			$component = $this->id;
 		}
 
 		// This is only temporary! This item business needs to be component-neutral
@@ -836,7 +830,14 @@ class BP_Docs_Component extends BP_Component {
 		wp_register_script( 'bp-docs-js', plugins_url( 'buddypress-docs/includes/js/bp-docs.js' ), array( 'jquery' ) );
 
 		// This is for edit/create scripts
-		if ( !empty( $this->query->current_view ) && ( 'edit' == $this->query->current_view || 'create' == $this->query->current_view ) ) {
+		if ( bp_docs_is_doc_edit()
+		     ||
+		     bp_docs_is_doc_create()
+		     || ( !empty( $this->query->current_view )
+		           &&
+		           ( 'edit' == $this->query->current_view || 'create' == $this->query->current_view )
+		        )
+		   ) {
 			require_once( ABSPATH . '/wp-admin/includes/post.php' );
 			wp_enqueue_script( 'common' );
 			wp_enqueue_script( 'jquery-color' );
@@ -859,11 +860,11 @@ class BP_Docs_Component extends BP_Component {
 
 		// Only load our JS on the right sorts of pages. Generous to account for
 		// different item types
-		if ( in_array( BP_DOCS_SLUG, $this->slugstocheck ) ) {
+		if ( in_array( BP_DOCS_SLUG, $this->slugstocheck ) || bp_docs_is_single_doc() || bp_docs_is_global_directory() ) {
 			wp_enqueue_script( 'bp-docs-js' );
 			wp_enqueue_script( 'comment-reply' );
 			wp_localize_script( 'bp-docs-js', 'bp_docs', array(
-				'still_working'		=> __( 'Still working?', 'bp-docs' )
+				'still_working'	=> __( 'Still working?', 'bp-docs' )
 			) );
 		}
 	}

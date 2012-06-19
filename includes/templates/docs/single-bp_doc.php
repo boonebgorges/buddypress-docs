@@ -7,9 +7,6 @@
  * @since 1.2
  */
 
-global $wp_query;
-var_dump( $wp_query->query_vars );
-
 ?>
 
 <?php get_header( 'buddypress' ); ?>
@@ -21,7 +18,11 @@ var_dump( $wp_query->query_vars );
 
 		<?php do_action( 'bp_before_single_doc' ); ?>
 
-		<?php include( bp_docs_locate_template( 'single/index.php' ) ) ?>
+		<?php if ( bp_docs_is_doc_edit() || bp_docs_is_doc_create() ) : ?>
+			<?php include( bp_docs_locate_template( 'single/edit.php' ) ) ?>
+		<?php else : ?>
+			<?php include( bp_docs_locate_template( 'single/index.php' ) ) ?>
+		<?php endif ?>
 
 		<?php do_action( 'bp_after_single_doc' ); ?>
 
