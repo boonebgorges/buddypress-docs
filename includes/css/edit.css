@@ -180,7 +180,6 @@ form.standard-form input[type="text"]#doc-title {
     clear: both; background-color: #EEE; padding: 2px; border: 1px solid #DDD;
     border-radius: 5px 5px 0 0; -webkit-border-radius: 5px 5px 0 0; -moz-border-radius: 5px 5px 0 0; }
 #ed_toolbar input { padding: 2px 4px; margin: 1px; }
-.mceToolbar { padding: 2px; background: #EEE; }
 #mce_fullscreen_container .mceToolbar { padding: 4px 2px; background: #EEE; }
 #editorcontainer .mceStatusbar { border-top: 1px solid #DDD; background: #EEE; }
 #editorcontainer .mceStatusbar div { padding: 2px; }
