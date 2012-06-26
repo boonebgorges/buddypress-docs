@@ -1,3 +1,5 @@
+<?php include( bp_docs_locate_template( 'single/sidebar.php' ) ) ?>
+
 <?php include( apply_filters( 'bp_docs_header_template', bp_docs_locate_template( 'docs-header.php' ) ) ) ?>
 
 <?php

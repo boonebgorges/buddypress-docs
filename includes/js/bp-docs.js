@@ -51,7 +51,7 @@ function bp_docs_load_idle() {
 		// For testing
 		//setIdleTimeout(1000 * 3); // 25 minutes until the popup (ms * s * min)
 		//setAwayTimeout(1000 * 10); // 30 minutes until the autosave
-		
+
 		/* Set away timeout for quasi-autosave */
 		setIdleTimeout(1000 * 60 * 25); // 25 minutes until the popup (ms * s * min)
 		setAwayTimeout(1000 * 60 * 30); // 30 minutes until the autosave
@@ -63,7 +63,7 @@ function bp_docs_load_idle() {
 				height: "50%"
 			});
 		}
-		document.onAway = function() {	
+		document.onAway = function() {
 			jQuery.colorbox.close();
 			var is_auto = '<input type="hidden" name="is_auto" value="1">';
 			jQuery('#doc-form').append(is_auto);
@@ -72,7 +72,7 @@ function bp_docs_load_idle() {
 
 		/* Remove the edit lock when the user clicks away */
 		jQuery("a").click(function(){
-			var doc_id = $("#existing-doc-id").val();
+			var doc_id = jQuery("#existing-doc-id").val();
 			var data = {action:'remove_edit_lock', doc_id:doc_id};
 			jQuery.ajax({
 				url: ajaxurl,
