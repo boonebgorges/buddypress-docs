@@ -35,10 +35,8 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
-= 1.1.24 =
-* Moves Table buttons to second row of editor, for better fit on all themes
-
 = 1.1.23 =
+* Moves Table buttons to second row of editor, for better fit on all themes
 * Adds Delete links to doc actions row
 * Adds Danish translation
 * Fixes an invalid markup issue in a template file
