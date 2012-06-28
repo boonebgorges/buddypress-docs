@@ -3,7 +3,7 @@
 Plugin Name: BuddyPress Docs
 Plugin URI: http://github.com/boonebgorges/buddypress-docs
 Description: Adds collaborative Docs to BuddyPress
-Version: 1.1.23
+Version: 1.1.24
 Author: Boone B Gorges
 Author URI: http://boone.gorg.es
 Licence: GPLv3
@@ -14,7 +14,7 @@ Network: true
 It's on like Donkey Kong
 */
 
-define( 'BP_DOCS_VERSION', '1.1.23' );
+define( 'BP_DOCS_VERSION', '1.1.24' );
 
 // BuddyPress Docs introduces a lot of overhead. Unless otherwise specified, 
 // don't load the plugin on subsites of an MS install

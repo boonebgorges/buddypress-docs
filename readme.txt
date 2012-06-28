@@ -3,8 +3,8 @@ Contributors: boonebgorges, cuny-academic-commons
 Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.3, BuddyPress 1.5
-Tested up to: WordPress 3.3.2, BuddyPress 1.5.4
-Stable tag: 1.1.22
+Tested up to: WordPress 3.4.1, BuddyPress 1.5.6
+Stable tag: 1.1.24
  
 Adds collaborative Docs to BuddyPress.
 
@@ -35,10 +35,12 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
-= 1.1.23 =
-* Moves Table buttons to second row of editor, for better fit on all themes
-* Adds Delete links to doc actions row
+= 1.1.24 =
+* Maves Table buttons to second row of editor, for better fit on all themes
 * Adds Danish translation
+
+= 1.1.23 =
+* Adds Delete links to doc actions row
 * Fixes an invalid markup issue in a template file
 
 = 1.1.22 =
