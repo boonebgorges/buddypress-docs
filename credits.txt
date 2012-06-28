@@ -19,3 +19,4 @@ Huge thanks go out to the individuals who donate their translations, making plug
 - Brazilian Portuguese: John Morgenthaler
 - European Portuguese: André Barriguinha
 - Romanian: Web Geek Science  (http://webhostinggeeks.com/)
+- Danish: Morten Nalholm

@@ -223,7 +223,17 @@ function bp_docs_add_idle_function_to_tinymce( $initArray ) {
 					});	
 					
 					bp_docs_load_idle();
-							
+
+					/* Hide rows 3+ */
+					var rows = jQuery(\'#\' + ed.editorContainer).find(\'table.mceToolbar\');
+					jQuery(rows).each(function(k,row){
+						if ( !jQuery(row).hasClass(\'mceToolbarRow2\') && !jQuery(row).hasClass(\'mceToolbarRow1\' ) ) {
+							jQuery(row).toggle();
+						}
+					});
+
+					bp_docs_kitchen_sink(ed);
+
 				}
 			);
 			
@@ -303,7 +313,7 @@ function bp_docs_add_external_tinymce_buttons_row1( $buttons ) {
 add_filter( 'mce_buttons', 'bp_docs_add_external_tinymce_buttons_row1' );
 
 /**
- * Adds BuddyPress Docs-specific TinyMCE plugin buttons to row 2 of the editor
+ * Adds BuddyPress Docs-specific TinyMCE plugin buttons to row 3 of the editor
  *
  * Includes:
  *   - tablecontrols
@@ -314,11 +324,11 @@ add_filter( 'mce_buttons', 'bp_docs_add_external_tinymce_buttons_row1' );
  * @param array $buttons TinyMCE buttons
  * @return array $buttons Button list, with BP Docs buttons added
  */
-function bp_docs_add_external_tinymce_buttons_row2( $buttons ) {
+function bp_docs_add_external_tinymce_buttons_row3( $buttons ) {
 	$buttons[] = 'tablecontrols';
 
 	return $buttons;
 }
-add_filter( 'mce_buttons_2', 'bp_docs_add_external_tinymce_buttons_row2' );
+add_filter( 'mce_buttons_3', 'bp_docs_add_external_tinymce_buttons_row3' );
 
 ?>
