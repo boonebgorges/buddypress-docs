@@ -160,7 +160,11 @@ class BP_Docs {
 		// Load the wikitext addon
 		require_once( BP_DOCS_INCLUDES_PATH . 'addon-wikitext.php' );
 		$this->wikitext = new BP_Docs_Wikitext;
-
+		
+		//load the file attachment addon
+		require_once( BP_DOCS_INCLUDES_PATH . 'addon-attachments.php' );
+		$this->attachments=new BP_Docs_Attachments;
+		
 		do_action( 'bp_docs_load_doc_extras' );
 	}
 

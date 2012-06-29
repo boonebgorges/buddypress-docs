@@ -17,7 +17,7 @@ if ( !function_exists( 'wp_editor' ) ) {
 	<p><?php _e( 'You have been idle for <span id="idle-warning-time"></span>', 'bp-docs' ) ?></p>
 </div>
 
-<form action="" method="post" class="standard-form" id="doc-form">
+<form action="" method="post" class="standard-form" id="doc-form" enctype="multipart/form-data">
     <div class="doc-header">	
 	<?php if ( bp_docs_is_existing_doc() ) : ?>
 		<input type="hidden" id="existing-doc-id" value="<?php the_ID() ?>" />
@@ -55,6 +55,63 @@ if ( !function_exists( 'wp_editor' ) ) {
 				}
 			?>
 		</div>
+        </div>
+        
+        <? //mikedit?>
+        <div id='doc-attachments'>
+        	<script>
+	    		jQuery(document).ready(function(){				
+		    		jQuery('#addAttachment-button').click(function(){	
+			    		addMetaRow();				
+			    	});		    
+		    	});				
+		    	function addMetaRow(){						    	
+			    	var count=jQuery('.bp-docs-attachment').length;		    	
+			    	var htmlToAppend="\
+				    			<div class='bp-docs-attachment-row'>\
+				    			<input type='file' class='bp-docs-attachment' name='bp-docs-attachments-"+count+"' >\
+				    			</div>";		    	
+			    	jQuery('#doc-attachments-box-new-attachments').append(htmlToAppend);	    	
+			    }
+        	</script>
+        	<style>
+        		.delete-button, .delete-button:hover{
+        			color:red;/*#BC0B0B;*/
+        			text-decoration:underline;
+        			
+        		}
+        		.float-right{
+        			float:right;
+        		}
+        		a.spacey{
+        			line-height:2em;
+        		}
+        	</style>
+        
+        	<label>Attachments:</label> 
+        	<div id='doc-attachments-box'>
+        		<div id='doc-attachments-box-old-attachments'>
+        			<? 
+	        		$attachments=get_children(array('post_parent'=>$post->ID,'post_type'=>'attachment'));
+	        		
+	        		foreach($attachments as $attachment){
+	        			?>
+	        			<div class='bp-docs-attachment-row bp-docs-old-attachment'>
+	        				<a href='<?=$attachment->guid?>'><?=$attachment->post_name?></a>
+	        				<span style='float:right'><input type='checkbox' value='true' name='bp-docs-existing-attachment-<?=$attachment->ID?>'/>Delete?</span>
+	        			</div>
+	        			<? 
+	        		}
+	        		?>
+        		</div>
+        		<div id='doc-attachments-box-new-attachments'>
+	        		<!-- <span class='bp-docs-attachment-row'>
+	        			<input type='file' class='bp-docs-attachment' name='bp-docs-attachments-0'>
+	        		</span>-->
+	        		
+        		</div>
+        		<a class='button spacey' id='addAttachment-button'>Select A New Attachment</a>
+        	</div>
         </div>
         
         <div id="doc-meta">

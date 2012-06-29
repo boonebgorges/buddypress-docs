@@ -22,7 +22,22 @@
 <div class="doc-content">
 	<?php the_content() ?>
 </div>
+<? //mikeedit?>
+<div class='doc-attachments'>
+<h3>Attachments</h3>
+<?
+$attachments=get_children(array('post_parent'=>$post->ID,'post_type'=>'attachment'));
 
+foreach($attachments as $attachment){
+	?>
+	<div class='bp-docs-attachment-row bp-docs-old-attachment'>
+
+		<a href='<?=$attachment->guid?>'><?=$attachment->post_name?> </a>
+	</div>
+	<?
+}
+?>
+</div>
 <div class="doc-meta">
 	<?php do_action( 'bp_docs_single_doc_meta' ) ?>
 </div>
