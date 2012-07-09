@@ -40,13 +40,8 @@ class BP_Docs_History {
 	function __construct() {
 		global $bp;
 
-		if ( 'history' != bp_docs_current_view() )
-			return false;
-
-		$this->setup_params();
-
-		// Hooked to a page load action to make sure the post type is registered
-		add_action( 'bp_docs_registered_post_type', array( $this, 'setup_action' ), 2 );
+		add_action( 'bp_actions', array( &$this, 'setup_params' ), 1 );
+		add_action( 'bp_actions', array( &$this, 'setup_action' ), 2 );
 
 		$bp->bp_docs->history =& $this;
 	}
@@ -77,8 +72,6 @@ class BP_Docs_History {
 		// current post
 		$this->revision_id = !empty( $_GET['revision'] ) ? (int)$_GET['revision'] : false;
 		if ( !$this->revision_id ) {
-			if ( empty( $bp->bp_docs->current_post ) )
-				$bp->bp_docs->current_post = bp_docs_get_current_doc();
 
 			$this->revision_id = !empty( $bp->bp_docs->current_post->ID ) ? $bp->bp_docs->current_post->ID : false;
 		}
@@ -125,7 +118,7 @@ class BP_Docs_History {
 			wp_restore_post_revision( $this->revision->ID );
 
 			bp_core_add_message( sprintf( __( 'You have successfully restored the Doc to the revision from %s.', 'bp-docs' ), $this->revision->post_date ) );
-			$redirect = bp_docs_get_doc_link( $post->ID ) . '/' . BP_DOCS_HISTORY_SLUG . '/';
+			$redirect = get_permalink( $post->ID ) . '/' . BP_DOCS_HISTORY_SLUG . '/';
 			break;
 		case 'diff' :
 			if ( !$this->left_revision  = get_post( $this->left ) )
@@ -237,7 +230,7 @@ class BP_Docs_History {
 				if ( !$content = wp_text_diff( $left_content, $right_content ) )
 					continue; // There is no difference between left and right
 				$this->revisions_are_identical = false;
-			} else {
+			} else if ( isset( $this->revision ) && is_object( $this->revision ) && isset( $this->revision->$field ) ) {
 				add_filter( "_wp_post_revision_field_$field", 'htmlspecialchars' );
 				$content = apply_filters( "_wp_post_revision_field_$field", $this->revision->$field, $field );
 			}
@@ -281,9 +274,9 @@ function bp_docs_history_post_revision_field( $side = false, $field = 'post_titl
 
 	if ( $side ) {
 		$side = 'right' == $side ? 'right_revision' : 'left_revision';
-		$data = $bp->bp_docs->history->{$side}->{$field};
+		$data = isset( $bp->bp_docs->history->{$side}->{$field} ) ? $bp->bp_docs->history->{$side}->{$field} : '';
 	} else {
-		$data = $bp->bp_docs->history->revision->{$field};
+		$data = isset( $bp->bp_docs->history->revision->{$field} ) ? $bp->bp_docs->history->revision->{$field} : '';
 	}
 
 	return apply_filters( 'bp_docs_history_post_revision_field', $data, $side );
@@ -379,7 +372,7 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
 		if ( 'revision' === $type && wp_is_post_autosave( $revision ) )
 			continue;
 
-		$base_url = bp_docs_get_doc_link( get_the_ID() ) . '/' . BP_DOCS_HISTORY_SLUG . '/';
+		$base_url = trailingslashit( get_permalink() . BP_DOCS_HISTORY_SLUG );
 
 		$date = '<a href="' . add_query_arg( 'revision', $revision->ID ) . '">' . bp_format_time( strtotime( $revision->post_date ), false, false /* don't double localize time */ ) . '</a>';
 		$name = bp_core_get_userlink( $revision->post_author );
@@ -464,12 +457,11 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
  */
 function bp_docs_history_tab() {
 	if ( bp_docs_current_user_can( 'view_history' ) ) : ?>
-		<li<?php if ( 'history' == bp_docs_current_view() ) : ?> class="current"<?php endif ?>>
+		<li<?php if ( bp_docs_is_doc_history() ) : ?> class="current"<?php endif ?>>
 			<a href="<?php echo get_permalink() . '/' . BP_DOCS_HISTORY_SLUG ?>"><?php _e( 'History', 'bp-docs' ) ?></a>
 		</li>
 	<?php endif;
 }
 add_action( 'bp_docs_header_tabs', 'bp_docs_history_tab' );
-
 
 ?>

@@ -20,6 +20,8 @@
 
 		<?php if ( bp_docs_is_doc_edit() || bp_docs_is_doc_create() ) : ?>
 			<?php include( bp_docs_locate_template( 'single/edit.php' ) ) ?>
+		<?php elseif ( bp_docs_is_doc_history() ) : ?>
+			<?php include( bp_docs_locate_template( 'single/history.php' ) ) ?>
 		<?php else : ?>
 			<?php include( bp_docs_locate_template( 'single/index.php' ) ) ?>
 		<?php endif ?>

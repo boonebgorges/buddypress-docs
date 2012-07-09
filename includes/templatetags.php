@@ -1068,6 +1068,22 @@ function bp_docs_is_doc_create() {
 }
 
 /**
+ * Is this the History tab?
+ *
+ * @since 1.2
+ * @return bool
+ */
+function bp_docs_is_doc_history() {
+	$is_doc_history = false;
+
+	if ( bp_docs_is_single_doc() && 1 == get_query_var( BP_DOCS_HISTORY_SLUG ) ) {
+		$is_doc_history = true;
+	}
+
+	return apply_filters( 'bp_docs_is_doc_history', $is_doc_history );
+}
+
+/**
  * Is this the global Docs directory?
  */
 function bp_docs_is_global_directory() {

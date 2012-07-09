@@ -41,7 +41,7 @@ function bp_docs_template_include( $template = '' ) {
 	// Custom template file exists
 	$template = !empty( $new_template ) ? $new_template : $template;
 
-	return apply_filters( 'bbp_template_include_theme_supports', $template );
+	return apply_filters( 'bp_docs_template_include', $template );
 }
 add_filter( 'template_include', 'bp_docs_template_include' );
 

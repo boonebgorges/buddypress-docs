@@ -1,5 +1,3 @@
-<?php if ( bp_docs_has_docs() ) : while ( bp_docs_has_docs() ) : bp_docs_the_doc() ?>
-
 <?php include( apply_filters( 'bp_docs_header_template', bp_docs_locate_template( 'docs-header.php' ) ) ) ?>
 
 <div class="doc-content">
@@ -7,7 +5,7 @@
 <?php if ( bp_docs_history_is_latest() ) : ?>
 
 	<p><?php _e( "Click on a revision date from the list below to view that revision.", 'bp-docs' ) ?></p>
-	
+
 	<p><?php _e( "Alternatively, you can compare two revisions by selecting them in the 'Old' and 'New' columns, and clicking 'Compare Revisions'.", 'bp-docs' ) ?></p>
 
 <?php endif ?>
@@ -29,7 +27,7 @@
 			<th scope="col" class="th-full">
 				<span class="alignleft"><?php printf( __( 'You are currently viewing a revision titled "%1$s", saved on %2$s by %3$s', 'bp-docs' ), bp_docs_history_post_revision_field( false, 'post_title' ), bp_format_time( strtotime( bp_docs_history_post_revision_field( false, 'post_date' ) ) ), bp_core_get_userlink( bp_docs_history_post_revision_field( false, 'post_author' ) ) ); ?></span>
 			</th>
-		</tr>	
+		</tr>
 	<?php endif ?>
 
 	<?php foreach ( _wp_post_revision_fields() as $field => $field_title ) : ?>
@@ -43,7 +41,7 @@
 				<th scope="row"><?php echo esc_html( $field_title ); ?></th>
 				<td><div class="pre"><?php echo bp_docs_history_post_revision_field( false, $field ) ?></div></td>
 			</tr>
-		
+
 		<?php endif ?>
 
 	<?php endforeach ?>
@@ -55,9 +53,7 @@
 </table>
 
 <br class="clear" />
-	
-<?php bp_docs_list_post_revisions( get_the_ID() ) ?>
-	
-</div>
 
-<?php endwhile; endif ?>
+<?php bp_docs_list_post_revisions( get_the_ID() ) ?>
+
+</div>

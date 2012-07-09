@@ -59,6 +59,52 @@ class BP_Docs {
 	}
 
 	/**
+	 * Loads the textdomain for the plugin
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0.2
+	 */
+	function load_plugin_textdomain() {
+		load_plugin_textdomain( 'bp-docs', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+	}
+
+	/**
+	 * Includes files needed by BuddyPress Docs
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0-beta
+	 */
+	function includes() {
+
+		// functions.php includes miscellaneous utility functions used throughout
+		require( BP_DOCS_INCLUDES_PATH . 'functions.php' );
+
+		// component.php extends BP_Component, and does most of the basic setup for BP Docs
+		require( BP_DOCS_INCLUDES_PATH . 'component.php' );
+
+		// caps.php handles capabilities and roles
+		require( BP_DOCS_INCLUDES_PATH . 'caps.php' );
+
+		// query-builder.php contains the class that fetches the content for each view
+		require( BP_DOCS_INCLUDES_PATH . 'query-builder.php' );
+
+		// templatetags.php has all functions in the global space available to templates
+		require( BP_DOCS_INCLUDES_PATH . 'templatetags.php' );
+
+		require( BP_DOCS_INCLUDES_PATH . 'templatetags-edit.php' );
+
+		require( BP_DOCS_INCLUDES_PATH . 'theme-bridge.php' );
+
+		// formatting.php contains filters and functions used to modify appearance only
+		require( BP_DOCS_INCLUDES_PATH . 'formatting.php' );
+
+		// Dashboard-specific functions
+		if ( is_admin() ) {
+			require( BP_DOCS_INCLUDES_PATH . 'admin.php' );
+		}
+	}
+
+	/**
 	 * Defines bp_docs_load action
 	 *
 	 * This action fires on WP's plugins_loaded action and provides a way for the rest of
@@ -159,37 +205,6 @@ class BP_Docs {
 	}
 
 	/**
-	 * Loads the file that enables the use of extras (doc taxonomy, hierarchy, etc)
-	 *
-	 * This is loaded conditionally, so that the use of extras can be disabled by the
-	 * administrator. It is loaded before the bp_docs post type is registered so that we have
-	 * access to the 'taxonomy' argument of register_post_type.
-	 *
-	 * @package BuddyPress Docs
-	 * @since 1.0-beta
-	 */
-	function load_doc_extras() {
-		// Todo: make this conditional with a filter or a constant
-		require_once( BP_DOCS_INCLUDES_PATH . 'addon-taxonomy.php' );
-		$this->taxonomy = new BP_Docs_Taxonomy;
-
-		require_once( BP_DOCS_INCLUDES_PATH . 'addon-hierarchy.php' );
-		$this->hierarchy = new BP_Docs_Hierarchy;
-
-		// Don't load the History component if post revisions are disabled
-		if ( defined( 'WP_POST_REVISIONS' ) && WP_POST_REVISIONS ) {
-			require_once( BP_DOCS_INCLUDES_PATH . 'addon-history.php' );
-			$this->history = new BP_Docs_History;
-		}
-
-		// Load the wikitext addon
-		require_once( BP_DOCS_INCLUDES_PATH . 'addon-wikitext.php' );
-		$this->wikitext = new BP_Docs_Wikitext;
-
-		do_action( 'bp_docs_load_doc_extras' );
-	}
-
-	/**
 	 * Registers BuddyPress Docs's post types and taxonomies
 	 *
 	 * The post type bp_doc corresponds to individual doc page, which in turn corresponds to
@@ -267,6 +282,38 @@ class BP_Docs {
 			restore_current_blog();
 	}
 
+
+	/**
+	 * Loads the file that enables the use of extras (doc taxonomy, hierarchy, etc)
+	 *
+	 * This is loaded conditionally, so that the use of extras can be disabled by the
+	 * administrator. It is loaded before the bp_docs post type is registered so that we have
+	 * access to the 'taxonomy' argument of register_post_type.
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0-beta
+	 */
+	function load_doc_extras() {
+		// Todo: make this conditional with a filter or a constant
+		require_once( BP_DOCS_INCLUDES_PATH . 'addon-taxonomy.php' );
+		$this->taxonomy = new BP_Docs_Taxonomy;
+
+		require_once( BP_DOCS_INCLUDES_PATH . 'addon-hierarchy.php' );
+		$this->hierarchy = new BP_Docs_Hierarchy;
+
+		// Don't load the History component if post revisions are disabled
+		if ( defined( 'WP_POST_REVISIONS' ) && WP_POST_REVISIONS ) {
+			require_once( BP_DOCS_INCLUDES_PATH . 'addon-history.php' );
+			$this->history =& new BP_Docs_History;
+		}
+
+		// Load the wikitext addon
+		require_once( BP_DOCS_INCLUDES_PATH . 'addon-wikitext.php' );
+		$this->wikitext = new BP_Docs_Wikitext;
+
+		do_action( 'bp_docs_load_doc_extras' );
+	}
+
 	/**
 	 * Add rewrite tags
 	 *
@@ -335,51 +382,7 @@ class BP_Docs {
 		return apply_filters( 'bp_docs_show_cpt_ui', $show_ui );
 	}
 
-	/**
-	 * Loads the textdomain for the plugin
-	 *
-	 * @package BuddyPress Docs
-	 * @since 1.0.2
-	 */
-	function load_plugin_textdomain() {
-		load_plugin_textdomain( 'bp-docs', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
-	}
 
-	/**
-	 * Includes files needed by BuddyPress Docs
-	 *
-	 * @package BuddyPress Docs
-	 * @since 1.0-beta
-	 */
-	function includes() {
-
-		// functions.php includes miscellaneous utility functions used throughout
-		require( BP_DOCS_INCLUDES_PATH . 'functions.php' );
-
-		// component.php extends BP_Component, and does most of the basic setup for BP Docs
-		require( BP_DOCS_INCLUDES_PATH . 'component.php' );
-
-		// caps.php handles capabilities and roles
-		require( BP_DOCS_INCLUDES_PATH . 'caps.php' );
-
-		// query-builder.php contains the class that fetches the content for each view
-		require( BP_DOCS_INCLUDES_PATH . 'query-builder.php' );
-
-		// templatetags.php has all functions in the global space available to templates
-		require( BP_DOCS_INCLUDES_PATH . 'templatetags.php' );
-
-		require( BP_DOCS_INCLUDES_PATH . 'templatetags-edit.php' );
-
-		require( BP_DOCS_INCLUDES_PATH . 'theme-bridge.php' );
-
-		// formatting.php contains filters and functions used to modify appearance only
-		require( BP_DOCS_INCLUDES_PATH . 'formatting.php' );
-
-		// Dashboard-specific functions
-		if ( is_admin() ) {
-			require( BP_DOCS_INCLUDES_PATH . 'admin.php' );
-		}
-	}
 
 	function template_include( $filter ) {
 		return $filter;
@@ -398,7 +401,7 @@ class BP_Docs {
 	function do_integration() {
 		global $bp;
 
-		$bp->bp_docs = new BP_Docs_Component;
+		$bp->bp_docs =& new BP_Docs_Component;
 	}
 }
 
