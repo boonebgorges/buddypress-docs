@@ -107,7 +107,7 @@ class BP_Docs_Component extends BP_Component {
 		// AJAX handler for removing the edit lock when a user clicks away from Edit mode
 		add_action( 'wp_ajax_remove_edit_lock', array( $this, 'remove_edit_lock'        ) );
 
-		add_action( 'bp_loaded',                array( $this, 'set_includes_url' 	) );
+		add_action( 'bp_docs_init',             array( $this, 'set_includes_url' 	) );
 		add_action( 'wp_enqueue_scripts',       array( $this, 'enqueue_scripts' 	) );
 		add_action( 'wp_print_styles',          array( $this, 'enqueue_styles' 		) );
 
