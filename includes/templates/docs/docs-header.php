@@ -11,15 +11,22 @@
 
 	<h2><?php the_title() ?></h2>
 
+	<div class="doc-permissions">
+
+
+		<?php if ( bp_docs_current_user_can( 'manage' ) ) : ?>
+		<?php endif ?>
+	</div>
+
 	<div class="doc-tabs">
 		<ul>
 			<li<?php if ( bp_docs_is_doc_read() ) : ?> class="current"<?php endif ?>>
-				<a href="<?php the_permalink() ?>"><?php _e( 'Read', 'bp-docs' ) ?></a>
+				<a href="<?php bp_docs_doc_link() ?>"><?php _e( 'Read', 'bp-docs' ) ?></a>
 			</li>
 
 			<?php if ( bp_docs_current_user_can( 'edit' ) ) : ?>
 				<li<?php if ( bp_docs_is_doc_edit() ) : ?> class="current"<?php endif ?>>
-					<a href="<?php echo get_permalink() . BP_DOCS_EDIT_SLUG ?>"><?php _e( 'Edit', 'bp-docs' ) ?></a>
+					<a href="<?php bp_docs_doc_edit_link() ?>"><?php _e( 'Edit', 'bp-docs' ) ?></a>
 				</li>
 			<?php endif ?>
 

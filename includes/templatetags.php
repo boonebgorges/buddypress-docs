@@ -266,15 +266,11 @@ function bp_docs_get_current_filters() {
  * @package BuddyPress Docs
  * @since 1.0-beta
  */
-function bp_docs_doc_link( $doc_id ) {
+function bp_docs_doc_link( $doc_id = false ) {
 	echo bp_docs_get_doc_link( $doc_id );
 }
 	/**
 	 * Get the doc's permalink
-	 *
-	 * For the moment, this returns the URL of the first item associated with the doc. If you
-	 * extend BuddyPress Docs so that items can be associated with multiple groups, you'll need
-	 * to change the way this function works.
 	 *
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta
@@ -282,27 +278,34 @@ function bp_docs_doc_link( $doc_id ) {
 	 * @param int $doc_id
 	 * @return str URL of the doc
 	 */
-	function bp_docs_get_doc_link( $doc_id ) {
-		global $bp;
+	function bp_docs_get_doc_link( $doc_id = false ) {
+		if ( false === $doc_id && $q = get_queried_object() ) {
+			$doc_id = isset( $q->ID ) ? $q->ID : 0;
+		}
 
-		if ( empty( $doc_id ) )
-			return false;
+		return apply_filters( 'bp_docs_get_doc_link', get_permalink( $doc_id ), $doc_id );
+	}
 
-		// Get the associated item
-		$ass_item 	= wp_get_post_terms( $doc_id, $bp->bp_docs->associated_item_tax_name );
-
-		if ( empty( $ass_item ) )
-			return false;
-
-		// Get the associated item's doc link
-		$item_type = array_pop( explode( '-', $ass_item[0]->slug ) );
-		$item_id   = bp_docs_get_associated_item_id_from_term_slug( $ass_item[0]->slug, $item_type );
-
-		$item_docs_link	= bp_docs_get_item_docs_link( array( 'item_id' => $item_id, 'item_type' => $item_type ) );
-
-		$post		= get_post( $doc_id );
-
-		return apply_filters( 'bp_docs_get_doc_link', $item_docs_link . $post->post_name );
+/**
+ * Echoes the output of bp_docs_get_doc_edit_link()
+ *
+ * @package BuddyPress_Docs
+ * @since 1.2
+ */
+function bp_docs_doc_edit_link( $doc_id = false ) {
+	echo bp_docs_get_doc_edit_link( $doc_id );
+}
+	/**
+	 * Get the edit link for a doc
+	 *
+	 * @package BuddyPress_Docs
+	 * @since 1.2
+	 *
+	 * @param int $doc_id
+	 * @return str URL of the edit page for the doc
+	 */
+	function bp_docs_get_doc_edit_link( $doc_id = false ) {
+		return apply_filters( 'bp_docs_get_doc_edit_link', trailingslashit( bp_docs_get_doc_link( $doc_id ) . BP_DOCS_EDIT_SLUG ) );
 	}
 
 /**
@@ -367,7 +370,7 @@ function bp_docs_item_docs_link() {
 				$base_url = bp_core_get_user_domain( $item_id );
 				break;
 		}
-//var_dump( $base_url ); die();
+
 		return apply_filters( 'bp_docs_get_item_docs_link', $base_url . $bp->bp_docs->slug . '/', $base_url, $r );
 	}
 
