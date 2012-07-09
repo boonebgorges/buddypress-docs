@@ -38,9 +38,6 @@ class BP_Docs {
 		// Load the BP Component extension
 		add_action( 'bp_docs_load', 	array( $this, 'do_integration' ), 6 );
 
-		// Set up doc taxonomy, etc
-		add_action( 'bp_docs_load',     array( $this, 'load_doc_extras' ), 8 );
-
 		// Load textdomain
 		add_action( 'bp_docs_load',     array( $this, 'load_plugin_textdomain' ) );
 
@@ -50,6 +47,9 @@ class BP_Docs {
 		// Hooks into the 'init' action to register our WP custom post type and tax
 		add_action( 'bp_docs_init',     array( $this, 'register_post_type' ), 2 );
 		add_action( 'bp_docs_init',     array( &$this, 'add_rewrite_tags' ), 4 );
+
+		// Set up doc taxonomy, etc
+		add_action( 'bp_docs_init',     array( $this, 'load_doc_extras' ), 8 );
 
 		// Add rewrite rules
 		add_action( 'generate_rewrite_rules', array( &$this, 'generate_rewrite_rules' ) );
