@@ -543,7 +543,7 @@ function bp_docs_doc_settings_markup() {
 
 	<tr>
 		<td class="desc-column">
-			<label for="settings[edit]"><?php _e( 'Where is this Doc\'s primary home?', 'bp-docs' ) ?></label>
+			<label for="settings[edit]"><?php _e( 'Who can edit this Doc?', 'bp-docs' ) ?></label>
 			<p class="description">
 				<?php _e( 'uoehnteouthn' ) ?>
 			</p>
@@ -947,6 +947,67 @@ function bp_docs_tabs() {
 
 	<?php
 	}
+}
+
+/**
+ * Markup for the Doc Permissions snapshot
+ *
+ * Markup is built inline. Someday I may abstract it. In the meantime, suck a lemon
+ *
+ * @since 1.2
+ */
+function bp_docs_doc_permissions_snapshot() {
+	// @todo Abstract?
+	$permissions_types = array(
+		'read'          => __( 'Read', 'bp-docs' ),
+		'edit'          => __( 'Edit', 'bp-docs' ),
+		'read_comments' => __( 'Read comments', 'bp-docs' ),
+		'post_comments' => __( 'Post comments', 'bp-docs' ),
+		'view_history'  => __( 'View history', 'bp-docs' )
+	);
+
+	$settings = bp_docs_get_doc_settings();
+
+	$output = '';
+
+	$output .= '<dl class="doc-permissions-types">';
+
+	foreach( $permissions_types as $p_type => $p_label ) {
+		$output .= '<dt class="doc-can-' . $p_type . '">' . $p_label . '</dt>';
+
+		switch( $settings[$p_type] ) {
+			case 'anyone' :
+				$p_text = __( 'Anyone', 'bp-docs' );
+				break;
+
+			case 'loggedin' :
+				$p_text = __( 'Logged-in Users', 'bp-docs' );
+				break;
+
+			case 'friends' :
+				$p_text = __( 'My Friends', 'bp-docs' );
+				break;
+
+			case 'group-members' :
+				$p_text = __( 'Members of the group', 'bp-docs' ); // @todo
+				break;
+
+			case 'admins-mods' :
+				$p_text = __( 'Admins and mods of the group', 'bp-docs' ); // @todo
+				break;
+
+			case 'creator' :
+			case 'no-one' :
+				$p_text = __( 'Just Me', 'bp-docs' );
+				break;
+		}
+
+		$output .= '<dd class="doc-can-' . $p_type . '">' . $p_text . '</dd>';
+	}
+
+	$output .= '</dl>';
+
+	echo $output;
 }
 
 /**

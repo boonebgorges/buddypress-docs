@@ -13,8 +13,13 @@
 
 	<div class="doc-permissions">
 
+		<h3><?php _e( 'Doc Permissions', 'bp-docs' ) ?></h3>
+
+		<?php bp_docs_doc_permissions_snapshot() ?>
 
 		<?php if ( bp_docs_current_user_can( 'manage' ) ) : ?>
+
+			<a id="edit-doc-permissions" href="<?php bp_docs_doc_edit_link() ?>#permissions">Edit</a>
 		<?php endif ?>
 	</div>
 

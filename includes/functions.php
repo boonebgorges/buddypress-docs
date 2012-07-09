@@ -332,4 +332,40 @@ function bp_docs_is_docs_component() {
 	return $retval;
 }
 
+/**
+ * Get the Doc settings array
+ *
+ * This will prepopulate many of the required settings, for cases where the settings have not
+ * yet been saved for this Doc.
+ *
+ * @param int $doc_id
+ * @return array
+ */
+function bp_docs_get_doc_settings( $doc_id = 0 ) {
+	$doc_settings = array();
+
+	$q = get_queried_object();
+	if ( !$doc_id && isset( $q->ID ) ) {
+		$doc_id = $q->ID;
+	}
+
+	$saved_settings = get_post_meta( $doc_id, 'bp_docs_settings', true );
+	if ( !is_array( $saved_settings ) ) {
+		$saved_settings = array();
+	}
+
+
+	$default_settings = array(
+		'read'          => 'anyone',
+		'edit'          => 'loggedin',
+		'read_comments' => 'anyone',
+		'post_comments' => 'anyone',
+		'view_history'  => 'anyone'
+	);
+
+	$doc_settings = wp_parse_args( $saved_settings, $default_settings );
+
+	return apply_filters( 'bp_docs_get_doc_settings', $doc_settings, $doc_id, $default_settings );
+}
+
 ?>
