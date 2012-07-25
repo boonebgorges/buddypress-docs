@@ -35,8 +35,12 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.1.25 =
+* Fixes bug in Javascript that may have caused secondary editor rows not to
+  show in some cases
+
 = 1.1.24 =
-* Maves Table buttons to second row of editor, for better fit on all themes
+* Moves Table buttons to second row of editor, for better fit on all themes
 * Adds Danish translation
 
 = 1.1.23 =
