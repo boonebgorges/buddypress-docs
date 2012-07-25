@@ -72,7 +72,7 @@ function bp_docs_load_idle() {
 
 		/* Remove the edit lock when the user clicks away */
 		jQuery("a").click(function(){
-			var doc_id = $("#existing-doc-id").val();
+			var doc_id = jQuery("#existing-doc-id").val();
 			var data = {action:'remove_edit_lock', doc_id:doc_id};
 			jQuery.ajax({
 				url: ajaxurl,
