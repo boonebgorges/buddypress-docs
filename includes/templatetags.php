@@ -309,6 +309,25 @@ function bp_docs_doc_edit_link( $doc_id = false ) {
 	}
 
 /**
+ * Echoes the output of bp_docs_get_create_link()
+ *
+ * @package BuddyPress_Docs
+ * @since 1.2
+ */
+function bp_docs_create_link() {
+        echo bp_docs_get_create_link();
+}
+        /**
+         * Get the link to create a Doc
+         * 
+         * @package BuddyPress_Docs
+         * @since 1.2
+         */
+        function bp_docs_get_create_link() {
+                return apply_filters( 'bp_docs_get_create_link', trailingslashit( get_post_type_archive_link( bp_docs_get_post_type_name() ) . '/' . BP_DOCS_CREATE_SLUG ) );
+        }
+
+/**
  * Echoes the output of bp_docs_get_item_docs_link()
  *
  * @package BuddyPress Docs
