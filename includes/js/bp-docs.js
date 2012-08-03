@@ -69,28 +69,31 @@ function bp_docs_load_idle() {
 			jQuery('#doc-form').append(is_auto);
 			jQuery('#doc-edit-submit').click();
 		}
-
-		/* Remove the edit lock when the user clicks away */
-		jQuery("a").click(function(){
-			var doc_id = $("#existing-doc-id").val();
-			var data = {action:'remove_edit_lock', doc_id:doc_id};
-			jQuery.ajax({
-				url: ajaxurl,
-				type: 'POST',
-				async: false,
-				timeout: 10000,
-				dataType:'json',
-				data: data,
-				success: function(response){
-					return true;
-				},
-				complete: function(){
-					return true;
-				}
-			});
-		});
 	}
 }
+
+/* Remove the document edit lock when the user clicks away */
+jQuery(window).unload(function() {
+	if(jQuery('#doc-form').length != 0 && jQuery('#existing-doc-id').length != 0 ) {
+		var doc_id = jQuery("#existing-doc-id").val();
+		var data = {action:'remove_edit_lock', doc_id:doc_id};
+		jQuery.ajax({
+			url: ajaxurl,
+			type: 'POST',
+			async: false,
+			timeout: 10000,
+			dataType:'json',
+			data: data,
+			success: function(response){
+				return true;
+			},
+			complete: function(){
+				return true;
+			}
+		});
+	}
+});
+
 
 function bp_docs_kitchen_sink(ed) {
 	var adv_button = jQuery('#' + ed.editorContainer).find('a.mce_wp_adv');
