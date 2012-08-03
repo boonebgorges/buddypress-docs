@@ -10,7 +10,6 @@ class BP_Docs_Attachments {
 		add_action('bp_docs_loop_additional_th',array($this,'add_loop_th'));
 		add_action('bp_docs_loop_additional_td',array($this,'add_loop_td')); 
 		add_action('bp_docs_header_tabs',array($this,'add_print_doc_tab'));
-		$bp->bp_docs->history =& $this;
 	}
 	
 	function save_post($query){
