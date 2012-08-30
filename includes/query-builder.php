@@ -45,10 +45,6 @@ class BP_Docs_Query {
 		$this->post_type_name 		= $bp->bp_docs->post_type_name;
 		$this->associated_item_tax_name	= $bp->bp_docs->associated_item_tax_name;
 
-		$this->item_type 		= $this->get_item_type();
-		$this->setup_item();
-		$this->current_view 		= $this->get_current_view();
-
 		// Get the item slug, if there is one available
 		if ( bp_docs_is_single_doc() ) {
 			$this->doc_slug = $this->get_doc_slug();
@@ -84,20 +80,7 @@ class BP_Docs_Query {
 	 * @return str $view The current item type
 	 */
 	function get_item_type() {
-		global $bp;
-
-		$type = '';
-
-		if ( bp_is_user() ) {
-			$type = 'user';
-		}
-
-		$type = apply_filters( 'bp_docs_get_item_type', $type, $this );
-
-		// Stuffing into the $bp global for later use. Barf.
-		$bp->bp_docs->current_item_type = $type;
-
-		return $type;
+		_deprecated_function( __METHOD__, '1.2' );
 	}
 
 	/**
@@ -197,19 +180,7 @@ class BP_Docs_Query {
 	 * @return str $view The current view. Core values: edit, single, list, category
 	 */
 	function get_current_view( $item_type = false ) {
-		global $bp;
-
-		$view = '';
-
-		if ( !$item_type )
-			$item_type = $this->item_type;
-
-		$view = apply_filters( 'bp_docs_get_current_view', $view, $item_type );
-
-		// Stuffing into the $bp global for later use. Cheating, I know.
-		$bp->bp_docs->current_view = $view;
-
-		return $view;
+		_deprecated_function( __METHOD__, '1.2' );
 	}
 
 	function get_wp_query() {
@@ -300,7 +271,7 @@ class BP_Docs_Query {
 					$this->define_wp_tiny_mce();
 				}
 
-				require BP_DOCS_INCLUDES_PATH . 'templatetags-edit.php';
+				require_once( BP_DOCS_INCLUDES_PATH . 'templatetags-edit.php' );
 
 				$template = 'edit-doc.php';
 				break;
@@ -333,7 +304,7 @@ class BP_Docs_Query {
 					/**
 					 * Load the template tags for the edit screen
 					 */
-					require BP_DOCS_INCLUDES_PATH . 'templatetags-edit.php';
+					require_once( BP_DOCS_INCLUDES_PATH . 'templatetags-edit.php' );
 				}
 
 				switch ( $this->current_view ) {

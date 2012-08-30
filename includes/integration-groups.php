@@ -311,7 +311,7 @@ class BP_Docs_Groups_Integration {
 				foreach( (array) $terms as $t ) {
 					if ( isset( $t->slug ) ) {
 						$s = explode( '-', $t->slug );
-						if ( 'group' == $s[1] ) {
+						if ( isset( $s[1] ) && 'group' == $s[1] ) {
 							$groups[] = $s[0];
 						}
 					}
@@ -329,7 +329,7 @@ class BP_Docs_Groups_Integration {
 				$ugs = $wpdb->get_results( $wpdb->prepare( "SELECT group_id, is_admin, is_mod FROM {$bp->groups->table_name_members} WHERE user_id = %d AND is_banned = 0 AND is_confirmed = 1", $user_id ) );
 
 				// Set a very short expiration. This is really just for pageload
-				set_transient( 'user_groups-' . $ugs, 5 );
+				set_transient( 'user_groups-' . $user_id, $ugs, 5 );
 			}
 
 			$user_groups = array();
@@ -1404,7 +1404,82 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	function display() {
 		global $bp;
 
-		$bp->bp_docs->query->load_template();
+		// Docs are stored on the root blog
+		if ( !bp_is_root_blog() )
+			switch_to_blog( BP_ROOT_BLOG );
+
+		switch ( $bp->bp_docs->current_view ) {
+			case 'create' :
+				// Todo: Make sure the user has permission to create
+
+				/**
+				 * Load the template tags for the edit screen
+				 */
+				if ( !function_exists( 'wp_tiny_mce' ) ) {
+					bp_docs_define_tiny_mce();
+				}
+
+				require_once( BP_DOCS_INCLUDES_PATH . 'templatetags-edit.php' );
+
+				$template = 'edit-doc.php';
+				break;
+			case 'list' :
+
+				$template = 'docs-loop.php';
+				break;
+			case 'category' :
+				// Check to make sure the category exists
+				// If not, redirect back to list view with error
+				// Otherwise, get args based on category ID
+				// Then load the loop template
+				break;
+			case 'single' :
+			case 'edit' :
+			case 'delete' :
+			case 'history' :
+
+				// If this is the edit screen, we won't really be able to use a
+				// regular have_posts() loop in the template, so we'll stash the
+				// post in the $bp global for the edit-specific template tags
+				if ( $bp->bp_docs->current_view == 'edit' ) {
+					if ( bp_docs_has_docs() ) : while ( bp_docs_has_docs() ) : bp_docs_the_doc();
+						$bp->bp_docs->current_post = $post;
+
+						// Set an edit lock
+						wp_set_post_lock( $post->ID );
+					endwhile; endif;
+
+					/**
+					 * Load the template tags for the edit screen
+					 */
+					require_once( BP_DOCS_INCLUDES_PATH . 'templatetags-edit.php' );
+				}
+
+				switch ( $bp->bp_docs->current_view ) {
+					case 'single' :
+						$template = 'single/index.php';
+						break;
+					case 'edit' :
+						$template = 'single/edit.php';
+						break;
+					case 'history' :
+						$template = 'single/history.php';
+						break;
+
+				}
+				// Todo: Maybe some sort of error if there is no edit permission?
+
+				break;
+		}
+
+		// Only register on the root blog
+		if ( !bp_is_root_blog() )
+			restore_current_blog();
+
+		$template_path = bp_docs_locate_template( $template );
+
+		if ( !empty( $template ) )
+			include( apply_filters( 'bp_docs_template', $template_path, $this ) );
 	}
 
 	/**

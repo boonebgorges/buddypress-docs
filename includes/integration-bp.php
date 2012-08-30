@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Deprecated.
  *
@@ -9,4 +10,3 @@
  */
 
 _deprecated_file( basename(__FILE__), '1.2', BP_DOCS_INCLUDES_PATH_ABS . 'component.php' );
-?>

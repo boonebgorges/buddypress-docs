@@ -319,7 +319,7 @@ function bp_docs_create_link() {
 }
         /**
          * Get the link to create a Doc
-         * 
+         *
          * @package BuddyPress_Docs
          * @since 1.2
          */
@@ -947,25 +947,43 @@ function bp_docs_slug() {
 		return apply_filters( 'bp_docs_get_slug', $bp->bp_docs->slug );
 	}
 
+/**
+ * Outputs the tabs at the top of the Docs view (All Docs, New Doc, etc)
+ *
+ * At the moment, the group-specific stuff is hard coded in here.
+ * @todo Get the group stuff out
+ */
 function bp_docs_tabs() {
-	if ( bp_is_group() ) {
-		bp_docs_group_tabs();
-	} else {
-		global $bp, $post, $bp_version;
+	global $bp, $post, $bp_version;
 
-		?>
-		<li<?php if ( $bp->bp_docs->current_view == 'list' ) : ?> class="current"<?php endif; ?>><a href="<?php echo get_post_type_archive_link( bp_docs_get_post_type_name() ) ?>"><?php _e( 'View Docs', 'bp-docs' ) ?></a></li>
+	$current_view = $bp->bp_docs->current_view;
 
-		<?php if ( bp_docs_current_user_can( 'create' ) ) : ?>
-			<li<?php if ( 'create' == $bp->bp_docs->current_view ) : ?> class="current"<?php endif; ?>><a href="<?php echo get_post_type_archive_link( bp_docs_get_post_type_name() ) ?>/create"><?php _e( 'New Doc', 'bp-docs' ) ?></a></li>
-		<?php endif ?>
-
-		<?php if ( bp_docs_is_existing_doc() ) : ?>
-			<li class="current"><a href="<?php the_permalink() ?>"><?php the_title() ?></a></li>
-		<?php endif ?>
-
-	<?php
+	$is_group = false;
+	if ( bp_is_active( 'groups' ) && bp_is_group() ) {
+		$is_group = true;
+		if ( 'list' == $current_view ) {
+			$current_view = 'group_list';
+			$group_docs_link_text = sprintf( '%s Docs', bp_get_current_group_name() );
+			$group_docs_link_url  = trailingslashit( bp_get_group_permalink( groups_get_current_group() ) . $bp->bp_docs->slug );
+		}
 	}
+
+	?>
+
+	<li<?php if ( $current_view == 'list' ) : ?> class="current"<?php endif; ?>><a href="<?php echo get_post_type_archive_link( bp_docs_get_post_type_name() ) ?>"><?php _e( 'All Docs', 'bp-docs' ) ?></a></li>
+
+	<?php if ( $is_group ) : ?>
+		<li<?php if ( 'group_list' == $current_view ) : ?> class="current"<?php endif; ?>><a href="<?php echo esc_url( $group_docs_link_url ) ?>"><?php echo esc_html( $group_docs_link_text ) ?></a></li>
+	<?php endif ?>
+
+	<?php if ( bp_docs_current_user_can( 'create' ) ) : ?>
+		<li<?php if ( 'create' == $current_view ) : ?> class="current"<?php endif; ?>><a href="<?php echo get_post_type_archive_link( bp_docs_get_post_type_name() ) ?>/create"><?php _e( 'New Doc', 'bp-docs' ) ?></a></li>
+	<?php endif ?>
+
+	<?php if ( bp_docs_is_existing_doc() ) : ?>
+		<li class="current"><a href="<?php the_permalink() ?>"><?php the_title() ?></a></li>
+	<?php endif;
+
 }
 
 /**

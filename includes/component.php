@@ -148,6 +148,55 @@ class BP_Docs_Component extends BP_Component {
 		$this->slugstocheck 	= bp_action_variables() ? bp_action_variables() : array();
 		$this->slugstocheck[] 	= bp_current_component();
 		$this->slugstocheck[] 	= bp_current_action();
+
+		$this->set_current_item_type();
+		$this->set_current_view();
+	}
+
+	/**
+	 * Gets the item type of the item you're looking at - e.g 'group', 'user'.
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0-beta
+	 *
+	 * @return str $view The current item type
+	 */
+	function set_current_item_type() {
+		global $bp;
+
+		$type = '';
+
+		if ( bp_is_user() ) {
+			$type = 'user';
+		}
+
+		$type = apply_filters( 'bp_docs_get_item_type', $type, $this );
+
+		$this->item_type = $type;
+	}
+
+	/**
+	 * Gets the current view, based on the page you're looking at.
+	 *
+	 * Filter 'bp_docs_get_current_view' to extend to different components.
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0-beta
+	 *
+	 * @param str $item_type Defaults to the object's item type
+	 * @return str $view The current view. Core values: edit, single, list, category
+	 */
+	function set_current_view( $item_type = false ) {
+		global $bp;
+
+		$view = '';
+
+		if ( !$item_type )
+			$item_type = $this->item_type;
+
+		$view = apply_filters( 'bp_docs_get_current_view', $view, $item_type );
+
+		$this->current_view = $view;
 	}
 
 	/**

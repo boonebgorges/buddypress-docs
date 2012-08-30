@@ -97,7 +97,7 @@ function bp_docs_get_associated_item_id_from_term_slug( $term_slug = '', $item_t
 	// The item_type should be hidden in the slug
 	$slug_array = explode( '-', $term_slug );
 
-	if ( $item_type == $slug_array[1] ) {
+	if ( isset( $slug_array[1] ) && $item_type == $slug_array[1] ) {
 		$item_id = $slug_array[0];
 	}
 
@@ -366,6 +366,10 @@ function bp_docs_get_doc_settings( $doc_id = 0 ) {
 	$doc_settings = wp_parse_args( $saved_settings, $default_settings );
 
 	return apply_filters( 'bp_docs_get_doc_settings', $doc_settings, $doc_id, $default_settings );
+}
+
+function bp_docs_define_tiny_mce() {
+	BP_Docs_Query::define_wp_tiny_mce();
 }
 
 ?>
