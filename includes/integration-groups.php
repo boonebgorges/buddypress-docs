@@ -205,7 +205,7 @@ class BP_Docs_Groups_Integration {
 	function get_current_view( $view, $item_type ) {
 		global $bp;
 
-		if ( $item_type == 'group' ) {
+		if ( $item_type == 'group' && bp_is_current_action( BP_DOCS_SLUG ) ) {
 			if ( empty( $bp->action_variables[0] ) ) {
 				// An empty $bp->action_variables[0] means that you're looking at a list
 				$view = 'list';

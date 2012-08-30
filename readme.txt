@@ -36,6 +36,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 == Changelog ==
 
 = 1.1.25 =
+* Fixes conflict with group avatar deletion
 * Fixes bug in Javascript that may have caused secondary editor rows not to
   show in some cases
 * Fixes bug that broke comment moderation in some cases
