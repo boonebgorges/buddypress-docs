@@ -48,7 +48,7 @@ class BP_Docs_BP_Integration {
 		add_action( 'bp_docs_doc_saved',	array( $this, 'post_activity' 		) );
 
 		// Doc comments are always from trusted members (for the moment), so approve them
-		add_action( 'pre_comment_approved',	create_function( '', 'return 1;' 	), 999 );
+		add_action( 'pre_comment_approved',     array( $this, 'pre_comment_approved' ), 999, 2 );
 
 		// Hook the doc comment activity function
 		add_action( 'comment_post',		array( $this, 'post_comment_activity'	), 8 );
@@ -432,6 +432,20 @@ class BP_Docs_BP_Integration {
 		do_action( 'bp_docs_after_activity_save', $activity_id, $args );
 
 		return $activity_id;
+	}
+
+	/**
+	 * Ensure that BP Docs comments are always approved
+	 *
+	 * For the moment, only logged-in users can comment on Docs anyway,
+	 * so we'll let them all through.
+	 */
+	function pre_comment_approved( $approved, $commentdata ) {
+		$comment_post = get_post( $commentdata['comment_post_ID'] );
+		if ( 'bp_doc' == $comment_post->post_type ) {
+			$approved = 1;
+		}
+		return $approved;
 	}
 
 	/**

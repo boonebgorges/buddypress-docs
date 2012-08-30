@@ -28,6 +28,7 @@ class BP_Docs {
 		$this->associated_item_tax_name = apply_filters( 'bp_docs_associated_item_tax_name', 'bp_docs_associated_item' );
 
 		// Then stash them in the $bp global for use in template tags
+		$bp->bp_docs                            = new stdClass;
 		$bp->bp_docs->post_type_name		= $this->post_type_name;
 		$bp->bp_docs->associated_item_tax_name	= $this->associated_item_tax_name;
 
