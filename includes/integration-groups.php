@@ -58,8 +58,8 @@ class BP_Docs_Groups_Integration {
 		// Filter the core user_can_edit function for group-specific functionality
 		add_filter( 'bp_docs_user_can',			array( $this, 'user_can' ), 10, 4 );
 
-		// Add group-specific settings to the doc settings box
-		add_filter( 'bp_docs_doc_settings_markup',	array( $this, 'doc_settings_markup' ) );
+		// Add group-specific options to the access options dropdowns
+		add_filter( 'bp_docs_get_access_options',       array( $this, 'get_access_options' ), 10, 3 );
 
 		// Filter the activity actions for group docs-related activity
 		add_filter( 'bp_docs_activity_action',		array( $this, 'activity_action' ), 10, 5 );
@@ -618,114 +618,35 @@ class BP_Docs_Groups_Integration {
 	function doc_settings_markup( $doc_settings ) {
 		global $bp;
 
-		// Only add these settings if we're in the group component
+		_deprecated_function( __METHOD__, '1.2' );
+	}
 
-		// BP 1.2/1.3 compatibility
-		$is_group_component = function_exists( 'bp_is_current_component' ) ? bp_is_current_component( 'groups' ) : $bp->current_component == $bp->groups->slug;
+	function get_access_options( $options, $settings_field, $doc_id ) {
+		$group_id = bp_docs_get_associated_group_id( $doc_id );
 
-		if ( $is_group_component ) {
-			// Get the current values
-			$edit 		= !empty( $doc_settings['edit'] ) ? $doc_settings['edit'] : 'group-members';
+		if ( ! empty( $group_id ) ) {
+			$group = groups_get_group( 'group_id=' . intval( $group_id ) );
 
-			$post_comments 	= !empty( $doc_settings['post_comments'] ) ? $doc_settings['post_comments'] : 'group-members';
+			$options[40] = array(
+				'name'  => 'group-members',
+				'label' => sprintf( __( 'Members of %s', 'bp-docs' ), $group->name )
+			);
 
-			// Read settings have a different default value for public groups
-			if ( !empty( $doc_settings['read_comments'] ) ) {
-				$read_comments = $doc_settings['read_comments'];
-			} else {
-				$read_comments = bp_group_is_visible() ? 'anyone' : 'group-members';
+			// Group-associated docs should have the edit/post
+			// permissions limited to group-members by default. If
+			// the group is non-public, set the other permissions
+			// to group-members as well
+			if ( 'public' != $group->status || in_array( $settings_field, array( 'edit', 'post-comments' ) ) ) {
+				$options[40]['default'] = 1;
 			}
 
-			$view_history   = !empty( $doc_settings['view_history'] ) ? $doc_settings['view_history'] : 'anyone';
-
-			$manage 	= !empty( $doc_settings['manage'] ) ? $doc_settings['manage'] : 'creator';
-
-			// Set the text of the 'creator only' label
-			if ( !empty( $bp->bp_docs->current_post->post_author ) && $bp->bp_docs->current_post->post_author != bp_loggedin_user_id() ) {
-				$creator_text = sprintf( __( 'Doc creator only (%s)', 'bp-docs' ), bp_core_get_user_displayname( $bp->bp_docs->current_post->post_author ) );
-			} else {
-				$creator_text = __( 'Doc creator only (that\'s you!)', 'bp-docs' );
-			}
-
-			?>
-
-			<?php /* EDITING */ ?>
-			<tr>
-				<td class="desc-column">
-					<label for="settings[edit]"><?php _e( 'Who can edit this doc?', 'bp-docs' ) ?></label>
-				</td>
-
-				<td class="content-column">
-					<input name="settings[edit]" type="radio" value="group-members" <?php checked( $edit, 'group-members' ) ?>/> <?php _e( 'All members of the group', 'bp-docs' ) ?><br />
-
-					<input name="settings[edit]" type="radio" value="creator" <?php checked( $edit, 'creator' ) ?>/> <?php echo esc_html( $creator_text ) ?><br />
-
-					<?php if ( bp_group_is_admin() || bp_group_is_mod() ) : ?>
-						<input name="settings[edit]" type="radio" value="admins-mods" <?php checked( $edit, 'admins-mods' ) ?>/> <?php _e( 'Only admins and mods of this group', 'bp-docs' ) ?><br />
-					<?php endif ?>
-				</td>
-			</tr>
-
-			<?php /* POSTING COMMENTS */ ?>
-			<tr>
-				<td class="desc-column">
-					<label for="settings[post_comments]"><?php _e( 'Who can <em>post</em> comments on this doc?', 'bp-docs' ) ?></label>
-				</td>
-
-				<td class="content-column">
-					<input name="settings[post_comments]" type="radio" value="group-members" <?php checked( $post_comments, 'group-members' ) ?>/> <?php _e( 'All members of the group', 'bp-docs' ) ?><br />
-
-					<?php if ( bp_group_is_admin() || bp_group_is_mod() ) : ?>
-						<input name="settings[post_comments]" type="radio" value="admins-mods" <?php checked( $post_comments, 'admins-mods' ) ?>/> <?php _e( 'Only admins and mods of this group', 'bp-docs' ) ?><br />
-					<?php endif ?>
-
-					<input name="settings[post_comments]" type="radio" value="no-one" <?php checked( $post_comments, 'no-one' ) ?>/> <?php _e( 'No one', 'bp-docs' ) ?><br />
-				</td>
-			</tr>
-
-			<?php /* READING COMMENTS */ ?>
-			<tr>
-				<td class="desc-column">
-					<label for="settings[read_comments]"><?php _e( 'Who can <em>read</em> comments on this doc?', 'bp-docs' ) ?></label>
-				</td>
-
-				<td class="content-column">
-					<?php if ( bp_docs_current_group_is_public() ) : ?>
-						<input name="settings[read_comments]" type="radio" value="anyone" <?php checked( $read_comments, 'anyone' ) ?>/> <?php _e( 'Anyone', 'bp-docs' ) ?><br />
-					<?php endif ?>
-
-					<input name="settings[read_comments]" type="radio" value="group-members" <?php checked( $read_comments, 'group-members' ) ?>/> <?php _e( 'All members of the group', 'bp-docs' ) ?><br />
-
-					<?php if ( bp_group_is_admin() || bp_group_is_mod() ) : ?>
-						<input name="settings[read_comments]" type="radio" value="admins-mods" <?php checked( $read_comments, 'admins-mods' ) ?>/> <?php _e( 'Only admins and mods of this group', 'bp-docs' ) ?><br />
-					<?php endif ?>
-
-					<input name="settings[read_comments]" type="radio" value="no-one" <?php checked( $read_comments, 'no-one' ) ?>/> <?php _e( 'No one', 'bp-docs' ) ?><br />
-				</td>
-			</tr>
-
-			<?php /* VIEWING HISTORY */ ?>
-			<tr>
-				<td class="desc-column">
-					<label for="settings[view_history]"><?php _e( 'Who can view this doc\'s history?', 'bp-docs' ) ?></label>
-				</td>
-
-				<td class="content-column">
-
-					<input name="settings[view_history]" type="radio" value="anyone" <?php checked( $view_history, 'anyone' ) ?>/> <?php _e( 'Anyone', 'bp-docs' ) ?><br />
-
-					<input name="settings[view_history]" type="radio" value="group-members" <?php checked( $view_history, 'group-members' ) ?>/> <?php _e( 'All members of the group', 'bp-docs' ) ?><br />
-
-					<?php if ( bp_group_is_admin() || bp_group_is_mod() ) : ?>
-						<input name="settings[view_history]" type="radio" value="admins-mods" <?php checked( $view_history, 'admins-mods' ) ?>/> <?php _e( 'Only admins and mods of this group', 'bp-docs' ) ?><br />
-					<?php endif ?>
-
-					<input name="settings[view_history]" type="radio" value="no-one" <?php checked( $view_history, 'no-one' ) ?>/> <?php _e( 'No one', 'bp-docs' ) ?><br />
-				</td>
-			</tr>
-
-			<?php
+			$options[50] = array(
+				'name'  => 'admins-mods',
+				'label' => sprintf( __( 'Admins and mods of %s', 'bp-docs' ), $group->name )
+			);
 		}
+
+		return $options;
 	}
 
 	/**
@@ -1641,7 +1562,7 @@ function bp_docs_get_associated_group_id( $doc_id, $doc = false, $single_array =
 		$return = $group_ids;
 	}
 
-	return apply_filters( 'bp_docs_get_associated_group_id', $group_ids, $doc_id, $doc, $single_array );
+	return apply_filters( 'bp_docs_get_associated_group_id', $return, $doc_id, $doc, $single_array );
 }
 
 ?>

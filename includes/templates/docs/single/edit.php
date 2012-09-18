@@ -106,7 +106,7 @@ if ( !function_exists( 'wp_editor' ) ) {
 		<?php if ( bp_docs_current_user_can( 'manage' ) ) : ?>
 			<div id="doc-settings" class="doc-meta-box">
 				<div class="toggleable">
-					<p class="toggle-switch" id="settings-toggle"><?php _e( 'Settings', 'bp-docs' ) ?></p>
+					<p class="toggle-switch" id="settings-toggle"><?php _e( 'Access', 'bp-docs' ) ?></p>
 
 					<div class="toggle-content">
 						<table class="toggle-table" id="toggle-table-settings">

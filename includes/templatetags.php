@@ -543,46 +543,65 @@ function bp_docs_doc_settings_markup() {
 
 	$doc = bp_docs_get_current_doc();
 
-	$doc_settings = !empty( $doc->ID ) ? get_post_meta( $doc->ID, 'bp_docs_settings', true ) : array();
+	$doc_settings = ! empty( $doc->ID ) ? get_post_meta( $doc->ID, 'bp_docs_settings', true ) : array();
 
-	$doc_primary_item = 0;
-	if ( !empty( $doc->ID ) ) {
-		$doc_primary_item = get_post_meta( $doc->ID, 'bp_docs_primary_item', true );
+	$settings_fields = array(
+		'read' => array(
+			'name'  => 'read',
+			'label' => __( 'Who can read this doc?', 'bp-docs' )
+		),
+		'edit' => array(
+			'name'  => 'edit',
+			'label' => __( 'Who can edit this doc?', 'bp-docs' )
+		),
+		'read_comments' => array(
+			'name'  => 'read_comments',
+			'label' => __( 'Who can read comments on this doc?', 'bp-docs' )
+		),
+		'post_comments' => array(
+			'name'  => 'post_comments',
+			'label' => __( 'Who can post comments on this doc?', 'bp-docs' )
+		),
+		'view_history' => array(
+			'name'  => 'view_history',
+			'label' => __( 'Who can view the history of this doc?', 'bp-docs' )
+		)
+	);
+
+	foreach ( $settings_fields as $settings_field ) {
+		bp_docs_access_options_helper( $settings_field );
 	}
 
-	if ( !$doc_primary_item && !empty( $bp->bp_docs->current_item ) && !empty( $bp->bp_docs->current_item_type ) ) {
-		// Default to the current item
-		$doc_primary_item = $bp->bp_docs->current_item . '-' . $bp->bp_docs->current_item_type;
-	}
+	// Hand off the creation of additional settings to individual integration pieces
+	do_action( 'bp_docs_doc_settings_markup', $doc_settings );
+}
 
-	$edit = isset( $doc_settings['edit'] ) ? $doc_settings['edit'] : '';
-	$creator_text = get_the_ID();
-
+function bp_docs_access_options_helper( $settings_field ) {
+	$doc_settings = get_post_meta( get_the_ID(), 'bp_docs_settings', true );
+	$setting = isset( $doc_settings[ $settings_field['name'] ] ) ? $doc_settings[ $settings_field['name'] ] : '';
 	?>
-
-	<tr>
+	<tr class="bp-docs-access-row bp-docs-access-row-<?php echo esc_attr( $settings_field['name'] ) ?>">
 		<td class="desc-column">
-			<label for="settings[edit]"><?php _e( 'Who can edit this Doc?', 'bp-docs' ) ?></label>
-			<p class="description">
-				<?php _e( 'uoehnteouthn' ) ?>
-			</p>
+			<label for="settings[<?php echo esc_attr( $settings_field['name'] ) ?>]"><?php echo esc_html( $settings_field['label'] ) ?></label>
 		</td>
 
 		<td class="content-column">
-			<input name="settings[edit]" type="radio" value="group-members" <?php checked( $edit, 'group-members' ) ?>/> <?php _e( 'All members of the group', 'bp-docs' ) ?><br />
-
-			<input name="settings[edit]" type="radio" value="creator" <?php checked( $edit, 'creator' ) ?>/> <?php echo esc_html( $creator_text ) ?><br />
-
-			<?php if ( bp_group_is_admin() || bp_group_is_mod() ) : ?>
-				<input name="settings[edit]" type="radio" value="admins-mods" <?php checked( $edit, 'admins-mods' ) ?>/> <?php _e( 'Only admins and mods of this group', 'bp-docs' ) ?><br />
-			<?php endif ?>
+			<select name="settings[<?php echo esc_attr( $settings_field['name'] ) ?>]">
+				<?php $access_options = bp_docs_get_access_options( $settings_field['name'] ) ?>
+				<?php foreach ( $access_options as $key => $option ) : ?>
+					<?php
+					$selected = selected( $setting, $option['name'], false );
+					if ( empty( $selected ) && ! empty( $option['default'] ) ) {
+						$selected = selected( 1, 1, false );
+					}
+					?>
+					<option value="<?php echo esc_attr( $option['name'] ) ?>" <?php echo $selected ?>><?php echo esc_attr( $option['label'] ) ?></option>
+				<?php endforeach ?>
+			</select>
 		</td>
 	</tr>
 
 	<?php
-
-	// Hand off the creation of additional settings to individual integration pieces
-	do_action( 'bp_docs_doc_settings_markup', $doc_settings );
 }
 
 /**
@@ -996,7 +1015,7 @@ function bp_docs_tabs() {
 function bp_docs_doc_permissions_snapshot() {
 	$html = '';
 
-	$doc_group_ids = bp_docs_get_associated_group_id( get_the_ID(), 'full' );
+	$doc_group_ids = bp_docs_get_associated_group_id( get_the_ID(), 'full', true );
 	$doc_groups = array();
 	foreach( $doc_group_ids as $dgid ) {
 		$maybe_group = groups_get_group( 'group_id=' . $dgid );
@@ -1052,11 +1071,11 @@ function bp_docs_doc_permissions_snapshot() {
 	$anyone_count  = 0;
 	$private_count = 0;
 	$public_settings = array(
-		'read' => 'anyone',
-		'edit' => 'loggedin',
+		'read'          => 'anyone',
+		'edit'          => 'loggedin',
 		'read_comments' => 'anyone',
 		'post_comments' => 'loggedin',
-		'view_history' => 'anyone'
+		'view_history'  => 'anyone'
 	);
 
 	foreach ( $settings as $l => $v ) {
@@ -1106,7 +1125,10 @@ function bp_docs_doc_permissions_snapshot() {
 	$html .=     '<li class="bp-docs-can-post_comments ' . $post_comments_class . '"><span class="bp-docs-level-icon"></span>' . $post_comments_text . '</li>';
 	$html .=     '<li class="bp-docs-can-view_history ' . $view_history_class . '"><span class="bp-docs-level-icon"></span>' . $view_history_text . '</li>';
 	$html .=   '</ul>';
-	$html .=   '<a href="' . get_permalink() . '" id="doc-permissions-edit">' . __( 'Edit', 'bp-docs' ) . '</a>'; // @todo fix link
+
+	if ( bp_docs_current_user_can( 'manage' ) )
+		$html .=   '<a href="' . bp_docs_get_doc_edit_link() . '#permissions" id="doc-permissions-edit">' . __( 'Edit', 'bp-docs' ) . '</a>';
+
 	$html .=   '<a href="#" class="doc-permissions-toggle" id="doc-permissions-less">' . __( 'Summary', 'bp-docs' ) . '</a>';
 	$html .= '</div>';
 

@@ -372,4 +372,63 @@ function bp_docs_define_tiny_mce() {
 	BP_Docs_Query::define_wp_tiny_mce();
 }
 
+/**
+ * Outputs a list of access options
+ *
+ * Access options are things like 'anyone', 'loggedin', 'group-members', etc
+ */
+function bp_docs_get_access_options( $settings_field, $doc_id = 0 ) {
+	$options = array();
+
+	if ( empty( $doc_id ) ) {
+		$doc_id = get_the_ID();
+	}
+
+	if ( ! empty( $doc_id ) ) {
+		// The base options for every setting
+		$options = array(
+			20 => array(
+				'name'  => 'loggedin',
+				'label' => __( 'Logged-in Users', 'bp-docs' ),
+				'default' => 1 // default to 'loggedin' for most options. See below for override
+			),
+			90 => array(
+				'name'  => 'creator',
+				'label' => __( 'The Doc author only', 'bp-docs' )
+			),
+			100 => array(
+				'name'  => 'no-one',
+				'label' => __( 'Just Me', 'bp-docs' )
+			)
+		);
+
+		// Allow anonymous reading
+		if ( in_array( $settings_field, array( 'read', 'read_comments', 'view_history' ) ) ) {
+			$options[10] = array(
+				'name'  => 'anyone',
+				'label' => __( 'Anyone', 'bp-docs' ),
+				'default' => 1
+			);
+
+			$options[20]['default'] = 0; // Default to 'anyone' instead
+		}
+
+		// @todo Probably don't want to allow this kind of limiting for group-associated docs
+		if ( bp_is_active( 'friends' ) ) {
+			$options[30] = array(
+				'name'  => 'friends',
+				'label' => __( 'My Friends', 'bp-docs' )
+			);
+		}
+	}
+
+	// Other integration pieces can mod the options with this filter
+	$options = apply_filters( 'bp_docs_get_access_options', $options, $settings_field, $doc_id );
+
+	// Options are sorted by the numeric key
+	ksort( $options );
+
+	return $options;
+}
+
 ?>
