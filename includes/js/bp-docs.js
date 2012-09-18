@@ -44,6 +44,17 @@ jQuery(document).ready(function($){
 	$('#bp-docs-group-enable').click(function(){
 		$('#group-doc-options').slideToggle(400);
 	});
+
+	/* Permissions snapshot toggle */
+	$('.doc-permissions-toggle').on('click',function(e){
+		e.preventDefault();
+		var thisaction = $(e.target).attr('id').split('-').pop();
+		var showing = 'more' == thisaction ? 'summary' : 'details';
+		var hidden = 'summary' == showing ? 'details' : 'summary';
+		$('#doc-permissions-' + showing).slideUp(100, function(){
+			$('#doc-permissions-' + hidden).slideDown(100);
+		});
+	});
 },(jQuery));
 
 function bp_docs_load_idle() {

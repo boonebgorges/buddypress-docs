@@ -994,57 +994,127 @@ function bp_docs_tabs() {
  * @since 1.2
  */
 function bp_docs_doc_permissions_snapshot() {
-	// @todo Abstract?
-	$permissions_types = array(
-		'read'          => __( 'Read', 'bp-docs' ),
-		'edit'          => __( 'Edit', 'bp-docs' ),
-		'read_comments' => __( 'Read comments', 'bp-docs' ),
-		'post_comments' => __( 'Post comments', 'bp-docs' ),
-		'view_history'  => __( 'View history', 'bp-docs' )
+	$html = '';
+
+	$doc_group_ids = bp_docs_get_associated_group_id( get_the_ID(), 'full' );
+	$doc_groups = array();
+	foreach( $doc_group_ids as $dgid ) {
+		$maybe_group = groups_get_group( 'group_id=' . $dgid );
+		if ( !empty( $maybe_group->name ) ) {
+			$doc_groups[] = $maybe_group;
+		}
+	}
+
+	// we'll need a list of comma-separated group names
+	$group_names = implode( ',', wp_list_pluck( $doc_groups, 'name' ) );
+
+	$levels = array(
+		'anyone'        => __( 'Anyone', 'bp-docs' ),
+		'loggedin'      => __( 'Logged-in Users', 'bp-docs' ),
+		'friends'       => __( 'My Friends', 'bp-docs' ),
+		'group-members' => __( 'Members of: %s', 'bp-docs' ), // @todo
+		'admins-mods'   => __( 'Admins and mods of the group', 'bp-docs' ),
+		'creator'       => __( 'The Doc author only', 'bp-docs' ),
+		'no-one'        => __( 'Just Me', 'bp-docs' )
 	);
+
+	if ( get_the_author_meta( 'ID' ) == bp_loggedin_user_id() ) {
+		$levels['creator'] = __( 'The Doc author only (that\'s you!)', 'bp-docs' );
+	}
 
 	$settings = bp_docs_get_doc_settings();
 
-	$output = '';
+	// Read
+	$read_class = bp_docs_get_permissions_css_class( $settings['read'] );
+	$read_text  = sprintf( __( 'This Doc can be read by: <strong>%s</strong>', 'bp-docs' ), $levels[ $settings['read'] ] );
 
-	$output .= '<dl class="doc-permissions-types">';
+	// Edit
+	$edit_class = bp_docs_get_permissions_css_class( $settings['edit'] );
+	$edit_text  = sprintf( __( 'This Doc can be edited by: <strong>%s</strong>', 'bp-docs' ), $levels[ $settings['edit'] ] );
 
-	foreach( $permissions_types as $p_type => $p_label ) {
-		$output .= '<dt class="doc-can-' . $p_type . '">' . $p_label . '</dt>';
+	// Read Comments
+	$read_comments_class = bp_docs_get_permissions_css_class( $settings['read_comments'] );
+	$read_comments_text  = sprintf( __( 'Comments are visible to: <strong>%s</strong>', 'bp-docs' ), $levels[ $settings['read_comments'] ] );
 
-		switch( $settings[$p_type] ) {
-			case 'anyone' :
-				$p_text = __( 'Anyone', 'bp-docs' );
-				break;
+	// Post Comments
+	$post_comments_class = bp_docs_get_permissions_css_class( $settings['post_comments'] );
+	$post_comments_text  = sprintf( __( 'Comments can be posted by: <strong>%s</strong>', 'bp-docs' ), $levels[ $settings['post_comments'] ] );
 
-			case 'loggedin' :
-				$p_text = __( 'Logged-in Users', 'bp-docs' );
-				break;
+	// View History
+	$view_history_class = bp_docs_get_permissions_css_class( $settings['view_history'] );
+	$view_history_text  = sprintf( __( 'History can be viewed by: <strong>%s</strong>', 'bp-docs' ), $levels[ $settings['view_history'] ] );
 
-			case 'friends' :
-				$p_text = __( 'My Friends', 'bp-docs' );
-				break;
+	// Calculate summary
+	// Summary works like this:
+	//  'public'  - all read_ items set to 'anyone', all others to 'anyone' or 'loggedin'
+	//  'private' - everything set to 'admins-mods', 'creator', 'no-one', 'friends', or 'group-members' where the associated group is non-public
+	//  'limited' - everything else
+	$anyone_count  = 0;
+	$private_count = 0;
+	$public_settings = array(
+		'read' => 'anyone',
+		'edit' => 'loggedin',
+		'read_comments' => 'anyone',
+		'post_comments' => 'loggedin',
+		'view_history' => 'anyone'
+	);
 
-			case 'group-members' :
-				$p_text = __( 'Members of the group', 'bp-docs' ); // @todo
-				break;
+	foreach ( $settings as $l => $v ) {
+		if ( 'anyone' == $v || $public_settings[ $l ] == $v ) {
 
-			case 'admins-mods' :
-				$p_text = __( 'Admins and mods of the group', 'bp-docs' ); // @todo
-				break;
+			$anyone_count++;
 
-			case 'creator' :
-			case 'no-one' :
-				$p_text = __( 'Just Me', 'bp-docs' );
-				break;
+		} else if ( in_array( $v, array( 'admins-mods', 'creator', 'no-one', 'friends', 'group-members' ) ) ) {
+
+			if ( 'group-members' == $v ) {
+				if ( ! isset( $group_status ) ) {
+					$group_status = 'foo'; // todo
+				}
+
+				if ( 'public' != $group_status ) {
+					$private_count++;
+				}
+			} else {
+				$private_count++;
+			}
+
 		}
-
-		$output .= '<dd class="doc-can-' . $p_type . '">' . $p_text . '</dd>';
 	}
 
-	$output .= '</dl>';
+	$settings_count = count( $settings );
+	if ( $settings_count == $private_count ) {
+		$summary       = 'private';
+		$summary_label = __( 'Private', 'bp-docs' );
+	} else if ( $settings_count == $anyone_count ) {
+		$summary       = 'public';
+		$summary_label = __( 'Public', 'bp-docs' );
+	} else {
+		$summary       = 'limited';
+		$summary_label = __( 'Limited', 'bp-docs' );
+	}
 
-	echo $output;
+	$html .= '<div id="doc-permissions-summary" class="doc-' . $summary . '">';
+	$html .=   sprintf( __( 'Access: <strong>%s</strong>', 'bp-docs' ), $summary_label );
+	$html .=   '<a href="#" class="doc-permissions-toggle" id="doc-permissions-more">' . __( 'Details', 'bp-docs' ) . '</a>';
+	$html .= '</div>';
+
+	$html .= '<div id="doc-permissions-details">';
+	$html .=   '<ul>';
+	$html .=     '<li class="bp-docs-can-read ' . $read_class . '"><span class="bp-docs-level-icon"></span>' . $read_text . '</li>';
+	$html .=     '<li class="bp-docs-can-edit ' . $edit_class . '"><span class="bp-docs-level-icon"></span>' . $edit_text . '</li>';
+	$html .=     '<li class="bp-docs-can-read_comments ' . $read_comments_class . '"><span class="bp-docs-level-icon"></span>' . $read_comments_text . '</li>';
+	$html .=     '<li class="bp-docs-can-post_comments ' . $post_comments_class . '"><span class="bp-docs-level-icon"></span>' . $post_comments_text . '</li>';
+	$html .=     '<li class="bp-docs-can-view_history ' . $view_history_class . '"><span class="bp-docs-level-icon"></span>' . $view_history_text . '</li>';
+	$html .=   '</ul>';
+	$html .=   '<a href="' . get_permalink() . '" id="doc-permissions-edit">' . __( 'Edit', 'bp-docs' ) . '</a>'; // @todo fix link
+	$html .=   '<a href="#" class="doc-permissions-toggle" id="doc-permissions-less">' . __( 'Summary', 'bp-docs' ) . '</a>';
+	$html .= '</div>';
+
+	echo $html;
+}
+
+function bp_docs_get_permissions_css_class( $level ) {
+	return apply_filters( 'bp_docs_get_permissions_css_class', 'bp-docs-level-' . $level );
 }
 
 /**

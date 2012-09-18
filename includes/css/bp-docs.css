@@ -251,6 +251,88 @@ div.doc-content {
 		margin: 0;
 	}
 
+#bp-docs-single-doc-header {
+	overflow: hidden;
+}
+div.doc-permissions {
+	float: right;
+	width: 40%;
+	border: 1px solid #aaa;
+	border-radius: 3px;
+	padding: 8px;
+}
+	div.doc-permissions div:last-child {
+		clear: both;
+	}
+body.js #doc-permissions-details {
+	display: none;
+}
+
+body.no-js a.doc-permissions-toggle {
+	display: none;
+}
+
+#doc-permissions-summary {
+	font-size: 1.5em;
+	padding: 8px 15px;
+}
+	#doc-permissions-summary.doc-public {
+		background: green;
+	}
+	#doc-permissions-summary.doc-limited {
+		background: yellow;
+	}
+	#doc-permissions-summary.doc-private {
+		background: red;
+	}
+
+a.doc-permissions-toggle {
+	display: block;
+	float: right;
+	font-size: 12px;
+	cursor: hand;
+}
+
+dl.doc-permissions-types dd,
+dl.doc-permissions-types dt {
+	height: 1.5em;
+}
+dl.doc-permissions-types dt {
+	width: 50%;
+	float: left;
+	clear: left;
+}
+
+/* Permissions level icons */
+span.bp-docs-level-icon {
+	display: block;
+	float: left;
+	width: 1.2em;
+	height: 1.2em;
+	margin: 3px 5px;
+}
+.bp-docs-level-anyone span.bp-docs-level-icon {
+	-moz-border-radius: .6em;
+	-webkit-border-radius: .6em;
+	border-radius: .6em;
+	background: green;
+}
+.bp-docs-level-friends span.bp-docs-level-icon,
+.bp-docs-level-loggedin span.bp-docs-level-icon,
+.bp-docs-level-group-members span.bp-docs-level-icon {
+	width: 0;
+	height: 0;
+	border-left: .6em solid transparent;
+	border-right: .6em solid transparent;
+	border-bottom: 1.2em solid yellow;
+}
+.bp-docs-level-admins-mods span.bp-docs-level-icon,
+.bp-docs-level-no-one span.bp-docs-level-icon,
+.bp-docs-level-creator span.bp-docs-level-icon {
+	background: red;
+}
+
+
 div.doc-is-locked .toggle-switch {
 	display: block;
 	background: #bbb url(../images/padlock.gif) no-repeat;
@@ -273,6 +355,11 @@ div.doc-meta p {
 
 a.nonexistent-doc {
 	color: #f33;
+}
+
+h2.doc-title {
+	display: inline-block;
+	width: 50%;
 }
 
 /* Comment section */

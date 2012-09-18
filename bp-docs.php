@@ -401,7 +401,7 @@ class BP_Docs {
 	function do_integration() {
 		global $bp;
 
-		$bp->bp_docs =& new BP_Docs_Component;
+		$bp->bp_docs = new BP_Docs_Component;
 	}
 }
 

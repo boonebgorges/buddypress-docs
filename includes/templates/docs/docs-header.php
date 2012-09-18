@@ -9,18 +9,19 @@
 
 <?php if ( bp_docs_is_existing_doc() ) : ?>
 
-	<h2><?php the_title() ?></h2>
+	<div id="bp-docs-single-doc-header">
+		<h2 class="doc-title"><?php the_title() ?></h2>
 
-	<div class="doc-permissions">
+		<div class="doc-permissions">
 
-		<h3><?php _e( 'Doc Permissions', 'bp-docs' ) ?></h3>
+			<?php bp_docs_doc_permissions_snapshot() ?>
 
-		<?php bp_docs_doc_permissions_snapshot() ?>
+			<?php if ( bp_docs_current_user_can( 'manage' ) ) : ?>
 
-		<?php if ( bp_docs_current_user_can( 'manage' ) ) : ?>
+				<a id="edit-doc-permissions" href="<?php bp_docs_doc_edit_link() ?>#permissions">Edit</a>
 
-			<a id="edit-doc-permissions" href="<?php bp_docs_doc_edit_link() ?>#permissions">Edit</a>
-		<?php endif ?>
+			<?php endif ?>
+		</div>
 	</div>
 
 	<div class="doc-tabs">
