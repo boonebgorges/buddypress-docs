@@ -56,6 +56,9 @@ class BP_Docs {
 
 		// Hook into the WP template loader
 		add_filter( 'template_include', array( $this, 'template_include' ) );
+
+		// parse_query
+		add_action( 'parse_query', array( $this, 'parse_query' ) );
 	}
 
 	/**
@@ -386,6 +389,28 @@ class BP_Docs {
 
 	function template_include( $filter ) {
 		return $filter;
+	}
+
+	function parse_query( $posts_query ) {
+
+		// Bail if $posts_query is not the main loop
+		if ( ! $posts_query->is_main_query() )
+			return;
+
+		// Bail if filters are suppressed on this query
+		if ( true == $posts_query->get( 'suppress_filters' ) )
+			return;
+
+		// Bail if in admin
+		if ( is_admin() )
+			return;
+
+		$is_create = $posts_query->get( BP_DOCS_CREATE_SLUG );
+
+		if ( $is_create ) {
+			$posts_query->is_404 = false;
+			$posts_query->set( 'p', -1 );
+		}
 	}
 
 	function activation() {
