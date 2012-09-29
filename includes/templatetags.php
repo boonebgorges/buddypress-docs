@@ -346,6 +346,65 @@ function bp_docs_mygroups_link() {
                 return apply_filters( 'bp_docs_get_mygroups_link', trailingslashit( bp_docs_get_archive_link() . BP_DOCS_MY_GROUPS_SLUG ) );
         }
 
+/**
+ * Echoes the output of bp_docs_get_mydocs_link()
+ *
+ * @package BuddyPress_Docs
+ * @since 1.2
+ */
+function bp_docs_mydocs_link() {
+        echo bp_docs_get_mydocs_link();
+}
+        /**
+         * Get the link to the My Docs tab of the logged in user
+         *
+         * @package BuddyPress_Docs
+         * @since 1.2
+         */
+        function bp_docs_get_mydocs_link() {
+                return apply_filters( 'bp_docs_get_mydocs_link', trailingslashit( bp_loggedin_user_domain() . bp_docs_get_slug() ) );
+        }
+
+/**
+ * Echoes the output of bp_docs_get_mydocs_started_link()
+ *
+ * @package BuddyPress_Docs
+ * @since 1.2
+ */
+function bp_docs_mydocs_started_link() {
+        echo bp_docs_get_mydocs_started_link();
+}
+        /**
+         * Get the link to the Started By Me tab of the logged in user
+         *
+         * @package BuddyPress_Docs
+         * @since 1.2
+         */
+        function bp_docs_get_mydocs_started_link() {
+                return apply_filters( 'bp_docs_get_mydocs_started_link', trailingslashit( bp_docs_get_mydocs_link() . BP_DOCS_STARTED_SLUG ) );
+        }
+
+/**
+ * Echoes the output of bp_docs_get_mydocs_edited_link()
+ *
+ * @package BuddyPress_Docs
+ * @since 1.2
+ */
+function bp_docs_mydocs_edited_link() {
+        echo bp_docs_get_mydocs_edited_link();
+}
+        /**
+         * Get the link to the Edited By Me tab of the logged in user
+         *
+         * @package BuddyPress_Docs
+         * @since 1.2
+         */
+        function bp_docs_get_mydocs_edited_link() {
+                return apply_filters( 'bp_docs_get_mydocs_edited_link', trailingslashit( bp_docs_get_mydocs_link() . BP_DOCS_EDITED_SLUG ) );
+        }
+
+
+
 
 /**
  * Echoes the output of bp_docs_get_create_link()
@@ -1020,9 +1079,15 @@ function bp_docs_tabs() {
 
 	<ul id="bp-docs-all-docs">
 		<li<?php if ( bp_docs_is_global_directory() ) : ?> class="current"<?php endif; ?>><a href="<?php bp_docs_archive_link() ?>"><?php _e( 'All Docs', 'bp-docs' ) ?></a></li>
-		<li<?php if ( $current_view == 'list' ) : ?> class="current"<?php endif; ?>><a href="<?php echo get_post_type_archive_link( bp_docs_get_post_type_name() ) ?>"><?php _e( 'Started By Me', 'bp-docs' ) ?></a></li>
-		<li<?php if ( $current_view == 'list' ) : ?> class="current"<?php endif; ?>><a href="<?php echo get_post_type_archive_link( bp_docs_get_post_type_name() ) ?>"><?php _e( 'Edited By Me', 'bp-docs' ) ?></a></li>
-		<li<?php if ( bp_docs_is_mygroups_docs() ) : ?> class="current"<?php endif; ?>><a href="<?php bp_docs_mygroups_link() ?>"><?php _e( 'My Groups', 'bp-docs' ) ?></a></li>
+
+		<?php if ( is_user_logged_in() ) : ?>
+			<li<?php if ( $current_view == 'list' ) : ?> class="current"<?php endif; ?>><a href="<?php bp_docs_mydocs_started_link() ?>"><?php _e( 'Started By Me', 'bp-docs' ) ?></a></li>
+			<li<?php if ( $current_view == 'list' ) : ?> class="current"<?php endif; ?>><a href="<?php bp_docs_mydocs_edited_link() ?>"><?php _e( 'Edited By Me', 'bp-docs' ) ?></a></li>
+
+			<?php if ( bp_is_active( 'groups' ) ) : ?>
+				<li<?php if ( bp_docs_is_mygroups_docs() ) : ?> class="current"<?php endif; ?>><a href="<?php bp_docs_mygroups_link() ?>"><?php _e( 'My Groups', 'bp-docs' ) ?></a></li>
+			<?php endif ?>
+		<?php endif ?>
 	</ul>
 
 	<?php /*

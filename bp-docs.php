@@ -198,6 +198,14 @@ class BP_Docs {
 		if ( !defined( 'BP_DOCS_DELETE_SLUG' ) )
 			define( 'BP_DOCS_DELETE_SLUG', 'delete' );
 
+		// The slug used for the Started section of My Docs
+		if ( !defined( 'BP_DOCS_STARTED_SLUG' ) )
+			define( 'BP_DOCS_STARTED_SLUG', 'started' );
+
+		// The slug used for the Edited section of My Docs
+		if ( !defined( 'BP_DOCS_EDITED_SLUG' ) )
+			define( 'BP_DOCS_EDITED_SLUG', 'edited' );
+
 		// The slug used for 'my-docs'
 		if ( !defined( 'BP_DOCS_MY_DOCS_SLUG' ) )
 			define( 'BP_DOCS_MY_DOCS_SLUG', 'my-docs' );

@@ -212,16 +212,16 @@ class BP_Docs_Component extends BP_Component {
 			'slug' 		      => bp_docs_get_slug(),
 			'position' 	      => 80,
 			'screen_function'     => array( &$this, 'template_loader' ),
-			'default_subnav_slug' => BP_DOCS_MY_DOCS_SLUG
+			'default_subnav_slug' => BP_DOCS_STARTED_SLUG
 		);
 
-		$parent_url = trailingslashit( bp_loggedin_user_domain() . bp_docs_get_slug() );
+		$parent_url = trailingslashit( bp_displayed_user_domain() . bp_docs_get_slug() );
 
 		$mydocs_label = bp_is_my_profile() ? __( 'My Docs ', 'bp-docs' ) : sprintf( __( '%s&#8217;s Docs' ), bp_get_user_firstname( bp_get_displayed_user_fullname() ) );
 
 		$sub_nav[] = array(
-			'name'            => $mydocs_label,
-			'slug'            => BP_DOCS_MY_DOCS_SLUG,
+			'name'            => bp_is_my_profile() ? __( 'Started By Me', 'bp-docs' ) : sprintf( __( 'Started By %s', 'bp-docs' ), bp_get_user_firstname() ),
+			'slug'            => BP_DOCS_STARTED_SLUG,
 			'parent_url'      => $parent_url,
 			'parent_slug'     => bp_docs_get_slug(),
 			'screen_function' => array( &$this, 'template_loader' ),
@@ -229,13 +229,12 @@ class BP_Docs_Component extends BP_Component {
 		);
 
 		$sub_nav[] = array(
-			'name'            =>  __( 'New Doc', 'bp-docs' ),
-			'slug'            => BP_DOCS_CREATE_SLUG,
+			'name'            => bp_is_my_profile() ? __( 'Edited By Me', 'bp-docs' ) : sprintf( __( 'Edited By %s', 'bp-docs' ), bp_get_user_firstname() ),
+			'slug'            => BP_DOCS_EDITED_SLUG,
 			'parent_url'      => $parent_url,
 			'parent_slug'     => bp_docs_get_slug(),
 			'screen_function' => array( &$this, 'template_loader' ),
 			'position'        => 20,
-			'user_has_access' => bp_is_my_profile()
 		);
 
 		parent::setup_nav( $main_nav, $sub_nav );
