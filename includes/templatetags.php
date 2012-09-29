@@ -309,6 +309,45 @@ function bp_docs_doc_edit_link( $doc_id = false ) {
 	}
 
 /**
+ * Echoes the output of bp_docs_get_archive_link()
+ *
+ * @package BuddyPress_Docs
+ * @since 1.2
+ */
+function bp_docs_archive_link() {
+        echo bp_docs_get_archive_link();
+}
+        /**
+         * Get the link to the main site Docs archive
+         *
+         * @package BuddyPress_Docs
+         * @since 1.2
+         */
+        function bp_docs_get_archive_link() {
+                return apply_filters( 'bp_docs_get_archive_link', trailingslashit( get_post_type_archive_link( bp_docs_get_post_type_name() ) ) );
+        }
+
+/**
+ * Echoes the output of bp_docs_get_mygroups_link()
+ *
+ * @package BuddyPress_Docs
+ * @since 1.2
+ */
+function bp_docs_mygroups_link() {
+        echo bp_docs_get_mygroups_link();
+}
+        /**
+         * Get the link the My Groups tab of the Docs archive
+         *
+         * @package BuddyPress_Docs
+         * @since 1.2
+         */
+        function bp_docs_get_mygroups_link() {
+                return apply_filters( 'bp_docs_get_mygroups_link', trailingslashit( bp_docs_get_archive_link() . BP_DOCS_MY_GROUPS_SLUG ) );
+        }
+
+
+/**
  * Echoes the output of bp_docs_get_create_link()
  *
  * @package BuddyPress_Docs
@@ -324,7 +363,7 @@ function bp_docs_create_link() {
          * @since 1.2
          */
         function bp_docs_get_create_link() {
-                return apply_filters( 'bp_docs_get_create_link', trailingslashit( get_post_type_archive_link( bp_docs_get_post_type_name() ) . '/' . BP_DOCS_CREATE_SLUG ) );
+                return apply_filters( 'bp_docs_get_create_link', trailingslashit( bp_docs_get_archive_link() . BP_DOCS_CREATE_SLUG ) );
         }
 
 /**
@@ -975,22 +1014,18 @@ function bp_docs_slug() {
 function bp_docs_tabs() {
 	global $bp, $post, $bp_version;
 
-	$current_view = $bp->bp_docs->current_view;
-
-	$is_group = false;
-	if ( bp_is_active( 'groups' ) && bp_is_group() ) {
-		$is_group = true;
-		if ( 'list' == $current_view ) {
-			$current_view = 'group_list';
-			$group_docs_link_text = sprintf( '%s Docs', bp_get_current_group_name() );
-			$group_docs_link_url  = trailingslashit( bp_get_group_permalink( groups_get_current_group() ) . $bp->bp_docs->slug );
-		}
-	}
+	$current_view = '';
 
 	?>
 
-	<li<?php if ( $current_view == 'list' ) : ?> class="current"<?php endif; ?>><a href="<?php echo get_post_type_archive_link( bp_docs_get_post_type_name() ) ?>"><?php _e( 'All Docs', 'bp-docs' ) ?></a></li>
+	<ul id="bp-docs-all-docs">
+		<li<?php if ( bp_docs_is_global_directory() ) : ?> class="current"<?php endif; ?>><a href="<?php bp_docs_archive_link() ?>"><?php _e( 'All Docs', 'bp-docs' ) ?></a></li>
+		<li<?php if ( $current_view == 'list' ) : ?> class="current"<?php endif; ?>><a href="<?php echo get_post_type_archive_link( bp_docs_get_post_type_name() ) ?>"><?php _e( 'Started By Me', 'bp-docs' ) ?></a></li>
+		<li<?php if ( $current_view == 'list' ) : ?> class="current"<?php endif; ?>><a href="<?php echo get_post_type_archive_link( bp_docs_get_post_type_name() ) ?>"><?php _e( 'Edited By Me', 'bp-docs' ) ?></a></li>
+		<li<?php if ( bp_docs_is_mygroups_docs() ) : ?> class="current"<?php endif; ?>><a href="<?php bp_docs_mygroups_link() ?>"><?php _e( 'My Groups', 'bp-docs' ) ?></a></li>
+	</ul>
 
+	<?php /*
 	<?php if ( $is_group ) : ?>
 		<li<?php if ( 'group_list' == $current_view ) : ?> class="current"<?php endif; ?>><a href="<?php echo esc_url( $group_docs_link_url ) ?>"><?php echo esc_html( $group_docs_link_text ) ?></a></li>
 	<?php endif ?>
@@ -1002,6 +1037,8 @@ function bp_docs_tabs() {
 	<?php if ( bp_docs_is_existing_doc() ) : ?>
 		<li class="current"><a href="<?php the_permalink() ?>"><?php the_title() ?></a></li>
 	<?php endif;
+
+	*/
 
 }
 
@@ -1261,6 +1298,22 @@ function bp_docs_is_doc_create() {
 }
 
 /**
+ * Is this the My Groups tab of the Docs archive?
+ *
+ * @since 1.2
+ * @return bool
+ */
+function bp_docs_is_mygroups_docs() {
+	$is_mygroups_docs = false;
+
+	if ( is_post_type_archive( bp_docs_get_post_type_name() ) && 1 == get_query_var( BP_DOCS_MY_GROUPS_SLUG ) ) {
+		$is_mygroups_docs = true;
+	}
+
+	return apply_filters( 'bp_docs_is_mygroups_docs', $is_mygroups_docs );
+}
+
+/**
  * Is this the History tab?
  *
  * @since 1.2
@@ -1282,7 +1335,7 @@ function bp_docs_is_doc_history() {
 function bp_docs_is_global_directory() {
 	$is_global_directory = false;
 
-	if ( is_post_type_archive( bp_docs_get_post_type_name() ) && !get_query_var( BP_DOCS_CREATE_SLUG ) ) {
+	if ( is_post_type_archive( bp_docs_get_post_type_name() ) && ! get_query_var( BP_DOCS_MY_GROUPS_SLUG ) && ! get_query_var( BP_DOCS_CREATE_SLUG ) ) {
 		$is_global_directory = true;
 	}
 

@@ -202,6 +202,10 @@ class BP_Docs {
 		if ( !defined( 'BP_DOCS_MY_DOCS_SLUG' ) )
 			define( 'BP_DOCS_MY_DOCS_SLUG', 'my-docs' );
 
+		// The slug used for 'my-groups'
+		if ( !defined( 'BP_DOCS_MY_GROUPS_SLUG' ) )
+			define( 'BP_DOCS_MY_GROUPS_SLUG', 'my-groups' );
+
 		// By default, BP Docs will replace the Recent Comments WP Dashboard Widget
 		if ( !defined( 'BP_DOCS_REPLACE_RECENT_COMMENTS_DASHBOARD_WIDGET' ) )
 			define( 'BP_DOCS_REPLACE_RECENT_COMMENTS_DASHBOARD_WIDGET', true );
@@ -323,10 +327,11 @@ class BP_Docs {
 	 * @since 1.2
 	 */
 	function add_rewrite_tags() {
-		add_rewrite_tag( '%%' . BP_DOCS_EDIT_SLUG . '%%', '([1]{1,})' );
-		add_rewrite_tag( '%%' . BP_DOCS_HISTORY_SLUG . '%%', '([1]{1,})' );
-		add_rewrite_tag( '%%' . BP_DOCS_DELETE_SLUG . '%%', '([1]{1,})' );
-		add_rewrite_tag( '%%' . BP_DOCS_CREATE_SLUG . '%%', '([1]{1,})' );
+		add_rewrite_tag( '%%' . BP_DOCS_EDIT_SLUG      . '%%', '([1]{1,})' );
+		add_rewrite_tag( '%%' . BP_DOCS_HISTORY_SLUG   . '%%', '([1]{1,})' );
+		add_rewrite_tag( '%%' . BP_DOCS_DELETE_SLUG    . '%%', '([1]{1,})' );
+		add_rewrite_tag( '%%' . BP_DOCS_CREATE_SLUG    . '%%', '([1]{1,})' );
+		add_rewrite_tag( '%%' . BP_DOCS_MY_GROUPS_SLUG . '%%', '([1]{1,})' );
 	}
 
 	/**
@@ -343,6 +348,10 @@ class BP_Docs {
 			// Create
 			BP_DOCS_SLUG . '/' . BP_DOCS_CREATE_SLUG . '/?$' =>
 				'index.php?post_type=' . $this->post_type_name . '&name=' . $wp_rewrite->preg_index( 1 ) . '&' . BP_DOCS_CREATE_SLUG . '=1',
+
+			// My Groups
+			BP_DOCS_SLUG . '/' . BP_DOCS_MY_GROUPS_SLUG . '/?$' =>
+				'index.php?post_type=' . $this->post_type_name . '&name=' . $wp_rewrite->preg_index( 1 ) . '&' . BP_DOCS_MY_GROUPS_SLUG . '=1',
 
 			/**
 			 * Single Docs
@@ -363,7 +372,7 @@ class BP_Docs {
 
 		);
 
-		// Merge bbPress rules with existing
+		// Merge Docs rules with existing
 		$wp_rewrite->rules = array_merge( $bp_docs_rules, $wp_rewrite->rules );
 
 		return $wp_rewrite;
@@ -405,12 +414,17 @@ class BP_Docs {
 		if ( is_admin() )
 			return;
 
-		$is_create = $posts_query->get( BP_DOCS_CREATE_SLUG );
-
-		if ( $is_create ) {
+		// Don't query for any posts on /docs/create/
+		if ( $posts_query->get( BP_DOCS_CREATE_SLUG ) ) {
 			$posts_query->is_404 = false;
 			$posts_query->set( 'p', -1 );
 		}
+
+		// Fall back on archive template on /docs/my-groups/
+		if ( $posts_query->get( BP_DOCS_MY_GROUPS_SLUG ) ) {
+			$posts_query->is_404 = false;
+		}
+		//var_dump( $posts_query );
 	}
 
 	function activation() {
