@@ -124,12 +124,12 @@ class BP_Docs_Groups_Integration {
 		}
 
 		// Query for all the current group's docs
-		if ( isset( $bp->groups->current_group->id ) ) {
+		if ( bp_get_current_group_id() ) {
 			$query_args = array(
 				'tax_query' => array(
 					array(
 						'taxonomy' => $bp->bp_docs->associated_item_tax_name,
-						'terms' => array( $bp->groups->current_group->id ),
+						'terms' => array( bp_get_current_group_id() ),
 						'field' => 'name',
 						'operator' => 'IN',
 						'include_children' => false
@@ -138,20 +138,20 @@ class BP_Docs_Groups_Integration {
 				'post_type' => $bp->bp_docs->post_type_name,
 				'showposts' => '-1'
 			);
-		}
 
-		// Don't recurse
-		remove_filter( 'posts_clauses', array( $this, 'protect_group_docs' ) );
+			// Don't recurse
+			remove_filter( 'posts_clauses', array( $this, 'protect_group_docs' ) );
 
-		$this_group_docs = new WP_Query( $query_args );
+			$this_group_docs = new WP_Query( $query_args );
 
-		$this_group_doc_ids = array();
-		foreach( $this_group_docs->posts as $gpost ) {
-			$this_group_doc_ids[] = $gpost->ID;
-		}
+			$this_group_doc_ids = array();
+			foreach( $this_group_docs->posts as $gpost ) {
+				$this_group_doc_ids[] = $gpost->ID;
+			}
 
-		if ( !empty( $this_group_doc_ids ) ) {
-			$clauses['where'] .= " AND $wpdb->posts.ID IN (" . implode(',', $this_group_doc_ids ) . ")";
+			if ( !empty( $this_group_doc_ids ) ) {
+				$clauses['where'] .= " AND $wpdb->posts.ID IN (" . implode(',', $this_group_doc_ids ) . ")";
+			}
 		}
 
 		return $clauses;
