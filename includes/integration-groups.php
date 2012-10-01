@@ -111,6 +111,7 @@ class BP_Docs_Groups_Integration {
 	 *
 	 * @package BuddyPress_Docs
 	 * @since 1.1.15
+	 * @todo This should be done differently in 1.2, because of broader privacy changes
 	 */
 	function protect_group_docs( $clauses ) {
 		global $bp, $wpdb;
