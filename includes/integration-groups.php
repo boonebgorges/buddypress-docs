@@ -115,11 +115,7 @@ class BP_Docs_Groups_Integration {
 	function protect_group_docs( $clauses ) {
 		global $bp, $wpdb;
 
-		if ( !isset( $bp->bp_docs->current_view ) ) {
-			return $clauses;
-		}
-
-		if ( 'single' != $bp->bp_docs->current_view && 'edit' != $bp->bp_docs->current_view && 'history' != $bp->bp_docs->current_view ) {
+		if ( ! bp_docs_is_single_doc() ) {
 			return $clauses;
 		}
 

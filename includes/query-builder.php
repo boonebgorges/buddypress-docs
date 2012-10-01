@@ -58,6 +58,7 @@ class BP_Docs_Query {
 			'group_id'	 => array(),     // Array or comma-separated string
 			'parent_id'	 => 0,		 // int
 			'author_id'	 => array(),     // Array or comma-separated string
+			'edited_by_id'   => array(),     // Array or comma-separated string
 			'tags'		 => array(),     // Array or comma-separated string
 			'order'		 => 'ASC',       // ASC or DESC
 			'orderby'	 => 'modified',  // 'modified', 'title', 'author', 'created'
@@ -213,6 +214,17 @@ class BP_Docs_Query {
 				$wp_query_args['s'] = $this->query_args['search_terms'];
 			}
 
+			// If an author_id param has been passed, pass it directly to WP_Query
+			if ( ! empty( $this->query_args['author_id'] ) ) {
+				$wp_query_args['author'] = implode( ',', wp_parse_id_list( $this->query_args['author_id'] ) );
+			}
+
+			// If an edited_by_id param has been passed, get a set
+			// of post ids that have revisions authored by that user
+			if ( ! empty( $this->query_args['edited_by_id'] ) ) {
+				$wp_query_args['post__in'] = $this->get_edited_by_post_ids();
+			}
+
 			// Set the taxonomy query. Filtered so that plugins can alter the query
 			// Filtering by groups also happens in this way
 			$wp_query_args['tax_query'] = apply_filters(
@@ -233,6 +245,31 @@ class BP_Docs_Query {
 
 		//echo $yes;var_dump( $wp_query_args ); die();
 		return $this->query;
+	}
+
+	/**
+	 *
+	 */
+	function get_edited_by_post_ids() {
+		$editor_ids = wp_parse_id_list( $this->query_args['edited_by_id'] );
+		$post_ids = array();
+
+		foreach ( $editor_ids as $editor_id ) {
+			// @todo - Not sure how this will scale
+			$posts = get_posts( array(
+				'author'                 => $editor_id,
+				'post_status'            => 'inherit',
+				'post_type'              => 'revision',
+				'posts_per_page'         => -1,
+				'update_post_meta_cache' => false,
+				'update_post_term_cache' => false,
+			) );
+
+			$post_ids = array_merge( $post_ids, array_unique( wp_list_pluck( $posts, 'post_parent' ) ) );
+		}
+
+		// @todo Might be faster to let the dupes through and let MySQL optimize
+		return array_unique( $post_ids );
 	}
 
 	/**

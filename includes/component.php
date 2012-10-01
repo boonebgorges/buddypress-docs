@@ -254,29 +254,14 @@ class BP_Docs_Component extends BP_Component {
 	/**
 	 * Utility function for selecting the correct Docs template to be loaded in the component
 	 *
+	 * At the moment, this only loads a single template. Logic could be
+	 * put here in the future in case more than one template needs to be
+	 * displayable on the component page
+	 *
 	 * @since 1.2
 	 */
 	function select_template() {
-		switch ( bp_current_action() ) {
-			case BP_DOCS_MY_DOCS_SLUG :
-				$template = 'docs-loop.php';
-				break;
-
-			case BP_DOCS_CREATE_SLUG :
-				require BP_DOCS_INCLUDES_PATH . 'templatetags-edit.php';
-				$template = 'single/edit.php';
-				break;
-
-			default :
-				if ( bp_is_action_variable( BP_DOCS_EDIT_SLUG, 0 ) ) {
-					require BP_DOCS_INCLUDES_PATH . 'templatetags-edit.php';
-					$template = 'single/edit.php';
-				} else if ( bp_is_action_variable( BP_DOCS_HISTORY_SLUG, 0 ) ) {
-					$template = 'single/history.php';
-				} else {
-					$template = 'single/index.php';
-				}
-		}
+		$template = 'docs-loop.php';
 		include bp_docs_locate_template( apply_filters( 'bp_docs_select_template', $template ) );
 	}
 
@@ -288,11 +273,10 @@ class BP_Docs_Component extends BP_Component {
 	 *
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta
-	 * @todo See if there's a way to make this more efficient. Right now, you end up querying
-	 *       once here, and then once again during the post loop
+	 * @deprecated No longer used since 1.2
 	 */
 	function do_query() {
-		$this->query = new BP_Docs_Query;
+		_deprecated_function( __METHOD__, '1.2' );
 	}
 
 	/**
@@ -300,6 +284,7 @@ class BP_Docs_Component extends BP_Component {
 	 *
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta
+	 * @todo This needs a ton of cleanup
 	 */
 	function catch_page_load() {
 		global $bp;

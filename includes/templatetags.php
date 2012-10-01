@@ -42,11 +42,14 @@ function bp_docs_has_docs( $args = array() ) {
 		// Default to current group id, if available
 		$d_group_id  = bp_is_group() ? bp_get_current_group_id() : array();
 
-		// Default to displayed user, if available
-		$d_author_id = bp_is_user() ? bp_displayed_user_id() : array();
+		// If this is a Started By tab, set the author ID
+		$d_author_id = bp_docs_is_started_by() ? bp_displayed_user_id() : array();
+
+		// If this is an Edited By tab, set the edited_by id
+		$d_edited_by_id = bp_docs_is_edited_by() ? bp_displayed_user_id() : array();
 
 		// Default to the tags in the URL string, if available
-		$d_tags	     = isset( $_REQUEST['bpd_tag'] ) ? explode( ',', urldecode( $_REQUEST['bpd_tag'] ) ) : array();
+		$d_tags = isset( $_REQUEST['bpd_tag'] ) ? explode( ',', urldecode( $_REQUEST['bpd_tag'] ) ) : array();
 
 		// Order and orderby arguments
 		$d_orderby = !empty( $_GET['orderby'] ) ? urldecode( $_GET['orderby'] ) : apply_filters( 'bp_docs_default_sort_order', 'modified' ) ;
@@ -76,15 +79,16 @@ function bp_docs_has_docs( $args = array() ) {
 		$d_doc_slug = !empty( $bp->bp_docs->query->doc_slug ) ? $bp->bp_docs->query->doc_slug : '';
 
 		$defaults = array(
-			'doc_id'	 => array(),      // Array or comma-separated string
-			'doc_slug'	 => $d_doc_slug,  // String (post_name/slug)
-			'group_id'	 => $d_group_id,  // Array or comma-separated string
-			'parent_id'	 => $d_parent_id, // int
-			'author_id'	 => $d_author_id, // Array or comma-separated string
-			'tags'		 => $d_tags,      // Array or comma-separated string
-			'order'		 => $d_order,        // ASC or DESC
-			'orderby'	 => $d_orderby,   // 'modified', 'title', 'author', 'created'
-			'paged'		 => $d_paged,
+			'doc_id'         => array(),      // Array or comma-separated string
+			'doc_slug'       => $d_doc_slug,  // String (post_name/slug)
+			'group_id'       => $d_group_id,  // Array or comma-separated string
+			'parent_id'      => $d_parent_id, // int
+			'author_id'      => $d_author_id, // Array or comma-separated string
+			'edited_by_id'   => $d_edited_by_id, // Array or comma-separated string
+			'tags'           => $d_tags,      // Array or comma-separated string
+			'order'          => $d_order,        // ASC or DESC
+			'orderby'        => $d_orderby,   // 'modified', 'title', 'author', 'created'
+			'paged'	         => $d_paged,
 			'posts_per_page' => $d_posts_per_page,
 			'search_terms'   => $d_search_terms
 		);
@@ -1081,8 +1085,8 @@ function bp_docs_tabs() {
 		<li<?php if ( bp_docs_is_global_directory() ) : ?> class="current"<?php endif; ?>><a href="<?php bp_docs_archive_link() ?>"><?php _e( 'All Docs', 'bp-docs' ) ?></a></li>
 
 		<?php if ( is_user_logged_in() ) : ?>
-			<li<?php if ( $current_view == 'list' ) : ?> class="current"<?php endif; ?>><a href="<?php bp_docs_mydocs_started_link() ?>"><?php _e( 'Started By Me', 'bp-docs' ) ?></a></li>
-			<li<?php if ( $current_view == 'list' ) : ?> class="current"<?php endif; ?>><a href="<?php bp_docs_mydocs_edited_link() ?>"><?php _e( 'Edited By Me', 'bp-docs' ) ?></a></li>
+			<li><a href="<?php bp_docs_mydocs_started_link() ?>"><?php _e( 'Started By Me', 'bp-docs' ) ?></a></li>
+			<li><a href="<?php bp_docs_mydocs_edited_link() ?>"><?php _e( 'Edited By Me', 'bp-docs' ) ?></a></li>
 
 			<?php if ( bp_is_active( 'groups' ) ) : ?>
 				<li<?php if ( bp_docs_is_mygroups_docs() ) : ?> class="current"<?php endif; ?>><a href="<?php bp_docs_mygroups_link() ?>"><?php _e( 'My Groups', 'bp-docs' ) ?></a></li>
@@ -1295,9 +1299,13 @@ function bp_docs_get_doc_count( $item_id = 0, $item_type = '' ) {
  * @return bool
  */
 function bp_docs_is_single_doc() {
+	global $wp_query;
+
 	$is_single_doc = false;
 
-	if ( is_single() ) {
+	// There's an odd bug in WP_Query that causes errors when attempting to access
+	// get_queried_object() too early. The check for $wp_query->post is a workaround
+	if ( is_single() && ! empty( $wp_query->post ) ) {
 		$post = get_queried_object();
 
 		if ( isset( $post->post_type ) && bp_docs_get_post_type_name() == $post->post_type ) {
@@ -1392,6 +1400,54 @@ function bp_docs_is_doc_history() {
 	}
 
 	return apply_filters( 'bp_docs_is_doc_history', $is_doc_history );
+}
+
+/**
+ * Is this the Docs tab of a user profile?
+ *
+ * @since 1.2
+ * @return bool
+ */
+function bp_docs_is_user_docs() {
+	$is_user_docs = false;
+
+	if ( bp_is_user() && bp_docs_is_docs_component() ) {
+		$is_user_docs = true;
+	}
+
+	return apply_filters( 'bp_docs_is_user_docs', $is_user_docs );
+}
+
+/**
+ * Is this the Started By tab of a user profile?
+ *
+ * @since 1.2
+ * @return bool
+ */
+function bp_docs_is_started_by() {
+	$is_started_by = false;
+
+	if ( bp_docs_is_user_docs() && bp_is_current_action( BP_DOCS_STARTED_SLUG ) ) {
+		$is_started_by = true;
+	}
+
+	return apply_filters( 'bp_docs_is_started_by', $is_started_by );
+}
+
+/**
+ * Is this the Edited By tab of a user profile?
+ *
+ * @since 1.2
+ * @return bool
+ */
+function bp_docs_is_edited_by() {
+	$is_edited_by = false;
+
+	if ( bp_docs_is_user_docs() && bp_is_current_action( BP_DOCS_EDITED_SLUG ) ) {
+		$is_edited_by = true;
+	}
+
+	return apply_filters( 'bp_docs_is_edited_by', $is_edited_by );
 }
 
 /**
