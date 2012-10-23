@@ -625,12 +625,42 @@ function bp_docs_inline_toggle_js() {
 			var plus = '<span class="plus-or-minus">+</span>';
 
 			jQuery(ts).html('<a href="#" id="' + toggleid + '" class="toggle-link">' + plus + jQuery(ts).html() + '</a>');
-
-			/* Hide the toggleable area */
-			jQuery(this).children('.toggle-content').toggle();
 		});
 
 	</script>
+	<?php
+}
+
+function bp_docs_doc_associated_group_markup() {
+	$selected_group = isset( $_GET['associated_group_id'] ) ? intval( $_GET['associated_group_id'] ) : 0;
+
+	if ( $selected_group && ! BP_Docs_Groups_Integration::user_can_associate_doc_with_group( bp_loggedin_user_id(), $selected_group ) ) {
+		$selected_group = 0;
+	}
+
+	$groups_args = array(
+		'per_page' => false,
+		'populate_extras' => false,
+	);
+
+	if ( ! bp_current_user_can( 'bp_moderate' ) ) {
+		$groups_args['user_id'] = bp_loggedin_user_id();
+	}
+
+	global $groups_template;
+	bp_has_groups( $groups_args );
+
+	?>
+	<tr>
+		<td>
+			<select name="associated_group_id" id="associated_group_id">
+				<option value=""><?php _e( 'None', 'bp-docs' ) ?></option>
+				<?php foreach( $groups_template->groups as $g ) : ?>
+					<option value="<?php echo esc_attr( $g->id ) ?>" <?php selected( $selected_group, $g->id ) ?>><?php echo esc_html( $g->name ) ?></option>
+				<?php endforeach ?>
+			</select>
+		</td>
+	</tr>
 	<?php
 }
 
@@ -645,7 +675,8 @@ function bp_docs_doc_settings_markup() {
 
 	$doc = bp_docs_get_current_doc();
 
-	$doc_settings = ! empty( $doc->ID ) ? get_post_meta( $doc->ID, 'bp_docs_settings', true ) : array();
+	$doc_id = isset( $doc->ID ) ? $doc->ID : 0;
+	$doc_settings = (array) get_post_meta( $doc_id, 'bp_docs_settings', true );
 
 	$settings_fields = array(
 		'read' => array(
@@ -671,15 +702,16 @@ function bp_docs_doc_settings_markup() {
 	);
 
 	foreach ( $settings_fields as $settings_field ) {
-		bp_docs_access_options_helper( $settings_field );
+		bp_docs_access_options_helper( $settings_field, $doc_id );
 	}
 
 	// Hand off the creation of additional settings to individual integration pieces
 	do_action( 'bp_docs_doc_settings_markup', $doc_settings );
 }
 
-function bp_docs_access_options_helper( $settings_field ) {
-	$doc_settings = get_post_meta( get_the_ID(), 'bp_docs_settings', true );
+function bp_docs_access_options_helper( $settings_field, $doc_id = 0 ) {
+	$doc_settings = get_post_meta( $doc_id, 'bp_docs_settings', true );
+
 	$setting = isset( $doc_settings[ $settings_field['name'] ] ) ? $doc_settings[ $settings_field['name'] ] : '';
 	?>
 	<tr class="bp-docs-access-row bp-docs-access-row-<?php echo esc_attr( $settings_field['name'] ) ?>">
@@ -689,7 +721,7 @@ function bp_docs_access_options_helper( $settings_field ) {
 
 		<td class="content-column">
 			<select name="settings[<?php echo esc_attr( $settings_field['name'] ) ?>]">
-				<?php $access_options = bp_docs_get_access_options( $settings_field['name'] ) ?>
+				<?php $access_options = bp_docs_get_access_options( $settings_field['name'], $doc_id ) ?>
 				<?php foreach ( $access_options as $key => $option ) : ?>
 					<?php
 					$selected = selected( $setting, $option['name'], false );
@@ -1075,8 +1107,6 @@ function bp_docs_slug() {
  * @todo Get the group stuff out
  */
 function bp_docs_tabs() {
-	global $bp, $post, $bp_version;
-
 	$current_view = '';
 
 	?>
@@ -1085,30 +1115,21 @@ function bp_docs_tabs() {
 		<li<?php if ( bp_docs_is_global_directory() ) : ?> class="current"<?php endif; ?>><a href="<?php bp_docs_archive_link() ?>"><?php _e( 'All Docs', 'bp-docs' ) ?></a></li>
 
 		<?php if ( is_user_logged_in() ) : ?>
-			<li><a href="<?php bp_docs_mydocs_started_link() ?>"><?php _e( 'Started By Me', 'bp-docs' ) ?></a></li>
-			<li><a href="<?php bp_docs_mydocs_edited_link() ?>"><?php _e( 'Edited By Me', 'bp-docs' ) ?></a></li>
+			<?php if ( function_exists( 'bp_is_group' ) && bp_is_group() ) : ?>
+				<li<?php if ( bp_is_current_action( 'docs' ) ) : ?> class="current"<?php endif ?>><a href="<?php bp_group_permalink( groups_get_current_group() ) ?><?php bp_docs_slug() ?>"><?php printf( __( "%s's Docs", 'bp-docs' ), bp_get_current_group_name() ) ?></a></li>
+			<?php else : ?>
+				<li><a href="<?php bp_docs_mydocs_started_link() ?>"><?php _e( 'Started By Me', 'bp-docs' ) ?></a></li>
+				<li><a href="<?php bp_docs_mydocs_edited_link() ?>"><?php _e( 'Edited By Me', 'bp-docs' ) ?></a></li>
 
-			<?php if ( bp_is_active( 'groups' ) ) : ?>
-				<li<?php if ( bp_docs_is_mygroups_docs() ) : ?> class="current"<?php endif; ?>><a href="<?php bp_docs_mygroups_link() ?>"><?php _e( 'My Groups', 'bp-docs' ) ?></a></li>
+				<?php if ( bp_is_active( 'groups' ) ) : ?>
+					<li<?php if ( bp_docs_is_mygroups_docs() ) : ?> class="current"<?php endif; ?>><a href="<?php bp_docs_mygroups_link() ?>"><?php _e( 'My Groups', 'bp-docs' ) ?></a></li>
+				<?php endif ?>
 			<?php endif ?>
+
+			<li id="bp-create-doc-button"><a href="<?php bp_docs_create_link() ?>"><?php _e( "New Doc", 'bp-docs' ) ?></a></li>
 		<?php endif ?>
 	</ul>
-
-	<?php /*
-	<?php if ( $is_group ) : ?>
-		<li<?php if ( 'group_list' == $current_view ) : ?> class="current"<?php endif; ?>><a href="<?php echo esc_url( $group_docs_link_url ) ?>"><?php echo esc_html( $group_docs_link_text ) ?></a></li>
-	<?php endif ?>
-
-	<?php if ( bp_docs_current_user_can( 'create' ) ) : ?>
-		<li<?php if ( 'create' == $current_view ) : ?> class="current"<?php endif; ?>><a href="<?php echo get_post_type_archive_link( bp_docs_get_post_type_name() ) ?>/create"><?php _e( 'New Doc', 'bp-docs' ) ?></a></li>
-	<?php endif ?>
-
-	<?php if ( bp_docs_is_existing_doc() ) : ?>
-		<li class="current"><a href="<?php the_permalink() ?>"><?php the_title() ?></a></li>
-	<?php endif;
-
-	*/
-
+	<?php
 }
 
 /**

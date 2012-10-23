@@ -25,17 +25,7 @@
  */
 class BP_Docs_Groups_Integration {
 	/**
-	 * PHP 4 constructor
-	 *
-	 * @package BuddyPress Docs
-	 * @since 1.0-beta
-	 */
-	function bp_docs_groups_integration() {
-		$this->__construct();
-	}
-
-	/**
-	 * PHP 5 constructor
+	 * Constructor
 	 *
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta
@@ -88,6 +78,9 @@ class BP_Docs_Groups_Integration {
 
 		// Prettify the page title
 		add_filter( 'bp_page_title',			array( $this, 'page_title' ) );
+
+		// Make sure the Create Doc link points to the right place
+		add_filter( 'bp_docs_get_create_link',          array( $this, 'get_create_link' ) );
 
 		// Prevent comments from being posted on expired logins (see
 		// https://github.com/boonebgorges/buddypress-docs/issues/108)
@@ -469,8 +462,6 @@ class BP_Docs_Groups_Integration {
 	function user_can( $user_can, $action, $user_id, $doc_id = false ) {
 		global $bp, $post;
 
-		$user_can = false;
-
 		// If a doc_id is provided, check it against the current post before querying
 		if ( $doc_id && isset( $post->ID ) && $doc_id == $post->ID ) {
 			$doc = $post;
@@ -487,7 +478,7 @@ class BP_Docs_Groups_Integration {
 		if ( empty( $doc ) )
 			$doc = get_post( $doc_id );
 
-		if ( !empty( $doc ) ) {
+		if ( ! empty( $doc ) ) {
 			$doc_settings = get_post_meta( $doc->ID, 'bp_docs_settings', true );
 
 			// Manage settings don't always get set on doc creation, so we need a default
@@ -501,19 +492,29 @@ class BP_Docs_Groups_Integration {
 			// Likewise with read_comments
 			if ( empty( $doc_settings['read_comments'] ) )
 				$doc_settings['read_comments'] = 'anyone';
+		} else if ( bp_docs_is_doc_create() && 'manage' == $action ) {
+			// Anyone can do anything during doc creation
+			return true;
 		}
 
 		// Default to the current group, but get the associated doc if not
+		$group_id = 0;
 		if ( isset( $bp->groups->current_group->id ) ) {
 			$group_id = $bp->groups->current_group->id;
 			$group = $bp->groups->current_group;
-		} else {
+		} else if ( isset( $doc->ID ) ) {
 			$group_id = bp_docs_get_associated_group_id( $doc->ID, $doc );
 
 			if ( is_array( $group_id ) ) {
 				$group_id = $group_id[0]; // todo: make this a loop
 				$group = groups_get_group( array( 'group_id' => $group_id ) );
 			}
+		}
+
+		if ( ! $group_id ) {
+			return $user_can;
+		} else {
+			$user_can = false;
 		}
 
 		switch ( $action ) {
@@ -586,7 +587,7 @@ class BP_Docs_Groups_Integration {
 							break;
 
 						case 'group-members' :
-							if ( groups_is_user_member( $user_id, $bp->groups->current_group->id ) )
+							if ( groups_is_user_member( $user_id, $group_id ) )
 								$user_can = true;
 							break;
 
@@ -619,14 +620,33 @@ class BP_Docs_Groups_Integration {
 	}
 
 	function get_access_options( $options, $settings_field, $doc_id ) {
+
 		$group_id = bp_docs_get_associated_group_id( $doc_id );
 
-		if ( ! empty( $group_id ) ) {
+		// If this is the Doc creation page, check to see whether a
+		// group id has been passed somewhere
+		if ( empty( $group_id ) ) {
+			if ( isset( $_POST['associated_group_id'] ) ) {
+				$group_id = intval( $_POST['associated_group_id'] );
+			} else if ( isset( $_GET['associated_group_id'] ) ) {
+				$group_id = intval( $_GET['associated_group_id'] );
+			}
+		}
+
+
+		$can_associate = self::user_can_associate_doc_with_group( bp_loggedin_user_id(), $group_id );
+
+		if ( $can_associate ) {
 			$group = groups_get_group( 'group_id=' . intval( $group_id ) );
 
 			$options[40] = array(
 				'name'  => 'group-members',
 				'label' => sprintf( __( 'Members of %s', 'bp-docs' ), $group->name )
+			);
+
+			$options[50] = array(
+				'name'  => 'admins-mods',
+				'label' => sprintf( __( 'Admins and mods of %s', 'bp-docs' ), $group->name )
 			);
 
 			// Group-associated docs should have the edit/post
@@ -636,14 +656,44 @@ class BP_Docs_Groups_Integration {
 			if ( 'public' != $group->status || in_array( $settings_field, array( 'edit', 'post-comments' ) ) ) {
 				$options[40]['default'] = 1;
 			}
-
-			$options[50] = array(
-				'name'  => 'admins-mods',
-				'label' => sprintf( __( 'Admins and mods of %s', 'bp-docs' ), $group->name )
-			);
 		}
 
 		return $options;
+	}
+
+	/**
+	 * Can a given user associate a doc with a given group?
+	 */
+	public static function user_can_associate_doc_with_group( $user_id, $group_id ) {
+		$group = groups_get_group( 'group_id=' . intval( $group_id ) );
+
+		// No one can associate anything with a non-existent group
+		if ( empty( $group->name ) ) {
+			return false;
+		}
+
+		// Site admins can do anything
+		if ( bp_current_user_can( 'bp_moderate' ) ) {
+			return true;
+		}
+
+		// Non-group-members can't associate a doc with a group
+		if ( ! groups_is_user_member( $user_id, $group_id ) ) {
+			return false;
+		}
+
+		// Check against group settings. Default to 'member'
+		// @todo Abstract default settings out better
+		$group_settings = groups_get_groupmeta( $group_id, 'bp-docs' );
+		$can_create = isset( $group_settings['can-create'] ) ? $group_settings['can-create'] : 'member';
+
+		if ( 'admin' == $can_create ) {
+			return groups_is_user_admin( $user_id, $group_id );
+		} else if ( 'mod' == $can_create ) {
+			return groups_is_user_mod( $user_id, $group_id );
+		}
+
+		return true;
 	}
 
 	/**
@@ -927,6 +977,14 @@ class BP_Docs_Groups_Integration {
 		}
 
 		return apply_filters( 'bp_docs_page_title', $title );
+	}
+
+	function get_create_link( $link ) {
+		if ( bp_is_group() ) {
+			$link = add_query_arg( 'group', bp_get_current_group_slug(), $link );
+		}
+
+		return $link;
 	}
 
 	/**

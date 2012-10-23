@@ -60,6 +60,34 @@ if ( !function_exists( 'wp_editor' ) ) {
         </div>
 
         <div id="doc-meta">
+		<?php if ( bp_docs_current_user_can( 'manage' ) ) : ?>
+			<div id="doc-associated-group" class="doc-meta-box">
+				<div class="toggleable">
+					<p class="toggle-switch" id="associated-group-toggle"><?php _e( 'Associated Group', 'bp-docs' ) ?></p>
+
+					<div class="toggle-content">
+						<table class="toggle-table" id="toggle-table-associated-group">
+							<?php bp_docs_doc_associated_group_markup() ?>
+						</table>
+					</div>
+				</div>
+			</div>
+		<?php endif ?>
+
+		<?php if ( bp_docs_current_user_can( 'manage' ) ) : ?>
+			<div id="doc-settings" class="doc-meta-box">
+				<div class="toggleable">
+					<p class="toggle-switch" id="settings-toggle"><?php _e( 'Access', 'bp-docs' ) ?></p>
+
+					<div class="toggle-content">
+						<table class="toggle-table" id="toggle-table-settings">
+							<?php bp_docs_doc_settings_markup() ?>
+						</table>
+					</div>
+				</div>
+			</div>
+		<?php endif ?>
+
         	<div id="doc-tax" class="doc-meta-box">
 			<div class="toggleable">
 				<p id="tags-toggle-edit" class="toggle-switch"><?php _e( 'Tags', 'bp-docs' ) ?></p>
@@ -102,20 +130,6 @@ if ( !function_exists( 'wp_editor' ) ) {
 				</div>
 			</div>
 		</div>
-
-		<?php if ( bp_docs_current_user_can( 'manage' ) ) : ?>
-			<div id="doc-settings" class="doc-meta-box">
-				<div class="toggleable">
-					<p class="toggle-switch" id="settings-toggle"><?php _e( 'Access', 'bp-docs' ) ?></p>
-
-					<div class="toggle-content">
-						<table class="toggle-table" id="toggle-table-settings">
-							<?php bp_docs_doc_settings_markup() ?>
-						</table>
-					</div>
-				</div>
-			</div>
-		<?php endif ?>
         </div>
 
         <div style="clear: both"> </div>
