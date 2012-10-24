@@ -37,6 +37,7 @@ class BP_Docs_Groups_Integration {
 		add_filter( 'bp_docs_get_item_type', 		array( $this, 'get_item_type' ) );
 		add_filter( 'bp_docs_get_current_view', 	array( $this, 'get_current_view' ), 10, 2 );
 		add_filter( 'bp_docs_this_doc_slug',		array( $this, 'get_doc_slug' ) );
+		add_filter( 'bp_docs_pre_query_args',           array( $this, 'pre_query_args' ), 10, 2 );
 
 		// Taxonomy helpers
 		add_filter( 'bp_docs_taxonomy_get_item_terms', 	array( $this, 'get_group_terms' ) );
@@ -232,6 +233,22 @@ class BP_Docs_Groups_Integration {
 		}
 
 		return $view;
+	}
+
+	/**
+	 * Filter the query args
+	 *
+	 * When looking at a group, this filters the group
+	 */
+	function pre_query_args( $query_args, $bp_docs_query ) {
+		if ( ! empty( $bp_docs_query->query_args['group_id'] ) ) {
+			$query_args['tax_query'][] = array(
+				'taxonomy' => bp_docs_get_associated_item_tax_name(),
+				'field'    => 'slug',
+				'terms'    => bp_docs_get_term_slug_from_group_id( $bp_docs_query->query_args['group_id'] ),
+			);
+		}
+		return $query_args;
 	}
 
 	/**
@@ -513,8 +530,6 @@ class BP_Docs_Groups_Integration {
 
 		if ( ! $group_id ) {
 			return $user_can;
-		} else {
-			$user_can = false;
 		}
 
 		switch ( $action ) {
@@ -841,14 +856,7 @@ class BP_Docs_Groups_Integration {
 		}
 
 		$items  = get_the_terms( get_the_ID(), bp_docs_get_associated_item_tax_name() );
-		$groups = array();
-
-		foreach( (array) $items as $item ) {
-			// Only add groups
-			if ( isset( $item->slug ) && $group_id = bp_docs_get_associated_item_id_from_term_slug( $item->slug, 'group' ) ) {
-				$groups[] = $group_id;
-			}
-		}
+		$groups = (array) bp_docs_get_associated_group_id( get_the_ID(), false, true );
 
 		?>
 
@@ -1588,7 +1596,6 @@ function bp_docs_is_docs_enabled_for_group( $group_id = false ) {
  * @return mixed $group_id Either an array or a string of the group id(s)
  */
 function bp_docs_get_associated_group_id( $doc_id, $doc = false, $single_array = false ) {
-	global $bp;
 
 	if ( !$doc ) {
 		$doc = get_post( $doc_id );
@@ -1598,16 +1605,13 @@ function bp_docs_get_associated_group_id( $doc_id, $doc = false, $single_array =
 		return false;
 	}
 
-	$post_terms = wp_get_post_terms( $doc_id, $bp->bp_docs->associated_item_tax_name );
+	$post_terms = wp_get_post_terms( $doc_id, bp_docs_get_associated_item_tax_name() );
 
 	$group_ids = array();
 
 	foreach( $post_terms as $post_term ) {
-		// Make sure this is a group term
-		$parent_term = get_term( $post_term->parent, $bp->bp_docs->associated_item_tax_name );
-
-		if ( 'group' == $parent_term->slug ) {
-			$group_ids[] = $post_term->name;
+		if ( 0 === strpos( $post_term->slug, 'bp_docs_associated_group_' ) ) {
+			$group_ids[] = bp_docs_get_group_id_from_term_slug( $post_term->slug );
 		}
 	}
 
@@ -1620,4 +1624,20 @@ function bp_docs_get_associated_group_id( $doc_id, $doc = false, $single_array =
 	return apply_filters( 'bp_docs_get_associated_group_id', $return, $doc_id, $doc, $single_array );
 }
 
-?>
+function bp_docs_set_associated_group_id( $doc_id, $group_id = 0 ) {
+	wp_set_post_terms( $doc_id, bp_docs_get_group_term( $group_id ), bp_docs_get_associated_item_tax_name(), true );
+}
+
+function bp_docs_get_group_term( $group_id ) {
+	$group = groups_get_group( 'group_id=' . intval( $group_id ) );
+	$group_name = isset( $group->name ) ? $group->name : '';
+	return bp_docs_get_item_term_id( $group_id, 'group', $group_name );
+}
+
+function bp_docs_get_group_id_from_term_slug( $term_slug ) {
+	return intval( array_pop( explode( 'bp_docs_associated_group_', $term_slug ) ) );
+}
+
+function bp_docs_get_term_slug_from_group_id( $group_id ) {
+	return 'bp_docs_associated_group_' . (int) $group_id;
+}

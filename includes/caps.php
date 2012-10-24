@@ -38,7 +38,7 @@ function bp_docs_map_meta_caps( $caps, $cap, $user_id, $args ) {
 	}
 
 	// Set up some data we'll need for these permission checks
-	$doc  	      = bp_docs_get_doc_for_caps( $args );
+	$doc = bp_docs_get_doc_for_caps( $args );
 
 	// Nothing to check
 	if ( empty( $doc ) ) {
@@ -54,7 +54,7 @@ function bp_docs_map_meta_caps( $caps, $cap, $user_id, $args ) {
 	switch ( $cap ) {
 		case 'create_bp_doc' :
 			// @todo This will probably need more thought
-			if ( !is_user_logged_in() ) {
+			if ( ! is_user_logged_in() ) {
 				$caps[] = 'do_not_allow';
 			} else {
 				// @todo - need to detect group membership

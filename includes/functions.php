@@ -124,22 +124,40 @@ function bp_docs_get_item_term_id( $item_id, $item_type, $item_name = '' ) {
 		return;
 	}
 
-	$item_term = term_exists( $item_id . '-' . $item_type, $bp->bp_docs->associated_item_tax_name );
+	// Sanitization
+	// @todo Maybe this should be more generous
+	$item_type = 'group' == $item_type ? 'group' : 'user';
+
+	$item_term_slug = 'bp_docs_associated_' . $item_type . '_' . $item_id;
+
+	$item_term = get_term_by( 'slug', $item_term_slug, bp_docs_get_associated_item_tax_name() );
 
 	// If the item term doesn't exist, then create it
 	if ( empty( $item_term ) ) {
 		// Set up the arguments for creating the term. Filter this to set your own
+		switch ( $item_type ) {
+			case 'group' :
+				$item = groups_get_group( 'group_id=' . $item_id );
+				$item_name = $item->name;
+				break;
+
+			case 'user' :
+			default :
+				$item_name = bp_core_get_user_displayname( $item_id );
+				break;
+		}
+
 		$item_term_args = apply_filters( 'bp_docs_item_term_values', array(
-			'description' => $item_name,
-			'slug'        => $item_id . '-' . $item_type
+			'description' => sprintf( __( 'Docs associated with the %1$s %2$s', 'bp-docs' ), $item_type, $item_name ),
+			'slug'        => $item_term_slug,
 		) );
 
 		// Create the item term
-		if ( !$item_term = wp_insert_term( $item_id, $bp->bp_docs->associated_item_tax_name, $item_term_args ) )
+		if ( ! $item_term = wp_insert_term( $item_name, bp_docs_get_associated_item_tax_name(), $item_term_args ) )
 			return false;
 	}
 
-	return apply_filters( 'bp_docs_get_item_term_id', $item_term['term_id'], $item_id, $item_type, $item_name );
+	return apply_filters( 'bp_docs_get_item_term_id', $item_term->term_id, $item_id, $item_type, $item_name );
 }
 
 /**
@@ -232,6 +250,7 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
 		if ( !$doc_id ) {
 			if ( !empty( $post->ID ) ) {
 				$doc_id = $post->ID;
+				$doc = $post;
 			} else {
 				$doc = bp_docs_get_current_doc();
 				if ( isset( $doc->ID ) ) {
@@ -242,6 +261,23 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
 	}
 
 	$user_can = false;
+
+	if ( ! empty( $doc ) ) {
+		$doc_settings = get_post_meta( $doc_id, 'bp_docs_settings', true );
+		$the_setting  = isset( $doc_settings[ $action ] ) ? $doc_settings[ $action ] : '';
+
+		switch ( $the_setting ) {
+			case 'anyone' :
+				$user_can = true;
+				break;
+
+			case 'loggedin' :
+				$user_can = is_user_logged_in();
+				break;
+
+			// Do nothing with other settings - they are passed through
+		}
+	}
 
 	if ( $user_id ) {
 		if ( is_super_admin() ) {

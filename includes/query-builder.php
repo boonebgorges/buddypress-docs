@@ -403,6 +403,20 @@ class BP_Docs_Query {
 			$doc_content = $_POST['doc']['content'];
 		}
 
+		// Check group associations
+		if ( isset( $_POST['associated_group_id'] ) ) {
+			if ( ! BP_Docs_Groups_Integration::user_can_associate_doc_with_group( bp_loggedin_user_id(), intval( $_POST['associated_group_id'] ) ) ) {
+				bp_core_add_message( __( 'You are not allowed to associate a Doc with that group.', 'bp-docs' ), 'error' );
+				bp_core_redirect( bp_docs_get_create_link() );
+			} else {
+				// We use this later on
+				$associated_group_id = intval( $_POST['associated_group_id'] );
+			}
+		}
+
+		// Check settings
+
+
 		if ( empty( $_POST['doc']['title'] ) || empty( $doc_content ) ) {
 			// Both the title and the content fields are required
 			$result['message'] = __( 'Both the title and the content fields are required.', 'bp-doc' );
@@ -429,8 +443,10 @@ class BP_Docs_Query {
 					$result['message'] = __( 'There was an error when creating the doc.', 'bp-doc' );
 					$result['redirect'] = 'create';
 				} else {
-					// If the doc was saved successfully, place it in the proper tax
-					wp_set_post_terms( $post_id, $this->term_id, $this->associated_item_tax_name, true );
+					// Add to a group, if necessary
+					if ( isset( $associated_group_id ) ) {
+						bp_docs_set_associated_group_id( $post_id, $associated_group_id );
+					}
 
 					$this->doc_id = $post_id;
 
