@@ -256,10 +256,10 @@ div.doc-content {
 }
 div.doc-permissions {
 	float: right;
-	width: 40%;
+	width: 30%;
 	border: 1px solid #aaa;
 	border-radius: 3px;
-	padding: 8px;
+	padding: 4px;
 }
 	div.doc-permissions div:last-child {
 		clear: both;
@@ -273,17 +273,21 @@ body.no-js a.doc-permissions-toggle {
 }
 
 #doc-permissions-summary {
-	font-size: 1.5em;
-	padding: 8px 15px;
+	font-size: 1.0em;
+	padding: 3px 12px;
+	border: 1px solid;
 }
 	#doc-permissions-summary.doc-public {
-		background: green;
+		background: #b2ffb2;
+		border-color: #00ff00;
 	}
 	#doc-permissions-summary.doc-limited {
-		background: yellow;
+		background: #ffffe0;
+		border-color: #e6db55;
 	}
 	#doc-permissions-summary.doc-private {
-		background: red;
+		background: #ffebe8;
+		border-color: #ff0000;
 	}
 
 a.doc-permissions-toggle {
