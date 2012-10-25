@@ -30,6 +30,10 @@ class BP_Docs_History {
 	function __construct() {
 		global $bp;
 
+		if ( ! bp_docs_is_existing_doc() ) {
+			return;
+		}
+
 		add_action( 'bp_actions', array( &$this, 'setup_params' ), 1 );
 		add_action( 'bp_actions', array( &$this, 'setup_action' ), 2 );
 
