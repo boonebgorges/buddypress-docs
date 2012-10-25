@@ -63,8 +63,6 @@ class BP_Docs_Groups_Integration {
 		add_filter( 'bp_docs_doc_saved',		array( $this, 'update_doc_count' )  );
 		add_filter( 'bp_docs_doc_deleted',		array( $this, 'update_doc_count' ) );
 
-		add_filter( 'posts_clauses',		array( $this, 'protect_group_docs' ) );
-
 		// On non-group Doc directories, add a Groups column
 		add_filter( 'bp_docs_loop_additional_th', array( $this, 'groups_th' ), 5 );
 		add_filter( 'bp_docs_loop_additional_td', array( $this, 'groups_td' ), 5 );
@@ -92,64 +90,6 @@ class BP_Docs_Groups_Integration {
 
 		// Add settings to the BuddyPress settings admin panel
 		add_action( 'bp_core_admin_screen_fields', 	array( $this, 'admin_screen_fields' ) );
-	}
-
-	/**
-	 * Prevents single docs from being loaded in the wrong group
-	 *
-	 * This whole mess is necessary because of the fact that WP skips taxonomy checks when
-	 * is_singular(). Thus, the group check is skipped, and as a result any doc can be loaded
-	 * by slug in any group. This function works around it by getting a list of all docs in
-	 * a group, and then explicitly stating that any resulting docs on this page must be in
-	 * that list.
-	 *
-	 * @package BuddyPress_Docs
-	 * @since 1.1.15
-	 * @todo This should be done differently in 1.2, because of broader privacy changes
-	 */
-	function protect_group_docs( $clauses ) {
-		global $bp, $wpdb;
-
-		if ( ! bp_docs_is_single_doc() ) {
-			return $clauses;
-		}
-
-		if ( false === strpos( $clauses['where'], $bp->bp_docs->post_type_name ) ) {
-			return $clauses;
-		}
-
-		// Query for all the current group's docs
-		if ( bp_get_current_group_id() ) {
-			$query_args = array(
-				'tax_query' => array(
-					array(
-						'taxonomy' => $bp->bp_docs->associated_item_tax_name,
-						'terms' => array( bp_get_current_group_id() ),
-						'field' => 'name',
-						'operator' => 'IN',
-						'include_children' => false
-					),
-				),
-				'post_type' => $bp->bp_docs->post_type_name,
-				'showposts' => '-1'
-			);
-
-			// Don't recurse
-			remove_filter( 'posts_clauses', array( $this, 'protect_group_docs' ) );
-
-			$this_group_docs = new WP_Query( $query_args );
-
-			$this_group_doc_ids = array();
-			foreach( $this_group_docs->posts as $gpost ) {
-				$this_group_doc_ids[] = $gpost->ID;
-			}
-
-			if ( !empty( $this_group_doc_ids ) ) {
-				$clauses['where'] .= " AND $wpdb->posts.ID IN (" . implode(',', $this_group_doc_ids ) . ")";
-			}
-		}
-
-		return $clauses;
 	}
 
 	/**
@@ -516,16 +456,9 @@ class BP_Docs_Groups_Integration {
 
 		// Default to the current group, but get the associated doc if not
 		$group_id = 0;
-		if ( isset( $bp->groups->current_group->id ) ) {
-			$group_id = $bp->groups->current_group->id;
-			$group = $bp->groups->current_group;
-		} else if ( isset( $doc->ID ) ) {
+		if ( bp_docs_is_existing_doc() ) {
 			$group_id = bp_docs_get_associated_group_id( $doc->ID, $doc );
-
-			if ( is_array( $group_id ) ) {
-				$group_id = $group_id[0]; // todo: make this a loop
-				$group = groups_get_group( array( 'group_id' => $group_id ) );
-			}
+			$group = groups_get_group( array( 'group_id' => $group_id ) );
 		}
 
 		if ( ! $group_id ) {
@@ -533,19 +466,6 @@ class BP_Docs_Groups_Integration {
 		}
 
 		switch ( $action ) {
-			case 'read' :
-				// At the moment, read permissions are entirely based on group
-				// membership and privacy level
-				if ( 'public' != $group->status ) {
-					if ( groups_is_user_member( $user_id, $group_id ) ) {
-						$user_can = true;
-					}
-				} else {
-					$user_can = true;
-				}
-
-				break;
-
 			case 'create' :
 				$group_settings = groups_get_groupmeta( $group_id, 'bp-docs' );
 
@@ -574,42 +494,42 @@ class BP_Docs_Groups_Integration {
 
 				break;
 
+			case 'read' :
 			case 'delete' : // Delete and Edit are the same for the time being
 			case 'edit' :
 			default :
-				// Group admins and mods always get to edit
-				if ( groups_is_user_admin( $user_id, $group_id ) || groups_is_user_mod( $user_id, $group_id ) ) {
-					$user_can = true;
-				} else {
-					// Delete defaults to Edit for now
-					if ( 'delete' == $action ) {
-						$action = 'edit';
-					}
+				// Delete defaults to Edit for now
+				if ( 'delete' == $action ) {
+					$action = 'edit';
+				}
 
-					// Make sure there's a default
-					if ( empty( $doc_settings[$action] ) ) {
-						$doc_settings[$action] = 'group-members';
+				// Make sure there's a default
+				if ( empty( $doc_settings[$action] ) ) {
+					if ( ! empty( $group_id ) ) {
+						$doc_settings[ $action ] = 'group-members';
+					} else {
+						$doc_settings[ $action ] = 'anyone';
 					}
+				}
 
-					switch ( $doc_settings[$action] ) {
-						case 'anyone' :
+				switch ( $doc_settings[$action] ) {
+					case 'anyone' :
+						$user_can = true;
+						break;
+
+					case 'creator' :
+						if ( $doc->post_author == $user_id )
 							$user_can = true;
-							break;
+						break;
 
-						case 'creator' :
-							if ( $doc->post_author == $user_id )
-								$user_can = true;
-							break;
+					case 'group-members' :
+						if ( groups_is_user_member( $user_id, $group_id ) )
+							$user_can = true;
+						break;
 
-						case 'group-members' :
-							if ( groups_is_user_member( $user_id, $group_id ) )
-								$user_can = true;
-							break;
-
-						case 'no-one' :
-						default :
-							break; // In other words, other types return false
-					}
+					case 'no-one' :
+					default :
+						break; // In other words, other types return false
 				}
 
 				break;

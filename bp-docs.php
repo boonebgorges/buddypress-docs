@@ -59,6 +59,9 @@ class BP_Docs {
 
 		// parse_query
 		add_action( 'parse_query', array( $this, 'parse_query' ) );
+
+		// Protect doc access
+		add_action( 'template_redirect', array( $this, 'protect_doc_access' ) );
 	}
 
 	/**
@@ -408,6 +411,12 @@ class BP_Docs {
 		return $filter;
 	}
 
+	/**
+	 * Handles stuff that needs to be done at 'parse_query'
+	 *
+	 * - Ensures that no post is loaded on the creation screen
+	 * - Ensures that an archive template is loaded in /docs/my-groups/
+	 */
 	function parse_query( $posts_query ) {
 
 		// Bail if $posts_query is not the main loop
@@ -432,7 +441,58 @@ class BP_Docs {
 		if ( $posts_query->get( BP_DOCS_MY_GROUPS_SLUG ) ) {
 			$posts_query->is_404 = false;
 		}
-		//var_dump( $posts_query );
+	}
+
+	/**
+	 * Protects group docs from unauthorized access
+	 *
+	 * @since 1.2
+	 * @uses bp_docs_current_user_can() This does most of the heavy lifting
+	 */
+	function protect_doc_access() {
+		// What is the user trying to do?
+		if ( bp_docs_is_doc_read() ) {
+			$action = 'read';
+		} else if ( bp_docs_is_doc_create() ) {
+			$action = 'create';
+		} else if ( bp_docs_is_doc_edit() ) {
+			$action = 'edit';
+		} else if ( bp_docs_is_doc_history() ) {
+			$action = 'view-history';
+		}
+
+		if ( ! isset( $action ) ) {
+			return;
+		}
+
+		if ( ! bp_docs_current_user_can( $action ) ) {
+			$redirect_to = wp_get_referer();
+
+			if ( ! $redirect_to || trailingslashit( $redirect_to ) == trailingslashit( wp_guess_url() ) ) {
+				$redirect_to = bp_get_root_domain();
+			}
+
+			switch ( $action ) {
+				case 'read' :
+					$message = __( 'You are not allowed to read that Doc.', 'bp-docs' );
+					break;
+
+				case 'create' :
+					$message = __( 'You are not allowed to create Docs.', 'bp-docs' );
+					break;
+
+				case 'edit' :
+					$message = __( 'You are not allowed to edit that Doc.', 'bp-docs' );
+					break;
+
+				case 'view-history' :
+					$message = __( 'You are not allowed to view that Doc\'s history.', 'bp-docs' );
+					break;
+			}
+
+			bp_core_add_message( $message, 'error' );
+			bp_core_redirect( $redirect_to );
+		}
 	}
 
 	function activation() {
