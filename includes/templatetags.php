@@ -1265,7 +1265,7 @@ function bp_docs_doc_permissions_snapshot() {
 	$html .=   '</ul>';
 
 	if ( bp_docs_current_user_can( 'manage' ) )
-		$html .=   '<a href="' . bp_docs_get_doc_edit_link() . '#permissions" id="doc-permissions-edit">' . __( 'Edit', 'bp-docs' ) . '</a>';
+		$html .=   '<a href="' . bp_docs_get_doc_edit_link() . '#doc-settings" id="doc-permissions-edit">' . __( 'Edit', 'bp-docs' ) . '</a>';
 
 	$html .=   '<a href="#" class="doc-permissions-toggle" id="doc-permissions-less">' . __( 'Summary', 'bp-docs' ) . '</a>';
 	$html .= '</div>';

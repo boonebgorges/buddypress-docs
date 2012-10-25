@@ -668,6 +668,13 @@ class BP_Docs_Groups_Integration {
 			// permissions limited to group-members by default. If
 			// the group is non-public, set the other permissions
 			// to group-members as well
+
+			// First, unset existing defaults
+			foreach ( $options as &$option ) {
+				$option['default'] = 0;
+			}
+
+			// Now, set new defaults
 			if ( 'public' != $group->status || in_array( $settings_field, array( 'edit', 'post-comments' ) ) ) {
 				$options[40]['default'] = 1;
 			}

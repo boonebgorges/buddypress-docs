@@ -414,12 +414,9 @@ class BP_Docs_Query {
 			}
 		}
 
-		// Check settings
-
-
 		if ( empty( $_POST['doc']['title'] ) || empty( $doc_content ) ) {
 			// Both the title and the content fields are required
-			$result['message'] = __( 'Both the title and the content fields are required.', 'bp-doc' );
+			$result['message'] = __( 'Both the title and the content fields are required.', 'bp-docs' );
 			$result['redirect'] = $this->current_view;
 		} else {
 			// If both the title and content fields are filled in, we can proceed
@@ -440,7 +437,7 @@ class BP_Docs_Query {
 
 				// This is a new doc
 				if ( !$post_id = wp_insert_post( $r ) ) {
-					$result['message'] = __( 'There was an error when creating the doc.', 'bp-doc' );
+					$result['message'] = __( 'There was an error when creating the doc.', 'bp-docs' );
 					$result['redirect'] = 'create';
 				} else {
 					// Add to a group, if necessary
@@ -454,7 +451,7 @@ class BP_Docs_Query {
 					$this->doc_slug = $the_doc->post_name;
 
 					// A normal, successful save
-					$result['message'] = __( 'Doc successfully created!', 'bp-doc' );
+					$result['message'] = __( 'Doc successfully created!', 'bp-docs' );
 					$result['redirect'] = 'single';
 				}
 			} else {
@@ -482,7 +479,7 @@ class BP_Docs_Query {
 				$this->doc_slug = $r['post_name'];
 
 				if ( !wp_update_post( $r ) ) {
-					$result['message'] = __( 'There was an error when saving the doc.', 'bp-doc' );
+					$result['message'] = __( 'There was an error when saving the doc.', 'bp-docs' );
 					$result['redirect'] = 'edit';
 				} else {
 					// Remove the edit lock
@@ -494,31 +491,39 @@ class BP_Docs_Query {
 						$result['message'] = __( 'You idled a bit too long while in Edit mode. In order to allow others to edit the doc you were working on, your changes have been autosaved. Click the Edit button to return to Edit mode.', 'bp-docs' );
 					} else {
 						// A normal, successful save
-						$result['message'] = __( 'Doc successfully edited!', 'bp-doc' );
+						$result['message'] = __( 'Doc successfully edited!', 'bp-docs' );
 					}
 					$result['redirect'] = 'single';
 				}
 
 				$post_id = $this->doc_id;
 			}
-
-			// Make sure the current user is added as one of the authors
-			wp_set_post_terms( $post_id, $this->user_term_id, $this->associated_item_tax_name, true );
-
-			// Save the last editor id. We'll use this to create an activity item
-			update_post_meta( $this->doc_id, 'bp_docs_last_editor', bp_loggedin_user_id() );
-
-			// Save settings
-			if ( !empty( $_POST['settings'] ) ) {
-				update_post_meta( $this->doc_id, 'bp_docs_settings', $_POST['settings'] );
-			}
-
-			// Provide a custom hook for plugins and optional components.
-			// WP's default save_post isn't enough, because we need something that fires
-			// only when we save from the front end (for things like taxonomies, which
-			// the WP admin handles automatically)
-			do_action( 'bp_docs_doc_saved', $this );
 		}
+
+		// Make sure the current user is added as one of the authors
+		wp_set_post_terms( $post_id, $this->user_term_id, $this->associated_item_tax_name, true );
+
+		// Save the last editor id. We'll use this to create an activity item
+		update_post_meta( $this->doc_id, 'bp_docs_last_editor', bp_loggedin_user_id() );
+
+		// Save settings
+		$settings = ! empty( $_POST['settings'] ) ? $_POST['settings'] : array();
+		$verified_settings = bp_docs_verify_settings( $settings, $post_id, bp_loggedin_user_id() );
+
+		$new_settings = array();
+		foreach ( $verified_settings as $verified_setting_name => $verified_setting ) {
+			$new_settings[ $verified_setting_name ] = $verified_setting['verified_value'];
+			if ( $verified_setting['verified_value'] != $verified_setting['original_value'] ) {
+				$result['message'] = __( 'Your Doc was successfully saved, but some of your access settings have been changed to match the Doc\'s permissions.', 'bp-docs' );
+			}
+		}
+		update_post_meta( $this->doc_id, 'bp_docs_settings', $new_settings );
+
+		// Provide a custom hook for plugins and optional components.
+		// WP's default save_post isn't enough, because we need something that fires
+		// only when we save from the front end (for things like taxonomies, which
+		// the WP admin handles automatically)
+		do_action( 'bp_docs_doc_saved', $this );
 
 		$message_type = $result['redirect'] == 'single' ? 'success' : 'error';
 		bp_core_add_message( $result['message'], $message_type );

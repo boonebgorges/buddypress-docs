@@ -452,4 +452,46 @@ function bp_docs_get_access_options( $settings_field, $doc_id = false ) {
 	return $options;
 }
 
-?>
+/**
+ * Verifies the settings associated with a given Doc
+ *
+ * @since 1.2
+ * @param array $settings Settings passed from the Edit form
+ * @param int $doc_id The numeric ID of the doc
+ * @param int $user_id The id of the user
+ * @return array $is_allowed Keyed by settings names, with boolean values
+ */
+function bp_docs_verify_settings( $settings, $doc_id, $user_id = 0 ) {
+	$verified_settings = array();
+
+	foreach ( $settings as $setting_name => $setting_value ) {
+		$allowed_values = bp_docs_get_access_options( $setting_name, $doc_id );
+
+		$verified_settings[ $setting_name ] = array(
+			'original_value'  => $setting_value,
+			'verified_value'  => '',
+			'setting_default' => '',
+		);
+
+		// Loop through to collect whitelisted values as well as the
+		// default setting, which will be used if the user-provided
+		// value doesn't match the whitelist
+		foreach ( $allowed_values as $allowed_value ) {
+			if ( empty( $verified_settings[ $setting_name ]['verified_value'] ) && $setting_value == $allowed_value['name'] ) {
+				$verified_settings[ $setting_name ]['verified_value'] = $setting_value;
+			}
+
+			if ( empty( $verified_settings[ $setting_name ]['setting_default'] ) && 1 == $allowed_value['default'] ) {
+				$verified_settings[ $setting_name ]['setting_default'] = 1;
+			}
+		}
+
+		// If no whitelisted value has been found, attempt to fall
+		// back on a default value for that option
+		if ( empty( $verified_settings[ $setting_name ] ) ) {
+			$verified_settings[ $setting_name ]['verified_value'] = $verified_settings[ $setting_name ]['setting_default'];
+		}
+	}
+
+	return $verified_settings;
+}
