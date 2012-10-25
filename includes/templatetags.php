@@ -728,7 +728,7 @@ function bp_docs_access_options_helper( $settings_field, $doc_id = 0 ) {
 				<?php foreach ( $access_options as $key => $option ) : ?>
 					<?php
 					$selected = selected( $setting, $option['name'], false );
-					if ( empty( $selected ) && ! empty( $option['default'] ) ) {
+					if ( empty( $setting ) && ! empty( $option['default'] ) ) {
 						$selected = selected( 1, 1, false );
 					}
 					?>
@@ -1145,13 +1145,21 @@ function bp_docs_tabs() {
 function bp_docs_doc_permissions_snapshot() {
 	$html = '';
 
-	$doc_group_ids = bp_docs_get_associated_group_id( get_the_ID(), 'full', true );
+	$doc_group_ids = bp_docs_get_associated_group_id( get_the_ID(), false, true );
 	$doc_groups = array();
 	foreach( $doc_group_ids as $dgid ) {
 		$maybe_group = groups_get_group( 'group_id=' . $dgid );
 		if ( !empty( $maybe_group->name ) ) {
 			$doc_groups[] = $maybe_group;
 		}
+	}
+
+	// First set up the Group snapshot, if there is one
+	if ( ! empty( $doc_groups ) ) {
+		$group_link = bp_get_group_permalink( $doc_groups[0] );
+		$html .= '<div id="doc-group-summary">';
+		$html .=   sprintf( __( 'Group: %s', 'bp-docs' ), '<a href="' . $group_link . '">' . bp_core_fetch_avatar( 'item_id=' . $doc_groups[0]->id . '&item_type=group&type=thumb&width=25&height=25' ) . '</a> ' . '<a href="' . $group_link . '">' . esc_html( $doc_groups[0]->name ) . '</a>' );
+		$html .= '</div>';
 	}
 
 	// we'll need a list of comma-separated group names

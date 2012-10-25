@@ -257,7 +257,8 @@ div.doc-content {
 div.doc-permissions {
 	float: right;
 	width: 30%;
-	border: 1px solid #aaa;
+	background: #f0f0f0;
+	border: 1px solid #ddd;
 	border-radius: 3px;
 	padding: 4px;
 }
@@ -272,7 +273,7 @@ body.no-js a.doc-permissions-toggle {
 	display: none;
 }
 
-#doc-permissions-summary {
+#doc-permissions-summary, #doc-group-summary {
 	font-size: 1.0em;
 	padding: 3px 12px;
 	border: 1px solid;
@@ -305,6 +306,13 @@ dl.doc-permissions-types dt {
 	width: 50%;
 	float: left;
 	clear: left;
+}
+
+#doc-group-summary {
+	border-color: #f0f0f0;
+}
+#doc-group-summary img.avatar {
+	float: none;
 }
 
 /* Permissions level icons */
