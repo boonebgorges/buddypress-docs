@@ -22,16 +22,6 @@ class BP_Docs_History {
 	var $is_latest;
 
 	/**
-	 * PHP 4 constructor
-	 *
-	 * @package BuddyPress Docs
-	 * @since 1.1
-	 */
-	function bp_docs_history() {
-		$this->__construct();
-	}
-
-	/**
 	 * PHP 5 constructor
 	 *
 	 * @package BuddyPress Docs
