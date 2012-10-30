@@ -63,7 +63,7 @@ class BP_Docs_Access_Query {
 
 		$admin_groups                      = BP_Groups_Member::get_is_admin_of( $this->user_id );
 		$mod_groups                        = BP_Groups_Member::get_is_mod_of( $this->user_id );
-		$this->user_groups['admin_mod_of'] = array_merge( $admin_groups['groups'], $mod_groups['groups'] );
+		$this->user_groups['admin_mod_of'] = array_merge( wp_list_pluck( $admin_groups['groups'], 'id' ), wp_list_pluck( $mod_groups['groups'], 'id' ) );
 	}
 
 	/**
