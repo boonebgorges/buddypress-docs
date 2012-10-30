@@ -12,6 +12,12 @@
 		padding: 2px 4px;
 	}
 
+#bp-create-doc-button {
+	float: right;
+	margin: 5px 19px;
+	font-weight: bold;
+}
+
 .doc-tabs {
 	overflow: hidden;
 }

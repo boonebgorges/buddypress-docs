@@ -4,9 +4,7 @@ if ( !function_exists( 'bp_is_root_blog' ) ) :
 	/**
 	 * Is this BP_ROOT_BLOG?
 	 *
-	 * I'm hoping to have this function in BP 1.3 core, but just in case, here's a
-	 * conditionally-loaded version. Checks against $wpdb->blogid, which provides greater
-	 * support for switch_to_blog()
+	 * Provides backward compatibility with pre-1.5 BP installs
 	 *
 	 * @package BuddyPress Docs
 	 * @since 1.0.4
@@ -1129,9 +1127,11 @@ function bp_docs_tabs() {
 				<?php endif ?>
 			<?php endif ?>
 
-			<li id="bp-create-doc-button"><a href="<?php bp_docs_create_link() ?>"><?php _e( "New Doc", 'bp-docs' ) ?></a></li>
 		<?php endif ?>
 	</ul>
+
+	<a class="button" id="bp-create-doc-button" href="<?php bp_docs_create_link() ?>"><?php _e( "Create New Doc", 'bp-docs' ) ?></a>
+
 	<?php
 }
 
