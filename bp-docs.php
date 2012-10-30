@@ -25,6 +25,7 @@ class BP_Docs {
 		// Define post type and taxonomy names for use in the register functions
 		$this->post_type_name 		= apply_filters( 'bp_docs_post_type_name', 'bp_doc' );
 		$this->associated_item_tax_name = apply_filters( 'bp_docs_associated_item_tax_name', 'bp_docs_associated_item' );
+		$this->access_tax_name          = apply_filters( 'bp_docs_access_tax_name', 'bp_docs_access' );
 
 		// Let plugins know that BP Docs has started loading
 		add_action( 'plugins_loaded',   array( $this, 'load_hook' ), 20 );
@@ -90,6 +91,9 @@ class BP_Docs {
 
 		// caps.php handles capabilities and roles
 		require( BP_DOCS_INCLUDES_PATH . 'caps.php' );
+
+		// access-query.php is a helper for determining access to docs
+		require( BP_DOCS_INCLUDES_PATH . 'access-query.php' );
 
 		// query-builder.php contains the class that fetches the content for each view
 		require( BP_DOCS_INCLUDES_PATH . 'query-builder.php' );
@@ -280,18 +284,25 @@ class BP_Docs {
 
 		// Define the labels to be used by the taxonomy bp_docs_associated_item
 		$associated_item_labels = array(
-			'name' => __( 'Associated Items', 'bp-docs' ),
+			'name'          => __( 'Associated Items', 'bp-docs' ),
 			'singular_name' => __( 'Associated Item', 'bp-docs' )
 		);
 
 		// Register the bp_docs_associated_item taxonomy
 		register_taxonomy( $this->associated_item_tax_name, array( $this->post_type_name ), array(
-			'labels' => $associated_item_labels,
+			'labels'       => $associated_item_labels,
 			'hierarchical' => true,
-			'show_ui' => true,
-			'query_var' => true,
-			'rewrite' => array( 'slug' => 'item' ),
-		));
+			'show_ui'      => true,
+			'query_var'    => true,
+			'rewrite'      => array( 'slug' => 'item' ),
+		) );
+
+		// Register the bp_docs_access taxonomy
+		register_taxonomy( $this->access_tax_name, array( $this->post_type_name ), array(
+			'hierarchical' => false,
+			'show_ui'      => true,
+			'query_var'    => false,
+		) );
 
 		do_action( 'bp_docs_registered_post_type' );
 

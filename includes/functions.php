@@ -18,7 +18,6 @@
  */
 function bp_docs_get_post_type_name() {
 	global $bp;
-
 	return $bp->bp_docs->post_type_name;
 }
 
@@ -30,8 +29,18 @@ function bp_docs_get_post_type_name() {
  */
 function bp_docs_get_associated_item_tax_name() {
 	global $bp;
-
 	return $bp->bp_docs->associated_item_tax_name;
+}
+
+/**
+ * Return the access taxonomy name
+ *
+ * @package BuddyPress_Docs
+ * @since 1.2
+ */
+function bp_docs_get_access_tax_name() {
+	global $bp;
+	return $bp->bp_docs->access_tax_name;
 }
 
 /**
@@ -495,3 +504,107 @@ function bp_docs_verify_settings( $settings, $doc_id, $user_id = 0 ) {
 
 	return $verified_settings;
 }
+
+/**
+ * Get the access term for 'anyone'
+ *
+ * @since 1.2
+ * @return string The term slug
+ */
+function bp_docs_get_access_term_anyone() {
+	return apply_filters( 'bp_docs_get_access_term_anyone', 'bp_docs_access_anyone' );
+}
+
+/**
+ * Get the access term for 'loggedin'
+ *
+ * @since 1.2
+ * @return string The term slug
+ */
+function bp_docs_get_access_term_loggedin() {
+	return apply_filters( 'bp_docs_get_access_term_loggedin', 'bp_docs_access_loggedin' );
+}
+
+/**
+ * Get the access term for a user id
+ *
+ * @since 1.2
+ * @param int|bool $user_id Defaults to logged in user
+ * @return string The term slug
+ */
+function bp_docs_get_access_term_user( $user_id = false ) {
+	if ( false === $user_id ) {
+		$user_id = bp_loggedin_user_id();
+	}
+
+	return apply_filters( 'bp_docs_get_access_term_user', 'bp_docs_access_user_' . intval( $user_id ) );
+}
+
+/**
+ * Get the access term corresponding to group-members for a given group
+ *
+ * @since 1.2
+ * @param int|bool $user_id Defaults to logged in user
+ * @return string The term slug
+ */
+function bp_docs_get_access_term_group_member( $user_id = false ) {
+	if ( false === $user_id ) {
+		$user_id = bp_loggedin_user_id();
+	}
+
+	return apply_filters( 'bp_docs_get_access_term_group_member', 'bp_docs_access_group_member_' . intval( $user_id ) );
+}
+
+/**
+ * Get the access term corresponding to admins-mods for a given group
+ *
+ * @since 1.2
+ * @param int|bool $user_id Defaults to logged in user
+ * @return string The term slug
+ */
+function bp_docs_get_access_term_group_adminmod( $user_id = false ) {
+	if ( false === $user_id ) {
+		$user_id = bp_loggedin_user_id();
+	}
+
+	return apply_filters( 'bp_docs_get_access_term_group_adminmod', 'bp_docs_access_group_adminmod_' . intval( $user_id ) );
+}
+
+function bp_docs_update_doc_access( $doc_id, $access_setting = 'anyone' ) {
+
+	$doc = get_post( $doc_id );
+
+	if ( ! $doc || is_wp_error( $doc ) ) {
+		return false;
+	}
+
+	// Convert the access setting to a WP taxonomy term
+	switch ( $access_setting ) {
+		case 'anyone' :
+		case 'loggedin' :
+			$access_term = 'bp_docs_access_' . $access_setting;
+			break;
+
+		case 'group-members' :
+		case 'admins-mods' :
+			$associated_group = bp_docs_get_associated_group_id( $doc_id );
+			$access_term = 'group-members' == $access_setting ? bp_docs_get_access_term_group_member( $associated_group ) : bp_docs_get_access_term_group_adminmod( $associated_group );
+			break;
+
+		case 'creator' :
+		case 'no-one' :
+			// @todo Don't know how these are different
+			$access_term = bp_docs_get_access_term_user( $doc->post_author );
+			break;
+	}
+
+	$retval = wp_set_post_terms( $doc_id, $access_term, bp_docs_get_access_tax_name() );
+
+	if ( ! $retval || is_wp_error( $retval ) ) {
+		return false;
+	} else {
+		return true;
+	}
+
+}
+

@@ -18,6 +18,7 @@ class BP_Docs_Component extends BP_Component {
 
 	var $post_type_name;
 	var $associated_tax_name;
+	var $access_tax_name;
 
 	var $slugtocheck = array();
 	var $query;
@@ -142,6 +143,7 @@ class BP_Docs_Component extends BP_Component {
 		// Stash tax and post type names in the $bp global for use in template tags
 		$this->post_type_name		= $bp_docs->post_type_name;
 		$this->associated_item_tax_name = $bp_docs->associated_item_tax_name;
+		$this->access_tax_name          = $bp_docs->access_tax_name;
 
 		// This info is loaded here because it needs to happen after BP core globals are
 		// set up

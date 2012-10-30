@@ -95,7 +95,7 @@ function bp_docs_map_meta_caps( $caps, $cap, $user_id, $args ) {
 
 	return apply_filters( 'bp_docs_map_meta_caps', $caps, $cap, $user_id, $args );
 }
-add_filter( 'map_meta_cap', 'bp_docs_map_meta_caps', 10, 4 );
+//add_filter( 'map_meta_cap', 'bp_docs_map_meta_caps', 10, 4 );
 
 /**
  * Load up the doc to check against for meta cap mapping

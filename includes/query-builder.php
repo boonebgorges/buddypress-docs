@@ -225,10 +225,13 @@ class BP_Docs_Query {
 				$wp_query_args['post__in'] = $this->get_edited_by_post_ids();
 			}
 
+			// Access
+			$wp_query_args['tax_query'] = array_merge( $wp_query_args['tax_query'], $this->get_access_tax_query() );
+
 			// Set the taxonomy query. Filtered so that plugins can alter the query
 			// Filtering by groups also happens in this way
 			$wp_query_args['tax_query'] = apply_filters(
-                        'bp_docs_tax_query', array(), $this );
+                        'bp_docs_tax_query', $wp_query_args['tax_query'], $this );
 
 			if ( !empty( $this->query_args['parent_id'] ) ) {
 				$wp_query_args['post_parent'] = $this->query_args['parent_id'];
@@ -270,6 +273,13 @@ class BP_Docs_Query {
 
 		// @todo Might be faster to let the dupes through and let MySQL optimize
 		return array_unique( $post_ids );
+	}
+
+	/**
+	 */
+	function get_access_tax_query() {
+		$bp_docs_access_query = new BP_Docs_Access_Query( bp_loggedin_user_id() );
+		return $bp_docs_access_query->get_tax_query();
 	}
 
 	/**
@@ -518,6 +528,10 @@ class BP_Docs_Query {
 			}
 		}
 		update_post_meta( $this->doc_id, 'bp_docs_settings', $new_settings );
+
+		// The 'read' setting must also be saved to a taxonomy, for
+		// easier directory queries
+		bp_docs_update_doc_access( $this->doc_id, $new_settings['read'] );
 
 		// Provide a custom hook for plugins and optional components.
 		// WP's default save_post isn't enough, because we need something that fires
