@@ -891,6 +891,8 @@ class BP_Docs_Component extends BP_Component {
 			wp_register_script( 'bp-docs-js', plugins_url( 'buddypress-docs/includes/js/bp-docs.js' ), array( 'jquery', 'editor' ) );
 
 			wp_register_script( 'word-counter', site_url() . '/wp-admin/js/word-count.js', array( 'jquery' ) );
+
+			wp_enqueue_script( 'bp-docs-edit-validation', plugins_url( 'buddypress-docs/includes/js/edit-validation.js' ), array( 'jquery' ) );
 		}
 
 		// Only load our JS on the right sorts of pages. Generous to account for

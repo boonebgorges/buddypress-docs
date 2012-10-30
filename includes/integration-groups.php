@@ -50,7 +50,7 @@ class BP_Docs_Groups_Integration {
 		add_filter( 'bp_docs_user_can',			array( $this, 'user_can' ), 10, 4 );
 
 		// Add group-specific options to the access options dropdowns
-		add_filter( 'bp_docs_get_access_options',       array( $this, 'get_access_options' ), 10, 3 );
+		add_filter( 'bp_docs_get_access_options',       array( $this, 'get_access_options' ), 10, 4 );
 
 		// Filter the activity actions for group docs-related activity
 		add_filter( 'bp_docs_activity_action',		array( $this, 'activity_action' ), 10, 5 );
@@ -554,9 +554,11 @@ class BP_Docs_Groups_Integration {
 		_deprecated_function( __METHOD__, '1.2' );
 	}
 
-	function get_access_options( $options, $settings_field, $doc_id ) {
+	public static function get_access_options( $options, $settings_field, $doc_id = 0, $group_id = 0 ) {
 
-		$group_id = bp_docs_get_associated_group_id( $doc_id );
+		if ( ! $group_id ) {
+			$group_id = bp_docs_get_associated_group_id( $doc_id );
+		}
 
 		// If this is the Doc creation page, check to see whether a
 		// group id has been passed somewhere
@@ -567,7 +569,6 @@ class BP_Docs_Groups_Integration {
 				$group_id = intval( $_GET['associated_group_id'] );
 			}
 		}
-
 
 		$can_associate = self::user_can_associate_doc_with_group( bp_loggedin_user_id(), $group_id );
 

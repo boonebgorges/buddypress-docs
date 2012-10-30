@@ -430,7 +430,7 @@ function bp_docs_define_tiny_mce() {
  *
  * Access options are things like 'anyone', 'loggedin', 'group-members', etc
  */
-function bp_docs_get_access_options( $settings_field, $doc_id = false ) {
+function bp_docs_get_access_options( $settings_field, $doc_id = 0, $group_id = 0 ) {
 	$options = array();
 
 	// The base options for every setting
@@ -458,7 +458,7 @@ function bp_docs_get_access_options( $settings_field, $doc_id = false ) {
 	}
 
 	// Other integration pieces can mod the options with this filter
-	$options = apply_filters( 'bp_docs_get_access_options', $options, $settings_field, $doc_id );
+	$options = apply_filters( 'bp_docs_get_access_options', $options, $settings_field, $doc_id, $group_id );
 
 	// Options are sorted by the numeric key
 	ksort( $options );

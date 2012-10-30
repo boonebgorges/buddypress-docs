@@ -673,10 +673,13 @@ function bp_docs_doc_associated_group_markup() {
  * @package BuddyPress Docs
  * @since 1.0-beta
  */
-function bp_docs_doc_settings_markup() {
+function bp_docs_doc_settings_markup( $doc_id = 0, $group_id = 0 ) {
 	global $bp;
 
-	$doc_id = is_single() ? get_the_ID() : 0;
+	if ( ! $doc_id ) {
+		$doc_id = is_single() ? get_the_ID() : 0;
+	}
+
 	$doc_settings = (array) get_post_meta( $doc_id, 'bp_docs_settings', true );
 
 	$settings_fields = array(
@@ -703,14 +706,14 @@ function bp_docs_doc_settings_markup() {
 	);
 
 	foreach ( $settings_fields as $settings_field ) {
-		bp_docs_access_options_helper( $settings_field, $doc_id );
+		bp_docs_access_options_helper( $settings_field, $doc_id, $group_id );
 	}
 
 	// Hand off the creation of additional settings to individual integration pieces
 	do_action( 'bp_docs_doc_settings_markup', $doc_settings );
 }
 
-function bp_docs_access_options_helper( $settings_field, $doc_id = 0 ) {
+function bp_docs_access_options_helper( $settings_field, $doc_id = 0, $group_id = 0 ) {
 	$doc_settings = get_post_meta( $doc_id, 'bp_docs_settings', true );
 
 	$setting = isset( $doc_settings[ $settings_field['name'] ] ) ? $doc_settings[ $settings_field['name'] ] : '';
@@ -722,7 +725,7 @@ function bp_docs_access_options_helper( $settings_field, $doc_id = 0 ) {
 
 		<td class="content-column">
 			<select name="settings[<?php echo esc_attr( $settings_field['name'] ) ?>]">
-				<?php $access_options = bp_docs_get_access_options( $settings_field['name'], $doc_id ) ?>
+				<?php $access_options = bp_docs_get_access_options( $settings_field['name'], $doc_id, $group_id ) ?>
 				<?php foreach ( $access_options as $key => $option ) : ?>
 					<?php
 					$selected = selected( $setting, $option['name'], false );
