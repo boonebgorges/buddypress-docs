@@ -286,6 +286,11 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
 
 			// Do nothing with other settings - they are passed through
 		}
+	} else if ( 'create' == $action ) {
+
+		// In the case of Doc creation, this value gets passed through
+		// to other components
+		$user_can = is_user_logged_in();
 	}
 
 	if ( $user_id ) {
