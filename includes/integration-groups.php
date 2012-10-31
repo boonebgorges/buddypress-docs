@@ -44,7 +44,7 @@ class BP_Docs_Groups_Integration {
 		add_action( 'bp_docs_taxonomy_save_item_terms', array( $this, 'save_group_terms' ) );
 
 		// Filter bp_docs_map_meta_caps for group-specific functionality
-		add_filter( 'bp_docs_map_meta_caps',		array( &$this, 'map_meta_caps' ), 10, 4 );
+//		add_filter( 'bp_docs_map_meta_caps',		array( &$this, 'map_meta_caps' ), 10, 4 );
 
 		// Filter the core user_can_edit function for group-specific functionality
 		add_filter( 'bp_docs_user_can',			array( $this, 'user_can' ), 10, 4 );
@@ -1468,10 +1468,12 @@ function bp_docs_group_doc_permalink() {
 		$group_permalink 	= bp_get_group_permalink( $group );
 
 		if ( $doc_id )
-			$post = get_post( $doc_id );
+			$the_post = get_post( $doc_id );
+		else
+			$the_post = $post;
 
-		if ( !empty( $post->post_name ) )
-			$doc_slug = $post->post_name;
+		if ( !empty( $the_post->post_name ) )
+			$doc_slug = $the_post->post_name;
 		else
 			return false;
 
