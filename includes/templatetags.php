@@ -636,7 +636,8 @@ function bp_docs_inline_toggle_js() {
  */
 function bp_docs_doc_associated_group_markup() {
 	// First, try to set the preselected group by looking at the URL params
-	$selected_group = isset( $_GET['associated_group_id'] ) ? intval( $_GET['associated_group_id'] ) : 0;
+	$selected_group_slug = isset( $_GET['group'] ) ? $_GET['group'] : '';
+	$selected_group      = BP_Groups_Group::get_id_from_slug( $selected_group_slug );
 	if ( $selected_group && ! BP_Docs_Groups_Integration::user_can_associate_doc_with_group( bp_loggedin_user_id(), $selected_group ) ) {
 		$selected_group = 0;
 	}
@@ -693,8 +694,9 @@ function bp_docs_associated_group_summary( $group_id = 0 ) {
 	$html = '';
 
 	if ( ! $group_id ) {
-		if ( isset( $_GET['associated_group_id'] ) ) {
-			$group_id = $_GET['associated_group_id'];
+		if ( isset( $_GET['group'] ) ) {
+			$group_slug = $_GET['group'];
+			$group_id   = BP_Groups_Group::get_id_from_slug( $group_slug );
 		} else {
 			$doc_id = is_single() ? get_the_ID() : 0;
 			$group_id = bp_docs_get_associated_group_id( $doc_id );
