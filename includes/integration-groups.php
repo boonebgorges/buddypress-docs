@@ -783,7 +783,6 @@ class BP_Docs_Groups_Integration {
 			return;
 		}
 
-		$items  = get_the_terms( get_the_ID(), bp_docs_get_associated_item_tax_name() );
 		$groups = (array) bp_docs_get_associated_group_id( get_the_ID(), false, true );
 
 		?>

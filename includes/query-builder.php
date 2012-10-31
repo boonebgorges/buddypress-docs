@@ -450,11 +450,6 @@ class BP_Docs_Query {
 					$result['message'] = __( 'There was an error when creating the doc.', 'bp-docs' );
 					$result['redirect'] = 'create';
 				} else {
-					// Add to a group, if necessary
-					if ( isset( $associated_group_id ) ) {
-						bp_docs_set_associated_group_id( $post_id, $associated_group_id );
-					}
-
 					$this->doc_id = $post_id;
 
 					$the_doc = get_post( $this->doc_id );
@@ -508,6 +503,11 @@ class BP_Docs_Query {
 
 				$post_id = $this->doc_id;
 			}
+		}
+
+		// Add to a group, if necessary
+		if ( isset( $associated_group_id ) ) {
+			bp_docs_set_associated_group_id( $post_id, $associated_group_id );
 		}
 
 		// Make sure the current user is added as one of the authors
