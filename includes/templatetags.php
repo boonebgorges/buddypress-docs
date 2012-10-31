@@ -1228,14 +1228,14 @@ function bp_docs_doc_permissions_snapshot() {
 	}
 
 	// we'll need a list of comma-separated group names
-	$group_names = implode( ',', wp_list_pluck( $doc_groups, 'name' ) );
+	$group_names = implode( ', ', wp_list_pluck( $doc_groups, 'name' ) );
 
 	$levels = array(
 		'anyone'        => __( 'Anyone', 'bp-docs' ),
 		'loggedin'      => __( 'Logged-in Users', 'bp-docs' ),
 		'friends'       => __( 'My Friends', 'bp-docs' ),
-		'group-members' => __( 'Members of: %s', 'bp-docs' ), // @todo
-		'admins-mods'   => __( 'Admins and mods of the group', 'bp-docs' ),
+		'group-members' => sprintf( __( 'Members of: %s', 'bp-docs' ), $group_names ),
+		'admins-mods'   => sprintf( __( 'Admins and mods of the group %s', 'bp-docs' ), $group_names ),
 		'creator'       => __( 'The Doc author only', 'bp-docs' ),
 		'no-one'        => __( 'Just Me', 'bp-docs' )
 	);
