@@ -284,13 +284,6 @@ div.doc-permissions {
 	div.doc-permissions div:last-child {
 		clear: both;
 	}
-body.js #doc-permissions-details {
-	display: none;
-}
-
-body.no-js a.doc-permissions-toggle {
-	display: none;
-}
 
 #doc-permissions-summary, #doc-group-summary {
 	font-size: 1.0em;

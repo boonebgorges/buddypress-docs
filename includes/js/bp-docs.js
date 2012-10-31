@@ -46,7 +46,10 @@ jQuery(document).ready(function($){
 	});
 
 	/* Permissions snapshot toggle */
-	$('.doc-permissions-toggle').on('click',function(e){
+	$('#doc-permissions-summary').show();
+	$('#doc-permissions-details').hide();
+	var dpt = $('.doc-permissions-toggle');
+	$(dpt).on('click',function(e){
 		e.preventDefault();
 		var thisaction = $(e.target).attr('id').split('-').pop();
 		var showing = 'more' == thisaction ? 'summary' : 'details';
