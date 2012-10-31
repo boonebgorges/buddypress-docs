@@ -275,7 +275,7 @@ div.doc-content {
 }
 div.doc-permissions {
 	float: right;
-	width: 30%;
+	width: 35%;
 	background: #f0f0f0;
 	border: 1px solid #ddd;
 	border-radius: 3px;
@@ -328,6 +328,13 @@ dl.doc-permissions-types dt {
 }
 
 /* Permissions level icons */
+#doc-permissions-details ul {
+	list-style-type: none;
+	padding-left: 0;
+}
+#doc-permissions-details ul li {
+	margin-bottom: .5em;
+}
 span.bp-docs-level-icon {
 	display: block;
 	float: left;
