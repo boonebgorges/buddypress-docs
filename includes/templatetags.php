@@ -650,11 +650,17 @@ function bp_docs_doc_associated_group_markup() {
 		$groups_args['user_id'] = bp_loggedin_user_id();
 	}
 
+	// Populate the $groups_template global
 	global $groups_template;
 	bp_has_groups( $groups_args );
 
 	?>
 	<tr>
+		<td class="desc-column">
+			<label for="associated_group_id"><?php _e( 'Which group should this Doc be associated with?', 'bp-docs' ) ?></label>
+			<span class="description"><?php _e( '(Optional) Note that the Access settings available for this Doc may be limited by the privacy settings of the group you choose.', 'bp-docs' ) ?></span>
+		</td>
+
 		<td>
 			<select name="associated_group_id" id="associated_group_id">
 				<option value=""><?php _e( 'None', 'bp-docs' ) ?></option>
@@ -662,13 +668,64 @@ function bp_docs_doc_associated_group_markup() {
 					<option value="<?php echo esc_attr( $g->id ) ?>" <?php selected( $selected_group, $g->id ) ?>><?php echo esc_html( $g->name ) ?></option>
 				<?php endforeach ?>
 			</select>
+
+			<div id="associated_group_summary">
+				<?php bp_docs_associated_group_summary() ?>
+			</div>
 		</td>
 	</tr>
 	<?php
 }
 
 /**
- * A hook for intregration pieces to insert their settings markup
+ * Display a summary of the associated group
+ *
+ * @since 1.2
+ *
+ * @param int $group_id
+ */
+function bp_docs_associated_group_summary( $group_id = 0 ) {
+	$html = '';
+
+	if ( ! $group_id ) {
+		if ( isset( $_GET['associated_group_id'] ) ) {
+			$group_id = $_GET['associated_group_id'];
+		} else {
+			$doc_id = is_single() ? get_the_ID() : 0;
+			$group_id = bp_docs_get_associated_group_id( $doc_id );
+		}
+	}
+
+	$group_id = intval( $group_id );
+	if ( $group_id ) {
+		$group = groups_get_group( 'group_id=' . $group_id );
+
+		if ( ! empty( $group->name ) ) {
+			$group_link = esc_url( bp_get_group_permalink( $group ) );
+			$group_avatar = bp_core_fetch_avatar( array(
+				'item_id' => $group_id,
+				'item_type' => 'group',
+				'type' => 'thumb',
+				'width' => '40',
+				'height' => '40',
+			) );
+			$group_member_count = sprintf( 1 == $group->total_member_count ? __( '%s member', 'bp-docs' ) : __( '%s members', 'bp-docs' ), intval( $group->total_member_count ) );
+
+			$html .= '<a href="' . $group_link . '">' . $group_avatar . '</a>';
+
+			$html .= '<div class="item">';
+			$html .= '<a href="' . $group_link . '">' . esc_html( $group->name ) . '</a>';
+			$html .= '<div class="meta">' . sprintf( __( '%s Group', 'bp-docs' ), ucwords( $group->status ) ) . ' / ' . $group_member_count . '</div>';
+			$html .= '</div>';
+		}
+
+	}
+
+	echo $html;
+}
+
+/**
+ * A hook for intergration pieces to insert their settings markup
  *
  * @package BuddyPress Docs
  * @since 1.0-beta

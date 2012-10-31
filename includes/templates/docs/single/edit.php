@@ -41,11 +41,6 @@ if ( !function_exists( 'wp_editor' ) ) {
         <div id="doc-content-textarea">
 		<label id="content-label" for="doc_content"><?php _e( 'Content', 'bp-docs' ) ?></label>
 		<div id="editor-toolbar">
-			<?php /* No media support for now
-			<div id="media-toolbar">
-			    <?php  echo bpsp_media_buttons(); ?>
-			</div>
-			*/ ?>
 			<?php
 				if ( function_exists( 'wp_editor' ) ) {
 					wp_editor( bp_docs_get_edit_doc_content(), 'doc_content', array(

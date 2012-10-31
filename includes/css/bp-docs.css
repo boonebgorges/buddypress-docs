@@ -137,6 +137,19 @@ div.docs-info-header {
 	margin-bottom: 10px;
 }
 
+#associated_group_summary .item {
+	padding-top: 1em;
+}
+
+#associated_group_summary .meta {
+	font-size: 11px;
+	color: #888;
+}
+
+#associated_group_summary img.avatar {
+	margin-left: 0;
+}
+
 /* TOGGLES */
 
 .toggle-switch {
