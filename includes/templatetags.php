@@ -704,7 +704,7 @@ function bp_docs_associated_group_summary( $group_id = 0 ) {
 			$group_link = esc_url( bp_get_group_permalink( $group ) );
 			$group_avatar = bp_core_fetch_avatar( array(
 				'item_id' => $group_id,
-				'item_type' => 'group',
+				'object' => 'group',
 				'type' => 'thumb',
 				'width' => '40',
 				'height' => '40',
@@ -1218,7 +1218,7 @@ function bp_docs_doc_permissions_snapshot() {
 	if ( ! empty( $doc_groups ) ) {
 		$group_link = bp_get_group_permalink( $doc_groups[0] );
 		$html .= '<div id="doc-group-summary">';
-		$html .=   sprintf( __( 'Group: %s', 'bp-docs' ), '<a href="' . $group_link . '">' . bp_core_fetch_avatar( 'item_id=' . $doc_groups[0]->id . '&item_type=group&type=thumb&width=25&height=25' ) . '</a> ' . '<a href="' . $group_link . '">' . esc_html( $doc_groups[0]->name ) . '</a>' );
+		$html .=   sprintf( __( 'Group: %s', 'bp-docs' ), '<a href="' . $group_link . '">' . bp_core_fetch_avatar( 'item_id=' . $doc_groups[0]->id . '&object=group&type=thumb&width=25&height=25' ) . '</a> ' . '<a href="' . $group_link . '">' . esc_html( $doc_groups[0]->name ) . '</a>' );
 		$html .= '</div>';
 	}
 
