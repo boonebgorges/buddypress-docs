@@ -629,6 +629,11 @@ function bp_docs_inline_toggle_js() {
 	<?php
 }
 
+/**
+ * Outputs the markup for the Associated Group settings section
+ *
+ * @since 1.2
+ */
 function bp_docs_doc_associated_group_markup() {
 	// First, try to set the preselected group by looking at the URL params
 	$selected_group = isset( $_GET['associated_group_id'] ) ? intval( $_GET['associated_group_id'] ) : 0;
@@ -661,7 +666,7 @@ function bp_docs_doc_associated_group_markup() {
 			<span class="description"><?php _e( '(Optional) Note that the Access settings available for this Doc may be limited by the privacy settings of the group you choose.', 'bp-docs' ) ?></span>
 		</td>
 
-		<td>
+		<td class="content-column">
 			<select name="associated_group_id" id="associated_group_id">
 				<option value=""><?php _e( 'None', 'bp-docs' ) ?></option>
 				<?php foreach( $groups_template->groups as $g ) : ?>
