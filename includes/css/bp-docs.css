@@ -236,6 +236,15 @@ p#filter-by-tag {
 
 .groups-cell ul li a {
 	vertical-align: middle;
+	font-size: .85em;
+}
+
+.groups-cell ul {
+	list-style-type: none;	
+	padding-left: 0;
+}
+.groups-cell ul li {
+	margin-bottom: .5em;
 }
 
 div#bp-docs-pagination {
