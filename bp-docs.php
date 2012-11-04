@@ -63,6 +63,8 @@ class BP_Docs {
 
 		// Protect doc access
 		add_action( 'template_redirect', array( $this, 'protect_doc_access' ) );
+
+		add_action( 'admin_init', array( $this, 'flush_rewrite_rules' ) );
 	}
 
 	/**
@@ -509,6 +511,31 @@ class BP_Docs {
 
 			bp_core_add_message( $message, 'error' );
 			bp_core_redirect( $redirect_to );
+		}
+	}
+
+	function flush_rewrite_rules() {
+		if ( ! is_admin() ) {
+			return;
+		}
+
+		if ( ! is_super_admin() ) {
+			return;
+		}
+
+		global $wp_rewrite;
+
+		// Check to see whether our rules have been registered yet, by
+		// finding a Docs rule and then comparing it to the registered rules
+		foreach ( $wp_rewrite->extra_rules_top as $rewrite => $rule ) {
+			if ( 0 === strpos( $rewrite, 'docs' ) ) {
+				$test_rule = $rule;
+			}
+		}
+		$registered_rules = get_option( 'rewrite_rules' );
+
+		if ( ! in_array( $test_rule, $registered_rules ) ) {
+			flush_rewrite_rules();
 		}
 	}
 

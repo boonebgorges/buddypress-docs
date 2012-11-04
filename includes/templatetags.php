@@ -629,9 +629,15 @@ function bp_docs_inline_toggle_js() {
 	<?php
 }
 
+/**
+ * Outputs the markup for the Associated Group settings section
+ *
+ * @since 1.2
+ */
 function bp_docs_doc_associated_group_markup() {
 	// First, try to set the preselected group by looking at the URL params
-	$selected_group = isset( $_GET['associated_group_id'] ) ? intval( $_GET['associated_group_id'] ) : 0;
+	$selected_group_slug = isset( $_GET['group'] ) ? $_GET['group'] : '';
+	$selected_group      = BP_Groups_Group::get_id_from_slug( $selected_group_slug );
 	if ( $selected_group && ! BP_Docs_Groups_Integration::user_can_associate_doc_with_group( bp_loggedin_user_id(), $selected_group ) ) {
 		$selected_group = 0;
 	}
@@ -661,7 +667,7 @@ function bp_docs_doc_associated_group_markup() {
 			<span class="description"><?php _e( '(Optional) Note that the Access settings available for this Doc may be limited by the privacy settings of the group you choose.', 'bp-docs' ) ?></span>
 		</td>
 
-		<td>
+		<td class="content-column">
 			<select name="associated_group_id" id="associated_group_id">
 				<option value=""><?php _e( 'None', 'bp-docs' ) ?></option>
 				<?php foreach( $groups_template->groups as $g ) : ?>
@@ -688,8 +694,9 @@ function bp_docs_associated_group_summary( $group_id = 0 ) {
 	$html = '';
 
 	if ( ! $group_id ) {
-		if ( isset( $_GET['associated_group_id'] ) ) {
-			$group_id = $_GET['associated_group_id'];
+		if ( isset( $_GET['group'] ) ) {
+			$group_slug = $_GET['group'];
+			$group_id   = BP_Groups_Group::get_id_from_slug( $group_slug );
 		} else {
 			$doc_id = is_single() ? get_the_ID() : 0;
 			$group_id = bp_docs_get_associated_group_id( $doc_id );
@@ -1223,14 +1230,14 @@ function bp_docs_doc_permissions_snapshot() {
 	}
 
 	// we'll need a list of comma-separated group names
-	$group_names = implode( ',', wp_list_pluck( $doc_groups, 'name' ) );
+	$group_names = implode( ', ', wp_list_pluck( $doc_groups, 'name' ) );
 
 	$levels = array(
 		'anyone'        => __( 'Anyone', 'bp-docs' ),
 		'loggedin'      => __( 'Logged-in Users', 'bp-docs' ),
 		'friends'       => __( 'My Friends', 'bp-docs' ),
-		'group-members' => __( 'Members of: %s', 'bp-docs' ), // @todo
-		'admins-mods'   => __( 'Admins and mods of the group', 'bp-docs' ),
+		'group-members' => sprintf( __( 'Members of: %s', 'bp-docs' ), $group_names ),
+		'admins-mods'   => sprintf( __( 'Admins and mods of the group %s', 'bp-docs' ), $group_names ),
 		'creator'       => __( 'The Doc author only', 'bp-docs' ),
 		'no-one'        => __( 'Just Me', 'bp-docs' )
 	);

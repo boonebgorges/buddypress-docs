@@ -236,6 +236,15 @@ p#filter-by-tag {
 
 .groups-cell ul li a {
 	vertical-align: middle;
+	font-size: .85em;
+}
+
+.groups-cell ul {
+	list-style-type: none;	
+	padding-left: 0;
+}
+.groups-cell ul li {
+	margin-bottom: .5em;
 }
 
 div#bp-docs-pagination {
@@ -275,7 +284,7 @@ div.doc-content {
 }
 div.doc-permissions {
 	float: right;
-	width: 30%;
+	width: 35%;
 	background: #f0f0f0;
 	border: 1px solid #ddd;
 	border-radius: 3px;
@@ -284,13 +293,6 @@ div.doc-permissions {
 	div.doc-permissions div:last-child {
 		clear: both;
 	}
-body.js #doc-permissions-details {
-	display: none;
-}
-
-body.no-js a.doc-permissions-toggle {
-	display: none;
-}
 
 #doc-permissions-summary, #doc-group-summary {
 	font-size: 1.0em;
@@ -335,6 +337,13 @@ dl.doc-permissions-types dt {
 }
 
 /* Permissions level icons */
+#doc-permissions-details ul {
+	list-style-type: none;
+	padding-left: 0;
+}
+#doc-permissions-details ul li {
+	margin-bottom: .5em;
+}
 span.bp-docs-level-icon {
 	display: block;
 	float: left;
