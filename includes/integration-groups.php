@@ -1540,7 +1540,10 @@ function bp_docs_get_associated_group_id( $doc_id, $doc = false, $single_array =
 
 	foreach( $post_terms as $post_term ) {
 		if ( 0 === strpos( $post_term->slug, 'bp_docs_associated_group_' ) ) {
-			$group_ids[] = bp_docs_get_group_id_from_term_slug( $post_term->slug );
+			$group_id = bp_docs_get_group_id_from_term_slug( $post_term->slug );
+			if ( $group_id ) {
+				$group_ids[] = $group_id;
+			}
 		}
 	}
 
