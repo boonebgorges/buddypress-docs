@@ -1195,14 +1195,19 @@ function bp_docs_tabs() {
 			<?php endif ?>
 
 		<?php endif ?>
+
+		<?php bp_docs_create_button() ?>
+
 	</ul>
-
-	<?php if ( ! bp_docs_is_doc_create() && bp_docs_current_user_can( 'create' ) ) : ?>
-		<a class="button" id="bp-create-doc-button" href="<?php bp_docs_create_link() ?>"><?php _e( "Create New Doc", 'bp-docs' ) ?></a>
-	<?php endif ?>
-
 	<?php
 }
+
+function bp_docs_create_button() {
+	if ( ! bp_docs_is_doc_create() && bp_docs_current_user_can( 'create' ) ) {
+		echo '<a class="button" id="bp-create-doc-button" href="' . bp_docs_get_create_link() . '">' . __( "Create New Doc", 'bp-docs' ) . '</a>';
+	}
+}
+add_action( 'bp_member_plugin_options_nav', 'bp_docs_create_button' );
 
 /**
  * Markup for the Doc Permissions snapshot
