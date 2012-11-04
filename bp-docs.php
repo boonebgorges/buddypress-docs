@@ -277,7 +277,7 @@ class BP_Docs {
 			'labels'       => $post_type_labels,
 			'public'       => true,
 			'show_ui'      => $this->show_cpt_ui(),
-			'hierarchical' => false,
+			'hierarchical' => true,
 			'supports'     => array( 'title', 'editor', 'revisions', 'excerpt', 'comments', 'author' ),
 			'query_var'    => false,
 			'has_archive'  => true,

@@ -90,18 +90,21 @@ function bp_docs_edit_parent_dropdown() {
 
 	$include = array();
 
-	if ( bp_docs_has_docs( array( 'posts_per_page' => -1 ) ) ) {
-		while ( bp_docs_has_docs() ) {
-			bp_docs_the_doc();
+	$doc_query_builder = new BP_Docs_Query( array( 'posts_per_page' => -1 ) );
+	$doc_query = $doc_query_builder->get_wp_query();
+
+	if ( $doc_query->have_posts() ) {
+		while ( $doc_query->have_posts() ) {
+			$doc_query->the_post();;
 			$include[] = get_the_ID();
 		}
 	}
 
 	// Exclude the current doc, if this is 'edit' and not 'create' mode
-	$exclude 	= ! empty( $bp->bp_docs->current_post->ID ) ? array( $bp->bp_docs->current_post->ID ) : false;
+	$exclude = ! empty( $bp->bp_docs->current_post->ID ) ? array( $bp->bp_docs->current_post->ID ) : false;
 
 	// Highlight the existing parent doc, if any
-	$parent 	= ! empty( $bp->bp_docs->current_post->post_parent ) ? $bp->bp_docs->current_post->post_parent : false;
+	$parent  = ! empty( $bp->bp_docs->current_post->post_parent ) ? $bp->bp_docs->current_post->post_parent : false;
 
 	$pages = wp_dropdown_pages( array(
 		'post_type' 	=> $bp->bp_docs->post_type_name,
