@@ -29,10 +29,14 @@ add_action( 'admin_menu', 'bp_docs_upgrade_init' );
 function bp_docs_upgrade_notice() {
 	global $pagenow;
 
-	$upgrades = bp_docs_upgrade_check();
-
 	if ( ! empty( $_GET['bp_docs_upgraded'] ) ) {
 		echo '<div class="updated message"><p>' . __( 'Upgrade complete!', 'bp-docs' ) . '</p></div>';
+	}
+
+	$upgrades = bp_docs_upgrade_check();
+
+	if ( empty( $upgrades ) ) {
+		return;
 	}
 
 	if (
