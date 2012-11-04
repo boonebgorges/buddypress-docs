@@ -1319,7 +1319,7 @@ function bp_docs_doc_permissions_snapshot() {
 
 	$html .= '<div id="doc-permissions-summary" class="doc-' . $summary . '">';
 	$html .=   sprintf( __( 'Access: <strong>%s</strong>', 'bp-docs' ), $summary_label );
-	$html .=   '<a href="#" class="doc-permissions-toggle" id="doc-permissions-more">' . __( 'Details', 'bp-docs' ) . '</a>';
+	$html .=   '<a href="#" class="doc-permissions-toggle" id="doc-permissions-more">' . __( 'Show Details', 'bp-docs' ) . '</a>';
 	$html .= '</div>';
 
 	$html .= '<div id="doc-permissions-details">';
@@ -1334,7 +1334,7 @@ function bp_docs_doc_permissions_snapshot() {
 	if ( bp_docs_current_user_can( 'manage' ) )
 		$html .=   '<a href="' . bp_docs_get_doc_edit_link() . '#doc-settings" id="doc-permissions-edit">' . __( 'Edit', 'bp-docs' ) . '</a>';
 
-	$html .=   '<a href="#" class="doc-permissions-toggle" id="doc-permissions-less">' . __( 'Summary', 'bp-docs' ) . '</a>';
+	$html .=   '<a href="#" class="doc-permissions-toggle" id="doc-permissions-less">' . __( 'Hide Details', 'bp-docs' ) . '</a>';
 	$html .= '</div>';
 
 	echo $html;
