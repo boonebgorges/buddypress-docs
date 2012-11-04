@@ -13,6 +13,8 @@ if ( !function_exists( 'wp_editor' ) ) {
 
 ?>
 
+<?php do_action( 'template_notices' ) ?>
+
 <div class="doc-content">
 
 <div id="idle-warning" style="display:none">

@@ -218,18 +218,8 @@ function bp_docs_locate_template( $template = '', $load = false, $require_once =
  * @param str $action The cap being tested
  * @return bool $user_can
  */
-function bp_docs_current_user_can( $action = 'edit' ) {
-	global $bp;
-
-	// Check to see whether the value has been cached in the global
-	if ( isset( $bp->bp_docs->current_user_can[$action] ) ) {
-		$user_can = 'yes' == $bp->bp_docs->current_user_can[$action] ? true : false;
-	} else {
-		$user_can = bp_docs_user_can( $action, bp_loggedin_user_id() );
-	}
-
-	// Stash in the $bp global to reduce future lookups
-	$bp->bp_docs->current_user_can[$action] = $user_can ? 'yes' : 'no';
+function bp_docs_current_user_can( $action = 'edit', $doc_id = false ) {
+	$user_can = bp_docs_user_can( $action, bp_loggedin_user_id(), $doc_id );
 
 	return apply_filters( 'bp_docs_current_user_can', $user_can, $action );
 }

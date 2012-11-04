@@ -16,6 +16,8 @@
 	<div id="content">
 		<div class="padder">
 
+		<?php do_action( 'template_notices' ) ?>
+
 		<?php do_action( 'bp_before_directory_docs' ); ?>
 
 		<h3><?php _e( 'Docs Directory', 'buddypress' ); ?></h3>
