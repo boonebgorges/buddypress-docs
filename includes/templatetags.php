@@ -1197,7 +1197,7 @@ function bp_docs_tabs() {
 		<?php endif ?>
 	</ul>
 
-	<?php if ( ! bp_docs_is_doc_create() ) : ?>
+	<?php if ( ! bp_docs_is_doc_create() && bp_docs_current_user_can( 'create' ) ) : ?>
 		<a class="button" id="bp-create-doc-button" href="<?php bp_docs_create_link() ?>"><?php _e( "Create New Doc", 'bp-docs' ) ?></a>
 	<?php endif ?>
 
