@@ -57,7 +57,7 @@ if ( !function_exists( 'wp_editor' ) ) {
         </div>
 
         <div id="doc-meta">
-		<?php if ( bp_docs_current_user_can( 'manage' ) ) : ?>
+		<?php if ( bp_docs_current_user_can( 'manage' ) && apply_filters( 'bp_docs_allow_associated_group', true ) ) : ?>
 			<div id="doc-associated-group" class="doc-meta-box">
 				<div class="toggleable">
 					<p class="toggle-switch" id="associated-group-toggle"><?php _e( 'Associated Group', 'bp-docs' ) ?></p>
@@ -71,7 +71,7 @@ if ( !function_exists( 'wp_editor' ) ) {
 			</div>
 		<?php endif ?>
 
-		<?php if ( bp_docs_current_user_can( 'manage' ) ) : ?>
+		<?php if ( bp_docs_current_user_can( 'manage' ) && apply_filters( 'bp_docs_allow_access_settings', true ) ) : ?>
 			<div id="doc-settings" class="doc-meta-box">
 				<div class="toggleable">
 					<p class="toggle-switch" id="settings-toggle"><?php _e( 'Access', 'bp-docs' ) ?></p>
