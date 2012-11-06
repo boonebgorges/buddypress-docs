@@ -264,9 +264,14 @@ function bp_docs_upgrade_1_2( $udata = array() ) {
 				break;
 			}
 
+			// Set the 'read' setting to a taxonomy
 			$doc_settings = get_post_meta( $next_doc_id, 'bp_docs_settings', true );
 			$read_setting = isset( $doc_settings['read'] ) ? $doc_settings['read'] : 'anyone';
 			bp_docs_update_doc_access( $next_doc_id, $read_setting );
+
+			// Count the total number of edits
+			$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->posts WHERE post_type = 'revision' AND post_status = 'inherit' AND post_parent = %d", $next_doc_id ) );
+			update_post_meta( $next_doc_id, 'bp_docs_revision_count', $count + 1 );
 
 			$counter++;
 			$udata['done']++;

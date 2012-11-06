@@ -534,6 +534,10 @@ class BP_Docs_Query {
 		$read_setting = isset( $new_settings['read'] ) ? $new_settings['read'] : 'anyone';
 		bp_docs_update_doc_access( $this->doc_id, $read_setting );
 
+		// Increment the revision count
+		$revision_count = get_post_meta( $this->doc_id, 'bp_docs_revision_count', true );
+		update_post_meta( $this->doc_id, 'bp_docs_revision_count', intval( $revision_count ) + 1 );
+
 		// Provide a custom hook for plugins and optional components.
 		// WP's default save_post isn't enough, because we need something that fires
 		// only when we save from the front end (for things like taxonomies, which
