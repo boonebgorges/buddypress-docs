@@ -204,8 +204,16 @@ class BP_Docs_Query {
 			// Only call this here to reduce database calls on other pages
 			$this->setup_terms();
 
+			// 'orderby' generally passes through, except for in 'most_active' queries
+			if ( 'most_active' == $this->query_args['orderby'] ) {
+				$wp_query_args['orderby']  = 'meta_value_num';
+				$wp_query_args['meta_key'] = 'bp_docs_revision_count';
+			} else {
+				$wp_query_args['orderby']  = $this->query_args['orderby'];
+			}
+
 			// Pagination and order args carry over directly
-			foreach ( array( 'order', 'orderby', 'paged', 'posts_per_page' ) as $key ) {
+			foreach ( array( 'order', 'paged', 'posts_per_page' ) as $key ) {
 				$wp_query_args[$key] = $this->query_args[$key];
 			}
 
