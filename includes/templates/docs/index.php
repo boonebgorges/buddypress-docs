@@ -31,6 +31,6 @@
 
 	<?php do_action( 'bp_after_directory_docs_page' ); ?>
 
-<?php get_sidebar( 'buddypress' ); ?>
+<?php bp_docs_get_sidebar( 'buddypress' ); ?>
 <?php get_footer( 'buddypress' ); ?>
 

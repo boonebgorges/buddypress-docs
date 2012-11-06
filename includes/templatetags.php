@@ -1568,3 +1568,11 @@ function bp_docs_is_global_directory() {
 
 	return apply_filters( 'bp_docs_is_global_directory', $is_global_directory );
 }
+
+function bp_docs_get_sidebar() {
+	if ( $template = apply_filters( 'bp_docs_sidebar_template', '' ) ) {
+		load_template( $template );
+	} else {
+		get_sidebar( 'buddypress' );
+	}
+}

@@ -33,6 +33,6 @@
 
 	<?php do_action( 'bp_after_single_doc_page' ); ?>
 
-<?php get_sidebar( 'buddypress' ); ?>
+<?php bp_docs_get_sidebar( 'buddypress' ); ?>
 <?php get_footer( 'buddypress' ); ?>
 
