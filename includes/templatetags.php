@@ -814,14 +814,14 @@ function bp_docs_access_options_helper( $settings_field, $doc_id = 0, $group_id 
 function bp_docs_doc_action_links() {
 	$links   = array();
 
-	$links[] = '<a href="' . get_permalink() . '">' . __( 'Read', 'bp-docs' ) . '</a>';
+	$links[] = '<a href="' . bp_docs_get_doc_link() . '">' . __( 'Read', 'bp-docs' ) . '</a>';
 
 	if ( bp_docs_current_user_can( 'edit', get_the_ID() ) ) {
-		$links[] = '<a href="' . get_permalink() . BP_DOCS_EDIT_SLUG . '">' . __( 'Edit', 'bp-docs' ) . '</a>';
+		$links[] = '<a href="' . bp_docs_get_doc_link() . BP_DOCS_EDIT_SLUG . '">' . __( 'Edit', 'bp-docs' ) . '</a>';
 	}
 
 	if ( bp_docs_current_user_can( 'view_history', get_the_ID() ) ) {
-		$links[] = '<a href="' . get_permalink() . BP_DOCS_HISTORY_SLUG . '">' . __( 'History', 'bp-docs' ) . '</a>';
+		$links[] = '<a href="' . bp_docs_get_doc_link() . BP_DOCS_HISTORY_SLUG . '">' . __( 'History', 'bp-docs' ) . '</a>';
 	}
 
 	echo implode( ' &#124; ', $links );
