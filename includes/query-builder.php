@@ -531,7 +531,8 @@ class BP_Docs_Query {
 
 		// The 'read' setting must also be saved to a taxonomy, for
 		// easier directory queries
-		bp_docs_update_doc_access( $this->doc_id, $new_settings['read'] );
+		$read_setting = isset( $new_settings['read'] ) ? $new_settings['read'] : 'anyone';
+		bp_docs_update_doc_access( $this->doc_id, $read_setting );
 
 		// Provide a custom hook for plugins and optional components.
 		// WP's default save_post isn't enough, because we need something that fires
