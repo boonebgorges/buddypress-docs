@@ -148,14 +148,17 @@ class BP_Docs_Taxonomy {
 					$term_ids[] = term_exists( $term, $tax_id, $parent );
 				}
 			}
-			
+
 			wp_set_post_terms( $query->doc_id, $terms, $tax_name );
-			
+
 			// Store these terms in the item term cache, to be used for tag clouds etc
 			$this->cache_terms_for_item( $terms, $query->doc_id );
+
 		}
+
+		do_action( 'bp_docs_taxonomy_saved', $query );
 	}
-	
+
 	/**
 	 * Handles taxonomy cleanup when a post is deleted
 	 *
