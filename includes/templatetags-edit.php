@@ -73,9 +73,7 @@ function bp_docs_edit_doc_content() {
 	 */
 	function bp_docs_get_edit_doc_content() {
 		global $post;
-
-		$content = isset( $post->post_content ) ? esc_attr( $post->post_content ) : '';
-
+		$content = bp_docs_is_existing_doc() ? $post->post_content : '';
 		return apply_filters( 'bp_docs_get_edit_doc_content', $content );
 	}
 
