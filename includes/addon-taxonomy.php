@@ -530,7 +530,7 @@ function bp_docs_post_tags_meta_box() {
 	$tax_name = esc_attr($taxonomy);
 	$taxonomy = get_taxonomy($taxonomy);
 
-	$terms = !empty( $bp->bp_docs->current_post ) ? get_terms_to_edit( $bp->bp_docs->current_post->ID, $tax_name ) : '';
+	$terms = bp_docs_is_existing_doc() ? get_terms_to_edit( get_the_ID(), $bp->bp_docs->docs_tag_tax_name ) : '';
 ?>
 	<textarea name="<?php echo "$tax_name"; ?>" class="the-tags" id="tax-input-<?php echo $tax_name; ?>"><?php echo $terms; // textarea_escaped by esc_attr() ?></textarea>
 <?php
