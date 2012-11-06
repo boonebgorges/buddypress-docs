@@ -281,8 +281,12 @@ function bp_docs_doc_link( $doc_id = false ) {
 	 * @return str URL of the doc
 	 */
 	function bp_docs_get_doc_link( $doc_id = false ) {
-		if ( false === $doc_id && $q = get_queried_object() ) {
-			$doc_id = isset( $q->ID ) ? $q->ID : 0;
+		if ( false === $doc_id ) {
+			if ( is_single() && $q = get_queried_object() ) {
+				$doc_id = isset( $q->ID ) ? $q->ID : 0;
+			} else if ( get_the_ID() ) {
+				$doc_id = get_the_ID();
+			}
 		}
 
 		return apply_filters( 'bp_docs_get_doc_link', get_permalink( $doc_id ), $doc_id );

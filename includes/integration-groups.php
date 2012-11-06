@@ -901,6 +901,9 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 		if ( apply_filters( 'bp_docs_force_enable_at_group_creation', false ) ) {
 			add_action( 'groups_created_group', array( &$this, 'enable_at_group_creation' ) );
 		}
+
+		// Backward compatibility for group-based Doc URLs
+		add_action( 'bp_actions', array( $this, 'url_backpat' ) );
 	}
 
 	/**
@@ -1216,13 +1219,28 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 			include( apply_filters( 'bp_docs_template', $template_path, $this ) );
 	}
 
+	function url_backpat() {
+		global $bp, $wpdb;
+
+		if ( bp_is_group() && bp_is_current_action( 'docs' ) ) {
+			if ( 'single' == $bp->bp_docs->current_view ) {
+				// Look up a Doc by this name
+				$maybe_id = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post_name = %s LIMIT 1", bp_action_variable( 0 ) ) );;
+
+				// Redirect to that Doc. Permissions will be handled there
+				if ( $maybe_id ) {
+					bp_core_redirect( bp_docs_get_doc_link( $maybe_id ) );
+				}
+			}
+		}
+	}
+
 	/**
 	 * Dummy function that must be overridden by this extending class, as per API
 	 *
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
-
 	function widget_display() { }
 }
 
