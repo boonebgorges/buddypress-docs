@@ -452,7 +452,7 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
 function bp_docs_history_tab() {
 	if ( bp_docs_current_user_can( 'view_history' ) ) : ?>
 		<li<?php if ( bp_docs_is_doc_history() ) : ?> class="current"<?php endif ?>>
-			<a href="<?php echo get_permalink() . '/' . BP_DOCS_HISTORY_SLUG ?>"><?php _e( 'History', 'bp-docs' ) ?></a>
+			<a href="<?php echo bp_docs_get_doc_link() . BP_DOCS_HISTORY_SLUG ?>"><?php _e( 'History', 'bp-docs' ) ?></a>
 		</li>
 	<?php endif;
 }
