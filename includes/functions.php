@@ -265,6 +265,10 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
 		$doc_settings = get_post_meta( $doc_id, 'bp_docs_settings', true );
 		$the_setting  = isset( $doc_settings[ $action ] ) ? $doc_settings[ $action ] : '';
 
+		if ( empty( $the_setting ) ) {
+			$the_setting = 'anyone';
+		}
+
 		switch ( $the_setting ) {
 			case 'anyone' :
 				$user_can = true;

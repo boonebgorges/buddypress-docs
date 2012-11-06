@@ -64,8 +64,8 @@ class BP_Docs_Groups_Integration {
 		add_filter( 'bp_docs_doc_deleted',		array( $this, 'update_doc_count' ) );
 
 		// On non-group Doc directories, add a Groups column
-		add_filter( 'bp_docs_loop_additional_th', array( $this, 'groups_th' ), 5 );
-		add_filter( 'bp_docs_loop_additional_td', array( $this, 'groups_td' ), 5 );
+		add_filter( 'bp_docs_loop_additional_th',       array( $this, 'groups_th' ), 5 );
+		add_filter( 'bp_docs_loop_additional_td',       array( $this, 'groups_td' ), 5 );
 
 		// Update group last active metadata when a doc is created, updated, or saved
 		add_filter( 'bp_docs_doc_saved',		array( $this, 'update_group_last_active' )  );
