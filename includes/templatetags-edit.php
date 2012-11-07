@@ -88,7 +88,7 @@ function bp_docs_edit_parent_dropdown() {
 
 	$include = array();
 
-	$doc_query_builder = new BP_Docs_Query( array( 'posts_per_page' => -1 ) );
+	$doc_query_builder = new BP_Docs_Query( array( 'doc_slug' => false, 'posts_per_page' => -1 ) );
 	$doc_query = $doc_query_builder->get_wp_query();
 
 	if ( $doc_query->have_posts() ) {
