@@ -30,10 +30,6 @@ class BP_Docs_History {
 	function __construct() {
 		global $bp;
 
-		if ( ! bp_docs_is_existing_doc() ) {
-			return;
-		}
-
 		add_action( 'bp_actions', array( &$this, 'setup_params' ), 1 );
 		add_action( 'bp_actions', array( &$this, 'setup_action' ), 2 );
 
@@ -51,6 +47,10 @@ class BP_Docs_History {
 	function setup_params() {
 		global $bp;
 
+		if ( ! bp_docs_is_existing_doc() ) {
+			return;
+		}
+
 		$actions = array(
 			'restore',
 			'diff',
@@ -66,8 +66,7 @@ class BP_Docs_History {
 		// current post
 		$this->revision_id = !empty( $_GET['revision'] ) ? (int)$_GET['revision'] : false;
 		if ( !$this->revision_id ) {
-
-			$this->revision_id = !empty( $bp->bp_docs->current_post->ID ) ? $bp->bp_docs->current_post->ID : false;
+			$this->revision_id = get_the_ID();
 		}
 	}
 
@@ -86,6 +85,10 @@ class BP_Docs_History {
 	 */
 	function setup_action() {
 		global $bp, $post;
+
+		if ( ! bp_docs_is_existing_doc() ) {
+			return;
+		}
 
 		wp_enqueue_script( 'list-revisions' );
 
