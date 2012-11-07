@@ -477,7 +477,7 @@ class BP_Docs {
 		} else if ( bp_docs_is_doc_edit() ) {
 			$action = 'edit';
 		} else if ( bp_docs_is_doc_history() ) {
-			$action = 'view-history';
+			$action = 'view_history';
 		}
 
 		if ( ! isset( $action ) ) {
@@ -504,7 +504,7 @@ class BP_Docs {
 					$message = __( 'You are not allowed to edit that Doc.', 'bp-docs' );
 					break;
 
-				case 'view-history' :
+				case 'view_history' :
 					$message = __( 'You are not allowed to view that Doc\'s history.', 'bp-docs' );
 					break;
 			}
