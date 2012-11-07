@@ -44,5 +44,3 @@ function bp_docs_template_include( $template = '' ) {
 	return apply_filters( 'bp_docs_template_include', $template );
 }
 add_filter( 'template_include', 'bp_docs_template_include' );
-
-?>

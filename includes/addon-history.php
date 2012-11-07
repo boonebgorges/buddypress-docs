@@ -84,7 +84,7 @@ class BP_Docs_History {
 	 * @since 1.1
 	 */
 	function setup_action() {
-		global $bp, $post;
+		global $bp;
 
 		if ( ! bp_docs_is_existing_doc() ) {
 			return;
