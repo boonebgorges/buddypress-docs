@@ -78,6 +78,8 @@ class BP_Docs_Component extends BP_Component {
 		// the plugin
 		add_filter( 'comments_template', array( $this, 'comments_template' ) );
 
+		add_filter( 'post_type_link', array( &$this, 'filter_permalinks' ), 10, 4 );
+
 		// Keep comment notifications from being sent
 		add_filter( 'comment_post', array( $this, 'check_comment_type' ) );
 
@@ -761,9 +763,8 @@ class BP_Docs_Component extends BP_Component {
 	 * This function filters 'post_type_link', which in turn powers get_permalink() and related
 	 * functions.
 	 *
-	 * In brief, the purpose is to make sure that Doc permalinks point to the proper place.
-	 * Ideally I would use a rewrite rule to accomplish this, but it's impossible to write
-	 * regex that will be able to tell which group/user a Doc should be associated with.
+	 * As of 1.2, the only role of this function is to ensure that child
+	 * Doc permalinks are returned correctly (without the parent slug)
 	 *
 	 * @package BuddyPress Docs
 	 * @since 1.1.8
@@ -775,7 +776,9 @@ class BP_Docs_Component extends BP_Component {
 	 * @return str $link The filtered permalink
 	 */
 	function filter_permalinks( $link, $post, $leavename, $sample ) {
-		_deprecated_function( __METHOD__, '1.2', 'No longer used' );
+		if ( bp_docs_get_post_type_name() == $post->post_type && ! empty( $post->post_parent ) ) {
+			$link = $post->guid;
+		}
 
 		return $link;
 	}
