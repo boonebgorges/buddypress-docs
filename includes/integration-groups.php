@@ -279,7 +279,7 @@ class BP_Docs_Groups_Integration {
 
 		// Default to the current group, but get the associated doc if not
 		$group_id = 0;
-		if ( bp_docs_is_existing_doc() ) {
+		if ( ! empty( $doc ) ) {
 			$group_id = bp_docs_get_associated_group_id( $doc->ID, $doc );
 			$group = groups_get_group( array( 'group_id' => $group_id ) );
 		}
