@@ -403,6 +403,9 @@ class BP_Docs_Query {
 
 		check_admin_referer( 'bp_docs_save' );
 
+		// bbPress plays naughty with revision saving
+		add_action( 'pre_post_update', 'wp_save_post_revision' );
+
 		// Get the required taxonomy items associated with the group. We only run this
 		// on a save because it requires extra database hits.
 		$this->setup_terms();
