@@ -73,10 +73,16 @@ class BP_Docs_Hierarchy {
 			'post_parent' => $post_parent
 		);
 
-		if ( $post_id = wp_update_post( $args ) )
+		// Don't let a revision get saved here
+		remove_action( 'pre_post_update', 'wp_save_post_revision' );
+		$post_id = wp_update_post( $args );
+		add_action( 'pre_post_update', 'wp_save_post_revision' );
+
+		if ( $post_id ) {
 			return $post_id;
-		else
+		} else {
 			return false;
+		}
 	}
 
 	/**

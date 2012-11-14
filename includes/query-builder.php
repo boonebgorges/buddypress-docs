@@ -472,25 +472,17 @@ class BP_Docs_Query {
 				}
 			} else {
 				$this->is_new_doc = false;
+				$doc = get_queried_object();
 
-				// This is an existing doc, so we need to get the post ID
-				$the_doc_args = array(
-					'name' => $this->doc_slug,
-					'post_type' => $this->post_type_name
-				);
-
-				$the_docs = get_posts( $the_doc_args );
-				$this->doc_id = $the_docs[0]->ID;
-
-				$r['ID'] 		= $this->doc_id;
-				$r['post_author'] 	= $the_docs[0]->post_author;
+				$this->doc_id     = $doc->ID;
+				$r['ID']          = $this->doc_id;
 
 				// Make sure the post_name is set
 				if ( empty( $r['post_name'] ) )
 					$r['post_name'] = sanitize_title( $r['post_title'] );
 
 				// Make sure the post_name is unique
-				$r['post_name'] = wp_unique_post_slug( $r['post_name'], $this->doc_id, $r['post_status'], $this->post_type_name, $the_docs[0]->post_parent );
+				$r['post_name'] = wp_unique_post_slug( $r['post_name'], $this->doc_id, $r['post_status'], $this->post_type_name, $doc->post_parent );
 
 				$this->doc_slug = $r['post_name'];
 
