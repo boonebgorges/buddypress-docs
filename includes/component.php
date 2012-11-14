@@ -881,7 +881,6 @@ class BP_Docs_Component extends BP_Component {
 			wp_enqueue_script( 'jquery-color' );
 			wp_enqueue_script( 'editor' );
 			wp_enqueue_script( 'utils' );
-			wp_enqueue_script( 'autosave' );
 
 			wp_register_script( 'bp-docs-idle-js', plugins_url( 'buddypress-docs/includes/js/idle.js' ), array( 'jquery', 'bp-docs-js' ) );
 			wp_enqueue_script( 'bp-docs-idle-js' );
@@ -929,5 +928,3 @@ class BP_Docs_Component extends BP_Component {
 	}
 
 }
-
-?>
