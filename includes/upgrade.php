@@ -266,7 +266,19 @@ function bp_docs_upgrade_1_2( $udata = array() ) {
 
 			// Set the 'read' setting to a taxonomy
 			$doc_settings = get_post_meta( $next_doc_id, 'bp_docs_settings', true );
+
+			if ( isset( $doc_settings['read'] ) ) {
+				$read_setting = $doc_settings['read'];
+			} else {
+				$group = groups_get_group( 'group_id=' . bp_docs_get_associated_group_id() );
+				if ( isset( $group->status ) || 'public' != $group->status ) {
+					$read_setting = 'group-members';
+				} else {
+					$read_setting = 'anyone';
+				}
+			}
 			$read_setting = isset( $doc_settings['read'] ) ? $doc_settings['read'] : 'anyone';
+			var_Dump( $read_setting ); die();
 			bp_docs_update_doc_access( $next_doc_id, $read_setting );
 
 			// Count the total number of edits
