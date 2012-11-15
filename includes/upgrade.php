@@ -270,15 +270,22 @@ function bp_docs_upgrade_1_2( $udata = array() ) {
 			if ( isset( $doc_settings['read'] ) ) {
 				$read_setting = $doc_settings['read'];
 			} else {
-				$group = groups_get_group( 'group_id=' . bp_docs_get_associated_group_id() );
-				if ( isset( $group->status ) || 'public' != $group->status ) {
+				$group = groups_get_group( 'group_id=' . bp_docs_get_associated_group_id( $next_doc_id ) );
+				if ( ! empty( $group->status ) && 'public' != $group->status ) {
 					$read_setting = 'group-members';
+
+					// Sanitize settings as well
+					foreach ( $doc_settings as $doc_settings_key => $doc_settings_value ) {
+						if ( in_array( $doc_settings_value, array( 'anyone', 'loggedin' ) ) ) {
+							$doc_settings[ $doc_settings_key ] = 'group-members';
+						}
+					}
+					$doc_settings['read'] = 'group-members';
+					update_post_meta( $next_doc_id, 'bp_docs_settings', $doc_settings );
 				} else {
 					$read_setting = 'anyone';
 				}
 			}
-			$read_setting = isset( $doc_settings['read'] ) ? $doc_settings['read'] : 'anyone';
-			var_Dump( $read_setting ); die();
 			bp_docs_update_doc_access( $next_doc_id, $read_setting );
 
 			// Count the total number of edits
