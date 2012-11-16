@@ -35,6 +35,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.2.2 =
+* Improves group-association auto-settings when creating via the Create New Doc link in a group
+
 = 1.2.1 =
 * Fixes bug with overzealous Create New Doc button
 * Fixes some PHP warnings
