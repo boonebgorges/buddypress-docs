@@ -390,7 +390,13 @@ class BP_Docs_Groups_Integration {
 				$group_id = intval( $_POST['associated_group_id'] );
 			} else if ( isset( $_GET['associated_group_id'] ) ) {
 				$group_id = intval( $_GET['associated_group_id'] );
+			} else if ( isset( $_GET['group'] ) ) {
+                                $maybe_group = BP_Groups_Group::get_id_from_slug( $_GET['group'] );
+                                if ( $maybe_group ) {
+                                        $group_id = $maybe_group->id;
+				}
 			}
+
 		}
 
 		$can_associate = self::user_can_associate_doc_with_group( bp_loggedin_user_id(), $group_id );
