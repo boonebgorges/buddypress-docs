@@ -534,7 +534,7 @@ class BP_Docs {
 		}
 		$registered_rules = get_option( 'rewrite_rules' );
 
-		if ( ! in_array( $test_rule, $registered_rules ) ) {
+		if ( is_array( $registered_rules ) && ! in_array( $test_rule, $registered_rules ) ) {
 			flush_rewrite_rules();
 		}
 	}
