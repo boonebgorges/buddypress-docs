@@ -143,7 +143,7 @@ class BP_Docs_Groups_Integration {
 	function get_current_view( $view, $item_type ) {
 		global $bp;
 
-		if ( $item_type == 'group' && bp_is_current_action( BP_DOCS_SLUG ) ) {
+		if ( $item_type == 'group' ) {
 			if ( empty( $bp->action_variables[0] ) ) {
 				// An empty $bp->action_variables[0] means that you're looking at a list
 				$view = 'list';
@@ -390,7 +390,13 @@ class BP_Docs_Groups_Integration {
 				$group_id = intval( $_POST['associated_group_id'] );
 			} else if ( isset( $_GET['associated_group_id'] ) ) {
 				$group_id = intval( $_GET['associated_group_id'] );
+			} else if ( isset( $_GET['group'] ) ) {
+                                $maybe_group = BP_Groups_Group::get_id_from_slug( $_GET['group'] );
+                                if ( $maybe_group ) {
+                                        $group_id = $maybe_group->id;
+				}
 			}
+
 		}
 
 		$can_associate = self::user_can_associate_doc_with_group( bp_loggedin_user_id(), $group_id );

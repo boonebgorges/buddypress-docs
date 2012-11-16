@@ -134,7 +134,7 @@ class BP_Docs_Component extends BP_Component {
 		$globals = array(
 			'slug'                  => BP_DOCS_SLUG,
 			'root_slug'             => isset( $bp->pages->{$this->id}->slug ) ? $bp->pages->{$this->id}->slug : BP_DOCS_SLUG,
-			'has_directory'         => true, // Set to false if not required
+			'has_directory'         => false, // Set to false if not required
 			'notification_callback' => 'bp_docs_format_notifications',
 			'search_string'         => __( 'Search Docs...', 'buddypress' ),
 		);
