@@ -2,9 +2,9 @@
 Contributors: boonebgorges, cuny-academic-commons
 Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
-Requires at least: WordPress 3.1, BuddyPress 1.5
-Tested up to: WordPress 3.3-bleeding, BuddyPress 1.5
-Stable tag: 1.1.19
+Requires at least: WordPress 3.3, BuddyPress 1.5
+Tested up to: WordPress 3.5, BuddyPress 1.6.1
+Stable tag: 1.2.2
  
 Adds collaborative Docs to BuddyPress.
 
@@ -14,7 +14,7 @@ BuddyPress Docs adds collaborative work spaces to your BuddyPress community. Par
 
 Features include:
 
-* Group-specific Docs
+* Docs that can be linked to groups or users, with a variety of privacy levels
 * Doc taxonomy, using tags
 * Fully sortable and filterable doc lists
 * TinyMCE front-end doc editing
@@ -35,11 +35,44 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.2.2 =
+* Improves group-association auto-settings when creating via the Create New Doc link in a group
+* Fixes bug that erroneously required a directory page
+
+= 1.2.1 =
+* Fixes bug with overzealous Create New Doc button
+* Fixes some PHP warnings
+
 = 1.2 =
-* Added support for a sitewide Docs directory
-* Added support for member Docs
-* Rewritten template/loop API. See dev-changelog.txt
-* Templates reorganized to better match BP's directory structure
+* Major plugin rewrite
+* Moves Docs out of groups, making URLs cleaner, interface simpler, and making it possible to have Docs not linked to any group
+* Adds a sitewide Docs directory
+
+= 1.1.25 =
+* Fixes bug in Javascript that may have caused secondary editor rows not to
+  show in some cases
+* Fixes bug that broke comment moderation in some cases
+
+= 1.1.24 =
+* Moves Table buttons to second row of editor, for better fit on all themes
+* Adds Danish translation
+
+= 1.1.23 =
+* Adds Delete links to doc actions row
+* Fixes an invalid markup issue in a template file
+
+= 1.1.22 =
+* Added Romanian translation
+
+= 1.1.21 =
+* Show the 'author' panel in the Dashboard
+
+= 1.1.20 =
+* Fixes idle timeout javascript
+* Fixes bug with timezones on History tab
+* Improves data passed to filters
+* Cleans up references to WP's fullscreen editing mode
+* Fixes potential PHP warnings on the Dashboard
 
 = 1.1.19 =
 * Improved WP 3.3 support
@@ -188,3 +221,10 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 = 1.0-beta =
 * Initial public release
+
+== Upgrade Notice ==
+
+= 1.2 =
+* Major plugin rewrite. See http://dev.commons.gc.cuny.edu/2012/11/15/buddypress-docs-1-2/ for more details.
+
+

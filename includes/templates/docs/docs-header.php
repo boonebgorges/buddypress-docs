@@ -1,22 +1,33 @@
-<div class="item-list-tabs no-ajax"<?php bp_docs_header_nav_id() ?> role="navigation">
-	<ul>
-		<?php bp_docs_nav() ?>
-	</ul>
-</div><!-- .item-list-tabs -->
+<?php /* Subnavigation on user pages is handled by BP's core functions */ ?>
+<?php if ( !bp_is_user() ) : ?>
+	<div class="item-list-tabs no-ajax" id="subnav" role="navigation">
+		<?php bp_docs_tabs() ?>
+	</div><!-- .item-list-tabs -->
+<?php endif ?>
 
 <?php if ( bp_docs_is_existing_doc() ) : ?>
 
-	<h2><?php the_title() ?></h2>
+	<div id="bp-docs-single-doc-header">
+		<h2 class="doc-title"><?php the_title() ?></h2>
+
+		<?php if ( apply_filters( 'bp_docs_allow_access_settings', true ) ) : ?>
+			<div class="doc-permissions">
+
+				<?php bp_docs_doc_permissions_snapshot() ?>
+
+			</div>
+		<?php endif ?>
+	</div>
 
 	<div class="doc-tabs">
 		<ul>
-			<li<?php if ( 'single' == bp_docs_current_view() ) : ?> class="current"<?php endif ?>>
-				<a href="<?php echo bp_docs_get_group_doc_permalink() ?>"><?php _e( 'Read', 'bp-docs' ) ?></a>
+			<li<?php if ( bp_docs_is_doc_read() ) : ?> class="current"<?php endif ?>>
+				<a href="<?php bp_docs_doc_link() ?>"><?php _e( 'Read', 'bp-docs' ) ?></a>
 			</li>
 
 			<?php if ( bp_docs_current_user_can( 'edit' ) ) : ?>
-				<li<?php if ( 'edit' == bp_docs_current_view() ) : ?> class="current"<?php endif ?>>
-					<a href="<?php echo bp_docs_get_group_doc_permalink() . '/' . BP_DOCS_EDIT_SLUG ?>"><?php _e( 'Edit', 'bp-docs' ) ?></a>
+				<li<?php if ( bp_docs_is_doc_edit() ) : ?> class="current"<?php endif ?>>
+					<a href="<?php bp_docs_doc_edit_link() ?>"><?php _e( 'Edit', 'bp-docs' ) ?></a>
 				</li>
 			<?php endif ?>
 
@@ -24,9 +35,8 @@
 		</ul>
 	</div>
 
-<?php elseif ( 'create' == bp_docs_current_view() ) : ?>
+<?php elseif ( bp_docs_is_doc_create() ) : ?>
 
 	<h2><?php _e( 'New Doc', 'bp-docs' ); ?></h2>
 
 <?php endif ?>
-</h2>

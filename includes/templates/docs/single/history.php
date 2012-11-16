@@ -1,5 +1,3 @@
-<?php if ( have_posts() ) : while ( have_posts() ) : the_post() ?>
-
 <?php include( apply_filters( 'bp_docs_header_template', bp_docs_locate_template( 'docs-header.php' ) ) ) ?>
 
 <div class="doc-content">
@@ -59,5 +57,3 @@
 <?php bp_docs_list_post_revisions( get_the_ID() ) ?>
 
 </div>
-
-<?php endwhile; endif ?>

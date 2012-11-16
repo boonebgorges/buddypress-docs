@@ -46,7 +46,7 @@
 			<td> </td>
 
 			<td class="title-cell">
-				<a href="<?php bp_docs_doc_permalink() ?>"><?php the_title() ?></a>
+				<a href="<?php bp_docs_doc_link() ?>"><?php the_title() ?></a>
 
 				<?php the_excerpt() ?>
 
@@ -86,6 +86,10 @@
 
 <?php else: ?>
 
-	<p class="no-docs"><?php printf( __( 'There are no docs for this view. Why not <a href="%s">create one</a>?', 'bp-docs' ), bp_docs_get_item_docs_link() . BP_DOCS_CREATE_SLUG ) ?>
+        <?php if ( bp_docs_current_user_can( 'create' ) ) : ?>
+                <p class="no-docs"><?php printf( __( 'There are no docs for this view. Why not <a href="%s">create one</a>?', 'bp-docs' ), bp_docs_get_create_link() ) ?>
+	<?php else : ?>
+		<p class="no-docs"><?php _e( 'There are no docs for this view.', 'bp-docs' ) ?></p>
+        <?php endif ?>
 
 <?php endif ?>

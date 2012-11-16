@@ -16,9 +16,11 @@
 	<div id="content">
 		<div class="padder">
 
+		<?php do_action( 'template_notices' ) ?>
+
 		<?php do_action( 'bp_before_directory_docs' ); ?>
 
-		<h3><?php _e( 'Docs Directory', 'buddypress' ); ?></h3>
+		<h3><?php _e( 'Docs Directory', 'bp-docs' ); ?></h3>
 
 		<?php include( bp_docs_locate_template( 'docs-loop.php' ) ) ?>
 
@@ -29,6 +31,6 @@
 
 	<?php do_action( 'bp_after_directory_docs_page' ); ?>
 
-<?php get_sidebar( 'buddypress' ); ?>
+<?php bp_docs_get_sidebar( 'buddypress' ); ?>
 <?php get_footer( 'buddypress' ); ?>
 

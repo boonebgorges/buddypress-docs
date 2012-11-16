@@ -1,13 +1,19 @@
+<?php include( bp_docs_locate_template( 'single/sidebar.php' ) ) ?>
+
 <?php include( apply_filters( 'bp_docs_header_template', bp_docs_locate_template( 'docs-header.php' ) ) ) ?>
 
 <?php
 // No media support at the moment. Want to integrate with something like BP Group Documents
 // include_once ABSPATH . '/wp-admin/includes/media.php' ;
 
-require_once ABSPATH . '/wp-admin/includes/post.php' ;
-wp_tiny_mce();
+if ( !function_exists( 'wp_editor' ) ) {
+	require_once ABSPATH . '/wp-admin/includes/post.php' ;
+	wp_tiny_mce();
+}
 
 ?>
+
+<?php do_action( 'template_notices' ) ?>
 
 <div class="doc-content">
 
@@ -30,23 +36,55 @@ wp_tiny_mce();
         <?php if ( bp_docs_is_existing_doc() ) : ?>
 		<div id="doc-content-permalink">
 			<label for="doc[permalink]"><?php _e( 'Permalink', 'bp-docs' ) ?></label>
-			<code><?php echo trailingslashit( bp_get_group_permalink() ) . BP_DOCS_SLUG . '/' ?></code><input type="text" id="doc-permalink" name="doc[permalink]" class="long" value="<?php bp_docs_edit_doc_slug() ?>" />
+			<code><?php echo trailingslashit( bp_get_root_domain() ) . BP_DOCS_SLUG . '/' ?></code><input type="text" id="doc-permalink" name="doc[permalink]" class="long" value="<?php bp_docs_edit_doc_slug() ?>" />
 		</div>
 	<?php endif ?>
 
         <div id="doc-content-textarea">
-		<label id="content-label" for="doc[content]"><?php _e( 'Content', 'bp-docs' ) ?></label>
+		<label id="content-label" for="doc_content"><?php _e( 'Content', 'bp-docs' ) ?></label>
 		<div id="editor-toolbar">
-			<?php /* No media support for now
-			<div id="media-toolbar">
-			    <?php  echo bpsp_media_buttons(); ?>
-			</div>
-			*/ ?>
-			<?php the_editor( bp_docs_get_edit_doc_content(), 'doc[content]', 'doc[title]', false ); ?>
+			<?php
+				if ( function_exists( 'wp_editor' ) ) {
+					wp_editor( bp_docs_get_edit_doc_content(), 'doc_content', array(
+						'media_buttons' => false,
+						'dfw'		=> false
+					) );
+				} else {
+					the_editor( bp_docs_get_edit_doc_content(), 'doc_content', 'doc[title]', false );
+				}
+			?>
 		</div>
         </div>
 
         <div id="doc-meta">
+		<?php if ( bp_docs_current_user_can( 'manage' ) && apply_filters( 'bp_docs_allow_associated_group', true ) ) : ?>
+			<div id="doc-associated-group" class="doc-meta-box">
+				<div class="toggleable">
+					<p class="toggle-switch" id="associated-group-toggle"><?php _e( 'Associated Group', 'bp-docs' ) ?></p>
+
+					<div class="toggle-content">
+						<table class="toggle-table" id="toggle-table-associated-group">
+							<?php bp_docs_doc_associated_group_markup() ?>
+						</table>
+					</div>
+				</div>
+			</div>
+		<?php endif ?>
+
+		<?php if ( bp_docs_current_user_can( 'manage' ) && apply_filters( 'bp_docs_allow_access_settings', true ) ) : ?>
+			<div id="doc-settings" class="doc-meta-box">
+				<div class="toggleable">
+					<p class="toggle-switch" id="settings-toggle"><?php _e( 'Access', 'bp-docs' ) ?></p>
+
+					<div class="toggle-content">
+						<table class="toggle-table" id="toggle-table-settings">
+							<?php bp_docs_doc_settings_markup() ?>
+						</table>
+					</div>
+				</div>
+			</div>
+		<?php endif ?>
+
         	<div id="doc-tax" class="doc-meta-box">
 			<div class="toggleable">
 				<p id="tags-toggle-edit" class="toggle-switch"><?php _e( 'Tags', 'bp-docs' ) ?></p>
@@ -89,20 +127,6 @@ wp_tiny_mce();
 				</div>
 			</div>
 		</div>
-
-		<?php if ( bp_docs_current_user_can( 'manage' ) ) : ?>
-			<div id="doc-settings" class="doc-meta-box">
-				<div class="toggleable">
-					<p class="toggle-switch" id="settings-toggle"><?php _e( 'Settings', 'bp-docs' ) ?></p>
-
-					<div class="toggle-content">
-						<table class="toggle-table" id="toggle-table-settings">
-							<?php bp_docs_doc_settings_markup() ?>
-						</table>
-					</div>
-				</div>
-			</div>
-		<?php endif ?>
         </div>
 
         <div style="clear: both"> </div>
@@ -125,18 +149,27 @@ wp_tiny_mce();
 
 <?php bp_docs_inline_toggle_js() ?>
 
-<script type="text/javascript" >
-    var tb_closeImage = "<?php bp_root_domain() ?>/wp-includes/js/thickbox/tb-close.png";
+<?php if ( !function_exists( 'wp_editor' ) ) : ?>
+<script type="text/javascript">
+jQuery(document).ready(function($){
+	/* On some setups, it helps TinyMCE to load if we fire the switchEditors event on load */
+	if ( typeof(switchEditors) == 'object' ) {
+		if ( !$("#edButtonPreview").hasClass('active') ) {
+			switchEditors.go('doc_content', 'tinymce');
+		}
+	}
+},(jQuery));
 </script>
+<?php endif ?>
 
 <?php /* Important - do not remove. Needed for autosave stuff */ ?>
-<div id="still_working_content" name="still_working_content" style="display:none;">
+<div style="display:none;">
+<div id="still_working_content" name="still_working_content">
 	<br />
 	<h3><?php _e( 'Are you still there?', 'bp-docs' ) ?></h3>
 
 	<p><?php _e( 'In order to prevent overwriting content, only one person can edit a given doc at a time. For that reason, you must periodically ensure the system that you\'re still actively editing. If you are idle for more than 30 minutes, your changes will be auto-saved, and you\'ll be sent out of Edit mode so that others can access the doc.', 'bp-docs' ) ?></p>
 
-	<a href="#" onclick="tb_remove(); return false" class="button"><?php _e( 'I\'m still editing!', 'bp-docs' ) ?></a>
-
-
+	<a href="#" onclick="jQuery.colorbox.close(); return false" class="button"><?php _e( 'I\'m still editing!', 'bp-docs' ) ?></a>
+</div>
 </div>
