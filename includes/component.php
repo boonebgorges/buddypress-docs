@@ -104,6 +104,8 @@ class BP_Docs_Component extends BP_Component {
 		 * MISC
 		 */
 
+		add_filter( 'bp_core_get_directory_page_ids', array( $this, 'remove_bp_page' ) );
+
 		// Respect $activities_template->disable_blogforum_replies
 		add_filter( 'bp_activity_can_comment',	array( $this, 'activity_can_comment'	) );
 
@@ -155,6 +157,21 @@ class BP_Docs_Component extends BP_Component {
 
 		$this->set_current_item_type();
 		$this->set_current_view();
+	}
+
+	/**
+	 * In Docs 1.2 through 1.2.2, there was an error in which Docs registered
+	 * a bp-pages entry. This fixes the error
+	 *
+	 * @since 1.2.3
+	 */
+	function remove_bp_page( $pages ) {
+		if ( isset( $pages['bp_docs'] ) ) {
+			unset( $pages['bp_docs']);
+			bp_update_option( 'bp-pages', $pages );
+		}
+
+		return $pages;
 	}
 
 	/**
