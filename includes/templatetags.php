@@ -1206,12 +1206,28 @@ function bp_docs_tabs() {
 	<?php
 }
 
+/**
+ * Echoes the Create A Doc button
+ *
+ * @since 1.2
+ */
 function bp_docs_create_button() {
 	if ( ! bp_docs_is_doc_create() && bp_docs_current_user_can( 'create' ) ) {
 		echo '<a class="button" id="bp-create-doc-button" href="' . bp_docs_get_create_link() . '">' . __( "Create New Doc", 'bp-docs' ) . '</a>';
 	}
 }
-add_action( 'bp_member_plugin_options_nav', 'bp_docs_create_button' );
+
+/**
+ * Puts a Create A Doc button on the members nav of member doc lists
+ *
+ * @since 1.2.1
+ */
+function bp_docs_member_create_button() {
+	if ( bp_docs_is_docs_component() ) {
+		bp_docs_create_button();
+	}
+}
+add_action( 'bp_member_plugin_options_nav', 'bp_docs_member_create_button' );
 
 /**
  * Markup for the Doc Permissions snapshot

@@ -36,6 +36,7 @@ function bp_docs_upgrade_notice() {
 	global $pagenow;
 
 	if ( ! empty( $_GET['bp_docs_upgraded'] ) ) {
+		flush_rewrite_rules(); // just in case. Hack
 		echo '<div class="updated message"><p>' . __( 'Upgrade complete!', 'bp-docs' ) . '</p></div>';
 	}
 
