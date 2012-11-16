@@ -10,7 +10,13 @@ function bp_docs_upgrade_check() {
 	$upgrades = array();
 
 	if ( ! bp_get_option( '_bp_docs_done_upgrade_1_2' ) ) {
-		$upgrades[] = '1.2';
+		// If this is a new install, don't bother
+		global $wpdb;
+		$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->posts WHERE post_type = %s", bp_docs_get_post_type_name() ) );
+
+		if ( $count ) {
+			$upgrades[] = '1.2';
+		}
 	}
 
 	return $upgrades;
