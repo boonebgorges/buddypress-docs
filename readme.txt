@@ -35,6 +35,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.2.3 = 
+* Fixes bug with bp-pages
+
 = 1.2.2 =
 * Improves group-association auto-settings when creating via the Create New Doc link in a group
 * Fixes bug that erroneously required a directory page
