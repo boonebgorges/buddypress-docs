@@ -35,6 +35,10 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.2.1 =
+* Fixes bug with overzealous Create New Doc button
+* Fixes some PHP warnings
+
 = 1.2 =
 * Major plugin rewrite
 * Moves Docs out of groups, making URLs cleaner, interface simpler, and making it possible to have Docs not linked to any group
