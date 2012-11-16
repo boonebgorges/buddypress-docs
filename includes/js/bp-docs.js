@@ -44,6 +44,20 @@ jQuery(document).ready(function($){
 	$('#bp-docs-group-enable').click(function(){
 		$('#group-doc-options').slideToggle(400);
 	});
+
+	/* Permissions snapshot toggle */
+	$('#doc-permissions-summary').show();
+	$('#doc-permissions-details').hide();
+	var dpt = $('.doc-permissions-toggle');
+	$(dpt).on('click',function(e){
+		e.preventDefault();
+		var thisaction = $(e.target).attr('id').split('-').pop();
+		var showing = 'more' == thisaction ? 'summary' : 'details';
+		var hidden = 'summary' == showing ? 'details' : 'summary';
+		$('#doc-permissions-' + showing).slideUp(100, function(){
+			$('#doc-permissions-' + hidden).slideDown(100);
+		});
+	});
 },(jQuery));
 
 function bp_docs_load_idle() {
@@ -51,7 +65,7 @@ function bp_docs_load_idle() {
 		// For testing
 		//setIdleTimeout(1000 * 3); // 25 minutes until the popup (ms * s * min)
 		//setAwayTimeout(1000 * 10); // 30 minutes until the autosave
-		
+
 		/* Set away timeout for quasi-autosave */
 		setIdleTimeout(1000 * 60 * 25); // 25 minutes until the popup (ms * s * min)
 		setAwayTimeout(1000 * 60 * 30); // 30 minutes until the autosave
@@ -63,7 +77,7 @@ function bp_docs_load_idle() {
 				height: "50%"
 			});
 		}
-		document.onAway = function() {	
+		document.onAway = function() {
 			jQuery.colorbox.close();
 			var is_auto = '<input type="hidden" name="is_auto" value="1">';
 			jQuery('#doc-form').append(is_auto);

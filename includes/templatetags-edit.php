@@ -25,14 +25,7 @@ function bp_docs_edit_doc_title() {
 	 * @return string Doc title
 	 */
 	function bp_docs_get_edit_doc_title() {
-		global $bp;
-
-		if ( empty( $bp->bp_docs->current_post ) || empty( $bp->bp_docs->current_post->post_title ) ) {
-			$title = isset( $_GET['create_title'] ) ? urldecode( $_GET['create_title'] ) : '';
-		} else {
-			$title = $bp->bp_docs->current_post->post_title;
-		}
-
+		$title = esc_attr( get_the_title() );
 		return apply_filters( 'bp_docs_get_edit_doc_title', $title );
 	}
 
@@ -54,13 +47,9 @@ function bp_docs_edit_doc_slug() {
 	 * @return string Doc slug
 	 */
 	function bp_docs_get_edit_doc_slug() {
-		global $bp;
+		global $post;
 
-		if ( empty( $bp->bp_docs->current_post ) || empty( $bp->bp_docs->current_post->post_name ) ) {
-			$slug = '';
-		} else {
-			$slug = $bp->bp_docs->current_post->post_name;
-		}
+		$slug = isset( $post->post_name ) ? esc_attr( $post->post_name ) : '';
 
 		return apply_filters( 'bp_docs_get_edit_doc_slug', $slug );
 	}
@@ -83,14 +72,8 @@ function bp_docs_edit_doc_content() {
 	 * @return string Doc content
 	 */
 	function bp_docs_get_edit_doc_content() {
-		global $bp;
-
-		if ( empty( $bp->bp_docs->current_post ) || empty( $bp->bp_docs->current_post->post_content ) ) {
-			$content = '';
-		} else {
-			$content = $bp->bp_docs->current_post->post_content;
-		}
-
+		global $post;
+		$content = bp_docs_is_existing_doc() ? $post->post_content : '';
 		return apply_filters( 'bp_docs_get_edit_doc_content', $content );
 	}
 
@@ -103,34 +86,23 @@ function bp_docs_edit_doc_content() {
 function bp_docs_edit_parent_dropdown() {
 	global $bp;
 
-	// Get the item docs to use as Include arguments
-	$q 			= new BP_Docs_Query;
-	$q->current_view 	= 'list';
-	$qt 			= $q->build_query();
-
-	// Make sure we don't limit the posts displayed
-	$qt['showposts']	= -1;
-
-	// Order them by name, no matter what
-	$qt['orderby'] 		= 'post_title';
-	$qt['order']		= 'ASC';
-
-	$include_posts		= new WP_Query( $qt );
-
 	$include = array();
 
-	if ( $include_posts->have_posts() ) {
-		while ( $include_posts->have_posts() ) {
-			$include_posts->the_post();
+	$doc_query_builder = new BP_Docs_Query( array( 'doc_slug' => false, 'posts_per_page' => -1 ) );
+	$doc_query = $doc_query_builder->get_wp_query();
+
+	if ( $doc_query->have_posts() ) {
+		while ( $doc_query->have_posts() ) {
+			$doc_query->the_post();;
 			$include[] = get_the_ID();
 		}
 	}
 
 	// Exclude the current doc, if this is 'edit' and not 'create' mode
-	$exclude 	= ! empty( $bp->bp_docs->current_post->ID ) ? array( $bp->bp_docs->current_post->ID ) : false;
+	$exclude = ! empty( $bp->bp_docs->current_post->ID ) ? array( $bp->bp_docs->current_post->ID ) : false;
 
 	// Highlight the existing parent doc, if any
-	$parent 	= ! empty( $bp->bp_docs->current_post->post_parent ) ? $bp->bp_docs->current_post->post_parent : false;
+	$parent  = ! empty( $bp->bp_docs->current_post->post_parent ) ? $bp->bp_docs->current_post->post_parent : false;
 
 	$pages = wp_dropdown_pages( array(
 		'post_type' 	=> $bp->bp_docs->post_type_name,
@@ -216,12 +188,12 @@ function bp_docs_add_idle_function_to_tinymce( $initArray ) {
 			ed.onInit.add(
 				function(ed) {
 					_initJQuery();
-					
+
 					// Set up listeners
 					jQuery(\'#\' + ed.id + \'_parent\').bind(\'mousemove\',function (evt){
 						_active(evt);
-					});	
-					
+					});
+
 					bp_docs_load_idle();
 
 					/* Hide rows 3+ */
@@ -236,7 +208,7 @@ function bp_docs_add_idle_function_to_tinymce( $initArray ) {
 
 				}
 			);
-			
+
 			ed.onKeyDown.add(
 				function(ed) {
 					_active();
@@ -244,7 +216,7 @@ function bp_docs_add_idle_function_to_tinymce( $initArray ) {
 			);
 		}';
 	}
-	
+
 	return $initArray;
 }
 add_filter( 'tiny_mce_before_init', 'bp_docs_add_idle_function_to_tinymce' );

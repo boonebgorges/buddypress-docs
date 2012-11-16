@@ -3,7 +3,7 @@ Contributors: boonebgorges, cuny-academic-commons
 Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.3, BuddyPress 1.5
-Tested up to: WordPress 3.4.1, BuddyPress 1.6.1
+Tested up to: WordPress 3.5, BuddyPress 1.6.1
 Stable tag: 1.1.25
  
 Adds collaborative Docs to BuddyPress.
@@ -14,7 +14,7 @@ BuddyPress Docs adds collaborative work spaces to your BuddyPress community. Par
 
 Features include:
 
-* Group-specific Docs
+* Docs that can be linked to groups or users, with a variety of privacy levels
 * Doc taxonomy, using tags
 * Fully sortable and filterable doc lists
 * TinyMCE front-end doc editing
@@ -35,8 +35,12 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.2 =
+* Major plugin rewrite
+* Moves Docs out of groups, making URLs cleaner, interface simpler, and making it possible to have Docs not linked to any group
+* Adds a sitewide Docs directory
+
 = 1.1.25 =
-* Fixes conflict with group avatar deletion
 * Fixes bug in Javascript that may have caused secondary editor rows not to
   show in some cases
 * Fixes bug that broke comment moderation in some cases
@@ -209,3 +213,10 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 = 1.0-beta =
 * Initial public release
+
+== Upgrade Notice ==
+
+= 1.2 =
+* Major plugin rewrite. See http://dev.commons.gc.cuny.edu/2012/11/15/buddypress-docs-1-2/ for more details.
+
+

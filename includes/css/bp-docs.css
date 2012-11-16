@@ -12,6 +12,12 @@
 		padding: 2px 4px;
 	}
 
+#bp-create-doc-button {
+	float: right;
+	margin: 5px 19px;
+	font-weight: bold;
+}
+
 .doc-tabs {
 	overflow: hidden;
 }
@@ -131,6 +137,19 @@ div.docs-info-header {
 	margin-bottom: 10px;
 }
 
+#associated_group_summary .item {
+	padding-top: 1em;
+}
+
+#associated_group_summary .meta {
+	font-size: 11px;
+	color: #888;
+}
+
+#associated_group_summary img.avatar {
+	margin-left: 0;
+}
+
 /* TOGGLES */
 
 .toggle-switch {
@@ -211,6 +230,23 @@ p#filter-by-tag {
 	padding-left: 10px;
 }
 
+.groups-cell ul li img.avatar {
+	float: none;
+}
+
+.groups-cell ul li a {
+	vertical-align: middle;
+	font-size: .85em;
+}
+
+.groups-cell ul {
+	list-style-type: none;	
+	padding-left: 0;
+}
+.groups-cell ul li {
+	margin-bottom: .5em;
+}
+
 div#bp-docs-pagination {
 	position: relative;
 	height: 30px;
@@ -243,6 +279,100 @@ div.doc-content {
 		margin: 0;
 	}
 
+#bp-docs-single-doc-header {
+	overflow: hidden;
+}
+div.doc-permissions {
+	float: right;
+	width: 35%;
+	background: #f0f0f0;
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 4px;
+}
+	div.doc-permissions div:last-child {
+		clear: both;
+	}
+
+#doc-permissions-summary, #doc-group-summary {
+	font-size: 1.0em;
+	padding: 3px 12px;
+	border: 1px solid;
+}
+	#doc-permissions-summary.doc-public {
+		background: #b2ffb2;
+		border-color: #00ff00;
+	}
+	#doc-permissions-summary.doc-limited {
+		background: #ffffe0;
+		border-color: #e6db55;
+	}
+	#doc-permissions-summary.doc-private {
+		background: #ffebe8;
+		border-color: #ff0000;
+	}
+
+a.doc-permissions-toggle {
+	display: block;
+	float: right;
+	font-size: 12px;
+	cursor: hand;
+}
+
+dl.doc-permissions-types dd,
+dl.doc-permissions-types dt {
+	height: 1.5em;
+}
+dl.doc-permissions-types dt {
+	width: 50%;
+	float: left;
+	clear: left;
+}
+
+#doc-group-summary {
+	border-color: #f0f0f0;
+}
+#doc-group-summary img.avatar {
+	float: none;
+}
+
+/* Permissions level icons */
+#doc-permissions-details ul {
+	list-style-type: none;
+	padding-left: 0;
+}
+#doc-permissions-details ul li {
+	margin-bottom: .5em;
+}
+span.bp-docs-level-icon {
+	display: block;
+	float: left;
+	width: 1.2em;
+	height: 1.2em;
+	margin: 3px 5px;
+}
+.bp-docs-level-anyone span.bp-docs-level-icon {
+	-moz-border-radius: .6em;
+	-webkit-border-radius: .6em;
+	border-radius: .6em;
+	background: green;
+}
+.bp-docs-level-friends span.bp-docs-level-icon,
+.bp-docs-level-loggedin span.bp-docs-level-icon,
+.bp-docs-level-group-members span.bp-docs-level-icon {
+	width: 0;
+	height: 0;
+	border-left: .6em solid transparent;
+	border-right: .6em solid transparent;
+	border-bottom: 1.2em solid yellow;
+}
+.bp-docs-level-admins-mods span.bp-docs-level-icon,
+.bp-docs-level-no-one span.bp-docs-level-icon,
+.bp-docs-level-creator span.bp-docs-level-icon {
+	background: red;
+}
+
+
 div.doc-is-locked .toggle-switch {
 	display: block;
 	background: #bbb url(../images/padlock.gif) no-repeat;
@@ -265,6 +395,11 @@ div.doc-meta p {
 
 a.nonexistent-doc {
 	color: #f33;
+}
+
+h2.doc-title {
+	display: inline-block;
+	width: 50%;
 }
 
 /* Comment section */

@@ -4,9 +4,7 @@ if ( !function_exists( 'bp_is_root_blog' ) ) :
 	/**
 	 * Is this BP_ROOT_BLOG?
 	 *
-	 * I'm hoping to have this function in BP 1.3 core, but just in case, here's a
-	 * conditionally-loaded version. Checks against $wpdb->blogid, which provides greater
-	 * support for switch_to_blog()
+	 * Provides backward compatibility with pre-1.5 BP installs
 	 *
 	 * @package BuddyPress Docs
 	 * @since 1.0.4
@@ -25,6 +23,92 @@ if ( !function_exists( 'bp_is_root_blog' ) ) :
 	}
 endif;
 
+/**
+ * Initiates a BuddyPress Docs query
+ *
+ * @since 1.2
+ */
+function bp_docs_has_docs( $args = array() ) {
+	global $bp;
+
+	// The if-empty is because, like with WP itself, we use bp_docs_has_docs() both for the
+	// initial 'if' of the loop, as well as for the 'while' iterator. Don't want infinite
+	// queries
+	if ( empty( $bp->bp_docs->doc_query ) ) {
+		// Build some intelligent defaults
+
+		// Default to current group id, if available
+		$d_group_id  = bp_is_group() ? bp_get_current_group_id() : array();
+
+		// If this is a Started By tab, set the author ID
+		$d_author_id = bp_docs_is_started_by() ? bp_displayed_user_id() : array();
+
+		// If this is an Edited By tab, set the edited_by id
+		$d_edited_by_id = bp_docs_is_edited_by() ? bp_displayed_user_id() : array();
+
+		// Default to the tags in the URL string, if available
+		$d_tags = isset( $_REQUEST['bpd_tag'] ) ? explode( ',', urldecode( $_REQUEST['bpd_tag'] ) ) : array();
+
+		// Order and orderby arguments
+		$d_orderby = !empty( $_GET['orderby'] ) ? urldecode( $_GET['orderby'] ) : apply_filters( 'bp_docs_default_sort_order', 'modified' ) ;
+
+		if ( empty( $_GET['order'] ) ) {
+			// If no order is explicitly stated, we must provide one.
+			// It'll be different for date fields (should be DESC)
+			if ( 'modified' == $d_orderby || 'date' == $d_orderby )
+				$d_order = 'DESC';
+			else
+				$d_order = 'ASC';
+		} else {
+			$d_order = $_GET['order'];
+		}
+
+		// Search
+		$d_search_terms = !empty( $_GET['s'] ) ? urldecode( $_GET['s'] ) : '';
+
+		// Parent id
+		$d_parent_id = !empty( $_REQUEST['parent_doc'] ) ? (int)$_REQUEST['parent_doc'] : '';
+
+		// Page number, posts per page
+		$d_paged          = !empty( $_GET['paged'] ) ? absint( $_GET['paged'] ) : 1;
+		$d_posts_per_page = !empty( $_GET['posts_per_page'] ) ? absint( $_GET['posts_per_page'] ) : 10;
+
+		// doc_slug
+		$d_doc_slug = !empty( $bp->bp_docs->query->doc_slug ) ? $bp->bp_docs->query->doc_slug : '';
+
+		$defaults = array(
+			'doc_id'         => array(),      // Array or comma-separated string
+			'doc_slug'       => $d_doc_slug,  // String (post_name/slug)
+			'group_id'       => $d_group_id,  // Array or comma-separated string
+			'parent_id'      => $d_parent_id, // int
+			'author_id'      => $d_author_id, // Array or comma-separated string
+			'edited_by_id'   => $d_edited_by_id, // Array or comma-separated string
+			'tags'           => $d_tags,      // Array or comma-separated string
+			'order'          => $d_order,        // ASC or DESC
+			'orderby'        => $d_orderby,   // 'modified', 'title', 'author', 'created'
+			'paged'	         => $d_paged,
+			'posts_per_page' => $d_posts_per_page,
+			'search_terms'   => $d_search_terms
+		);
+		$r = wp_parse_args( $args, $defaults );
+
+		$doc_query_builder      = new BP_Docs_Query( $r );
+		$bp->bp_docs->doc_query = $doc_query_builder->get_wp_query();
+	}
+
+	return $bp->bp_docs->doc_query->have_posts();
+}
+
+/**
+ * Part of the bp_docs_has_docs() loop
+ *
+ * @since 1.2
+ */
+function bp_docs_the_doc() {
+	global $bp;
+
+	return $bp->bp_docs->doc_query->the_post();
+}
 
 /**
  * Determine whether you are viewing a BuddyPress Docs page
@@ -35,13 +119,20 @@ endif;
  * @return bool
  */
 function bp_docs_is_bp_docs_page() {
-	global $bp;
+	global $bp, $post;
 
 	$is_bp_docs_page = false;
 
 	// This is intentionally ambiguous and generous, to account for BP Docs is different
 	// components. Probably should be cleaned up at some point
-	if ( $bp->bp_docs->slug == bp_current_component() || $bp->bp_docs->slug == bp_current_action() )
+	if ( isset( $bp->bp_docs->slug ) && $bp->bp_docs->slug == bp_current_component()
+	     ||
+	     isset( $bp->bp_docs->slug ) && $bp->bp_docs->slug == bp_current_action()
+	     ||
+	     isset( $post->post_type ) && bp_docs_get_post_type_name() == $post->post_type
+	     ||
+	     is_post_type_archive( bp_docs_get_post_type_name() )
+	   )
 		$is_bp_docs_page = true;
 
 	return apply_filters( 'bp_docs_is_bp_docs_page', $is_bp_docs_page );
@@ -100,7 +191,7 @@ function bp_docs_info_header() {
 			$message = implode( "\n", $message );
 
 			// We are viewing a subset of docs, so we'll add a link to clear filters
-			$message .= ' - ' . sprintf( __( '<strong><a href="%s" title="View All Docs">View All Docs</a></strong>', 'bp_docs' ), bp_docs_get_item_docs_link() );
+			$message .= ' - ' . sprintf( __( '<strong><a href="%s" title="View All Docs">View All Docs</a></strong>', 'bp-docs' ), remove_query_arg( 'bpd_tag' ) );
 		}
 
 		?>
@@ -177,15 +268,11 @@ function bp_docs_get_current_filters() {
  * @package BuddyPress Docs
  * @since 1.0-beta
  */
-function bp_docs_doc_link( $doc_id ) {
+function bp_docs_doc_link( $doc_id = false ) {
 	echo bp_docs_get_doc_link( $doc_id );
 }
 	/**
 	 * Get the doc's permalink
-	 *
-	 * For the moment, this returns the URL of the first item associated with the doc. If you
-	 * extend BuddyPress Docs so that items can be associated with multiple groups, you'll need
-	 * to change the way this function works.
 	 *
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta
@@ -193,26 +280,156 @@ function bp_docs_doc_link( $doc_id ) {
 	 * @param int $doc_id
 	 * @return str URL of the doc
 	 */
-	function bp_docs_get_doc_link( $doc_id ) {
-		global $bp;
+	function bp_docs_get_doc_link( $doc_id = false ) {
+		if ( false === $doc_id ) {
+			if ( is_single() && $q = get_queried_object() ) {
+				$doc_id = isset( $q->ID ) ? $q->ID : 0;
+			} else if ( get_the_ID() ) {
+				$doc_id = get_the_ID();
+			}
+		}
 
-		if ( empty( $doc_id ) )
-			return false;
-
-		// Get the associated item
-		$ass_item 	= wp_get_post_terms( $doc_id, $bp->bp_docs->associated_item_tax_name );
-
-		if ( empty( $ass_item ) )
-			return false;
-
-		// Get the associated item's doc link
-		// Default to 'group' for now. Todo: abstract (will take another query for tax parent)
-		$item_docs_link	= bp_docs_get_item_docs_link( array( 'item_id' => $ass_item[0]->name, 'item_type' => 'group' ) );
-
-		$post		= get_post( $doc_id );
-
-		return apply_filters( 'bp_docs_get_doc_link', $item_docs_link . $post->post_name );
+		return apply_filters( 'bp_docs_get_doc_link', get_permalink( $doc_id ), $doc_id );
 	}
+
+/**
+ * Echoes the output of bp_docs_get_doc_edit_link()
+ *
+ * @package BuddyPress_Docs
+ * @since 1.2
+ */
+function bp_docs_doc_edit_link( $doc_id = false ) {
+	echo bp_docs_get_doc_edit_link( $doc_id );
+}
+	/**
+	 * Get the edit link for a doc
+	 *
+	 * @package BuddyPress_Docs
+	 * @since 1.2
+	 *
+	 * @param int $doc_id
+	 * @return str URL of the edit page for the doc
+	 */
+	function bp_docs_get_doc_edit_link( $doc_id = false ) {
+		return apply_filters( 'bp_docs_get_doc_edit_link', trailingslashit( bp_docs_get_doc_link( $doc_id ) . BP_DOCS_EDIT_SLUG ) );
+	}
+
+/**
+ * Echoes the output of bp_docs_get_archive_link()
+ *
+ * @package BuddyPress_Docs
+ * @since 1.2
+ */
+function bp_docs_archive_link() {
+        echo bp_docs_get_archive_link();
+}
+        /**
+         * Get the link to the main site Docs archive
+         *
+         * @package BuddyPress_Docs
+         * @since 1.2
+         */
+        function bp_docs_get_archive_link() {
+                return apply_filters( 'bp_docs_get_archive_link', trailingslashit( get_post_type_archive_link( bp_docs_get_post_type_name() ) ) );
+        }
+
+/**
+ * Echoes the output of bp_docs_get_mygroups_link()
+ *
+ * @package BuddyPress_Docs
+ * @since 1.2
+ */
+function bp_docs_mygroups_link() {
+        echo bp_docs_get_mygroups_link();
+}
+        /**
+         * Get the link the My Groups tab of the Docs archive
+         *
+         * @package BuddyPress_Docs
+         * @since 1.2
+         */
+        function bp_docs_get_mygroups_link() {
+                return apply_filters( 'bp_docs_get_mygroups_link', trailingslashit( bp_docs_get_archive_link() . BP_DOCS_MY_GROUPS_SLUG ) );
+        }
+
+/**
+ * Echoes the output of bp_docs_get_mydocs_link()
+ *
+ * @package BuddyPress_Docs
+ * @since 1.2
+ */
+function bp_docs_mydocs_link() {
+        echo bp_docs_get_mydocs_link();
+}
+        /**
+         * Get the link to the My Docs tab of the logged in user
+         *
+         * @package BuddyPress_Docs
+         * @since 1.2
+         */
+        function bp_docs_get_mydocs_link() {
+                return apply_filters( 'bp_docs_get_mydocs_link', trailingslashit( bp_loggedin_user_domain() . bp_docs_get_slug() ) );
+        }
+
+/**
+ * Echoes the output of bp_docs_get_mydocs_started_link()
+ *
+ * @package BuddyPress_Docs
+ * @since 1.2
+ */
+function bp_docs_mydocs_started_link() {
+        echo bp_docs_get_mydocs_started_link();
+}
+        /**
+         * Get the link to the Started By Me tab of the logged in user
+         *
+         * @package BuddyPress_Docs
+         * @since 1.2
+         */
+        function bp_docs_get_mydocs_started_link() {
+                return apply_filters( 'bp_docs_get_mydocs_started_link', trailingslashit( bp_docs_get_mydocs_link() . BP_DOCS_STARTED_SLUG ) );
+        }
+
+/**
+ * Echoes the output of bp_docs_get_mydocs_edited_link()
+ *
+ * @package BuddyPress_Docs
+ * @since 1.2
+ */
+function bp_docs_mydocs_edited_link() {
+        echo bp_docs_get_mydocs_edited_link();
+}
+        /**
+         * Get the link to the Edited By Me tab of the logged in user
+         *
+         * @package BuddyPress_Docs
+         * @since 1.2
+         */
+        function bp_docs_get_mydocs_edited_link() {
+                return apply_filters( 'bp_docs_get_mydocs_edited_link', trailingslashit( bp_docs_get_mydocs_link() . BP_DOCS_EDITED_SLUG ) );
+        }
+
+
+
+
+/**
+ * Echoes the output of bp_docs_get_create_link()
+ *
+ * @package BuddyPress_Docs
+ * @since 1.2
+ */
+function bp_docs_create_link() {
+        echo bp_docs_get_create_link();
+}
+        /**
+         * Get the link to create a Doc
+         *
+         * @package BuddyPress_Docs
+         * @since 1.2
+         */
+        function bp_docs_get_create_link() {
+                return apply_filters( 'bp_docs_get_create_link', trailingslashit( bp_docs_get_archive_link() . BP_DOCS_CREATE_SLUG ) );
+        }
 
 /**
  * Echoes the output of bp_docs_get_item_docs_link()
@@ -234,10 +451,28 @@ function bp_docs_item_docs_link() {
 	function bp_docs_get_item_docs_link( $args = array() ) {
 		global $bp;
 
-		// Defaulting to groups for now
+		// @todo Disabling for now!!
+		return;
+
+		$d_item_type = '';
+		if ( bp_is_user() ) {
+			$d_item_type = 'user';
+		} else if ( bp_is_active( 'groups' ) && bp_is_group() ) {
+			$d_item_type = 'group';
+		}
+
+		switch ( $d_item_type ) {
+			case 'user' :
+				$d_item_id = bp_displayed_user_id();
+				break;
+			case 'group' :
+				$d_item_id = bp_get_current_group_id();
+				break;
+		}
+
 		$defaults = array(
-			'item_id'	=> !empty( $bp->groups->current_group->id ) ? $bp->groups->current_group->id : false,
-			'item_type'	=> !empty( $bp->groups->current_group->id ) ? 'group' : false
+			'item_id'	=> $d_item_id,
+			'item_type'	=> $d_item_type
 		);
 
 		$r = wp_parse_args( $args, $defaults );
@@ -252,6 +487,10 @@ function bp_docs_item_docs_link() {
 					$group = groups_get_group( array( 'group_id' => $item_id ) );
 
 				$base_url = bp_get_group_permalink( $group );
+				break;
+
+			case 'user' :
+				$base_url = bp_core_get_user_domain( $item_id );
 				break;
 		}
 
@@ -360,81 +599,6 @@ function bp_docs_is_current_orderby_class( $orderby = 'modified' ) {
 	echo apply_filters( 'bp_docs_is_current_orderby', $class, $is_current_orderby, $current_orderby );
 }
 
-
-/**
- * Determine whether the current user can do something the current doc
- *
- * @package BuddyPress Docs
- * @since 1.0-beta
- *
- * @param str $action The cap being tested
- * @return bool $user_can
- */
-function bp_docs_current_user_can( $action = 'edit' ) {
-	global $bp;
-
-	// Check to see whether the value has been cached in the global
-	if ( isset( $bp->bp_docs->current_user_can[$action] ) ) {
-		$user_can = 'yes' == $bp->bp_docs->current_user_can[$action] ? true : false;
-	} else {
-		$user_can = bp_docs_user_can( $action, bp_loggedin_user_id() );
-	}
-
-	// Stash in the $bp global to reduce future lookups
-	$bp->bp_docs->current_user_can[$action] = $user_can ? 'yes' : 'no';
-
-	return apply_filters( 'bp_docs_current_user_can', $user_can, $action );
-}
-
-/**
- * Determine whether a given user can do something with a given doc
- *
- * @package BuddyPress Docs
- * @since 1.0-beta
- *
- * @param str $action Optional. The action being queried. Eg 'edit', 'read_comments', 'manage'
- * @param int $user_id Optional. Unique user id for the user being tested. Defaults to logged-in ID
- * @param int $doc_id Optional. Unique doc id. Defaults to doc currently being viewed
- */
-function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false ) {
-	global $bp, $post;
-
-	if ( !$user_id )
-		$user_id = bp_loggedin_user_id();
-
-	// Only certain actions are checked against doc_ids
-	$need_doc_ids_actions = apply_filters( 'bp_docs_need_doc_ids_actions', array( 'edit', 'manage', 'view_history', 'read', 'delete' ) );
-
-	if ( in_array( $action, $need_doc_ids_actions ) ) {
-		if ( !$doc_id ) {
-			if ( !empty( $post->ID ) ) {
-				$doc_id = $post->ID;
-			} else {
-				$doc = bp_docs_get_current_doc();
-				$doc_id = $doc->ID;
-			}
-		}
-	} else {
-		$doc_id = false;
-	}
-
-	$user_can = false;
-
-	if ( $user_id ) {
-		if ( is_super_admin() ) {
-			// Super admin always gets to edit. What a big shot
-			$user_can = true;
-		} else {
-			// Filter this so that groups-integration and other plugins can give their
-			// own rules. Done inside the conditional so that plugins don't have to
-			// worry about the is_super_admin() check
-			$user_can = apply_filters( 'bp_docs_user_can', $user_can, $action, $user_id, $doc_id );
-		}
-	}
-
-	return $user_can;
-}
-
 /**
  * Prints the inline toggle setup script
  *
@@ -463,9 +627,6 @@ function bp_docs_inline_toggle_js() {
 			var plus = '<span class="plus-or-minus">+</span>';
 
 			jQuery(ts).html('<a href="#" id="' + toggleid + '" class="toggle-link">' + plus + jQuery(ts).html() + '</a>');
-
-			/* Hide the toggleable area */
-			jQuery(this).children('.toggle-content').toggle();
 		});
 
 	</script>
@@ -473,18 +634,180 @@ function bp_docs_inline_toggle_js() {
 }
 
 /**
- * A hook for intregration pieces to insert their settings markup
+ * Outputs the markup for the Associated Group settings section
+ *
+ * @since 1.2
+ */
+function bp_docs_doc_associated_group_markup() {
+	// First, try to set the preselected group by looking at the URL params
+	$selected_group_slug = isset( $_GET['group'] ) ? $_GET['group'] : '';
+	$selected_group      = BP_Groups_Group::get_id_from_slug( $selected_group_slug );
+	if ( $selected_group && ! BP_Docs_Groups_Integration::user_can_associate_doc_with_group( bp_loggedin_user_id(), $selected_group ) ) {
+		$selected_group = 0;
+	}
+
+	// If the selected group is still 0, see if there's something in the db
+	if ( ! $selected_group && is_single() ) {
+		$selected_group = bp_docs_get_associated_group_id( get_the_ID() );
+	}
+
+	$groups_args = array(
+		'per_page' => false,
+		'populate_extras' => false,
+	);
+
+	if ( ! bp_current_user_can( 'bp_moderate' ) ) {
+		$groups_args['user_id'] = bp_loggedin_user_id();
+	}
+
+	// Populate the $groups_template global
+	global $groups_template;
+	bp_has_groups( $groups_args );
+
+	?>
+	<tr>
+		<td class="desc-column">
+			<label for="associated_group_id"><?php _e( 'Which group should this Doc be associated with?', 'bp-docs' ) ?></label>
+			<span class="description"><?php _e( '(Optional) Note that the Access settings available for this Doc may be limited by the privacy settings of the group you choose.', 'bp-docs' ) ?></span>
+		</td>
+
+		<td class="content-column">
+			<select name="associated_group_id" id="associated_group_id">
+				<option value=""><?php _e( 'None', 'bp-docs' ) ?></option>
+				<?php foreach( $groups_template->groups as $g ) : ?>
+					<option value="<?php echo esc_attr( $g->id ) ?>" <?php selected( $selected_group, $g->id ) ?>><?php echo esc_html( $g->name ) ?></option>
+				<?php endforeach ?>
+			</select>
+
+			<div id="associated_group_summary">
+				<?php bp_docs_associated_group_summary() ?>
+			</div>
+		</td>
+	</tr>
+	<?php
+}
+
+/**
+ * Display a summary of the associated group
+ *
+ * @since 1.2
+ *
+ * @param int $group_id
+ */
+function bp_docs_associated_group_summary( $group_id = 0 ) {
+	$html = '';
+
+	if ( ! $group_id ) {
+		if ( isset( $_GET['group'] ) ) {
+			$group_slug = $_GET['group'];
+			$group_id   = BP_Groups_Group::get_id_from_slug( $group_slug );
+		} else {
+			$doc_id = is_single() ? get_the_ID() : 0;
+			$group_id = bp_docs_get_associated_group_id( $doc_id );
+		}
+	}
+
+	$group_id = intval( $group_id );
+	if ( $group_id ) {
+		$group = groups_get_group( 'group_id=' . $group_id );
+
+		if ( ! empty( $group->name ) ) {
+			$group_link = esc_url( bp_get_group_permalink( $group ) );
+			$group_avatar = bp_core_fetch_avatar( array(
+				'item_id' => $group_id,
+				'object' => 'group',
+				'type' => 'thumb',
+				'width' => '40',
+				'height' => '40',
+			) );
+			$group_member_count = sprintf( 1 == $group->total_member_count ? __( '%s member', 'bp-docs' ) : __( '%s members', 'bp-docs' ), intval( $group->total_member_count ) );
+
+			$html .= '<a href="' . $group_link . '">' . $group_avatar . '</a>';
+
+			$html .= '<div class="item">';
+			$html .= '<a href="' . $group_link . '">' . esc_html( $group->name ) . '</a>';
+			$html .= '<div class="meta">' . sprintf( __( '%s Group', 'bp-docs' ), ucwords( $group->status ) ) . ' / ' . $group_member_count . '</div>';
+			$html .= '</div>';
+		}
+
+	}
+
+	echo $html;
+}
+
+/**
+ * A hook for intergration pieces to insert their settings markup
  *
  * @package BuddyPress Docs
  * @since 1.0-beta
  */
-function bp_docs_doc_settings_markup() {
-	$doc = bp_docs_get_current_doc();
+function bp_docs_doc_settings_markup( $doc_id = 0, $group_id = 0 ) {
+	global $bp;
 
-	$doc_settings = !empty( $doc->ID ) ? get_post_meta( $doc->ID, 'bp_docs_settings', true ) : array();
+	if ( ! $doc_id ) {
+		$doc_id = is_single() ? get_the_ID() : 0;
+	}
 
-	// For now, I'll hand off the creation of settings to individual integration pieces
+	$doc_settings = (array) get_post_meta( $doc_id, 'bp_docs_settings', true );
+
+	$settings_fields = array(
+		'read' => array(
+			'name'  => 'read',
+			'label' => __( 'Who can read this doc?', 'bp-docs' )
+		),
+		'edit' => array(
+			'name'  => 'edit',
+			'label' => __( 'Who can edit this doc?', 'bp-docs' )
+		),
+		'read_comments' => array(
+			'name'  => 'read_comments',
+			'label' => __( 'Who can read comments on this doc?', 'bp-docs' )
+		),
+		'post_comments' => array(
+			'name'  => 'post_comments',
+			'label' => __( 'Who can post comments on this doc?', 'bp-docs' )
+		),
+		'view_history' => array(
+			'name'  => 'view_history',
+			'label' => __( 'Who can view the history of this doc?', 'bp-docs' )
+		)
+	);
+
+	foreach ( $settings_fields as $settings_field ) {
+		bp_docs_access_options_helper( $settings_field, $doc_id, $group_id );
+	}
+
+	// Hand off the creation of additional settings to individual integration pieces
 	do_action( 'bp_docs_doc_settings_markup', $doc_settings );
+}
+
+function bp_docs_access_options_helper( $settings_field, $doc_id = 0, $group_id = 0 ) {
+	$doc_settings = get_post_meta( $doc_id, 'bp_docs_settings', true );
+
+	$setting = isset( $doc_settings[ $settings_field['name'] ] ) ? $doc_settings[ $settings_field['name'] ] : '';
+	?>
+	<tr class="bp-docs-access-row bp-docs-access-row-<?php echo esc_attr( $settings_field['name'] ) ?>">
+		<td class="desc-column">
+			<label for="settings[<?php echo esc_attr( $settings_field['name'] ) ?>]"><?php echo esc_html( $settings_field['label'] ) ?></label>
+		</td>
+
+		<td class="content-column">
+			<select name="settings[<?php echo esc_attr( $settings_field['name'] ) ?>]">
+				<?php $access_options = bp_docs_get_access_options( $settings_field['name'], $doc_id, $group_id ) ?>
+				<?php foreach ( $access_options as $key => $option ) : ?>
+					<?php
+					$selected = selected( $setting, $option['name'], false );
+					if ( empty( $setting ) && ! empty( $option['default'] ) ) {
+						$selected = selected( 1, 1, false );
+					}
+					?>
+					<option value="<?php echo esc_attr( $option['name'] ) ?>" <?php echo $selected ?>><?php echo esc_attr( $option['label'] ) ?></option>
+				<?php endforeach ?>
+			</select>
+		</td>
+	</tr>
+
+	<?php
 }
 
 /**
@@ -493,20 +816,16 @@ function bp_docs_doc_settings_markup() {
  * @package BuddyPress Docs
  */
 function bp_docs_doc_action_links() {
-	$links = array();
+	$links   = array();
 
-	$links[] = '<a class="read" href="' . bp_docs_get_group_doc_permalink() . '">' . __( 'Read', 'bp-docs' ) . '</a>';
+	$links[] = '<a href="' . bp_docs_get_doc_link() . '">' . __( 'Read', 'bp-docs' ) . '</a>';
 
-	if ( bp_docs_user_can( 'edit', bp_loggedin_user_id() ) ) {
-		$links[] = '<a class="edit" href="' . get_permalink() . '/' . BP_DOCS_EDIT_SLUG . '">' . __( 'Edit', 'bp-docs' ) . '</a>';
+	if ( bp_docs_current_user_can( 'edit', get_the_ID() ) ) {
+		$links[] = '<a href="' . bp_docs_get_doc_link() . BP_DOCS_EDIT_SLUG . '">' . __( 'Edit', 'bp-docs' ) . '</a>';
 	}
 
-	if ( bp_docs_user_can( 'view_history', bp_loggedin_user_id() ) ) {
-		$links[] = '<a class="history" href="' . get_permalink() . '/' . BP_DOCS_HISTORY_SLUG . '">' . __( 'History', 'bp-docs' ) . '</a>';
-	}
-
-	if ( bp_docs_user_can( 'delete', bp_loggedin_user_id() ) ) {
-		$links[] = '<a class="delete confirm" href="' . wp_nonce_url( get_permalink() . '/' . BP_DOCS_DELETE_SLUG , 'bp_docs_delete' ) . '">' . __( 'Delete', 'bp-docs' ) . '</a>';
+	if ( bp_docs_current_user_can( 'view_history', get_the_ID() ) ) {
+		$links[] = '<a href="' . bp_docs_get_doc_link() . BP_DOCS_HISTORY_SLUG . '">' . __( 'History', 'bp-docs' ) . '</a>';
 	}
 
 	echo implode( ' &#124; ', $links );
@@ -519,55 +838,6 @@ function bp_docs_current_group_is_public() {
 		return true;
 
 	return false;
-}
-
-/**
- * Utility function to get and cache the current doc
- *
- * @package BuddyPress Docs
- * @since 1.0-beta
- *
- * @return obj Current doc
- */
-function bp_docs_get_current_doc() {
-	global $bp;
-
-	if ( empty( $bp->bp_docs->doc_slug ) )
-		return false;
-
-	if ( empty( $bp->bp_docs->current_post ) ) {
-
-		$posts = get_posts( array(
-			'post_type' => $bp->bp_docs->post_type_name,
-			'name' => $bp->bp_docs->doc_slug
-		) );
-
-		if ( empty( $posts ) )
-			return false;
-
-		$doc = $posts[0];
-
-		$bp->bp_docs->current_post = $posts[0];
-
-	} else {
-		$doc = $bp->bp_docs->current_post;
-	}
-
-	return $doc;
-}
-
-/**
- * Return the bp_doc post type name
- *
- * @package BuddyPress Docs
- * @since 1.2
- *
- * @return str The name of the bp_doc post type
- */
-function bp_docs_get_post_type_name() {
-	global $bp;
-
-	return $bp->bp_docs->post_type_name;
 }
 
 /**
@@ -747,11 +1017,11 @@ function bp_docs_delete_doc_link() {
  * @since 1.0-beta-2
  */
 function bp_docs_paginate_links() {
-	global $wp_query;
+	global $bp;
 
 	$cur_page = isset( $_GET['paged'] ) ? absint( $_GET['paged'] ) : 1;
 
-        $page_links_total = $wp_query->max_num_pages;
+        $page_links_total = $bp->bp_docs->doc_query->max_num_pages;
 
         $page_links = paginate_links( array(
 		'base' 		=> add_query_arg( 'paged', '%#%' ),
@@ -777,11 +1047,11 @@ function bp_docs_paginate_links() {
  * @return int $start The start number
  */
 function bp_docs_get_current_docs_start() {
-	global $wp_query;
+	global $bp;
 
-	$paged = !empty( $wp_query->query_vars['paged'] ) ? $wp_query->query_vars['paged'] : 1;
+	$paged = !empty( $bp->bp_docs->doc_query->query_vars['paged'] ) ? $bp->bp_docs->doc_query->query_vars['paged'] : 1;
 
-	$posts_per_page = !empty( $wp_query->query_vars['posts_per_page'] ) ? $wp_query->query_vars['posts_per_page'] : 10;
+	$posts_per_page = !empty( $bp->bp_docs->doc_query->query_vars['posts_per_page'] ) ? $bp->bp_docs->doc_query->query_vars['posts_per_page'] : 10;
 
 	$start = ( ( $paged - 1 ) * $posts_per_page ) + 1;
 
@@ -800,11 +1070,11 @@ function bp_docs_get_current_docs_start() {
  * @return int $end The start number
  */
 function bp_docs_get_current_docs_end() {
-	global $wp_query;
+	global $bp;
 
-	$paged = !empty( $wp_query->query_vars['paged'] ) ? $wp_query->query_vars['paged'] : 1;
+	$paged = !empty( $bp->bp_docs->doc_query->query_vars['paged'] ) ? $bp->bp_docs->doc_query->query_vars['paged'] : 1;
 
-	$posts_per_page = !empty( $wp_query->query_vars['posts_per_page'] ) ? $wp_query->query_vars['posts_per_page'] : 10;
+	$posts_per_page = !empty( $bp->bp_docs->doc_query->query_vars['posts_per_page'] ) ? $bp->bp_docs->doc_query->query_vars['posts_per_page'] : 10;
 
 	$end = $paged * $posts_per_page;
 
@@ -823,9 +1093,9 @@ function bp_docs_get_current_docs_end() {
  * @return int $total_doc_count The start number
  */
 function bp_docs_get_total_docs_num() {
-	global $wp_query;
+	global $bp;
 
-	$total_doc_count = !empty( $wp_query->found_posts ) ? $wp_query->found_posts : 0;
+	$total_doc_count = !empty( $bp->bp_docs->doc_query->found_posts ) ? $bp->bp_docs->doc_query->found_posts : 0;
 
 	return apply_filters( 'bp_docs_get_total_docs_num', $total_doc_count );
 }
@@ -863,15 +1133,8 @@ function bp_docs_list_comments() {
  * @return bool True if it's an existing doc
  */
 function bp_docs_is_existing_doc() {
-	global $bp;
-
-	if ( empty( $bp->bp_docs->current_post ) )
-		$bp->bp_docs->current_post = bp_docs_get_current_doc();
-
-	if ( empty( $bp->bp_docs->current_post ) )
-		return false;
-
-	return true;
+	$post_type_obj = get_queried_object();
+	return is_single() && isset( $post_type_obj->post_type ) && bp_docs_get_post_type_name() == $post_type_obj->post_type;
 }
 
 /**
@@ -891,33 +1154,429 @@ function bp_docs_current_view() {
 }
 
 /**
- * Get the absolute path of a given template.
- *
- * Looks first for a template in [theme-dir]/docs/, and falls back on the provided templates.
- *
- * Ideally, I would not need this function. But WP's locate_template() plays funny with directory
- * paths, and bp_core_load_template() does not have an option that will let you locate but not load
- * the found template.
- *
- * @package BuddyPress Docs
- * @since 1.0.5
- *
- * @param str $template This string should be of the format 'edit-docs.php'. Ie, you need '.php',
- *                      but you don't need the leading '/docs/'
- * @return str $template_path The absolute path of the located template file.
+ * Todo: Make less hackish
  */
-function bp_docs_locate_template( $template = '' ) {
-	if ( empty( $template ) )
-		return false;
-
-	// Try to load custom templates first
-	$stylesheet_path = STYLESHEETPATH . '/docs/';
-
-	if ( file_exists( $stylesheet_path . $template ) )
-		$template_path = $stylesheet_path . $template;
-	else
-		$template_path = BP_DOCS_INCLUDES_PATH . 'templates/docs/' . $template;
-
-	return apply_filters( 'bp_docs_locate_template', $template_path, $template );
+function bp_docs_doc_permalink() {
+	if ( bp_is_group() ) {
+		bp_docs_group_doc_permalink();
+	} else {
+		the_permalink();
+	}
 }
-?>
+
+function bp_docs_slug() {
+	echo bp_docs_get_slug();
+}
+	function bp_docs_get_slug() {
+		global $bp;
+		return apply_filters( 'bp_docs_get_slug', $bp->bp_docs->slug );
+	}
+
+/**
+ * Outputs the tabs at the top of the Docs view (All Docs, New Doc, etc)
+ *
+ * At the moment, the group-specific stuff is hard coded in here.
+ * @todo Get the group stuff out
+ */
+function bp_docs_tabs() {
+	$current_view = '';
+
+	?>
+
+	<ul id="bp-docs-all-docs">
+		<li<?php if ( bp_docs_is_global_directory() ) : ?> class="current"<?php endif; ?>><a href="<?php bp_docs_archive_link() ?>"><?php _e( 'All Docs', 'bp-docs' ) ?></a></li>
+
+		<?php if ( is_user_logged_in() ) : ?>
+			<?php if ( function_exists( 'bp_is_group' ) && bp_is_group() ) : ?>
+				<li<?php if ( bp_is_current_action( 'docs' ) ) : ?> class="current"<?php endif ?>><a href="<?php bp_group_permalink( groups_get_current_group() ) ?><?php bp_docs_slug() ?>"><?php printf( __( "%s's Docs", 'bp-docs' ), bp_get_current_group_name() ) ?></a></li>
+			<?php else : ?>
+				<li><a href="<?php bp_docs_mydocs_started_link() ?>"><?php _e( 'Started By Me', 'bp-docs' ) ?></a></li>
+				<li><a href="<?php bp_docs_mydocs_edited_link() ?>"><?php _e( 'Edited By Me', 'bp-docs' ) ?></a></li>
+
+				<?php if ( bp_is_active( 'groups' ) ) : ?>
+					<li<?php if ( bp_docs_is_mygroups_docs() ) : ?> class="current"<?php endif; ?>><a href="<?php bp_docs_mygroups_link() ?>"><?php _e( 'My Groups', 'bp-docs' ) ?></a></li>
+				<?php endif ?>
+			<?php endif ?>
+
+		<?php endif ?>
+
+		<?php bp_docs_create_button() ?>
+
+	</ul>
+	<?php
+}
+
+function bp_docs_create_button() {
+	if ( ! bp_docs_is_doc_create() && bp_docs_current_user_can( 'create' ) ) {
+		echo '<a class="button" id="bp-create-doc-button" href="' . bp_docs_get_create_link() . '">' . __( "Create New Doc", 'bp-docs' ) . '</a>';
+	}
+}
+add_action( 'bp_member_plugin_options_nav', 'bp_docs_create_button' );
+
+/**
+ * Markup for the Doc Permissions snapshot
+ *
+ * Markup is built inline. Someday I may abstract it. In the meantime, suck a lemon
+ *
+ * @since 1.2
+ */
+function bp_docs_doc_permissions_snapshot() {
+	$html = '';
+
+	$doc_group_ids = bp_docs_get_associated_group_id( get_the_ID(), false, true );
+	$doc_groups = array();
+	foreach( $doc_group_ids as $dgid ) {
+		$maybe_group = groups_get_group( 'group_id=' . $dgid );
+		if ( !empty( $maybe_group->name ) ) {
+			$doc_groups[] = $maybe_group;
+		}
+	}
+
+	// First set up the Group snapshot, if there is one
+	if ( ! empty( $doc_groups ) ) {
+		$group_link = bp_get_group_permalink( $doc_groups[0] );
+		$html .= '<div id="doc-group-summary">';
+		$html .=   sprintf( __( 'Group: %s', 'bp-docs' ), '<a href="' . $group_link . '">' . bp_core_fetch_avatar( 'item_id=' . $doc_groups[0]->id . '&object=group&type=thumb&width=25&height=25' ) . '</a> ' . '<a href="' . $group_link . '">' . esc_html( $doc_groups[0]->name ) . '</a>' );
+		$html .= '</div>';
+	}
+
+	// we'll need a list of comma-separated group names
+	$group_names = implode( ', ', wp_list_pluck( $doc_groups, 'name' ) );
+
+	$levels = array(
+		'anyone'        => __( 'Anyone', 'bp-docs' ),
+		'loggedin'      => __( 'Logged-in Users', 'bp-docs' ),
+		'friends'       => __( 'My Friends', 'bp-docs' ),
+		'group-members' => sprintf( __( 'Members of: %s', 'bp-docs' ), $group_names ),
+		'admins-mods'   => sprintf( __( 'Admins and mods of the group %s', 'bp-docs' ), $group_names ),
+		'creator'       => __( 'The Doc author only', 'bp-docs' ),
+		'no-one'        => __( 'Just Me', 'bp-docs' )
+	);
+
+	if ( get_the_author_meta( 'ID' ) == bp_loggedin_user_id() ) {
+		$levels['creator'] = __( 'The Doc author only (that\'s you!)', 'bp-docs' );
+	}
+
+	$settings = bp_docs_get_doc_settings();
+
+	// Read
+	$read_class = bp_docs_get_permissions_css_class( $settings['read'] );
+	$read_text  = sprintf( __( 'This Doc can be read by: <strong>%s</strong>', 'bp-docs' ), $levels[ $settings['read'] ] );
+
+	// Edit
+	$edit_class = bp_docs_get_permissions_css_class( $settings['edit'] );
+	$edit_text  = sprintf( __( 'This Doc can be edited by: <strong>%s</strong>', 'bp-docs' ), $levels[ $settings['edit'] ] );
+
+	// Read Comments
+	$read_comments_class = bp_docs_get_permissions_css_class( $settings['read_comments'] );
+	$read_comments_text  = sprintf( __( 'Comments are visible to: <strong>%s</strong>', 'bp-docs' ), $levels[ $settings['read_comments'] ] );
+
+	// Post Comments
+	$post_comments_class = bp_docs_get_permissions_css_class( $settings['post_comments'] );
+	$post_comments_text  = sprintf( __( 'Comments can be posted by: <strong>%s</strong>', 'bp-docs' ), $levels[ $settings['post_comments'] ] );
+
+	// View History
+	$view_history_class = bp_docs_get_permissions_css_class( $settings['view_history'] );
+	$view_history_text  = sprintf( __( 'History can be viewed by: <strong>%s</strong>', 'bp-docs' ), $levels[ $settings['view_history'] ] );
+
+	// Calculate summary
+	// Summary works like this:
+	//  'public'  - all read_ items set to 'anyone', all others to 'anyone' or 'loggedin'
+	//  'private' - everything set to 'admins-mods', 'creator', 'no-one', 'friends', or 'group-members' where the associated group is non-public
+	//  'limited' - everything else
+	$anyone_count  = 0;
+	$private_count = 0;
+	$public_settings = array(
+		'read'          => 'anyone',
+		'edit'          => 'loggedin',
+		'read_comments' => 'anyone',
+		'post_comments' => 'loggedin',
+		'view_history'  => 'anyone'
+	);
+
+	foreach ( $settings as $l => $v ) {
+		if ( 'anyone' == $v || $public_settings[ $l ] == $v ) {
+
+			$anyone_count++;
+
+		} else if ( in_array( $v, array( 'admins-mods', 'creator', 'no-one', 'friends', 'group-members' ) ) ) {
+
+			if ( 'group-members' == $v ) {
+				if ( ! isset( $group_status ) ) {
+					$group_status = 'foo'; // todo
+				}
+
+				if ( 'public' != $group_status ) {
+					$private_count++;
+				}
+			} else {
+				$private_count++;
+			}
+
+		}
+	}
+
+	$settings_count = count( $settings );
+	if ( $settings_count == $private_count ) {
+		$summary       = 'private';
+		$summary_label = __( 'Private', 'bp-docs' );
+	} else if ( $settings_count == $anyone_count ) {
+		$summary       = 'public';
+		$summary_label = __( 'Public', 'bp-docs' );
+	} else {
+		$summary       = 'limited';
+		$summary_label = __( 'Limited', 'bp-docs' );
+	}
+
+	$html .= '<div id="doc-permissions-summary" class="doc-' . $summary . '">';
+	$html .=   sprintf( __( 'Access: <strong>%s</strong>', 'bp-docs' ), $summary_label );
+	$html .=   '<a href="#" class="doc-permissions-toggle" id="doc-permissions-more">' . __( 'Show Details', 'bp-docs' ) . '</a>';
+	$html .= '</div>';
+
+	$html .= '<div id="doc-permissions-details">';
+	$html .=   '<ul>';
+	$html .=     '<li class="bp-docs-can-read ' . $read_class . '"><span class="bp-docs-level-icon"></span>' . $read_text . '</li>';
+	$html .=     '<li class="bp-docs-can-edit ' . $edit_class . '"><span class="bp-docs-level-icon"></span>' . $edit_text . '</li>';
+	$html .=     '<li class="bp-docs-can-read_comments ' . $read_comments_class . '"><span class="bp-docs-level-icon"></span>' . $read_comments_text . '</li>';
+	$html .=     '<li class="bp-docs-can-post_comments ' . $post_comments_class . '"><span class="bp-docs-level-icon"></span>' . $post_comments_text . '</li>';
+	$html .=     '<li class="bp-docs-can-view_history ' . $view_history_class . '"><span class="bp-docs-level-icon"></span>' . $view_history_text . '</li>';
+	$html .=   '</ul>';
+
+	if ( bp_docs_current_user_can( 'manage' ) )
+		$html .=   '<a href="' . bp_docs_get_doc_edit_link() . '#doc-settings" id="doc-permissions-edit">' . __( 'Edit', 'bp-docs' ) . '</a>';
+
+	$html .=   '<a href="#" class="doc-permissions-toggle" id="doc-permissions-less">' . __( 'Hide Details', 'bp-docs' ) . '</a>';
+	$html .= '</div>';
+
+	echo $html;
+}
+
+function bp_docs_get_permissions_css_class( $level ) {
+	return apply_filters( 'bp_docs_get_permissions_css_class', 'bp-docs-level-' . $level );
+}
+
+/**
+ * Blasts any previous queries stashed in the BP global
+ *
+ * @since 1.2
+ */
+function bp_docs_reset_query() {
+	global $bp;
+
+	if ( isset( $bp->bp_docs->doc_query ) ) {
+		unset( $bp->bp_docs->doc_query );
+	}
+}
+
+/**
+ * Get a total doc count, for a user, a group, or the whole site
+ *
+ * @since 1.2
+ * @todo Total sitewide doc count
+ *
+ * @param int $item_id The id of the item (user or group)
+ * @param str $item_type 'user' or 'group'
+ * @return int
+ */
+function bp_docs_get_doc_count( $item_id = 0, $item_type = '' ) {
+	$doc_count = 0;
+
+	switch ( $item_type ) {
+		case 'user' :
+			$doc_count = get_user_meta( $item_id, 'bp_docs_count', true );
+
+			if ( '' === $doc_count ) {
+				$doc_count = bp_docs_update_doc_count( $item_id, 'user' );
+			}
+
+			break;
+		case 'group' :
+			$doc_count = groups_get_groupmeta( $item_id, 'bp-docs-count' );
+
+			if ( '' === $doc_count ) {
+				$doc_count = bp_docs_update_doc_count( $item_id, 'group' );
+			}
+			break;
+	}
+
+	return apply_filters( 'bp_docs_get_doc_count', (int)$doc_count, $item_id, $item_type );
+}
+
+/**
+ * Is the current page a single Doc?
+ *
+ * @since 1.2
+ * @return bool
+ */
+function bp_docs_is_single_doc() {
+	global $wp_query;
+
+	$is_single_doc = false;
+
+	// There's an odd bug in WP_Query that causes errors when attempting to access
+	// get_queried_object() too early. The check for $wp_query->post is a workaround
+	if ( is_single() && ! empty( $wp_query->post ) ) {
+		$post = get_queried_object();
+
+		if ( isset( $post->post_type ) && bp_docs_get_post_type_name() == $post->post_type ) {
+			$is_single_doc = true;
+		}
+	}
+
+	return apply_filters( 'bp_docs_is_single_doc', $is_single_doc );
+}
+
+/**
+ * Is the current page a single Doc 'read' view?
+ *
+ * By process of elimination.
+ *
+ * @since 1.2
+ * @return bool
+ */
+function bp_docs_is_doc_read() {
+	$is_doc_read = false;
+
+	if ( bp_docs_is_single_doc() &&
+	     !bp_docs_is_doc_edit() &&
+	     ( !function_exists( 'bp_docs_is_doc_history' ) || !bp_docs_is_doc_history() )
+	   ) {
+	 	$is_doc_read = true;
+	}
+
+	return apply_filters( 'bp_docs_is_doc_read', $is_doc_read );
+}
+
+
+/**
+ * Is the current page a doc edit?
+ *
+ * @since 1.2
+ * @return bool
+ */
+function bp_docs_is_doc_edit() {
+	$is_doc_edit = false;
+
+	if ( bp_docs_is_single_doc() && 1 == get_query_var( BP_DOCS_EDIT_SLUG ) ) {
+		$is_doc_edit = true;
+	}
+
+	return apply_filters( 'bp_docs_is_doc_edit', $is_doc_edit );
+}
+
+/**
+ * Is this the Docs create screen?
+ *
+ * @since 1.2
+ * @return bool
+ */
+function bp_docs_is_doc_create() {
+	$is_doc_create = false;
+
+	if ( is_post_type_archive( bp_docs_get_post_type_name() ) && 1 == get_query_var( BP_DOCS_CREATE_SLUG ) ) {
+		$is_doc_create = true;
+	}
+
+	return apply_filters( 'bp_docs_is_doc_create', $is_doc_create );
+}
+
+/**
+ * Is this the My Groups tab of the Docs archive?
+ *
+ * @since 1.2
+ * @return bool
+ */
+function bp_docs_is_mygroups_docs() {
+	$is_mygroups_docs = false;
+
+	if ( is_post_type_archive( bp_docs_get_post_type_name() ) && 1 == get_query_var( BP_DOCS_MY_GROUPS_SLUG ) ) {
+		$is_mygroups_docs = true;
+	}
+
+	return apply_filters( 'bp_docs_is_mygroups_docs', $is_mygroups_docs );
+}
+
+/**
+ * Is this the History tab?
+ *
+ * @since 1.2
+ * @return bool
+ */
+function bp_docs_is_doc_history() {
+	$is_doc_history = false;
+
+	if ( bp_docs_is_single_doc() && 1 == get_query_var( BP_DOCS_HISTORY_SLUG ) ) {
+		$is_doc_history = true;
+	}
+
+	return apply_filters( 'bp_docs_is_doc_history', $is_doc_history );
+}
+
+/**
+ * Is this the Docs tab of a user profile?
+ *
+ * @since 1.2
+ * @return bool
+ */
+function bp_docs_is_user_docs() {
+	$is_user_docs = false;
+
+	if ( bp_is_user() && bp_docs_is_docs_component() ) {
+		$is_user_docs = true;
+	}
+
+	return apply_filters( 'bp_docs_is_user_docs', $is_user_docs );
+}
+
+/**
+ * Is this the Started By tab of a user profile?
+ *
+ * @since 1.2
+ * @return bool
+ */
+function bp_docs_is_started_by() {
+	$is_started_by = false;
+
+	if ( bp_docs_is_user_docs() && bp_is_current_action( BP_DOCS_STARTED_SLUG ) ) {
+		$is_started_by = true;
+	}
+
+	return apply_filters( 'bp_docs_is_started_by', $is_started_by );
+}
+
+/**
+ * Is this the Edited By tab of a user profile?
+ *
+ * @since 1.2
+ * @return bool
+ */
+function bp_docs_is_edited_by() {
+	$is_edited_by = false;
+
+	if ( bp_docs_is_user_docs() && bp_is_current_action( BP_DOCS_EDITED_SLUG ) ) {
+		$is_edited_by = true;
+	}
+
+	return apply_filters( 'bp_docs_is_edited_by', $is_edited_by );
+}
+
+/**
+ * Is this the global Docs directory?
+ */
+function bp_docs_is_global_directory() {
+	$is_global_directory = false;
+
+	if ( is_post_type_archive( bp_docs_get_post_type_name() ) && ! get_query_var( BP_DOCS_MY_GROUPS_SLUG ) && ! get_query_var( BP_DOCS_CREATE_SLUG ) ) {
+		$is_global_directory = true;
+	}
+
+	return apply_filters( 'bp_docs_is_global_directory', $is_global_directory );
+}
+
+function bp_docs_get_sidebar() {
+	if ( $template = apply_filters( 'bp_docs_sidebar_template', '' ) ) {
+		load_template( $template );
+	} else {
+		get_sidebar( 'buddypress' );
+	}
+}
