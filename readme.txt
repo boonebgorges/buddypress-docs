@@ -37,6 +37,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 = 1.2.2 =
 * Improves group-association auto-settings when creating via the Create New Doc link in a group
+* Fixes bug that erroneously required a directory page
 
 = 1.2.1 =
 * Fixes bug with overzealous Create New Doc button
