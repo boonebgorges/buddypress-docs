@@ -289,7 +289,7 @@ function bp_docs_doc_link( $doc_id = false ) {
 			}
 		}
 
-		return apply_filters( 'bp_docs_get_doc_link', get_permalink( $doc_id ), $doc_id );
+		return apply_filters( 'bp_docs_get_doc_link', trailingslashit( get_permalink( $doc_id ) ), $doc_id );
 	}
 
 /**
