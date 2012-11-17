@@ -996,16 +996,9 @@ function bp_docs_delete_doc_link() {
 	 * @return string $delete_link href for the delete doc link
 	 */
 	function bp_docs_get_delete_doc_link() {
-		global $bp, $post;
+		$doc_permalink = bp_docs_get_doc_link();
 
-		$doc_id = !empty( $bp->bp_docs->current_post->ID ) ? $bp->bp_docs->current_post->ID : false;
-
-		if ( !$doc_id )
-			return false;
-
-		$doc_permalink = bp_docs_get_doc_link( $doc_id );
-
-		$delete_link = wp_nonce_url( $doc_permalink . '/' . BP_DOCS_DELETE_SLUG, 'bp_docs_delete' );
+		$delete_link = wp_nonce_url( add_query_arg( BP_DOCS_DELETE_SLUG, '1', $doc_permalink ), 'bp_docs_delete' );
 
 		return apply_filters( 'bp_docs_get_delete_doc_link', $delete_link, $doc_permalink );
 	}
@@ -1454,7 +1447,7 @@ function bp_docs_is_doc_read() {
 	$is_doc_read = false;
 
 	if ( bp_docs_is_single_doc() &&
-	     !bp_docs_is_doc_edit() &&
+	     ! bp_docs_is_doc_edit() &&
 	     ( !function_exists( 'bp_docs_is_doc_history' ) || !bp_docs_is_doc_history() )
 	   ) {
 	 	$is_doc_read = true;

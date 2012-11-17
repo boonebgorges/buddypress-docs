@@ -356,7 +356,7 @@ class BP_Docs_Component extends BP_Component {
 			}
 		}
 
-		if ( !empty( $bp->bp_docs->current_view ) && 'create' == $bp->bp_docs->current_view ) {
+		if ( bp_docs_is_doc_create() ) {
 			if ( !bp_docs_current_user_can( 'create' ) ) {
 				// The user does not have edit permission. Redirect.
 				if ( function_exists( 'bp_core_no_access' ) && !is_user_logged_in() )
@@ -419,16 +419,17 @@ class BP_Docs_Component extends BP_Component {
 		}
 
 		// Todo: get this into a proper method
-		if ( $bp->bp_docs->current_view == 'delete' ) {
+		if ( bp_docs_is_doc_read() && ! empty( $_GET['delete'] ) ) {
+
 			check_admin_referer( 'bp_docs_delete' );
 
 			if ( bp_docs_current_user_can( 'manage' ) ) {
-				$doc = bp_docs_get_current_doc();
+				$delete_doc_id = get_queried_object_id();
 
-				do_action( 'bp_docs_before_doc_delete', $doc->ID );
+				do_action( 'bp_docs_before_doc_delete', $delete_doc_id );
 
 				$delete_args = array(
-					'ID'		=> $doc->ID,
+					'ID'		=> $delete_doc_id,
 					'post_status'	=> 'trash'
 				);
 
@@ -441,9 +442,7 @@ class BP_Docs_Component extends BP_Component {
 				bp_core_add_message( __( 'You do not have permission to delete that doc.', 'bp-docs' ), 'error' );
 			}
 
-			// todo: abstract this out so I don't have to call group permalink here
-			$redirect_url = bp_docs_get_item_docs_link();
-			bp_core_redirect( $redirect_url );
+			bp_core_redirect( home_url( bp_docs_get_slug() ) );
 		}
 	}
 
