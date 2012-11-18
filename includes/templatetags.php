@@ -722,11 +722,29 @@ function bp_docs_associated_group_summary( $group_id = 0 ) {
 			) );
 			$group_member_count = sprintf( 1 == $group->total_member_count ? __( '%s member', 'bp-docs' ) : __( '%s members', 'bp-docs' ), intval( $group->total_member_count ) );
 
+			switch ( $group->status ) {
+				case 'public' :
+					$group_type_string = __( 'Public Group', 'bp-docs' );
+					break;
+
+				case 'private' :
+					$group_type_string = __( 'Private Group', 'bp-docs' );
+					break;
+
+				case 'hidden' :
+					$group_type_string = __( 'Hidden Group', 'bp-docs' );
+					break;
+
+				default :
+					$group_type_string = '';
+					break;
+			}
+
 			$html .= '<a href="' . $group_link . '">' . $group_avatar . '</a>';
 
 			$html .= '<div class="item">';
 			$html .= '<a href="' . $group_link . '">' . esc_html( $group->name ) . '</a>';
-			$html .= '<div class="meta">' . sprintf( __( '%s Group', 'bp-docs' ), ucwords( $group->status ) ) . ' / ' . $group_member_count . '</div>';
+			$html .= '<div class="meta">' . $group_type_string . ' / ' . $group_member_count . '</div>';
 			$html .= '</div>';
 		}
 
