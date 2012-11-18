@@ -308,7 +308,7 @@ class BP_Docs {
 		// Register the bp_docs_access taxonomy
 		register_taxonomy( $this->access_tax_name, array( $this->post_type_name ), array(
 			'hierarchical' => false,
-			'show_ui'      => true,
+			'show_ui'      => false,
 			'query_var'    => false,
 		) );
 
