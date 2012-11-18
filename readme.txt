@@ -40,6 +40,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Updates German translation
 * Ensures that doc links are trailingslashed
 * Fixes bug that prevented front-end doc deletion
+* Removes temporarily non-functional doc counts from group tabs
 
 = 1.2.3 = 
 * Fixes bug with bp-pages
