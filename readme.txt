@@ -65,7 +65,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Fixes bug that broke comment moderation in some cases
 
 = 1.1.24 =
-* Moves Table buttons to second row of editor, for better fit on all themes
+* Moves Table buttons to third row of editor, for better fit on all themes
 * Adds Danish translation
 
 = 1.1.23 =
