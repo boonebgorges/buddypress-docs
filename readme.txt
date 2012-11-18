@@ -37,6 +37,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 = 1.2.4 =
 * Updates .pot file
+* Updates German translation
 * Ensures that doc links are trailingslashed
 * Fixes bug that prevented front-end doc deletion
 
