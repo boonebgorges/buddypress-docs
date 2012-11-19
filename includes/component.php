@@ -488,75 +488,69 @@ class BP_Docs_Component extends BP_Component {
 	function post_comment_activity( $comment_id ) {
 		global $bp;
 
-		if ( !bp_is_active( 'activity' ) )
+		if ( ! bp_is_active( 'activity' ) ) {
 			return false;
+		}
 
-		if ( empty( $comment_id ) )
+		if ( empty( $comment_id ) ) {
 			return false;
+		}
 
-		$comment 	= get_comment( $comment_id );
-		$doc 		= !empty( $comment->comment_post_ID ) ? get_post( $comment->comment_post_ID ) : false;
+		$comment = get_comment( $comment_id );
+		$doc     = !empty( $comment->comment_post_ID ) ? get_post( $comment->comment_post_ID ) : false;
 
-		if ( empty( $doc ) )
+		if ( empty( $doc ) ) {
 			return false;
+		}
 
 		// Only continue if this is a BP Docs post
-		if ( $doc->post_type != $bp->bp_docs->post_type_name )
+		if ( $doc->post_type != bp_docs_get_post_type_name() ) {
 			return;
+		}
 
-		$doc_id 	= !empty( $doc->ID ) ? $doc->ID : false;
+		$doc_id = ! empty( $doc->ID ) ? $doc->ID : false;
 
-		if ( !$doc_id )
+		if ( ! $doc_id ) {
 			return false;
+		}
 
 		// Make sure that BP doesn't record this comment with its native functions
 		remove_action( 'comment_post', 'bp_blogs_record_comment', 10, 2 );
 
 		// Until better individual activity item privacy controls are available in BP,
 		// comments will only be shown in the activity stream if "Who can read comments on
-		// this doc?" is set to "Anyone" or "Group members"
-		$doc_settings	= get_post_meta( $doc_id, 'bp_docs_settings', true );
+		// this doc?" is set to "Anyone", "Logged-in Users" or "Group members"
+		$doc_settings = get_post_meta( $doc_id, 'bp_docs_settings', true );
 
-		if ( !empty( $doc_settings['read_comments'] ) && ( 'admins-mods' == $doc_settings['read_comments'] || 'no-one' == $doc_settings['read_comments'] ) )
+		if ( ! empty( $doc_settings['read_comments'] ) && ! in_array( $doc_settings['read_comments'], array( 'anyone', 'loggedin', 'group-members' ) ) ) {
 			return false;
+		}
 
-		// Get the associated item for this doc. Todo: abstract to standalone function
-		$items = wp_get_post_terms( $doc_id, $bp->bp_docs->associated_item_tax_name );
+		// See if we're associated with a group
+		$group_id = bp_docs_get_associated_group_id( $doc_id );
 
-		// It's possible that there will be more than one item; for now, post only to the
-		// first one. Todo: make this extensible
-		$item = !empty( $items[0]->name ) ? $items[0]->name : false;
-
-		// From the item, we can obtain the component (the parent tax of the item tax)
-		if ( !empty( $items[0]->parent ) ) {
-			$parent = get_term( (int)$items[0]->parent, $bp->bp_docs->associated_item_tax_name );
-
-			// For some reason, I named them singularly. So we have to canonicalize
-			switch ( $parent->slug ) {
-				case 'user' :
-					$component = 'profile';
-					break;
-
-				case 'group' :
-				default	:
-					$component = 'groups';
-					break;
-			}
+		if ( $group_id ) {
+			$component = 'groups';
+			$item = $group_id;
+		} else {
+			$component = bp_docs_get_slug();
+			$item = 0;
 		}
 
 		// Set the action. Filterable so that other integration pieces can alter it
-		$action 	= '';
-		$commenter	= get_user_by( 'email', $comment->comment_author_email );
-		$commenter_id	= !empty( $commenter->ID ) ? $commenter->ID : false;
+		$action       = '';
+		$commenter    = get_user_by( 'email', $comment->comment_author_email );
+		$commenter_id = !empty( $commenter->ID ) ? $commenter->ID : false;
 
 		// Since BP Docs only allows member comments, the following should never happen
-		if ( !$commenter_id )
+		if ( !$commenter_id ) {
 			return false;
+		}
 
-		$user_link 	= bp_core_get_userlink( $commenter_id );
-		$doc_url	= bp_docs_get_doc_link( $doc_id );
-		$comment_url	= $doc_url . '#comment-' . $comment->comment_ID;
-		$comment_link	= '<a href="' . $comment_url . '">' . $doc->post_title . '</a>';
+		$user_link    = bp_core_get_userlink( $commenter_id );
+		$doc_url      = bp_docs_get_doc_link( $doc_id );
+		$comment_url  = $doc_url . '#comment-' . $comment->comment_ID;
+		$comment_link = '<a href="' . $comment_url . '">' . $doc->post_title . '</a>';
 
 		$action = sprintf( __( '%1$s commented on the doc %2$s', 'bp-docs' ), $user_link, $comment_link );
 
