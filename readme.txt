@@ -36,7 +36,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 == Changelog ==
 
 = 1.2.5 =
+* Fixes comment posting
 * Fixes comment display and posting permissions
+* Don't show Tags: label when no tags are present
 
 = 1.2.4 =
 * Updates .pot file
