@@ -35,6 +35,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.2.5 =
+* Fixes comment display and posting permissions
+
 = 1.2.4 =
 * Updates .pot file
 * Updates German translation
