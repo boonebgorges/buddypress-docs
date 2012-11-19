@@ -135,6 +135,7 @@ if ( !function_exists( 'wp_editor' ) ) {
 
         	<?php wp_nonce_field( 'bp_docs_save' ) ?>
 
+		<input type="hidden" id="doc_id" name="doc_id" value="<?php the_ID() ?>" />
 		<input type="submit" name="doc-edit-submit" id="doc-edit-submit" value="<?php _e( 'Save', 'bp-docs' ) ?>"> <a href="<?php bp_docs_cancel_edit_link() ?>" class="action safe"><?php _e( 'Cancel', 'bp-docs' ); ?></a>
 
             	<?php if ( bp_docs_current_user_can( 'manage' ) ) : ?><a class="delete-doc-button confirm" href="<?php bp_docs_delete_doc_link() ?>"><?php _e( 'Delete', 'bp-docs' ) ?></a><?php endif ?>
