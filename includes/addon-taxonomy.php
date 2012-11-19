@@ -202,14 +202,17 @@ class BP_Docs_Taxonomy {
 	 */
 	function show_terms() {
 	 	foreach( $this->taxonomies as $tax_name ) {
-	 		$tagtext 	= array();
-	 		$tags 		= wp_get_post_terms( get_the_ID(), $tax_name );
+			$html    = '';
+	 		$tagtext = array();
+	 		$tags 	 = wp_get_post_terms( get_the_ID(), $tax_name );
 
 	 		foreach( $tags as $tag ) {
 	 			$tagtext[] = bp_docs_get_tag_link( array( 'tag' => $tag->name ) );
 	 		}
 
-	 		$html = '<p>' . sprintf( __( 'Tags: %s', 'bp-docs' ), implode( ', ', $tagtext ) ) . '</p>';
+			if ( ! empty( $tagtext ) ) {
+				$html = '<p>' . sprintf( __( 'Tags: %s', 'bp-docs' ), implode( ', ', $tagtext ) ) . '</p>';
+			}
 
 	 		echo apply_filters( 'bp_docs_taxonomy_show_terms', $html, $tagtext );
 	 	}
