@@ -278,6 +278,9 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
 				$user_can = is_user_logged_in();
 				break;
 
+			case 'creator' :
+				$user_can = $doc->post_author == $user_id;
+				break;
 			// Do nothing with other settings - they are passed through
 		}
 	} else if ( 'create' == $action ) {
