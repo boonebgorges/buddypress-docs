@@ -35,6 +35,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.2.6 =
+* Updates Danish translation
+
 = 1.2.5 =
 * Fixes comment posting
 * Fixes comment display and posting permissions
