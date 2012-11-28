@@ -790,7 +790,7 @@ class BP_Docs_Component extends BP_Component {
 			$link = $post->guid;
 		}
 
-		return $link;
+		return html_entity_decode( $link );
 	}
 
 	/**
