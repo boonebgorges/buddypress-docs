@@ -37,6 +37,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 = 1.2.6 =
 * Updates Danish translation
+* Fixes infinite loop bug in upgrader
 
 = 1.2.5 =
 * Fixes comment posting
