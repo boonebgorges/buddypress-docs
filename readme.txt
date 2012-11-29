@@ -35,6 +35,10 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.2.7 =
+* Updates German translation
+* Fixes rewrite problem when using custom BP_DOCS_SLUG
+
 = 1.2.6 =
 * Updates Danish translation
 * Fixes infinite loop bug in upgrader
