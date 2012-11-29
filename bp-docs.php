@@ -282,7 +282,7 @@ class BP_Docs {
 			'query_var'    => false,
 			'has_archive'  => true,
 			'rewrite'      => array(
-				'slug'       => 'docs',
+				'slug'       => bp_docs_get_slug(),
 				'with_front' => false
 			)
 		) );
@@ -528,7 +528,7 @@ class BP_Docs {
 		// Check to see whether our rules have been registered yet, by
 		// finding a Docs rule and then comparing it to the registered rules
 		foreach ( $wp_rewrite->extra_rules_top as $rewrite => $rule ) {
-			if ( 0 === strpos( $rewrite, 'docs' ) ) {
+			if ( 0 === strpos( $rewrite, bp_docs_get_slug() ) ) {
 				$test_rule = $rule;
 			}
 		}
