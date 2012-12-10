@@ -229,7 +229,10 @@ class BP_Docs_Component extends BP_Component {
 	function setup_nav() {
 
 		$main_nav = array(
-			'name' 		      => sprintf( __( 'Docs <span>%d</span>', 'bp-docs' ), bp_docs_get_doc_count( bp_displayed_user_id(), 'user' ) ),
+			'name' 		      => __( 'Docs', 'bp-docs' ),
+
+			// Disabled count for now. See https://github.com/boonebgorges/buddypress-docs/issues/261
+			//'name' 		      => sprintf( __( 'Docs <span>%d</span>', 'bp-docs' ), bp_docs_get_doc_count( bp_displayed_user_id(), 'user' ) ),
 			'slug' 		      => bp_docs_get_slug(),
 			'position' 	      => 80,
 			'screen_function'     => array( &$this, 'template_loader' ),
