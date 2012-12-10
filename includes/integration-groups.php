@@ -31,7 +31,9 @@ class BP_Docs_Groups_Integration {
 	 * @since 1.0-beta
 	 */
 	function __construct() {
-		bp_register_group_extension( 'BP_Docs_Group_Extension' );
+		if ( class_exists( 'BP_Group_Extension' ) ) {
+			bp_register_group_extension( 'BP_Docs_Group_Extension' );
+		}
 
 		// Filter some properties of the query object
 		add_filter( 'bp_docs_get_item_type', 		array( $this, 'get_item_type' ) );

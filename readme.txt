@@ -38,6 +38,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 = 1.2.7 =
 * Updates German translation
 * Fixes rewrite problem when using custom BP_DOCS_SLUG
+* Fixes fatal error when upgrading BuddyPress
 
 = 1.2.6 =
 * Updates Danish translation
