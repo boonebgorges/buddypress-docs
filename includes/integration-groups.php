@@ -392,7 +392,7 @@ class BP_Docs_Groups_Integration {
 			} else if ( isset( $_GET['group'] ) ) {
                                 $maybe_group = BP_Groups_Group::get_id_from_slug( $_GET['group'] );
                                 if ( $maybe_group ) {
-                                        $group_id = $maybe_group->id;
+                                        $group_id = $maybe_group;
 				}
 			}
 
