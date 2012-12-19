@@ -610,3 +610,26 @@ function bp_docs_update_doc_access( $doc_id, $access_setting = 'anyone' ) {
 
 }
 
+/**
+ * Should 'hide_sitewide' be true for activity items associated with this Doc?
+ *
+ * We generalize: mark the activity items as 'hide_sitewide' whenever the
+ * 'read' setting is something other than 'anyone'.
+ *
+ * Note that this gets overridden by the filter in integration-groups.php in
+ * the case of group-associated Docs.
+ *
+ * @since 1.2.8
+ * @param int $doc_id
+ * @return bool $hide_sitewide
+ */
+function bp_docs_hide_sitewide_for_doc( $doc_id ) {
+	if ( ! $doc_id ) {
+		return false;
+	}
+
+	$settings = get_post_meta( $doc_id, 'bp_docs_settings', true );
+	$hide_sitewide = empty( $settings['read'] ) || 'anyone' != $settings['read'];
+
+	return apply_filters( 'bp_docs_hide_sitewide_for_doc', $hide_sitewide, $doc_id );
+}

@@ -38,6 +38,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 = 1.2.8 =
 * Fixes problem with group associations and privacy levels of new docs
 * Improves access protection in WP searches and elsewhere
+* Sets hide_sitewide more carefully when posting Doc activity items
 
 = 1.2.7 =
 * Updates German translation
