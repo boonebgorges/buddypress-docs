@@ -76,3 +76,24 @@ class BP_Docs_Access_Query {
 		return $this->tax_query;
 	}
 }
+
+/**
+ * Keep private Docs out of primary WP queries
+ *
+ * By catching the query at pre_get_posts, we ensure that all queries are
+ * filtered appropriately, whether they originate with BuddyPress Docs or not
+ * (as in the case of search)
+ *
+ * @since 1.2.8
+ */
+function bp_docs_general_access_protection( $query ) {
+	$bp_docs_access_query = new BP_Docs_Access_Query( bp_loggedin_user_id() );
+
+	$tax_query = $query->get( 'tax_query' );
+	if ( ! $tax_query ) {
+		$tax_query = array();
+	}
+
+	$query->set( 'tax_query', array_merge( $tax_query, $bp_docs_access_query->get_tax_query() ) );
+}
+add_action( 'pre_get_posts', 'bp_docs_general_access_protection' );
