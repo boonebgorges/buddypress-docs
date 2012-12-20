@@ -120,6 +120,15 @@ class BP_Docs_Access_Query {
 }
 
 /**
+ * Wrapper function for BP_Docs_Access_Query singleton
+ *
+ * @since 1.2.8
+ */
+function bp_docs_access_query() {
+	return BP_Docs_Access_Query::init( bp_loggedin_user_id() );
+}
+
+/**
  * Keep private Docs out of primary WP queries
  *
  * By catching the query at pre_get_posts, we ensure that all queries are
@@ -129,7 +138,13 @@ class BP_Docs_Access_Query {
  * @since 1.2.8
  */
 function bp_docs_general_access_protection( $query ) {
-	$bp_docs_access_query = new BP_Docs_Access_Query( bp_loggedin_user_id() );
+	// Access is unlimited when viewing your own profile, or when the
+	// current user is a site admin
+	if ( bp_is_my_profile() || current_user_can( 'bp_moderate' ) ) {
+		return;
+	}
+
+	$bp_docs_access_query = bp_docs_access_query();
 
 	if ( bp_docs_get_post_type_name() == $query->get( 'post_type' ) ) {
 		$tax_query = $query->get( 'tax_query' );
