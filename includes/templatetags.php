@@ -883,15 +883,11 @@ function bp_docs_is_doc_edit_locked( $doc_id = false ) {
 			$doc_id = !empty( $post->ID ) ? $post->ID : false;
 
 		if ( $doc_id ) {
-			// Make sure that wp-admin/includes/post.php is loaded
-			if ( !function_exists( 'wp_check_post_lock' ) )
-				require_once( ABSPATH . 'wp-admin/includes/post.php' );
-
 			// Because we're not using WP autosave at the moment, ensure that
 			// the lock interval always returns as in process
 			add_filter( 'wp_check_post_lock_window', create_function( false, 'return time();' ) );
 
-			$is_edit_locked = wp_check_post_lock( $doc_id );
+			$is_edit_locked = bp_docs_check_post_lock( $doc_id );
 		}
 
 		// Put into the $bp global to avoid extra lookups

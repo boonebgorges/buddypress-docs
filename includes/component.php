@@ -229,7 +229,10 @@ class BP_Docs_Component extends BP_Component {
 	function setup_nav() {
 
 		$main_nav = array(
-			'name' 		      => sprintf( __( 'Docs <span>%d</span>', 'bp-docs' ), bp_docs_get_doc_count( bp_displayed_user_id(), 'user' ) ),
+			'name' 		      => __( 'Docs', 'bp-docs' ),
+
+			// Disabled count for now. See https://github.com/boonebgorges/buddypress-docs/issues/261
+			//'name' 		      => sprintf( __( 'Docs <span>%d</span>', 'bp-docs' ), bp_docs_get_doc_count( bp_displayed_user_id(), 'user' ) ),
 			'slug' 		      => bp_docs_get_slug(),
 			'position' 	      => 80,
 			'screen_function'     => array( &$this, 'template_loader' ),
@@ -330,7 +333,7 @@ class BP_Docs_Component extends BP_Component {
 				// the lock interval always returns as in process
 				add_filter( 'wp_check_post_lock_window', create_function( false, 'return time();' ) );
 
-				$lock = wp_check_post_lock( $doc->ID );
+				$lock = bp_docs_check_post_lock( $doc->ID );
 
 				if ( $lock ) {
 					bp_core_add_message( sprintf( __( 'This doc is currently being edited by %s. To prevent overwrites, you cannot edit until that user has finished. Please try again in a few minutes.', 'bp-docs' ), bp_core_get_user_displayname( $lock ) ), 'error' );
@@ -488,75 +491,69 @@ class BP_Docs_Component extends BP_Component {
 	function post_comment_activity( $comment_id ) {
 		global $bp;
 
-		if ( !bp_is_active( 'activity' ) )
+		if ( ! bp_is_active( 'activity' ) ) {
 			return false;
+		}
 
-		if ( empty( $comment_id ) )
+		if ( empty( $comment_id ) ) {
 			return false;
+		}
 
-		$comment 	= get_comment( $comment_id );
-		$doc 		= !empty( $comment->comment_post_ID ) ? get_post( $comment->comment_post_ID ) : false;
+		$comment = get_comment( $comment_id );
+		$doc     = !empty( $comment->comment_post_ID ) ? get_post( $comment->comment_post_ID ) : false;
 
-		if ( empty( $doc ) )
+		if ( empty( $doc ) ) {
 			return false;
+		}
 
 		// Only continue if this is a BP Docs post
-		if ( $doc->post_type != $bp->bp_docs->post_type_name )
+		if ( $doc->post_type != bp_docs_get_post_type_name() ) {
 			return;
+		}
 
-		$doc_id 	= !empty( $doc->ID ) ? $doc->ID : false;
+		$doc_id = ! empty( $doc->ID ) ? $doc->ID : false;
 
-		if ( !$doc_id )
+		if ( ! $doc_id ) {
 			return false;
+		}
 
 		// Make sure that BP doesn't record this comment with its native functions
 		remove_action( 'comment_post', 'bp_blogs_record_comment', 10, 2 );
 
 		// Until better individual activity item privacy controls are available in BP,
 		// comments will only be shown in the activity stream if "Who can read comments on
-		// this doc?" is set to "Anyone" or "Group members"
-		$doc_settings	= get_post_meta( $doc_id, 'bp_docs_settings', true );
+		// this doc?" is set to "Anyone", "Logged-in Users" or "Group members"
+		$doc_settings = get_post_meta( $doc_id, 'bp_docs_settings', true );
 
-		if ( !empty( $doc_settings['read_comments'] ) && ( 'admins-mods' == $doc_settings['read_comments'] || 'no-one' == $doc_settings['read_comments'] ) )
+		if ( ! empty( $doc_settings['read_comments'] ) && ! in_array( $doc_settings['read_comments'], array( 'anyone', 'loggedin', 'group-members' ) ) ) {
 			return false;
+		}
 
-		// Get the associated item for this doc. Todo: abstract to standalone function
-		$items = wp_get_post_terms( $doc_id, $bp->bp_docs->associated_item_tax_name );
+		// See if we're associated with a group
+		$group_id = bp_docs_get_associated_group_id( $doc_id );
 
-		// It's possible that there will be more than one item; for now, post only to the
-		// first one. Todo: make this extensible
-		$item = !empty( $items[0]->name ) ? $items[0]->name : false;
-
-		// From the item, we can obtain the component (the parent tax of the item tax)
-		if ( !empty( $items[0]->parent ) ) {
-			$parent = get_term( (int)$items[0]->parent, $bp->bp_docs->associated_item_tax_name );
-
-			// For some reason, I named them singularly. So we have to canonicalize
-			switch ( $parent->slug ) {
-				case 'user' :
-					$component = 'profile';
-					break;
-
-				case 'group' :
-				default	:
-					$component = 'groups';
-					break;
-			}
+		if ( $group_id ) {
+			$component = 'groups';
+			$item = $group_id;
+		} else {
+			$component = bp_docs_get_slug();
+			$item = 0;
 		}
 
 		// Set the action. Filterable so that other integration pieces can alter it
-		$action 	= '';
-		$commenter	= get_user_by( 'email', $comment->comment_author_email );
-		$commenter_id	= !empty( $commenter->ID ) ? $commenter->ID : false;
+		$action       = '';
+		$commenter    = get_user_by( 'email', $comment->comment_author_email );
+		$commenter_id = !empty( $commenter->ID ) ? $commenter->ID : false;
 
 		// Since BP Docs only allows member comments, the following should never happen
-		if ( !$commenter_id )
+		if ( !$commenter_id ) {
 			return false;
+		}
 
-		$user_link 	= bp_core_get_userlink( $commenter_id );
-		$doc_url	= bp_docs_get_doc_link( $doc_id );
-		$comment_url	= $doc_url . '#comment-' . $comment->comment_ID;
-		$comment_link	= '<a href="' . $comment_url . '">' . $doc->post_title . '</a>';
+		$user_link    = bp_core_get_userlink( $commenter_id );
+		$doc_url      = bp_docs_get_doc_link( $doc_id );
+		$comment_url  = $doc_url . '#comment-' . $comment->comment_ID;
+		$comment_link = '<a href="' . $comment_url . '">' . $doc->post_title . '</a>';
 
 		$action = sprintf( __( '%1$s commented on the doc %2$s', 'bp-docs' ), $user_link, $comment_link );
 
@@ -564,6 +561,8 @@ class BP_Docs_Component extends BP_Component {
 
 		// Set the type, to be used in activity filtering
 		$type = 'bp_doc_comment';
+
+		$hide_sitewide = bp_docs_hide_sitewide_for_doc( $doc_id );
 
 		$args = array(
 			'user_id'		=> $commenter_id,
@@ -575,7 +574,7 @@ class BP_Docs_Component extends BP_Component {
 			'item_id'		=> $item, // Set to the group/user/etc id, for better consistency with other BP components
 			'secondary_item_id'	=> $comment_id, // The id of the doc itself. Note: limitations in the BP activity API mean I don't get to store the doc_id, but at least it can be abstracted from the comment_id
 			'recorded_time'		=> bp_core_current_time(),
-			'hide_sitewide'		=> apply_filters( 'bp_docs_hide_sitewide', false, $comment, $doc, $item, $component ) // Filtered to allow plugins and integration pieces to dictate
+			'hide_sitewide'		=> apply_filters( 'bp_docs_hide_sitewide', $hide_sitewide, $comment, $doc, $item, $component ) // Filtered to allow plugins and integration pieces to dictate
 		);
 
 		do_action( 'bp_docs_before_comment_activity_save', $args );
@@ -733,6 +732,8 @@ class BP_Docs_Component extends BP_Component {
 
 		$action	= apply_filters( 'bp_docs_activity_action', $action, $user_link, $doc_link, $query->is_new_doc, $query );
 
+		$hide_sitewide = bp_docs_hide_sitewide_for_doc( $doc_id );
+
 		// Get a canonical name for the component. This is a nightmare because of the way
 		// the current component and root slug relate in BP 1.3+
 		$component = bp_current_component();
@@ -757,7 +758,7 @@ class BP_Docs_Component extends BP_Component {
 			'item_id'		=> $query->item_id, // Set to the group/user/etc id, for better consistency with other BP components
 			'secondary_item_id'	=> $doc_id, // The id of the doc itself
 			'recorded_time'		=> bp_core_current_time(),
-			'hide_sitewide'		=> apply_filters( 'bp_docs_hide_sitewide', false, false, $doc, $item, $component ) // Filtered to allow plugins and integration pieces to dictate
+			'hide_sitewide'		=> apply_filters( 'bp_docs_hide_sitewide', $hide_sitewide, false, $doc, $item, $component ) // Filtered to allow plugins and integration pieces to dictate
 		);
 
 		do_action( 'bp_docs_before_activity_save', $args );
@@ -796,7 +797,7 @@ class BP_Docs_Component extends BP_Component {
 			$link = $post->guid;
 		}
 
-		return $link;
+		return html_entity_decode( $link );
 	}
 
 	/**

@@ -251,16 +251,17 @@ function bp_docs_upgrade_1_2( $udata = array() ) {
 					'parent'      => 0,
 				) );
 			}
-
-			// Store that we're done
-			$udata['group_terms_migrated'] = 1;
-			$udata['message'] = __( 'Group terms migrated. Now migrating Doc access terms....', 'bp-docs' );
-			$udata['refresh_url'] = add_query_arg( array(
-				'do_upgrade' => '1',
-				'_wpnonce'   => wp_create_nonce( 'bp-docs-upgrade' ),
-			), $url_base );
-			$udata['total'] = 0;
 		}
+
+		// Store that we're done
+		$udata['group_terms_migrated'] = 1;
+		$udata['message'] = __( 'Group terms migrated. Now migrating Doc access terms....', 'bp-docs' );
+		$udata['refresh_url'] = add_query_arg( array(
+			'do_upgrade' => '1',
+			'_wpnonce'   => wp_create_nonce( 'bp-docs-upgrade' ),
+		), $url_base );
+		$udata['total'] = 0;
+
 	} else if ( intval( $udata['done'] ) < intval( $udata['total'] ) ) {
 		$counter = 0;
 		while ( $counter < 5 ) {

@@ -3,8 +3,8 @@ Contributors: boonebgorges, cuny-academic-commons
 Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.3, BuddyPress 1.5
-Tested up to: WordPress 3.5, BuddyPress 1.6.1
-Stable tag: 1.2.4
+Tested up to: WordPress 3.5, BuddyPress 1.6.2
+Stable tag: 1.2.8
  
 Adds collaborative Docs to BuddyPress.
 
@@ -34,6 +34,28 @@ This plugin is in active development. For feature requests and bug reports, visi
 1. Sit back and watch the jack roll in
 
 == Changelog ==
+
+= 1.2.8 =
+* Fixes problem with group associations and privacy levels of new docs
+* Improves access protection in WP searches and elsewhere
+* Sets hide_sitewide more carefully when posting Doc activity items
+* Prevents some errors related to wp_check_post_lock()
+* Adds Russian translation
+
+= 1.2.7 =
+* Updates German translation
+* Fixes rewrite problem when using custom BP_DOCS_SLUG
+* Fixes fatal error when upgrading BuddyPress
+
+= 1.2.6 =
+* Updates Danish translation
+* Fixes infinite loop bug in upgrader
+* Fixes html entity problem in permalinks
+
+= 1.2.5 =
+* Fixes comment posting
+* Fixes comment display and posting permissions
+* Don't show Tags: label when no tags are present
 
 = 1.2.4 =
 * Updates .pot file

@@ -233,8 +233,7 @@ class BP_Docs_Query {
 				$wp_query_args['post__in'] = $this->get_edited_by_post_ids();
 			}
 
-			// Access
-			$wp_query_args['tax_query'] = array_merge( $wp_query_args['tax_query'], $this->get_access_tax_query() );
+			// Access queries are handled at pre_get_posts, using bp_docs_general_access_protection()
 
 			// Set the taxonomy query. Filtered so that plugins can alter the query
 			// Filtering by groups also happens in this way
