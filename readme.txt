@@ -39,6 +39,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Fixes problem with group associations and privacy levels of new docs
 * Improves access protection in WP searches and elsewhere
 * Sets hide_sitewide more carefully when posting Doc activity items
+* Prevents some errors related to wp_check_post_lock()
 
 = 1.2.7 =
 * Updates German translation

@@ -333,7 +333,7 @@ class BP_Docs_Component extends BP_Component {
 				// the lock interval always returns as in process
 				add_filter( 'wp_check_post_lock_window', create_function( false, 'return time();' ) );
 
-				$lock = wp_check_post_lock( $doc->ID );
+				$lock = bp_docs_check_post_lock( $doc->ID );
 
 				if ( $lock ) {
 					bp_core_add_message( sprintf( __( 'This doc is currently being edited by %s. To prevent overwrites, you cannot edit until that user has finished. Please try again in a few minutes.', 'bp-docs' ), bp_core_get_user_displayname( $lock ) ), 'error' );
