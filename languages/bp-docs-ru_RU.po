@@ -1,0 +1,1064 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: BuddyPress Docs v1.2.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2012-12-20 09:08:25+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%100/10==1 ? 2 : n%10==1 ? 0 : (n+9)%10>3 ? 2 : 1;\n"
+"X-Poedit-Language: Russian\n"
+"X-Poedit-Country: RUSSIA\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2;\n"
+"X-Poedit-Basepath: ../\n"
+"X-Poedit-Bookmarks: \n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Textdomain-Support: yes"
+
+#: bp-docs.php:260
+#@ bp-docs
+msgctxt "post type general name"
+msgid "BuddyPress Docs"
+msgstr "Записи"
+
+#: bp-docs.php:261
+#@ bp-docs
+msgctxt "post type singular name"
+msgid "Doc"
+msgstr "Запись"
+
+#: bp-docs.php:262
+#@ bp-docs
+msgctxt "add new"
+msgid "Add New"
+msgstr "Добавить новую"
+
+#: bp-docs.php:263
+#@ bp-docs
+msgid "Add New Doc"
+msgstr "Добавить Новую Запись"
+
+#: bp-docs.php:264
+#@ bp-docs
+msgid "Edit Doc"
+msgstr "Редактировать Запись"
+
+#: bp-docs.php:265
+#: includes/integration-groups.php:728
+#: includes/integration-groups.php:1228
+#: includes/templates/docs/docs-header.php:40
+#@ bp-docs
+msgid "New Doc"
+msgstr "Новая запись"
+
+#: bp-docs.php:266
+#@ bp-docs
+msgid "View Doc"
+msgstr "Смотреть запись"
+
+#: bp-docs.php:267
+#@ bp-docs
+msgid "Search Docs"
+msgstr "Искать записи"
+
+#: bp-docs.php:268
+#@ bp-docs
+msgid "No Docs found"
+msgstr "Записи не найдены"
+
+#: bp-docs.php:269
+#@ bp-docs
+msgid "No Docs found in Trash"
+msgstr "В корзине нет записей"
+
+#: bp-docs.php:276
+#: includes/component.php:39
+#: includes/integration-groups.php:1023
+#@ bp-docs
+msgid "BuddyPress Docs"
+msgstr "Записи"
+
+#: bp-docs.php:295
+#@ bp-docs
+msgid "Associated Items"
+msgstr "Связанные пункты"
+
+#: bp-docs.php:296
+#@ bp-docs
+msgid "Associated Item"
+msgstr "Связанный пункт"
+
+#: bp-docs.php:496
+#@ bp-docs
+msgid "You are not allowed to read that Doc."
+msgstr "Вы не можете читать эту запись"
+
+#: bp-docs.php:500
+#@ bp-docs
+msgid "You are not allowed to create Docs."
+msgstr "Вы не можете создавать записи"
+
+#: bp-docs.php:504
+#@ bp-docs
+msgid "You are not allowed to edit that Doc."
+msgstr "Вы не можете редактировать эту запись"
+
+#: bp-docs.php:508
+#@ bp-docs
+msgid "You are not allowed to view that Doc's history."
+msgstr "Вы не можете просматривать историю этой записи."
+
+#: includes/addon-hierarchy.php:106
+#@ bp-docs
+msgid "Parent: "
+msgstr "Исходный:"
+
+#: includes/addon-hierarchy.php:157
+#@ bp-docs
+msgid "Children: "
+msgstr "Дочерний:"
+
+#: includes/addon-history.php:117
+#, php-format
+#@ bp-docs
+msgid "You have successfully restored the Doc to the revision from %s."
+msgstr "Записи успешно восстановлены за %s."
+
+#: includes/addon-history.php:165
+#, php-format
+#@ bp-docs
+msgid "Compare Revisions of &#8220;%1$s&#8221;"
+msgstr "Сравнение проверок &#8220;%1$s&#8221;"
+
+#: includes/addon-history.php:166
+#: includes/addon-history.php:195
+#@ bp-docs
+msgid "Revisions"
+msgstr "Проверки"
+
+#: includes/addon-history.php:194
+#, php-format
+#@ bp-docs
+msgid "Revision for &#8220;%1$s&#8221; created on %2$s"
+msgstr "Проверка от &#8220;%1$s&#8221; созданная %2$s"
+
+#. translators: post revision: 1: when, 2: author name
+#: includes/addon-history.php:360
+#, php-format
+#@ default
+msgctxt "post revision"
+msgid "%1$s by %2$s"
+msgstr ""
+
+#: includes/addon-history.php:387
+#@ bp-docs
+msgid "Restore"
+msgstr "Восстановить"
+
+#: includes/addon-history.php:410
+#@ bp-docs
+msgid "Compare Revisions"
+msgstr "Сравнение проверок"
+
+#. translators: column name in revisons
+#: includes/addon-history.php:426
+#@ bp-docs
+msgid "Old"
+msgstr "Старые"
+
+#. translators: column name in revisons
+#: includes/addon-history.php:427
+#@ bp-docs
+msgid "New"
+msgstr "Новые"
+
+#. translators: column name in revisons
+#: includes/addon-history.php:428
+#@ bp-docs
+msgid "Date Created"
+msgstr "Дата создания"
+
+#: includes/addon-history.php:429
+#: includes/templates/docs/docs-loop.php:28
+#@ bp-docs
+msgid "Author"
+msgstr "Автор"
+
+#: includes/addon-history.php:430
+#@ bp-docs
+msgid "Actions"
+msgstr "Действия"
+
+#: includes/addon-history.php:458
+#: includes/integration-groups.php:737
+#: includes/templatetags.php:846
+#@ bp-docs
+msgid "History"
+msgstr "История"
+
+#: includes/addon-taxonomy.php:86
+#@ bp-docs
+msgid "Docs Tags"
+msgstr "Метки записей"
+
+#: includes/addon-taxonomy.php:87
+#@ bp-docs
+msgid "Docs Tag"
+msgstr "Метка записи"
+
+#: includes/addon-taxonomy.php:214
+#, php-format
+#@ bp-docs
+msgid "Tags: %s"
+msgstr "Метки: %s"
+
+#: includes/addon-taxonomy.php:346
+#: includes/templates/docs/single/edit.php:90
+#@ bp-docs
+msgid "Tags"
+msgstr "Метки"
+
+#: includes/addon-taxonomy.php:398
+#, php-format
+#@ bp-docs
+msgid "You are viewing docs with the following tags: %s"
+msgstr "Вы смотрите записи с такими метками: %s"
+
+#: includes/addon-taxonomy.php:420
+#@ bp-docs
+msgid "Filter by tag"
+msgstr "Фильтр по меткам"
+
+#: includes/addon-taxonomy.php:426
+#, php-format
+#@ bp-docs
+msgid "(%d)"
+msgstr "(%d)"
+
+#: includes/addon-taxonomy.php:508
+#, php-format
+#@ bp-docs
+msgid "Docs tagged %s"
+msgstr "Записи, помеченные %s"
+
+#: includes/addon-taxonomy.php:567
+#@ bp-docs
+msgid "Most Used"
+msgstr "Популярное"
+
+#. translators: %s: add new taxonomy label
+#: includes/addon-taxonomy.php:591
+#, php-format
+#@ default
+msgid "+ %s"
+msgstr ""
+
+#: includes/admin.php:63
+#@ default
+msgid "Recent Comments"
+msgstr ""
+
+#: includes/admin.php:138
+#@ default
+msgid "No comments yet."
+msgstr ""
+
+#: includes/component.php:141
+#@ buddypress
+msgid "Search Docs..."
+msgstr ""
+
+#: includes/component.php:232
+#: includes/integration-groups.php:722
+#: includes/integration-groups.php:775
+#: includes/integration-groups.php:840
+#@ bp-docs
+msgid "Docs"
+msgstr "Записи"
+
+#: includes/component.php:244
+#@ bp-docs
+msgid "My Docs "
+msgstr "Мои записи"
+
+#: includes/component.php:244
+#, php-format
+#@ default
+msgid "%s&#8217;s Docs"
+msgstr ""
+
+#: includes/component.php:247
+#: includes/templatetags.php:1204
+#@ bp-docs
+msgid "Started By Me"
+msgstr "Начатое мной"
+
+#: includes/component.php:247
+#, php-format
+#@ bp-docs
+msgid "Started By %s"
+msgstr "Начатое %s"
+
+#: includes/component.php:256
+#: includes/templatetags.php:1205
+#@ bp-docs
+msgid "Edited By Me"
+msgstr "Редактированное мной"
+
+#: includes/component.php:256
+#, php-format
+#@ bp-docs
+msgid "Edited By %s"
+msgstr "Редактированное %s"
+
+#: includes/component.php:339
+#, php-format
+#@ bp-docs
+msgid "This doc is currently being edited by %s. To prevent overwrites, you cannot edit until that user has finished. Please try again in a few minutes."
+msgstr "Эта запись в настоящее время редактируется %s. Чтобы предотвратить перезапись, вы не можете редактировать пока другой пользователь не закончит. Пожалуйста, попробуйте еще раз через несколько минут."
+
+#: includes/component.php:352
+#@ bp-docs
+msgid "You do not have permission to edit the doc."
+msgstr "У вас нет прав на редактирование этой записи."
+
+#: includes/component.php:368
+#@ bp-docs
+msgid "You do not have permission to create a Doc in this group."
+msgstr "У вас нет прав создавать записи в этой группе."
+
+#: includes/component.php:384
+#@ bp-docs
+msgid "You do not have permission to view this Doc's history."
+msgstr "У вас нет прав просматривать историю этой записи."
+
+#: includes/component.php:408
+#@ bp-docs
+msgid "Lock successfully removed"
+msgstr "Блокировка убрана"
+
+#: includes/component.php:443
+#@ bp-docs
+msgid "Doc successfully deleted!"
+msgstr "Запись удалена!"
+
+#: includes/component.php:445
+#@ bp-docs
+msgid "You do not have permission to delete that doc."
+msgstr "У вас нет прав удалять эту запись."
+
+#: includes/component.php:558
+#, php-format
+#@ bp-docs
+msgid "%1$s commented on the doc %2$s"
+msgstr "%1$s прокомментировали запись %2$s"
+
+#: includes/component.php:657
+#@ bp-docs
+msgid "Show New Docs"
+msgstr "Показать новые записи"
+
+#: includes/component.php:658
+#@ bp-docs
+msgid "Show Doc Edits"
+msgstr "Показать редактированные записи"
+
+#: includes/component.php:659
+#@ bp-docs
+msgid "Show Doc Comments"
+msgstr "Показать комментарии "
+
+#: includes/component.php:726
+#, php-format
+#@ bp-docs
+msgid "%1$s created the doc %2$s"
+msgstr "%1$s created the doc %2$s"
+
+#: includes/component.php:728
+#, php-format
+#@ bp-docs
+msgid "%1$s edited the doc %2$s"
+msgstr "%1$s edited the doc %2$s"
+
+#: includes/component.php:919
+#@ bp-docs
+msgid "Still working?"
+msgstr "В работе?"
+
+#: includes/functions.php:160
+#, php-format
+#@ bp-docs
+msgid "Docs associated with the %1$s %2$s"
+msgstr "Записи, ассоциированные с %1$s %2$s"
+
+#: includes/functions.php:437
+#: includes/templatetags.php:1275
+#@ bp-docs
+msgid "Logged-in Users"
+msgstr "Пользователи онлайн"
+
+#: includes/functions.php:442
+#: includes/templatetags.php:1279
+#@ bp-docs
+msgid "The Doc author only"
+msgstr "Только автор записи"
+
+#: includes/functions.php:450
+#: includes/templatetags.php:1274
+#@ bp-docs
+msgid "Anyone"
+msgstr "Все"
+
+#: includes/integration-groups.php:408
+#, php-format
+#@ bp-docs
+msgid "Members of %s"
+msgstr "Участники %s"
+
+#: includes/integration-groups.php:413
+#, php-format
+#@ bp-docs
+msgid "Admins and mods of %s"
+msgstr "Администраторы и модераторы %s"
+
+#: includes/integration-groups.php:490
+#, php-format
+#@ bp-docs
+msgid "%1$s created the doc %2$s in the group %3$s"
+msgstr "%1$s created the doc %2$s в группе %3$s"
+
+#: includes/integration-groups.php:492
+#, php-format
+#@ bp-docs
+msgid "%1$s edited the doc %2$s in the group %3$s"
+msgstr "%1$s edited the doc %2$s в группе %3$s"
+
+#: includes/integration-groups.php:519
+#, php-format
+#@ bp-docs
+msgid "%1$s commented on the doc %2$s in the group %3$s"
+msgstr "%1$s commented on the doc %2$s в группе %3$s"
+
+#: includes/integration-groups.php:593
+#@ bp-docs
+msgid "Group"
+msgstr "Группа"
+
+#: includes/integration-groups.php:700
+#, php-format
+#@ bp-docs
+msgid "%s <span>%d</span>"
+msgstr "%s <span>%d</span>"
+
+#: includes/integration-groups.php:735
+#: includes/templates/docs/docs-header.php:30
+#: includes/templatetags.php:842
+#: includes/templatetags.php:1373
+#@ bp-docs
+msgid "Edit"
+msgstr "Редактировать"
+
+#: includes/integration-groups.php:784
+#@ bp-docs
+msgid "BuddyPress Docs group tab name:"
+msgstr "Docs group tab name:"
+
+#: includes/integration-groups.php:941
+#@ bp-docs
+msgid "Save Changes"
+msgstr "Сохранить изменения"
+
+#: includes/integration-groups.php:966
+#@ buddypress
+msgid "There was an error saving, please try again"
+msgstr ""
+
+#: includes/integration-groups.php:968
+#@ buddypress
+msgid "Settings saved successfully"
+msgstr ""
+
+#: includes/integration-groups.php:1025
+#@ bp-docs
+msgid "BuddyPress Docs is a powerful tool for collaboration with members of your group. A cross between document editor and wiki, BuddyPress Docs allows you to co-author and co-edit documents with your fellow group members, which you can then sort and tag in a way that helps your group to get work done."
+msgstr "..."
+
+#: includes/integration-groups.php:1028
+#@ bp-docs
+msgid "Enable BuddyPress Docs for this group"
+msgstr "Разрешить записи для этой группы"
+
+#: includes/integration-groups.php:1032
+#@ bp-docs
+msgid "Options"
+msgstr "Настройки"
+
+#: includes/integration-groups.php:1037
+#@ bp-docs
+msgid "Minimum role to create new Docs:"
+msgstr "Минимальный статус пользователя для создания новых записей:"
+
+#: includes/integration-groups.php:1042
+#@ bp-docs
+msgid "Group admin"
+msgstr "Администратор группы"
+
+#: includes/integration-groups.php:1043
+#@ bp-docs
+msgid "Group moderator"
+msgstr "Модератор группы"
+
+#: includes/integration-groups.php:1044
+#@ bp-docs
+msgid "Group member"
+msgstr "Пользователь группы"
+
+#: includes/integration-groups.php:1225
+#@ bp-docs
+msgid "View Docs"
+msgstr "Смотреть записи"
+
+#: includes/query-builder.php:415
+#@ bp-docs
+msgid "Unknown error. Please try again."
+msgstr "Неизвестная ошибка, попробуйте еще раз."
+
+#: includes/query-builder.php:430
+#@ bp-docs
+msgid "You are not allowed to associate a Doc with that group."
+msgstr "У вас нет прав привязывать записи к этой группе."
+
+#: includes/query-builder.php:440
+#@ bp-docs
+msgid "Both the title and the content fields are required."
+msgstr "Поля заголовок и содержание должны быть заполнены."
+
+#: includes/query-builder.php:461
+#@ bp-docs
+msgid "There was an error when creating the doc."
+msgstr "Ошибка при создании записи."
+
+#: includes/query-builder.php:470
+#@ bp-docs
+msgid "Doc successfully created!"
+msgstr "Запись создана!"
+
+#: includes/query-builder.php:490
+#@ bp-docs
+msgid "There was an error when saving the doc."
+msgstr "Ошибка при сохранении записи."
+
+#: includes/query-builder.php:499
+#@ bp-docs
+msgid "You idled a bit too long while in Edit mode. In order to allow others to edit the doc you were working on, your changes have been autosaved. Click the Edit button to return to Edit mode."
+msgstr "Слишком большое время простоя в режиме редактирования. Ваши данные были сохранены автоматически. Нажмите кнопку редактирования чтобы продолжить."
+
+#: includes/query-builder.php:502
+#@ bp-docs
+msgid "Doc successfully edited!"
+msgstr "Запись отредактирована!"
+
+#: includes/query-builder.php:530
+#@ bp-docs
+msgid "Your Doc was successfully saved, but some of your access settings have been changed to match the Doc's permissions."
+msgstr "Запись сохранена, но некоторые настройки доступа были изменены чтобы соответствовать разрешениям."
+
+#: includes/templates/docs/docs-header.php:25
+#: includes/templatetags.php:839
+#@ bp-docs
+msgid "Read"
+msgstr "Читать"
+
+#: includes/templates/docs/docs-loop.php:7
+#@ bp-docs
+msgid "Search"
+msgstr "Поиск"
+
+#: includes/templates/docs/docs-loop.php:24
+#: includes/templates/docs/single/edit.php:32
+#@ bp-docs
+msgid "Title"
+msgstr "Заголовок"
+
+#: includes/templates/docs/docs-loop.php:32
+#@ bp-docs
+msgid "Created"
+msgstr "Создано"
+
+#: includes/templates/docs/docs-loop.php:36
+#@ bp-docs
+msgid "Last Edited"
+msgstr "Редактировалось"
+
+#: includes/templates/docs/docs-loop.php:79
+#, php-format
+#@ bp-docs
+msgid "Viewing %1$s-%2$s of %3$s docs"
+msgstr "Показано %1$s-%2$s из %3$s записей"
+
+#: includes/templates/docs/docs-loop.php:90
+#, php-format
+#@ bp-docs
+msgid "There are no docs for this view. Why not <a href=\"%s\">create one</a>?"
+msgstr "Записей нет. Почему не <a href=\"%s\">создать одну</a>?"
+
+#: includes/templates/docs/docs-loop.php:92
+#@ bp-docs
+msgid "There are no docs for this view."
+msgstr "Нет записей"
+
+#: includes/templates/docs/index.php:23
+#@ bp-docs
+msgid "Docs Directory"
+msgstr "Каталог записей"
+
+#: includes/templates/docs/single/comments.php:22
+#, php-format
+#@ bp-docs
+msgid "Discussion (%d)"
+msgstr "Обсуждение (%d)"
+
+#: includes/templates/docs/single/comments.php:44
+#@ bp-docs
+msgid "There are no comments for this doc yet."
+msgstr "Еще нет комментариев к этой записи."
+
+#: includes/templates/docs/single/comments.php:53
+#@ bp-docs
+msgid "Comment display has been disabled on this doc."
+msgstr "Комментарии для этой записи отключены."
+
+#: includes/templates/docs/single/comments.php:62
+#@ bp-docs
+msgid "Comment posting has been disabled on this doc."
+msgstr "Добавление комментариев для этой записи отключено."
+
+#: includes/templates/docs/single/edit.php:21
+#@ bp-docs
+msgid "You have been idle for <span id=\"idle-warning-time\"></span>"
+msgstr "Вы не проявляли активность <span id=\"idle-warning-time\"></span>"
+
+#: includes/templates/docs/single/edit.php:38
+#@ bp-docs
+msgid "Permalink"
+msgstr "Постоянная ссылка"
+
+#: includes/templates/docs/single/edit.php:44
+#@ bp-docs
+msgid "Content"
+msgstr "Содержание"
+
+#: includes/templates/docs/single/edit.php:63
+#@ bp-docs
+msgid "Associated Group"
+msgstr "ассоциированная группа"
+
+#: includes/templates/docs/single/edit.php:77
+#@ bp-docs
+msgid "Access"
+msgstr "Доступ"
+
+#: includes/templates/docs/single/edit.php:96
+#@ bp-docs
+msgid "Tags are words or phrases that help to describe and organize your Docs."
+msgstr "Метки - слова или фразы, помогающие описывать и сортировать ваши записи."
+
+#: includes/templates/docs/single/edit.php:97
+#@ bp-docs
+msgid "Separate tags with commas (for example: <em>orchestra, snare drum, piccolo, Brahms</em>)"
+msgstr "Разделяйте метки запятыми (например:  <em>orchestra, snare drum, piccolo, Brahms</em>)"
+
+#: includes/templates/docs/single/edit.php:111
+#@ bp-docs
+msgid "Parent"
+msgstr "Связи"
+
+#: includes/templates/docs/single/edit.php:117
+#@ bp-docs
+msgid "Select a parent for this Doc."
+msgstr "Выберите исходную связь для этой записи."
+
+#: includes/templates/docs/single/edit.php:119
+#@ bp-docs
+msgid "(Optional) Assigning a parent Doc means that a link to the parent will appear at the bottom of this Doc, and a link to this Doc will appear at the bottom of the parent."
+msgstr "(Необязательно) Выбор исходной записи означает что ссылка на нее появится в основании этой записи и ссылка на эту запись появится в основании исходной."
+
+#: includes/templates/docs/single/edit.php:139
+#@ bp-docs
+msgid "Save"
+msgstr "Сохранить"
+
+#: includes/templates/docs/single/edit.php:139
+#@ bp-docs
+msgid "Cancel"
+msgstr "Отмена"
+
+#: includes/templates/docs/single/edit.php:141
+#@ bp-docs
+msgid "Delete"
+msgstr "Удалить"
+
+#: includes/templates/docs/single/edit.php:170
+#@ bp-docs
+msgid "Are you still there?"
+msgstr "Вы еще здесь?!"
+
+#: includes/templates/docs/single/edit.php:172
+#@ bp-docs
+msgid "In order to prevent overwriting content, only one person can edit a given doc at a time. For that reason, you must periodically ensure the system that you're still actively editing. If you are idle for more than 30 minutes, your changes will be auto-saved, and you'll be sent out of Edit mode so that others can access the doc."
+msgstr "Чтобы предотвратить перезапись содержания, только один пользователь может редактировать запись. Если вы ничего не делаете в режиме редактирования больше 30-ти минут, ваши изменения сохраняются автоматически и режим редактирования закрывается чтобы другие могли получить доступ к изменениям этой записи."
+
+#: includes/templates/docs/single/edit.php:174
+#@ bp-docs
+msgid "I'm still editing!"
+msgstr "Редактирую!"
+
+#: includes/templates/docs/single/history.php:7
+#@ bp-docs
+msgid "Click on a revision date from the list below to view that revision."
+msgstr "Нажмите на дату из списка чтобы видеть изменения."
+
+#: includes/templates/docs/single/history.php:9
+#@ bp-docs
+msgid "Alternatively, you can compare two revisions by selecting them in the 'Old' and 'New' columns, and clicking 'Compare Revisions'."
+msgstr "Вы можете сравнить две версии, выбрав их в колонках 'Старое' и 'Новое' и нажав на 'Сравнить версии'."
+
+#: includes/templates/docs/single/history.php:20
+#, php-format
+#@ bp-docs
+msgid "Older: %s"
+msgstr "Older: %s"
+
+#: includes/templates/docs/single/history.php:21
+#, php-format
+#@ bp-docs
+msgid "Newer: %s"
+msgstr "Newer: %s"
+
+#: includes/templates/docs/single/history.php:28
+#, php-format
+#@ bp-docs
+msgid "You are currently viewing a revision titled \"%1$s\", saved on %2$s by %3$s"
+msgstr "Вы просматриваете изменения, названные \"%1$s\", сохраненные %2$s в %3$s"
+
+#: includes/templates/docs/single/history.php:50
+#@ bp-docs
+msgid "These revisions are identical."
+msgstr "Версии идентичны."
+
+#: includes/templates/docs/single/index.php:8
+#@ bp-docs
+msgid "Locked"
+msgstr "Заблокировано"
+
+#: includes/templates/docs/single/index.php:8
+#@ bp-docs
+msgid "(click for more info)"
+msgstr "(нажмите для инфо)"
+
+#: includes/templates/docs/single/index.php:10
+#, php-format
+#@ bp-docs
+msgid "This doc is currently being edited by %1$s. In order to prevent edit conflicts, only one user can edit a doc at a time."
+msgstr "Эта запись сейчас редактируется %1$s. Чтобы избежать конфликта редактирования, только один пользователь может редактировать запись."
+
+#: includes/templates/docs/single/index.php:13
+#, php-format
+#@ bp-docs
+msgid "Please try again in a few minutes. Or, as an admin, you can <a href=\"%s\">force cancel</a> the edit lock."
+msgstr "Попробуйте еще раз через несколько минут. Или, как администратор, вы можете <a href=\"%s\">принудительно отменить</a> блокировку редактирования."
+
+#: includes/templates/docs/single/index.php:15
+#@ bp-docs
+msgid "Please try again in a few minutes."
+msgstr "Попробуйте еще через несколько минут."
+
+#: includes/templates/docs/single/index.php:39
+#@ bp-docs
+msgid "No Doc by this name exists."
+msgstr "Нет записей с таким именем."
+
+#: includes/templates/docs/single/index.php:41
+#, php-format
+#@ bp-docs
+msgid "<a href=\"%1$s\">View all Docs in this group</a> or <a href=\"%2$s\">create a new Doc</a>."
+msgstr "<a href=\"%1$s\">Смотреть все записи в этой группе</a> или <a href=\"%2$s\">создать новую запись</a>."
+
+#: includes/templatetags-edit.php:113
+#@ bp-docs
+msgid "(no parent)"
+msgstr "(no parent)"
+
+#: includes/templatetags.php:185
+#@ bp-docs
+msgid "You are viewing <strong>all</strong> docs."
+msgstr "Вы видите <strong>все</strong> записи."
+
+#: includes/templatetags.php:194
+#, php-format
+#@ bp-docs
+msgid "<strong><a href=\"%s\" title=\"View All Docs\">View All Docs</a></strong>"
+msgstr "<strong><a href=\"%s\" title=\"Смотреть все записи\">Смотреть все записи</a></strong>"
+
+#: includes/templatetags.php:229
+#, php-format
+#@ bp-docs
+msgid "You are searching for docs containing the term <em>%s</em>"
+msgstr "Вы ищете записи, содержащие <em>%s</em>"
+
+#: includes/templatetags.php:670
+#@ bp-docs
+msgid "Which group should this Doc be associated with?"
+msgstr "С какой группой будет ассоциирована запись?"
+
+#: includes/templatetags.php:671
+#@ bp-docs
+msgid "(Optional) Note that the Access settings available for this Doc may be limited by the privacy settings of the group you choose."
+msgstr "(Необязательно) Настройки доступа этой записи могут быть ограничены настройками доступа выбранной вами группы."
+
+#: includes/templatetags.php:676
+#@ bp-docs
+msgid "None"
+msgstr "Ничего"
+
+#: includes/templatetags.php:723
+#, php-format
+#@ bp-docs
+msgid "%s member"
+msgstr "%s  пользователь"
+
+#: includes/templatetags.php:723
+#, php-format
+#@ bp-docs
+msgid "%s members"
+msgstr "%s пользователи"
+
+#: includes/templatetags.php:727
+#@ bp-docs
+msgid "Public Group"
+msgstr "Публичная группа"
+
+#: includes/templatetags.php:731
+#@ bp-docs
+msgid "Private Group"
+msgstr "Приватная группа"
+
+#: includes/templatetags.php:735
+#@ bp-docs
+msgid "Hidden Group"
+msgstr "Скрытая группа"
+
+#: includes/templatetags.php:774
+#@ bp-docs
+msgid "Who can read this doc?"
+msgstr "Кто может читать эту запись?"
+
+#: includes/templatetags.php:778
+#@ bp-docs
+msgid "Who can edit this doc?"
+msgstr "Кто может редактировать эту запись?"
+
+#: includes/templatetags.php:782
+#@ bp-docs
+msgid "Who can read comments on this doc?"
+msgstr "Кто может читать комментарии к этой записи?"
+
+#: includes/templatetags.php:786
+#@ bp-docs
+msgid "Who can post comments on this doc?"
+msgstr "Кто может оставлять комментарии к этой записи?"
+
+#: includes/templatetags.php:790
+#@ bp-docs
+msgid "Who can view the history of this doc?"
+msgstr "Кто может видеть историю этой записи?"
+
+#: includes/templatetags.php:1040
+#@ default
+msgid "&laquo;"
+msgstr ""
+
+#: includes/templatetags.php:1041
+#@ default
+msgid "&raquo;"
+msgstr ""
+
+#: includes/templatetags.php:1198
+#@ bp-docs
+msgid "All Docs"
+msgstr "Все записи"
+
+#: includes/templatetags.php:1202
+#, php-format
+#@ bp-docs
+msgid "%s's Docs"
+msgstr "%s записи"
+
+#: includes/templatetags.php:1208
+#@ bp-docs
+msgid "My Groups"
+msgstr "Мои группы"
+
+#: includes/templatetags.php:1227
+#@ bp-docs
+msgid "Create New Doc"
+msgstr "Создать новую запись"
+
+#: includes/templatetags.php:1266
+#, php-format
+#@ bp-docs
+msgid "Group: %s"
+msgstr "Группа: %s"
+
+#: includes/templatetags.php:1276
+#@ bp-docs
+msgid "My Friends"
+msgstr "Мои друзья"
+
+#: includes/templatetags.php:1277
+#, php-format
+#@ bp-docs
+msgid "Members of: %s"
+msgstr "Участники: %s"
+
+#: includes/templatetags.php:1278
+#, php-format
+#@ bp-docs
+msgid "Admins and mods of the group %s"
+msgstr "Администраторы и модераторы группы %s"
+
+#: includes/templatetags.php:1280
+#@ bp-docs
+msgid "Just Me"
+msgstr "Только Я"
+
+#: includes/templatetags.php:1284
+#@ bp-docs
+msgid "The Doc author only (that's you!)"
+msgstr "Только автор записи (это вы!)"
+
+#: includes/templatetags.php:1291
+#, php-format
+#@ bp-docs
+msgid "This Doc can be read by: <strong>%s</strong>"
+msgstr "Эту запись могут читать: <strong>%s</strong>"
+
+#: includes/templatetags.php:1295
+#, php-format
+#@ bp-docs
+msgid "This Doc can be edited by: <strong>%s</strong>"
+msgstr "Эту запись могут редактировать: <strong>%s</strong>"
+
+#: includes/templatetags.php:1299
+#, php-format
+#@ bp-docs
+msgid "Comments are visible to: <strong>%s</strong>"
+msgstr "Комментарии могут видеть: <strong>%s</strong>"
+
+#: includes/templatetags.php:1303
+#, php-format
+#@ bp-docs
+msgid "Comments can be posted by: <strong>%s</strong>"
+msgstr "Комментарии могут оставлять: <strong>%s</strong>"
+
+#: includes/templatetags.php:1307
+#, php-format
+#@ bp-docs
+msgid "History can be viewed by: <strong>%s</strong>"
+msgstr "Историю могут видеть: <strong>%s</strong>"
+
+#: includes/templatetags.php:1349
+#@ bp-docs
+msgid "Private"
+msgstr "Скрыто"
+
+#: includes/templatetags.php:1352
+#@ bp-docs
+msgid "Public"
+msgstr "Видно всем"
+
+#: includes/templatetags.php:1355
+#@ bp-docs
+msgid "Limited"
+msgstr "Ограничено"
+
+#: includes/templatetags.php:1359
+#, php-format
+#@ bp-docs
+msgid "Access: <strong>%s</strong>"
+msgstr "Доступ: <strong>%s</strong>"
+
+#: includes/templatetags.php:1360
+#@ bp-docs
+msgid "Show Details"
+msgstr "Показать детали"
+
+#: includes/templatetags.php:1375
+#@ bp-docs
+msgid "Hide Details"
+msgstr "Скрыть детали"
+
+#: includes/upgrade.php:40
+#@ bp-docs
+msgid "Upgrade complete!"
+msgstr "Обновление завершено!"
+
+#: includes/upgrade.php:61
+#: includes/upgrade.php:99
+#@ bp-docs
+msgid "Thanks for updating BuddyPress Docs. We need to run a few quick operations before your new Docs is ready to use."
+msgstr "Thanks for updating BuddyPress Docs. We need to run a few quick operations before your new Docs is ready to use."
+
+#: includes/upgrade.php:62
+#@ bp-docs
+msgid "Click here to start the upgrade."
+msgstr "Нажмите здесь чтобы начать обновление."
+
+#: includes/upgrade.php:70
+#: includes/upgrade.php:91
+#@ bp-docs
+msgid "BuddyPress Docs Upgrade"
+msgstr "Обновление BuddyPress Docs"
+
+#: includes/upgrade.php:71
+#@ bp-docs
+msgid "Upgrade"
+msgstr "Обновление"
+
+#: includes/upgrade.php:101
+#@ bp-docs
+msgid "Start the upgrade"
+msgstr "Начать обновление"
+
+#: includes/upgrade.php:107
+#@ bp-docs
+msgid "Migrating..."
+msgstr "Migrating..."
+
+#: includes/upgrade.php:138
+#, php-format
+#@ bp-docs
+msgid "Migration complete! <a href=\"%s\">Dashboard</a>"
+msgstr "Migration complete! <a href=\"%s\">Dashboard</a>"
+
+#: includes/upgrade.php:243
+#, php-format
+#@ bp-docs
+msgid "Docs associated with the group %s"
+msgstr "Записи, ассоциированные с группой %s"
+
+#: includes/upgrade.php:258
+#@ bp-docs
+msgid "Group terms migrated. Now migrating Doc access terms...."
+msgstr "Условия группы перенесены. Теперь переносятся условия доступа записей....."
+
+#: includes/upgrade.php:306
+#, php-format
+#@ bp-docs
+msgid "Migrated %s of %s Docs. Migrating...."
+msgstr "Migrated %s of %s Docs. Migrating...."
+
