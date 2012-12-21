@@ -6,11 +6,11 @@ class BP_Docs_Access_Query {
 	protected $user_groups = array();
 	protected $levels = array();
 
-	public function init() {
+	public function init( $user_id = 0 ) {
 		static $instance;
 
 		if ( empty( $instance ) ) {
-			$instance = new BP_Docs_Access_Query;
+			$instance = new BP_Docs_Access_Query( $user_id );
 		}
 
 		return $instance;
@@ -144,21 +144,39 @@ function bp_docs_general_access_protection( $query ) {
 		return;
 	}
 
-	$bp_docs_access_query = bp_docs_access_query();
+	// We only need to filter when BP Docs could possibly show up in the
+	// results, so we check the post type, and bail if the post_type rules
+	// out Docs to begin with
+	$queried_post_type = $query->get( 'post_type' );
+	if ( ! $queried_post_type ||
+	     'any' == $queried_post_type ||
+	     bp_docs_get_post_type_name() == $queried_post_type
+	) {
 
-	if ( bp_docs_get_post_type_name() == $query->get( 'post_type' ) ) {
-		$tax_query = $query->get( 'tax_query' );
-		if ( ! $tax_query ) {
-			$tax_query = array();
-		}
+		$bp_docs_access_query = bp_docs_access_query();
 
-		$query->set( 'tax_query', array_merge( $tax_query, $bp_docs_access_query->get_tax_query() ) );
-	} else {
-		$exclude = $bp_docs_access_query->get_doc_ids();
+		if ( bp_docs_get_post_type_name() == $queried_post_type ) {
+			// Use a tax query if possible
+			$tax_query = $query->get( 'tax_query' );
+			if ( ! $tax_query ) {
+				$tax_query = array();
+			}
 
-		if ( ! empty( $exclude ) ) {
-			$not_in = $query->get( 'post__not_in' );
-			$query->set( 'post__not_in', array_merge( (array) $not_in, $exclude ) );
+			$query->set( 'tax_query', array_merge( $tax_query, $bp_docs_access_query->get_tax_query() ) );
+
+		} else {
+			// When it's not a straight bp_doc query, a tax_query
+			// approach won't work (because the taxonomy in
+			// question only applies to bp_docs, and conditional
+			// tax_query is not supported by WP). Instead, get a
+			// list of off-limits Docs and pass to post__not_in
+			$exclude = $bp_docs_access_query->get_doc_ids();
+
+			if ( ! empty( $exclude ) ) {
+				$not_in = $query->get( 'post__not_in' );
+				$query->set( 'post__not_in', array_merge( (array) $not_in, $exclude ) );
+			}
+
 		}
 	}
 }
