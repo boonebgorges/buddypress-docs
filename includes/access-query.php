@@ -148,14 +148,17 @@ function bp_docs_general_access_protection( $query ) {
 	// results, so we check the post type, and bail if the post_type rules
 	// out Docs to begin with
 	$queried_post_type = $query->get( 'post_type' );
+	$pt = bp_docs_get_post_type_name();
+	$is_bp_doc_query = is_array( $queried_post_type ) ? in_array( $pt, $queried_post_type ) : $pt == $queried_post_type;
+
 	if ( ! $queried_post_type ||
 	     'any' == $queried_post_type ||
-	     bp_docs_get_post_type_name() == $queried_post_type
+	     $is_bp_doc_query
 	) {
 
 		$bp_docs_access_query = bp_docs_access_query();
 
-		if ( bp_docs_get_post_type_name() == $queried_post_type ) {
+		if ( $pt == $queried_post_type ) {
 			// Use a tax query if possible
 			$tax_query = $query->get( 'tax_query' );
 			if ( ! $tax_query ) {
