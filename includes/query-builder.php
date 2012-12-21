@@ -424,6 +424,7 @@ class BP_Docs_Query {
 		}
 
 		// Check group associations
+		// @todo Move into group integration piece
 		if ( ! empty( $_POST['associated_group_id'] ) ) {
 			if ( ! BP_Docs_Groups_Integration::user_can_associate_doc_with_group( bp_loggedin_user_id(), intval( $_POST['associated_group_id'] ) ) ) {
 				bp_core_add_message( __( 'You are not allowed to associate a Doc with that group.', 'bp-docs' ), 'error' );
