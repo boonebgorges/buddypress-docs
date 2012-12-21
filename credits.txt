@@ -20,4 +20,4 @@ Huge thanks go out to the individuals who donate their translations, making plug
 - European Portuguese: André Barriguinha
 - Romanian: Web Geek Science  (http://webhostinggeeks.com/)
 - Danish: Morten Nalholm
-- Russian: Igor M.
+- Russian: Igor M., Eugene Efimenko
