@@ -35,6 +35,10 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.2.9 =
+* Improved access protection, for better compatibility with bbPress 2.x and other plugins
+* Updated Russian translation
+
 = 1.2.8 =
 * Fixes problem with group associations and privacy levels of new docs
 * Improves access protection in WP searches and elsewhere
