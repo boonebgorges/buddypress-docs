@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: BuddyPress Docs v1.2.7\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-12-21 02:09:21+0000\n"
+"PO-Revision-Date: 2012-12-27 02:16:36+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -23,7 +23,7 @@ msgstr ""
 #@ bp-docs
 msgctxt "post type general name"
 msgid "BuddyPress Docs"
-msgstr "BuddyPress Docs"
+msgstr "Документы"
 
 #: bp-docs.php:261
 #@ bp-docs
@@ -45,7 +45,7 @@ msgstr "Добавить новый документ"
 #: bp-docs.php:264
 #@ bp-docs
 msgid "Edit Doc"
-msgstr "Редактировать документ"
+msgstr "Изменить документ"
 
 #: bp-docs.php:265
 #: includes/integration-groups.php:728
@@ -115,12 +115,12 @@ msgstr "Вы не можете просматривать историю это�
 #: includes/addon-hierarchy.php:106
 #@ bp-docs
 msgid "Parent: "
-msgstr "Родительский:"
+msgstr "Родительский: "
 
 #: includes/addon-hierarchy.php:157
 #@ bp-docs
 msgid "Children: "
-msgstr "Дочерний:"
+msgstr "Дочерний: "
 
 #: includes/addon-history.php:117
 #, php-format
@@ -349,13 +349,13 @@ msgstr "Документ удален!"
 #: includes/component.php:445
 #@ bp-docs
 msgid "You do not have permission to delete that doc."
-msgstr "У вас нет прав удалять этот документ."
+msgstr "У вас нет прав на удаление этого документа."
 
 #: includes/component.php:558
 #, php-format
 #@ bp-docs
 msgid "%1$s commented on the doc %2$s"
-msgstr "%1$s прокомментировали документ %2$s"
+msgstr "%1$s прокомментирован документ %2$s"
 
 #: includes/component.php:657
 #@ bp-docs
@@ -365,12 +365,12 @@ msgstr "Показать новые документы"
 #: includes/component.php:658
 #@ bp-docs
 msgid "Show Doc Edits"
-msgstr "Показать редактированные документы"
+msgstr "Показать измененные документы"
 
 #: includes/component.php:659
 #@ bp-docs
 msgid "Show Doc Comments"
-msgstr "Показать комментарии "
+msgstr "Комментарии к документам"
 
 #: includes/component.php:726
 #, php-format
@@ -387,7 +387,7 @@ msgstr "%1$s изменен документ %2$s"
 #: includes/component.php:919
 #@ bp-docs
 msgid "Still working?"
-msgstr "В работе?"
+msgstr "Все ещё работаете?"
 
 #: includes/functions.php:160
 #, php-format
@@ -399,7 +399,7 @@ msgstr "Документы, ассоциированные с %1$s %2$s"
 #: includes/templatetags.php:1275
 #@ bp-docs
 msgid "Logged-in Users"
-msgstr "Пользователи онлайн"
+msgstr "Авторизированые пользователи"
 
 #: includes/functions.php:442
 #: includes/templatetags.php:1279
@@ -465,7 +465,7 @@ msgstr "Редактировать"
 #: includes/integration-groups.php:784
 #@ bp-docs
 msgid "BuddyPress Docs group tab name:"
-msgstr "BuddyPress Docs название вкладки группы:"
+msgstr "Название вкладки группы BuddyPress Docs:"
 
 #: includes/integration-groups.php:941
 #@ bp-docs
@@ -485,7 +485,7 @@ msgstr "Настройки сохранены"
 #: includes/integration-groups.php:1025
 #@ bp-docs
 msgid "BuddyPress Docs is a powerful tool for collaboration with members of your group. A cross between document editor and wiki, BuddyPress Docs allows you to co-author and co-edit documents with your fellow group members, which you can then sort and tag in a way that helps your group to get work done."
-msgstr "BuddyPress Docs представляет собой мощный инструмент для совместной работы с участниками вашей группы.Нечто среднее между редактором документов и вики, BuddyPress Docs реализует соавторство и совместное редактирование документов с другими участниками группы, которые затем можно сортировать и отмечать тем способом, который помогает вашей группе осуществлять работу."
+msgstr "BuddyPress Docs представляет собой мощный инструмент для совместной работы между участниками вашей группы.Нечто среднее между редактором документов и вики, BuddyPress Docs реализует соавторство и совместное редактирование документов с другими участниками группы, которые затем можно сортировать и отмечать тем способом, который помогает вашей группе осуществлять работу."
 
 #: includes/integration-groups.php:1028
 #@ bp-docs
@@ -592,7 +592,7 @@ msgstr "Создано"
 #: includes/templates/docs/docs-loop.php:36
 #@ bp-docs
 msgid "Last Edited"
-msgstr "Редактировалось"
+msgstr "Последнее изменение"
 
 #: includes/templates/docs/docs-loop.php:79
 #, php-format
@@ -625,7 +625,7 @@ msgstr "Обсуждение (%d)"
 #: includes/templates/docs/single/comments.php:44
 #@ bp-docs
 msgid "There are no comments for this doc yet."
-msgstr "Еще нет комментариев к этому документу."
+msgstr "К этому документу еще нет комментариев."
 
 #: includes/templates/docs/single/comments.php:53
 #@ bp-docs
@@ -715,7 +715,7 @@ msgstr "Чтобы предотвратить перезапись содерж�
 #: includes/templates/docs/single/edit.php:174
 #@ bp-docs
 msgid "I'm still editing!"
-msgstr "Редактирую!"
+msgstr "Я все ещё редактирую!"
 
 #: includes/templates/docs/single/history.php:7
 #@ bp-docs
@@ -725,7 +725,7 @@ msgstr "Нажмите на дату редакции из списка ниже
 #: includes/templates/docs/single/history.php:9
 #@ bp-docs
 msgid "Alternatively, you can compare two revisions by selecting them in the 'Old' and 'New' columns, and clicking 'Compare Revisions'."
-msgstr "Вы можете сравнить две версии, выбрав их в колонках 'Старое' и 'Новое' и нажав на 'Сравнить редакции'."
+msgstr "Вы можете сравнить две редакции, выбрав их в колонках 'Старое' и 'Новое' и нажав на 'Сравнить редакции'."
 
 #: includes/templates/docs/single/history.php:20
 #, php-format
@@ -764,7 +764,7 @@ msgstr "(нажмите для получения дополнительной �
 #, php-format
 #@ bp-docs
 msgid "This doc is currently being edited by %1$s. In order to prevent edit conflicts, only one user can edit a doc at a time."
-msgstr "Этот документ сейчас редактируется %1$s. В целях предотвращения конфликтов редактирования, только один пользователь может редактировать документ одновременно."
+msgstr "Этот документ сейчас редактирует %1$s. В целях предотвращения конфликтов редактирования, только один пользователь может редактировать документ одновременно."
 
 #: includes/templates/docs/single/index.php:13
 #, php-format
@@ -775,7 +775,7 @@ msgstr "Попробуйте еще раз через несколько мин�
 #: includes/templates/docs/single/index.php:15
 #@ bp-docs
 msgid "Please try again in a few minutes."
-msgstr "Попробуйте еще через несколько минут."
+msgstr "Пожалуйста, попробуйте снова через несколько минут."
 
 #: includes/templates/docs/single/index.php:39
 #@ bp-docs
@@ -791,7 +791,7 @@ msgstr "<a href=\"%1$s\">Смотреть все документы в этой 
 #: includes/templatetags-edit.php:113
 #@ bp-docs
 msgid "(no parent)"
-msgstr "(no parent)"
+msgstr "(нет родителя)"
 
 #: includes/templatetags.php:185
 #@ bp-docs
@@ -1011,7 +1011,7 @@ msgstr "Обновление завершено!"
 #: includes/upgrade.php:99
 #@ bp-docs
 msgid "Thanks for updating BuddyPress Docs. We need to run a few quick operations before your new Docs is ready to use."
-msgstr "Спасибо за обновление BuddyPress Docs. Мы должны запустить несколько простых операций чтобы подготовить ваши новые документы к использованию."
+msgstr "Спасибо за обновление BuddyPress Docs. Мы должны осуществить несколько простых операций чтобы подготовить ваши новые документы к использованию."
 
 #: includes/upgrade.php:62
 #@ bp-docs
