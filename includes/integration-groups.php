@@ -613,6 +613,8 @@ class BP_Docs_Groups_Integration {
 
 		$groups = (array) bp_docs_get_associated_group_id( get_the_ID(), false, true );
 
+		$groups = array_unique( $groups ); // just in case
+
 		?>
 
 		<td class="groups-cell">
