@@ -641,6 +641,12 @@ function bp_docs_inline_toggle_js() {
 function bp_docs_doc_associated_group_markup() {
 	// First, try to set the preselected group by looking at the URL params
 	$selected_group_slug = isset( $_GET['group'] ) ? $_GET['group'] : '';
+
+	// Support for BP Group Hierarchy
+	if ( false !== $slash = strrpos( $selected_group_slug, '/' ) ) {
+		$selected_group_slug = substr( $selected_group_slug, $slash + 1 );
+	}
+
 	$selected_group      = BP_Groups_Group::get_id_from_slug( $selected_group_slug );
 	if ( $selected_group && ! BP_Docs_Groups_Integration::user_can_associate_doc_with_group( bp_loggedin_user_id(), $selected_group ) ) {
 		$selected_group = 0;
