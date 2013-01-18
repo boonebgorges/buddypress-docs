@@ -1,14 +1,14 @@
-# Copyright (C) 2012 
+# Copyright (C) 2013 
 # This file is distributed under the same license as the  package.
 msgid ""
 msgstr ""
 "Project-Id-Version:  \n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/buddypress-docs\n"
-"POT-Creation-Date: 2012-11-17 16:37:01+00:00\n"
+"POT-Creation-Date: 2013-01-18 14:05:39+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2012-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2013-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 
@@ -35,8 +35,8 @@ msgstr ""
 msgid "Edit Doc"
 msgstr ""
 
-#: bp-docs.php:265 includes/integration-groups.php:726
-#: includes/integration-groups.php:1283
+#: bp-docs.php:265 includes/integration-groups.php:730
+#: includes/integration-groups.php:1230
 #: includes/templates/docs/docs-header.php:40
 msgid "New Doc"
 msgstr ""
@@ -58,7 +58,7 @@ msgid "No Docs found in Trash"
 msgstr ""
 
 #: bp-docs.php:276 includes/component.php:39
-#: includes/integration-groups.php:1078
+#: includes/integration-groups.php:1025
 msgid "BuddyPress Docs"
 msgstr ""
 
@@ -147,8 +147,8 @@ msgstr ""
 msgid "Actions"
 msgstr ""
 
-#: includes/addon-history.php:458 includes/integration-groups.php:735
-#: includes/templatetags.php:828
+#: includes/addon-history.php:458 includes/integration-groups.php:739
+#: includes/templatetags.php:846
 msgid "History"
 msgstr ""
 
@@ -160,36 +160,36 @@ msgstr ""
 msgid "Docs Tag"
 msgstr ""
 
-#: includes/addon-taxonomy.php:212
+#: includes/addon-taxonomy.php:214
 msgid "Tags: %s"
 msgstr ""
 
-#: includes/addon-taxonomy.php:343 includes/templates/docs/single/edit.php:90
+#: includes/addon-taxonomy.php:346 includes/templates/docs/single/edit.php:90
 msgid "Tags"
 msgstr ""
 
-#: includes/addon-taxonomy.php:395
+#: includes/addon-taxonomy.php:398
 msgid "You are viewing docs with the following tags: %s"
 msgstr ""
 
-#: includes/addon-taxonomy.php:417
+#: includes/addon-taxonomy.php:420
 msgid "Filter by tag"
 msgstr ""
 
-#: includes/addon-taxonomy.php:423
+#: includes/addon-taxonomy.php:426
 msgid "(%d)"
 msgstr ""
 
-#: includes/addon-taxonomy.php:505
+#: includes/addon-taxonomy.php:508
 msgid "Docs tagged %s"
 msgstr ""
 
-#: includes/addon-taxonomy.php:564
+#: includes/addon-taxonomy.php:567
 msgid "Most Used"
 msgstr ""
 
 #. translators: %s: add new taxonomy label
-#: includes/addon-taxonomy.php:588
+#: includes/addon-taxonomy.php:591
 msgid "+ %s"
 msgstr ""
 
@@ -205,85 +205,86 @@ msgstr ""
 msgid "Search Docs..."
 msgstr ""
 
-#: includes/component.php:232
-msgid "Docs <span>%d</span>"
-msgstr ""
-
-#: includes/component.php:241
-msgid "My Docs "
-msgstr ""
-
-#: includes/component.php:241
-msgid "%s&#8217;s Docs"
-msgstr ""
-
-#: includes/component.php:244 includes/templatetags.php:1193
-msgid "Started By Me"
+#: includes/component.php:232 includes/integration-groups.php:724
+#: includes/integration-groups.php:777 includes/integration-groups.php:842
+msgid "Docs"
 msgstr ""
 
 #: includes/component.php:244
+msgid "My Docs "
+msgstr ""
+
+#: includes/component.php:244
+msgid "%s&#8217;s Docs"
+msgstr ""
+
+#: includes/component.php:247 includes/templatetags.php:1200
+msgid "Started By Me"
+msgstr ""
+
+#: includes/component.php:247
 msgid "Started By %s"
 msgstr ""
 
-#: includes/component.php:253 includes/templatetags.php:1194
+#: includes/component.php:256 includes/templatetags.php:1201
 msgid "Edited By Me"
 msgstr ""
 
-#: includes/component.php:253
+#: includes/component.php:256
 msgid "Edited By %s"
 msgstr ""
 
-#: includes/component.php:336
+#: includes/component.php:339
 msgid ""
 "This doc is currently being edited by %s. To prevent overwrites, you cannot "
 "edit until that user has finished. Please try again in a few minutes."
 msgstr ""
 
-#: includes/component.php:349
+#: includes/component.php:352
 msgid "You do not have permission to edit the doc."
 msgstr ""
 
-#: includes/component.php:365
+#: includes/component.php:368
 msgid "You do not have permission to create a Doc in this group."
 msgstr ""
 
-#: includes/component.php:381
+#: includes/component.php:384
 msgid "You do not have permission to view this Doc's history."
 msgstr ""
 
-#: includes/component.php:405
+#: includes/component.php:408
 msgid "Lock successfully removed"
 msgstr ""
 
-#: includes/component.php:439
+#: includes/component.php:443
 msgid "Doc successfully deleted!"
 msgstr ""
 
-#: includes/component.php:441
+#: includes/component.php:445
 msgid "You do not have permission to delete that doc."
 msgstr ""
 
-#: includes/component.php:562
+#: includes/component.php:558
 msgid "%1$s commented on the doc %2$s"
 msgstr ""
 
-#: includes/component.php:661
+#: includes/component.php:659
 msgid "Show New Docs"
 msgstr ""
 
-#: includes/component.php:662
+#: includes/component.php:660
 msgid "Show Doc Edits"
 msgstr ""
 
-#: includes/component.php:663
+#: includes/component.php:661
 msgid "Show Doc Comments"
 msgstr ""
 
-#: includes/component.php:730
+#: includes/component.php:728
 msgid "%1$s created the doc %2$s"
 msgstr ""
 
-#: includes/component.php:732
+#: includes/component.php:730
 msgid "%1$s edited the doc %2$s"
 msgstr ""
 
@@ -295,78 +296,69 @@ msgstr ""
 msgid "Docs associated with the %1$s %2$s"
 msgstr ""
 
-#: includes/functions.php:434 includes/templatetags.php:1264
+#: includes/functions.php:439 includes/templatetags.php:1271
 msgid "Logged-in Users"
 msgstr ""
 
-#: includes/functions.php:439 includes/templatetags.php:1268
+#: includes/functions.php:444 includes/templatetags.php:1275
 msgid "The Doc author only"
 msgstr ""
 
-#: includes/functions.php:447 includes/templatetags.php:1263
+#: includes/functions.php:452 includes/templatetags.php:1270
 msgid "Anyone"
 msgstr ""
 
-#: includes/integration-groups.php:409
+#: includes/integration-groups.php:408
 msgid "Members of %s"
 msgstr ""
 
-#: includes/integration-groups.php:414
+#: includes/integration-groups.php:413
 msgid "Admins and mods of %s"
 msgstr ""
 
-#: includes/integration-groups.php:491
+#: includes/integration-groups.php:490
 msgid "%1$s created the doc %2$s in the group %3$s"
 msgstr ""
 
-#: includes/integration-groups.php:493
+#: includes/integration-groups.php:492
 msgid "%1$s edited the doc %2$s in the group %3$s"
 msgstr ""
 
-#: includes/integration-groups.php:520
+#: includes/integration-groups.php:519
 msgid "%1$s commented on the doc %2$s in the group %3$s"
 msgstr ""
 
-#: includes/integration-groups.php:594
+#: includes/integration-groups.php:593
 msgid "Group"
 msgstr ""
 
-#: includes/integration-groups.php:698
+#: includes/integration-groups.php:702
 msgid "%s <span>%d</span>"
 msgstr ""
 
-#: includes/integration-groups.php:720 includes/integration-groups.php:830
-#: includes/integration-groups.php:895
-msgid "Docs"
-msgstr ""
-
-#: includes/integration-groups.php:733
-#: includes/templates/docs/docs-header.php:30 includes/templatetags.php:824
-#: includes/templatetags.php:1362
+#: includes/integration-groups.php:737
+#: includes/templates/docs/docs-header.php:30 includes/templatetags.php:842
+#: includes/templatetags.php:1369
 msgid "Edit"
 msgstr ""
 
-#: includes/integration-groups.php:805
-msgid "You do not have permission to post comments on this doc."
-msgstr ""
-
-#: includes/integration-groups.php:839
+#: includes/integration-groups.php:786
 msgid "BuddyPress Docs group tab name:"
 msgstr ""
 
-#: includes/integration-groups.php:996
+#: includes/integration-groups.php:943
 msgid "Save Changes"
 msgstr ""
 
-#: includes/integration-groups.php:1021
+#: includes/integration-groups.php:968
 msgid "There was an error saving, please try again"
 msgstr ""
 
-#: includes/integration-groups.php:1023
+#: includes/integration-groups.php:970
 msgid "Settings saved successfully"
 msgstr ""
 
-#: includes/integration-groups.php:1080
+#: includes/integration-groups.php:1027
 msgid ""
 "BuddyPress Docs is a powerful tool for collaboration with members of your "
 "group. A cross between document editor and wiki, BuddyPress Docs allows you "
@@ -374,35 +366,35 @@ msgid ""
 "can then sort and tag in a way that helps your group to get work done."
 msgstr ""
 
-#: includes/integration-groups.php:1083
+#: includes/integration-groups.php:1030
 msgid "Enable BuddyPress Docs for this group"
 msgstr ""
 
-#: includes/integration-groups.php:1087
+#: includes/integration-groups.php:1034
 msgid "Options"
 msgstr ""
 
-#: includes/integration-groups.php:1092
+#: includes/integration-groups.php:1039
 msgid "Minimum role to create new Docs:"
 msgstr ""
 
-#: includes/integration-groups.php:1097
+#: includes/integration-groups.php:1044
 msgid "Group admin"
 msgstr ""
 
-#: includes/integration-groups.php:1098
+#: includes/integration-groups.php:1045
 msgid "Group moderator"
 msgstr ""
 
-#: includes/integration-groups.php:1099
+#: includes/integration-groups.php:1046
 msgid "Group member"
 msgstr ""
 
-#: includes/integration-groups.php:1280
+#: includes/integration-groups.php:1227
 msgid "View Docs"
 msgstr ""
 
-#: includes/query-builder.php:415
+#: includes/query-builder.php:414
 msgid "Unknown error. Please try again."
 msgstr ""
 
@@ -443,7 +435,7 @@ msgid ""
 "changed to match the Doc's permissions."
 msgstr ""
 
-#: includes/templates/docs/docs-header.php:25 includes/templatetags.php:821
+#: includes/templates/docs/docs-header.php:25 includes/templatetags.php:839
 msgid "Read"
 msgstr ""
 
@@ -541,19 +533,23 @@ msgid ""
 "bottom of the parent."
 msgstr ""
 
-#: includes/templates/docs/single/edit.php:138
+#: includes/templates/docs/single/edit.php:140
 msgid "Save"
 msgstr ""
 
-#: includes/templates/docs/single/edit.php:138
+#: includes/templates/docs/single/edit.php:140
 msgid "Cancel"
 msgstr ""
 
-#: includes/templates/docs/single/edit.php:169
-msgid "Are you still there?"
+#: includes/templates/docs/single/edit.php:142
+msgid "Delete"
 msgstr ""
 
 #: includes/templates/docs/single/edit.php:171
+msgid "Are you still there?"
+msgstr ""
+
+#: includes/templates/docs/single/edit.php:173
 msgid ""
 "In order to prevent overwriting content, only one person can edit a given "
 "doc at a time. For that reason, you must periodically ensure the system that "
@@ -562,7 +558,7 @@ msgid ""
 "others can access the doc."
 msgstr ""
 
-#: includes/templates/docs/single/edit.php:173
+#: includes/templates/docs/single/edit.php:175
 msgid "I'm still editing!"
 msgstr ""
 
@@ -666,119 +662,127 @@ msgstr ""
 msgid "%s members"
 msgstr ""
 
-#: includes/templatetags.php:729
-msgid "%s Group"
+#: includes/templatetags.php:727
+msgid "Public Group"
 msgstr ""
 
-#: includes/templatetags.php:756
+#: includes/templatetags.php:731
+msgid "Private Group"
+msgstr ""
+
+#: includes/templatetags.php:735
+msgid "Hidden Group"
+msgstr ""
+
+#: includes/templatetags.php:774
 msgid "Who can read this doc?"
 msgstr ""
 
-#: includes/templatetags.php:760
+#: includes/templatetags.php:778
 msgid "Who can edit this doc?"
 msgstr ""
 
-#: includes/templatetags.php:764
+#: includes/templatetags.php:782
 msgid "Who can read comments on this doc?"
 msgstr ""
 
-#: includes/templatetags.php:768
+#: includes/templatetags.php:786
 msgid "Who can post comments on this doc?"
 msgstr ""
 
-#: includes/templatetags.php:772
+#: includes/templatetags.php:790
 msgid "Who can view the history of this doc?"
 msgstr ""
 
-#: includes/templatetags.php:1029
+#: includes/templatetags.php:1036
 msgid "&laquo;"
 msgstr ""
 
-#: includes/templatetags.php:1030
+#: includes/templatetags.php:1037
 msgid "&raquo;"
 msgstr ""
 
-#: includes/templatetags.php:1187
+#: includes/templatetags.php:1194
 msgid "All Docs"
 msgstr ""
 
-#: includes/templatetags.php:1191
+#: includes/templatetags.php:1198
 msgid "%s's Docs"
 msgstr ""
 
-#: includes/templatetags.php:1197
+#: includes/templatetags.php:1204
 msgid "My Groups"
 msgstr ""
 
-#: includes/templatetags.php:1216
+#: includes/templatetags.php:1223
 msgid "Create New Doc"
 msgstr ""
 
-#: includes/templatetags.php:1255
+#: includes/templatetags.php:1262
 msgid "Group: %s"
 msgstr ""
 
-#: includes/templatetags.php:1265
+#: includes/templatetags.php:1272
 msgid "My Friends"
 msgstr ""
 
-#: includes/templatetags.php:1266
+#: includes/templatetags.php:1273
 msgid "Members of: %s"
 msgstr ""
 
-#: includes/templatetags.php:1267
+#: includes/templatetags.php:1274
 msgid "Admins and mods of the group %s"
 msgstr ""
 
-#: includes/templatetags.php:1269
+#: includes/templatetags.php:1276
 msgid "Just Me"
 msgstr ""
 
-#: includes/templatetags.php:1273
+#: includes/templatetags.php:1280
 msgid "The Doc author only (that's you!)"
 msgstr ""
 
-#: includes/templatetags.php:1280
+#: includes/templatetags.php:1287
 msgid "This Doc can be read by: <strong>%s</strong>"
 msgstr ""
 
-#: includes/templatetags.php:1284
+#: includes/templatetags.php:1291
 msgid "This Doc can be edited by: <strong>%s</strong>"
 msgstr ""
 
-#: includes/templatetags.php:1288
+#: includes/templatetags.php:1295
 msgid "Comments are visible to: <strong>%s</strong>"
 msgstr ""
 
-#: includes/templatetags.php:1292
+#: includes/templatetags.php:1299
 msgid "Comments can be posted by: <strong>%s</strong>"
 msgstr ""
 
-#: includes/templatetags.php:1296
+#: includes/templatetags.php:1303
 msgid "History can be viewed by: <strong>%s</strong>"
 msgstr ""
 
-#: includes/templatetags.php:1338
+#: includes/templatetags.php:1345
 msgid "Private"
 msgstr ""
 
-#: includes/templatetags.php:1341
+#: includes/templatetags.php:1348
 msgid "Public"
 msgstr ""
 
-#: includes/templatetags.php:1344
+#: includes/templatetags.php:1351
 msgid "Limited"
 msgstr ""
 
-#: includes/templatetags.php:1348
+#: includes/templatetags.php:1355
 msgid "Access: <strong>%s</strong>"
 msgstr ""
 
-#: includes/templatetags.php:1349
+#: includes/templatetags.php:1356
 msgid "Show Details"
 msgstr ""
 
-#: includes/templatetags.php:1364
+#: includes/templatetags.php:1371
 msgid "Hide Details"
 msgstr ""
 
@@ -820,10 +824,10 @@ msgstr ""
 msgid "Docs associated with the group %s"
 msgstr ""
 
-#: includes/upgrade.php:257
+#: includes/upgrade.php:258
 msgid "Group terms migrated. Now migrating Doc access terms...."
 msgstr ""
 
-#: includes/upgrade.php:305
+#: includes/upgrade.php:306
 msgid "Migrated %s of %s Docs. Migrating...."
 msgstr ""
