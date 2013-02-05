@@ -1234,7 +1234,7 @@ function bp_docs_slug() {
  * At the moment, the group-specific stuff is hard coded in here.
  * @todo Get the group stuff out
  */
-function bp_docs_tabs() {
+function bp_docs_tabs( $show_create_button = true) {
 	$current_view = '';
 
 	?>
@@ -1255,8 +1255,12 @@ function bp_docs_tabs() {
 			<?php endif ?>
 
 		<?php endif ?>
-
-		<?php bp_docs_create_button() ?>
+		
+  <?php if( $show_create_button && ! bp_docs_is_doc_create() && bp_docs_current_user_can( 'create' ) ) : ?>
+  		<li class="doc-tabs-create-button">
+				<?php bp_docs_create_button() ?>
+  		</li>
+  <?php endif; ?>
 
 	</ul>
 	<?php
