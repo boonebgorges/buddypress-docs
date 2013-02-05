@@ -1281,8 +1281,11 @@ function bp_docs_create_button() {
  * @since 1.2.1
  */
 function bp_docs_member_create_button() {
-	if ( bp_docs_is_docs_component() ) {
-		bp_docs_create_button();
+	if ( bp_docs_is_docs_component() ) { ?>
+ <li class="create-doc-li">
+	<?php bp_docs_create_button(); ?>
+  </li>
+ <?php
 	}
 }
 add_action( 'bp_member_plugin_options_nav', 'bp_docs_member_create_button' );
@@ -1294,9 +1297,16 @@ add_action( 'bp_member_plugin_options_nav', 'bp_docs_member_create_button' );
  *
  * @since 1.2
  */
-function bp_docs_doc_permissions_snapshot() {
+function bp_docs_doc_permissions_snapshot( $args ) {
 	$html = '';
 
+ $defaults = array(
+ 		'summary_before_content' => '',
+    'summary_after_content' => ''
+    );
+ $args = wp_parse_args( $args, $defaults );
+ extract( $args, EXTR_SKIP );
+ 
 	$doc_group_ids = bp_docs_get_associated_group_id( get_the_ID(), false, true );
 	$doc_groups = array();
 	foreach( $doc_group_ids as $dgid ) {
@@ -1310,8 +1320,11 @@ function bp_docs_doc_permissions_snapshot() {
 	if ( ! empty( $doc_groups ) ) {
 		$group_link = bp_get_group_permalink( $doc_groups[0] );
 		$html .= '<div id="doc-group-summary">';
-		$html .=   sprintf( __( 'Group: %s', 'bp-docs' ), '<a href="' . $group_link . '">' . bp_core_fetch_avatar( 'item_id=' . $doc_groups[0]->id . '&object=group&type=thumb&width=25&height=25' ) . '</a> ' . '<a href="' . $group_link . '">' . esc_html( $doc_groups[0]->name ) . '</a>' );
-		$html .= '</div>';
+  $html .= $summary_before_content ;
+  $html .= '<span>' . __('Group: ', 'bp-docs') . '</span>';
+		$html .= sprintf( __( ' %s', 'bp-docs' ), '<a href="' . $group_link . '">' . bp_core_fetch_avatar( 'item_id=' . $doc_groups[0]->id . '&object=group&type=thumb&width=25&height=25' ) . '</a> ' . '<a href="' . $group_link . '">' . esc_html( $doc_groups[0]->name ) . '</a>' );
+		$html .= $summary_after_content;
+  $html .= '</div>';
 	}
 
 	// we'll need a list of comma-separated group names
@@ -1403,9 +1416,11 @@ function bp_docs_doc_permissions_snapshot() {
 	}
 
 	$html .= '<div id="doc-permissions-summary" class="doc-' . $summary . '">';
-	$html .=   sprintf( __( 'Access: <strong>%s</strong>', 'bp-docs' ), $summary_label );
+	$html .= $summary_before_content;
+ $html .=   sprintf( __( 'Access: <strong>%s</strong>', 'bp-docs' ), $summary_label );
 	$html .=   '<a href="#" class="doc-permissions-toggle" id="doc-permissions-more">' . __( 'Show Details', 'bp-docs' ) . '</a>';
-	$html .= '</div>';
+	$html .= $summary_after_content;
+ $html .= '</div>';
 
 	$html .= '<div id="doc-permissions-details">';
 	$html .=   '<ul>';
