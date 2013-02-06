@@ -115,10 +115,7 @@ class BP_Docs {
 		// Dashboard-specific functions
 		if ( is_admin() ) {
 			require( BP_DOCS_INCLUDES_PATH . 'admin.php' );
-
-			if ( current_user_can( 'bp_moderate' ) ) {
-				require( BP_DOCS_INCLUDES_PATH . 'upgrade.php' );
-			}
+			require( BP_DOCS_INCLUDES_PATH . 'upgrade.php' );
 		}
 	}
 
