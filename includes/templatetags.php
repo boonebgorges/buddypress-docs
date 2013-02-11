@@ -1250,7 +1250,7 @@ add_action( 'bp_member_plugin_options_nav', 'bp_docs_member_create_button' );
  *
  * @since 1.2
  */
-function bp_docs_doc_permissions_snapshot( $args ) {
+function bp_docs_doc_permissions_snapshot( $args = '' ) {
 	$html = '';
 
  $defaults = array(
