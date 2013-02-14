@@ -37,6 +37,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 = 1.2.10 =
 * Improved comcpatibility with BP Group Hierarchy
+* Fixes for global directory pagination
 
 = 1.2.9 =
 * Improved access protection, for better compatibility with bbPress 2.x and other plugins
