@@ -3,8 +3,8 @@ Contributors: boonebgorges, cuny-academic-commons
 Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.3, BuddyPress 1.5
-Tested up to: WordPress 3.5, BuddyPress 1.6.2
-Stable tag: 1.2.9
+Tested up to: WordPress 3.5.1, BuddyPress 1.6.4
+Stable tag: 1.2.10
  
 Adds collaborative Docs to BuddyPress.
 
@@ -36,7 +36,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 == Changelog ==
 
 = 1.2.10 =
-* Improved comcpatibility with BP Group Hierarchy
+* Improved compatibility with BP Group Hierarchy
 
 = 1.2.9 =
 * Improved access protection, for better compatibility with bbPress 2.x and other plugins
