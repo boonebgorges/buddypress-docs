@@ -204,10 +204,22 @@ function bp_docs_locate_template( $template = '', $load = false, $require_once =
 
 	$template_path = apply_filters( 'bp_docs_locate_template', $template_path, $template );
 
-	if ( $load ) {
-		load_template( $template_path, $require_once );
-	} else {
-		return $template_path;
+	if ( $template_path ) {
+		if ( $load ) {
+			load_template( $template_path, $require_once );
+		} else {
+			return $template_path;
+		}
+	} else if ( function_exists( 'is_buddypress' ) ) {
+
+		if ( bp_docs_is_docs_component() ) {
+			status_header( 200 );
+			$wp_query->is_page     = true;
+			$wp_query->is_singular = true;
+			$wp_query->is_404      = false;
+		}
+
+		do_action( 'bp_setup_theme_compat' );
 	}
 }
 
