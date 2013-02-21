@@ -28,6 +28,12 @@ class BP_Docs_Wikitext {
 	 * @since 1.2
 	 */
 	function bracket_links( $content ) {
+		// Don't do this on a non-Doc
+		global $post;
+
+		if ( empty( $post->post_type ) || $post->post_type != bp_docs_get_post_type_name() ) {
+			return $content;
+		}
 
 		// Find the text enclosed in double brackets.
 		// Letters, numbers, spaces, parentheses, pipes
