@@ -55,9 +55,6 @@ class BP_Docs {
 		// Add rewrite rules
 		add_action( 'generate_rewrite_rules', array( &$this, 'generate_rewrite_rules' ) );
 
-		// Hook into the WP template loader
-		add_filter( 'template_include', array( $this, 'template_include' ) );
-
 		// parse_query
 		add_action( 'parse_query', array( $this, 'parse_query' ) );
 
@@ -419,12 +416,6 @@ class BP_Docs {
 		$show_ui = is_super_admin();
 
 		return apply_filters( 'bp_docs_show_cpt_ui', $show_ui );
-	}
-
-
-
-	function template_include( $filter ) {
-		return $filter;
 	}
 
 	/**

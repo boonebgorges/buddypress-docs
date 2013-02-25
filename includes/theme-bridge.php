@@ -1,10 +1,10 @@
 <?php
 
 /**
- * The functions in this file are used to load template files in the non-BP sections of BP Docs
+ * The functions in this file are used to load template files in the non-BP
+ * sections of BP Docs
  *
- * It's likely that these functions will be removed at some point in the future, when BuddyPress
- * has better versions of the functionality I'm after.
+ * Uses BP's theme compatibility layer, when it's available
  *
  * @since 1.2
  */
@@ -28,24 +28,33 @@ if ( !defined( 'ABSPATH' ) ) exit;
  */
 function bp_docs_template_include( $template = '' ) {
 
+	if ( ! bp_docs_is_docs_component() ) {
+		return $template;
+	}
+
+	$do_theme_compat = class_exists( 'BP_Theme_Compat' ) && apply_filters( 'bp_docs_do_theme_compat', true, $template );
+
+	if ( $do_theme_compat ) {
+
 		do_action( 'bp_setup_theme_compat' );
+		$template = str_replace( 'archive', 'page', $template );
 
-		return str_replace( 'archive', 'page', $template );
+	} else {
 
-	if ( bp_docs_is_single_doc() && ( $new_template = bp_docs_locate_template( 'single-bp_doc.php' ) ) ) :
+		if ( bp_docs_is_single_doc() && ( $new_template = bp_docs_locate_template( 'single-bp_doc.php' ) ) ) :
 
-	elseif ( bp_docs_is_doc_create() && ( $new_template = bp_docs_locate_template( 'single-bp_doc.php' ) ) ) :
+		elseif ( bp_docs_is_doc_create() && ( $new_template = bp_docs_locate_template( 'single-bp_doc.php' ) ) ) :
 
-	elseif ( is_post_type_archive( bp_docs_get_post_type_name() ) && $new_template = bp_docs_locate_template( 'archive-bp_doc.php' ) ) :
+		elseif ( is_post_type_archive( bp_docs_get_post_type_name() ) && $new_template = bp_docs_locate_template( 'archive-bp_doc.php' ) ) :
 
-	endif;
+		endif;
 
-	// Custom template file exists
-	$template = !empty( $new_template ) ? $new_template : $template;
+		$template = !empty( $new_template ) ? $new_template : $template;
+	}
 
 	return apply_filters( 'bp_docs_template_include', $template );
 }
-add_filter( 'template_redirect', 'bp_docs_template_include' );
+add_filter( 'template_include', 'bp_docs_template_include', 6 );
 
 /**
  * Theme Compat
@@ -76,13 +85,15 @@ class BP_Docs_Theme_Compat {
 
 		add_filter( 'bp_get_template_stack', array( $this, 'add_plugin_templates_to_stack' ) );
 
+		add_filter( 'bp_get_buddypress_template', array( $this, 'query_templates' ) );
+
 		if ( bp_docs_is_global_directory() ) {
 
 			bp_update_is_directory( true, 'docs' );
 			do_action( 'bp_docs_screen_index' );
 
 			add_action( 'bp_template_include_reset_dummy_post_data', array( $this, 'directory_dummy_post' ) );
-			add_filter( 'bp_replace_the_content', array( $this, 'directory_content'    ) );
+			add_filter( 'bp_replace_the_content', array( $this, 'directory_content' ) );
 
 		} else if ( bp_docs_is_existing_doc() ) {
 
@@ -116,6 +127,11 @@ class BP_Docs_Theme_Compat {
 	function add_plugin_templates_to_stack( $stack ) {
 		$stack[] = BP_DOCS_INCLUDES_PATH . 'templates';
 		return $stack;
+	}
+
+	function query_templates( $templates ) {
+		$templates = array_merge( array( 'plugin-buddypress-docs.php' ), $templates );
+		return $templates;
 	}
 
 	/** Directory *************************************************************/
