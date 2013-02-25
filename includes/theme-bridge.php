@@ -15,10 +15,20 @@ if ( !defined( 'ABSPATH' ) ) exit;
 /**
  * Possibly intercept the template being loaded
  *
- * Listens to the 'template_include' filter and waits for a BP Docs post_type
- * to appear. When one is found, we look to see whether the current theme provides
- * its own version of the template; otherwise we fall back on the template shipped
- * with BuddyPress Docs.
+ * This function does two different things, depending on whether you're using BP
+ * 1.7's theme compatibility feature.
+ *  - If so, the function runs the 'bp_setup_theme_compat' hook, which tells BP
+ *    to run the theme compat layer
+ *  - If not, the function checks to see which page you intend to be looking at
+ *    and loads the correct top-level bp-docs template
+ *
+ * The theme compatibility feature kicks in automatically for users running BP
+ * 1.7+. If you are running 1.7+, but you do not want theme compat running for
+ * a given Docs template type (archive, single, create), you can filter
+ * 'bp_docs_do_theme_compat' and return false. This should only be done in the
+ * case of legacy templates; if you're customizing new top-level templates for
+ * Docs, you may put a file called plugin-buddypress-docs.php into the root of
+ * your theme.
  *
  * @since 1.2
  *
@@ -37,7 +47,6 @@ function bp_docs_template_include( $template = '' ) {
 	if ( $do_theme_compat ) {
 
 		do_action( 'bp_setup_theme_compat' );
-		$template = str_replace( 'archive', 'page', $template );
 
 	} else {
 
@@ -129,6 +138,15 @@ class BP_Docs_Theme_Compat {
 		return $stack;
 	}
 
+	/**
+	 * Add our custom top-level query template to the top of the query
+	 * template stack
+	 *
+	 * This ensures that users can provide a Docs-specific template at the
+	 * top-level of the rendering stack
+	 *
+	 * @since 1.3
+	 */
 	function query_templates( $templates ) {
 		$templates = array_merge( array( 'plugin-buddypress-docs.php' ), $templates );
 		return $templates;
