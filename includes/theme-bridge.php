@@ -162,7 +162,7 @@ class BP_Docs_Theme_Compat {
 	public function directory_dummy_post() {
 		bp_theme_compat_reset_post( array(
 			'ID'             => 0,
-			'post_title'     => __( 'BuddyPress Docs', 'buddypress' ),
+			'post_title'     => __( 'Docs Directory', 'buddypress' ),
 			'post_author'    => 0,
 			'post_date'      => 0,
 			'post_content'   => '',

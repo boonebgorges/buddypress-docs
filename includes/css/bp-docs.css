@@ -18,6 +18,14 @@
 	font-weight: bold;
 }
 
+body.bp-docs div.page ul {
+	list-style-type: none;
+}
+
+#bp-docs-all-docs {
+	width: auto;
+}
+
 .doc-tabs {
 	overflow: hidden;
 }

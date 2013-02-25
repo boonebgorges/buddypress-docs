@@ -112,6 +112,9 @@ class BP_Docs_Component extends BP_Component {
 		// AJAX handler for removing the edit lock when a user clicks away from Edit mode
 		add_action( 'wp_ajax_remove_edit_lock', array( $this, 'remove_edit_lock'        ) );
 
+		// Add body class
+		add_filter( 'bp_get_the_body_class', array( $this, 'body_class' ) );
+
 		add_action( 'bp_docs_init',             array( $this, 'set_includes_url' 	) );
 		add_action( 'wp_enqueue_scripts',       array( $this, 'enqueue_scripts' 	) );
 		add_action( 'wp_print_styles',          array( $this, 'enqueue_styles' 		) );
@@ -868,6 +871,19 @@ class BP_Docs_Component extends BP_Component {
 	 */
 	function set_includes_url() {
 		$this->includes_url = plugins_url() . '/buddypress-docs/includes/';
+	}
+
+	/**
+	 * Add a bp-docs class to bp-docs pages
+	 *
+	 * @since 1.3
+	 */
+	function body_class( $classes ) {
+		if ( bp_docs_is_docs_component() ) {
+			$classes[] = 'bp-docs';
+		}
+
+		return $classes;
 	}
 
 	/**
