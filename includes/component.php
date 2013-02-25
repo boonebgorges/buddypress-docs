@@ -601,18 +601,13 @@ class BP_Docs_Component extends BP_Component {
 	 * @return str The path of the preferred template
 	 */
 	function comments_template( $path ) {
-		if ( !bp_docs_is_bp_docs_page() )
+		if ( ! bp_docs_is_existing_doc() )
 			return $path;
 
 		$original_path = $path;
 
-		if ( !file_exists( $path ) ) {
-			$file = str_replace( STYLESHEETPATH, '', $path );
-
-			if ( file_exists( TEMPLATEPATH . $file ) )
-				$path = TEMPLATEPATH .  $file;
-			else
-				$path = BP_DOCS_INSTALL_PATH . 'includes/templates' . $file;
+		if ( ! $path = locate_template( 'docs/single/comments.php' ) ) {
+			$path = BP_DOCS_INSTALL_PATH . 'includes/templates/docs/single/comments.php';
 		}
 
 		return apply_filters( 'bp_docs_comment_template_path', $path, $original_path );
