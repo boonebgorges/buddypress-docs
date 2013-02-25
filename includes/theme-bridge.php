@@ -77,23 +77,29 @@ class BP_Docs_Theme_Compat {
 		add_filter( 'bp_get_template_stack', array( $this, 'add_plugin_templates_to_stack' ) );
 
 		if ( bp_docs_is_global_directory() ) {
-			bp_update_is_directory( true, 'docs' );
 
+			bp_update_is_directory( true, 'docs' );
 			do_action( 'bp_docs_screen_index' );
 
 			add_action( 'bp_template_include_reset_dummy_post_data', array( $this, 'directory_dummy_post' ) );
-			add_filter( 'bp_replace_the_content',                    array( $this, 'directory_content'    ) );
+			add_filter( 'bp_replace_the_content', array( $this, 'directory_content'    ) );
+
 		} else if ( bp_docs_is_existing_doc() ) {
+
 			if ( bp_docs_is_doc_history() ) {
 				$this->single_content_template = 'docs/single/history';
+				add_filter( 'bp_force_comment_status', '__return_false' );
 			} else if ( bp_docs_is_doc_edit() ) {
 				$this->single_content_template = 'docs/single/edit';
+				add_filter( 'bp_force_comment_status', '__return_false' );
 			} else {
 				$this->single_content_template = 'docs/single/index';
+				add_filter( 'bp_docs_allow_comment_section', '__return_false' );
 			}
 
 			add_action( 'bp_template_include_reset_dummy_post_data', array( $this, 'single_dummy_post' ) );
 			add_filter( 'bp_replace_the_content',                    array( $this, 'single_content'    ) );
+
 		}
 	}
 
