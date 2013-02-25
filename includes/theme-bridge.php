@@ -157,6 +157,7 @@ class BP_Docs_Theme_Compat {
 	 */
 	public function single_content() {
 		bp_buffer_template_part( $this->single_content_template );
+		return ' ';
 	}
 }
 new BP_Docs_Theme_Compat();
