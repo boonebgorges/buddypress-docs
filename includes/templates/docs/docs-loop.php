@@ -1,3 +1,5 @@
+<div id="buddypress">
+
 <?php include( apply_filters( 'bp_docs_header_template', bp_docs_locate_template( 'docs-header.php' ) ) ) ?>
 
 <div class="docs-info-header">
@@ -93,3 +95,5 @@
         <?php endif ?>
 
 <?php endif ?>
+
+</div><!-- /#buddypress -->

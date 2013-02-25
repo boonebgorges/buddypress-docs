@@ -84,6 +84,14 @@ class BP_Docs_Theme_Compat {
 			add_action( 'bp_template_include_reset_dummy_post_data', array( $this, 'directory_dummy_post' ) );
 			add_filter( 'bp_replace_the_content',                    array( $this, 'directory_content'    ) );
 		} else if ( bp_docs_is_existing_doc() ) {
+			if ( bp_docs_is_doc_history() ) {
+				$this->single_content_template = 'docs/single/history';
+			} else if ( bp_docs_is_doc_edit() ) {
+				$this->single_content_template = 'docs/single/edit';
+			} else {
+				$this->single_content_template = 'docs/single/index';
+			}
+
 			add_action( 'bp_template_include_reset_dummy_post_data', array( $this, 'single_dummy_post' ) );
 			add_filter( 'bp_replace_the_content',                    array( $this, 'single_content'    ) );
 		}
@@ -139,17 +147,7 @@ class BP_Docs_Theme_Compat {
 	 * @since BuddyPress (1.7)
 	 */
 	public function single_dummy_post() {
-		bp_theme_compat_reset_post( array(
-			'ID'             => 0,
-			'post_title'     => '<a href="' . bp_docs_get_doc_link( get_queried_object_id() ) . '">' . get_the_title() . '</a>',
-			'post_author'    => 0,
-			'post_date'      => 0,
-			'post_content'   => '',
-			'post_type'      => 'bp_docs',
-			'post_status'    => 'publish',
-			'is_archive'     => true,
-			'comment_status' => 'closed'
-		) );
+		bp_set_theme_compat_active();
 	}
 
 	/**
@@ -158,7 +156,7 @@ class BP_Docs_Theme_Compat {
 	 * @since BuddyPress (1.7)
 	 */
 	public function single_content() {
-		bp_buffer_template_part( 'docs/single/index' );
+		bp_buffer_template_part( $this->single_content_template );
 	}
 }
 new BP_Docs_Theme_Compat();
