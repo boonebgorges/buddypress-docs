@@ -418,7 +418,6 @@ function bp_docs_get_doc_settings( $doc_id = 0 ) {
 		$saved_settings = array();
 	}
 
-
 	$default_settings = array(
 		'read'          => 'anyone',
 		'edit'          => 'loggedin',
@@ -614,9 +613,11 @@ function bp_docs_update_doc_access( $doc_id, $access_setting = 'anyone' ) {
 			break;
 	}
 
-	$retval = wp_set_post_terms( $doc_id, $access_term, bp_docs_get_access_tax_name() );
+	if ( isset( $access_term ) ) {
+		$retval = wp_set_post_terms( $doc_id, $access_term, bp_docs_get_access_tax_name() );
+	}
 
-	if ( ! $retval || is_wp_error( $retval ) ) {
+	if ( empty( $retval ) || is_wp_error( $retval ) ) {
 		return false;
 	} else {
 		return true;
