@@ -24,6 +24,7 @@
 	.doc-tabs li {
 		float: left;
 		margin: 0 5px;
+		list-style-type: none;
 	}
 	.doc-tabs li:first-child {
 		margin-left: 0;
