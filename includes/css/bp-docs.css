@@ -294,6 +294,13 @@ div.doc-permissions {
 		clear: both;
 	}
 
+/* On theme-compat, can't float next to title */
+#buddypress div.doc-permissions {
+	float: none;
+	width: auto;
+	margin-bottom: 1em;
+}
+
 #doc-permissions-summary, #doc-group-summary {
 	font-size: 1.0em;
 	padding: 3px 12px;

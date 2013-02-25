@@ -161,4 +161,20 @@ class BP_Docs_Theme_Compat {
 }
 new BP_Docs_Theme_Compat();
 
+/**
+ * Wrapper function for bp_is_theme_compat_active()
+ *
+ * Needed for backward compatibility with BP < 1.7
+ *
+ * @since 1.3
+ * @return bool
+ */
+function bp_docs_is_theme_compat_active() {
+	$is_active = false;
 
+	if ( function_exists( 'bp_is_theme_compat_active' ) ) {
+		$is_active = bp_is_theme_compat_active();
+	}
+
+	return $is_active;
+}

@@ -1620,3 +1620,14 @@ function bp_docs_get_sidebar() {
 		get_sidebar( 'buddypress' );
 	}
 }
+
+function bp_docs_render_permissions_snapshot() {
+	if ( apply_filters( 'bp_docs_allow_access_settings', true ) )  {
+		?>
+		<div class="doc-permissions">
+			<?php bp_docs_doc_permissions_snapshot() ?>
+		</div>
+		<?php
+	}
+}
+add_action( 'bp_docs_single_doc_header_fields', 'bp_docs_render_permissions_snapshot' );
