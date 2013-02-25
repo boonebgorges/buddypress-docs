@@ -174,9 +174,9 @@ class BP_Docs_Theme_Compat {
 	}
 
 	/**
-	 * Filter the_content with the members index template part
+	 * Filter the_content with the docs index template part
 	 *
-	 * @since BuddyPress (1.7)
+	 * @since 1.3
 	 */
 	public function directory_content() {
 		bp_buffer_template_part( 'docs/docs-loop' );
@@ -185,18 +185,24 @@ class BP_Docs_Theme_Compat {
 	/** Single ****************************************************************/
 
 	/**
-	 * Update the global $post with the displayed user's data
+	 * We're not setting a dummy post for our post type, but we do need to
+	 * activate theme compat
 	 *
-	 * @since BuddyPress (1.7)
+	 * @todo This seems very wrong. Figure it out
+	 *
+	 * @since 1.3
 	 */
 	public function single_dummy_post() {
 		bp_set_theme_compat_active();
 	}
 
 	/**
-	 * Filter the_content with the members' single home template part
+	 * Filter the_content with the single doc template part
 	 *
-	 * @since BuddyPress (1.7)
+	 * We return ' ' as a hack, to make sure that the_content doesn't
+	 * display extra crap at the end of our documents
+	 *
+	 * @since 1.3
 	 */
 	public function single_content() {
 		bp_buffer_template_part( $this->single_content_template );
@@ -206,9 +212,9 @@ class BP_Docs_Theme_Compat {
 	/** Create ****************************************************************/
 
 	/**
-	 * Update the global $post with the displayed user's data
+	 * Update the global $post with dummy data regarding doc creation
 	 *
-	 * @since BuddyPress (1.7)
+	 * @since 1.3
 	 */
 	public function create_dummy_post() {
 		bp_theme_compat_reset_post( array(
@@ -225,9 +231,9 @@ class BP_Docs_Theme_Compat {
 	}
 
 	/**
-	 * Filter the_content with the members' single home template part
+	 * Filter the_content with the doc creation template part
 	 *
-	 * @since BuddyPress (1.7)
+	 * @since 1.3
 	 */
 	public function create_content() {
 		bp_buffer_template_part( 'docs/single/edit' );
