@@ -934,7 +934,8 @@ class BP_Docs_Component extends BP_Component {
 			wp_enqueue_style( 'bp-docs-css', $this->includes_url . 'css/bp-docs.css' );
 		}
 
-		if ( !empty( $this->query->current_view ) && ( 'edit' == $this->query->current_view || 'create' == $this->query->current_view ) ) {
+		if ( bp_docs_is_doc_edit() || bp_docs_is_doc_create() ) {
+			wp_enqueue_style( 'bp-docs-edit-css', $this->includes_url . 'css/edit.css' );
 			wp_enqueue_style( 'thickbox' );
 		}
 	}
