@@ -152,7 +152,8 @@ div.docs-info-header {
 
 /* TOGGLES */
 
-.toggle-switch {
+.toggle-switch,
+.entry-content p.toggle-switch {
 	display: block;
 	font-weight: bold;
 	font-size: 1.1em;
@@ -185,7 +186,8 @@ div.docs-info-header {
 		margin: 16px 0 0;
 	}
 
-.toggle-content{
+.toggle-content {
+	width: 100%;
 	-moz-border-radius-bottomleft: 3px;
 	-webkit-border-bottom-left-radius: 3px;
 	-moz-border-radius-bottomright: 3px;
@@ -240,7 +242,7 @@ p#filter-by-tag {
 }
 
 .groups-cell ul {
-	list-style-type: none;	
+	list-style-type: none;
 	padding-left: 0;
 }
 .groups-cell ul li {
