@@ -50,6 +50,17 @@ form.standard-form input[type="text"]#doc-title {
 	padding: 2px;
 }
 
+/* Theme compat: Visual mode editor toolbar */
+#buddypress table.mceLayout td,
+#buddypress table.mceLayout tr th {
+	padding: inherit;
+}
+
+/* Theme compat: Text mode editor */
+#buddypress .standard-form textarea#doc_content {
+	width: 100%;
+}
+
 /* Colorbox idle popup */
 /*
     ColorBox Core Style:
