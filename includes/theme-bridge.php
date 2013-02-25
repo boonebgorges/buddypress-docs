@@ -100,6 +100,9 @@ class BP_Docs_Theme_Compat {
 			add_action( 'bp_template_include_reset_dummy_post_data', array( $this, 'single_dummy_post' ) );
 			add_filter( 'bp_replace_the_content',                    array( $this, 'single_content'    ) );
 
+		} else if ( bp_docs_is_doc_create() ) {
+			add_action( 'bp_template_include_reset_dummy_post_data', array( $this, 'create_dummy_post' ) );
+			add_filter( 'bp_replace_the_content',                    array( $this, 'create_content'    ) );
 		}
 	}
 
@@ -164,6 +167,36 @@ class BP_Docs_Theme_Compat {
 	public function single_content() {
 		bp_buffer_template_part( $this->single_content_template );
 		return ' ';
+	}
+
+	/** Create ****************************************************************/
+
+	/**
+	 * Update the global $post with the displayed user's data
+	 *
+	 * @since BuddyPress (1.7)
+	 */
+	public function create_dummy_post() {
+		bp_theme_compat_reset_post( array(
+			'ID'             => 0,
+			'post_title'     => __( 'Create a Doc', 'buddypress' ),
+			'post_author'    => 0,
+			'post_date'      => 0,
+			'post_content'   => '',
+			'post_type'      => 'bp_docs',
+			'post_status'    => 'publish',
+			'is_archive'     => true,
+			'comment_status' => 'closed'
+		) );
+	}
+
+	/**
+	 * Filter the_content with the members' single home template part
+	 *
+	 * @since BuddyPress (1.7)
+	 */
+	public function create_content() {
+		bp_buffer_template_part( 'docs/single/edit' );
 	}
 }
 new BP_Docs_Theme_Compat();
