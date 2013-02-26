@@ -100,6 +100,9 @@ class BP_Docs_Component extends BP_Component {
 		// Hook the create/edit activity function
 		add_action( 'bp_docs_doc_saved', array( &$this, 'post_activity' ) );
 
+		// Delete activity items when a post is trashed
+		add_action( 'transition_post_status', array( $this, 'delete_doc_activity' ), 10, 3 );
+
 		/**
 		 * MISC
 		 */
@@ -111,6 +114,9 @@ class BP_Docs_Component extends BP_Component {
 
 		// AJAX handler for removing the edit lock when a user clicks away from Edit mode
 		add_action( 'wp_ajax_remove_edit_lock', array( $this, 'remove_edit_lock'        ) );
+
+		// Add body class
+		add_filter( 'bp_get_the_body_class', array( $this, 'body_class' ) );
 
 		add_action( 'bp_docs_init',             array( $this, 'set_includes_url' 	) );
 		add_action( 'wp_enqueue_scripts',       array( $this, 'enqueue_scripts' 	) );
@@ -157,6 +163,54 @@ class BP_Docs_Component extends BP_Component {
 
 		$this->set_current_item_type();
 		$this->set_current_view();
+	}
+
+	/**
+	 * Sets up Docs menu under My Account toolbar
+	 *
+	 * @since 1.3
+	 */
+	public function setup_admin_bar() {
+		global $bp;
+
+		$wp_admin_nav = array();
+
+		if ( is_user_logged_in() ) {
+
+			$title = __( 'Docs', 'buddypress' );
+
+			// Add the "My Account" sub menus
+			$wp_admin_nav[] = array(
+				'parent' => $bp->my_account_menu_id,
+				'id'     => 'my-account-' . $this->id,
+				'title'  => $title,
+				'href'   => bp_docs_get_mydocs_link(),
+			);
+
+			$wp_admin_nav[] = array(
+				'parent' => 'my-account-' . $this->id,
+				'id'     => 'my-account-' . $this->id . '-started',
+				'title'  => __( 'Started By Me', 'bp-docs' ),
+				'href'   => bp_docs_get_mydocs_started_link(),
+			);
+
+			$wp_admin_nav[] = array(
+				'parent' => 'my-account-' . $this->id,
+				'id'     => 'my-account-' . $this->id . '-edited',
+				'title'  => __( 'Edited By Me', 'bp-docs' ),
+				'href'   => bp_docs_get_mydocs_edited_link(),
+			);
+
+			$wp_admin_nav[] = array(
+				'parent' => 'my-account-' . $this->id,
+				'id'     => 'my-account-' . $this->id . '-create',
+				'title'  => __( 'Create New Doc', 'bp-docs' ),
+				'href'   => bp_docs_get_create_link(),
+			);
+
+		}
+
+		parent::setup_admin_bar( $wp_admin_nav );
 	}
 
 	/**
@@ -429,18 +483,11 @@ class BP_Docs_Component extends BP_Component {
 			if ( bp_docs_current_user_can( 'manage' ) ) {
 				$delete_doc_id = get_queried_object_id();
 
-				do_action( 'bp_docs_before_doc_delete', $delete_doc_id );
-
-				$delete_args = array(
-					'ID'		=> $delete_doc_id,
-					'post_status'	=> 'trash'
-				);
-
-				wp_update_post( $delete_args );
-
-				do_action( 'bp_docs_doc_deleted', $delete_args );
-
-				bp_core_add_message( __( 'Doc successfully deleted!', 'bp-docs' ) );
+				if ( bp_docs_trash_doc( $delete_doc_id ) ) {
+					bp_core_add_message( __( 'Doc successfully deleted!', 'bp-docs' ) );
+				} else {
+					bp_core_add_message( __( 'Could not delete doc.', 'bp-docs' ) );
+				}
 			} else {
 				bp_core_add_message( __( 'You do not have permission to delete that doc.', 'bp-docs' ), 'error' );
 			}
@@ -601,18 +648,13 @@ class BP_Docs_Component extends BP_Component {
 	 * @return str The path of the preferred template
 	 */
 	function comments_template( $path ) {
-		if ( !bp_docs_is_bp_docs_page() )
+		if ( ! bp_docs_is_existing_doc() )
 			return $path;
 
 		$original_path = $path;
 
-		if ( !file_exists( $path ) ) {
-			$file = str_replace( STYLESHEETPATH, '', $path );
-
-			if ( file_exists( TEMPLATEPATH . $file ) )
-				$path = TEMPLATEPATH .  $file;
-			else
-				$path = BP_DOCS_INSTALL_PATH . 'includes/templates' . $file;
+		if ( ! $path = locate_template( 'docs/single/comments.php' ) ) {
+			$path = BP_DOCS_INSTALL_PATH . 'includes/templates/docs/single/comments.php';
 		}
 
 		return apply_filters( 'bp_docs_comment_template_path', $path, $original_path );
@@ -771,6 +813,41 @@ class BP_Docs_Component extends BP_Component {
 	}
 
 	/**
+	 * Delete activity associated with a Doc
+	 *
+	 * Run on transition_post_status, to catch deletes from all locations
+	 *
+	 * @since 1.3
+	 *
+	 * @param string $new_status
+	 * @param string $old_status
+	 * @param obj WP_Post object
+	 */
+	public function delete_doc_activity( $new_status, $old_status, $post ) {
+		if ( bp_docs_get_post_type_name() != $post->post_type ) {
+			return;
+		}
+
+		if ( 'trash' != $new_status ) {
+			return;
+		}
+
+
+		$activities = bp_activity_get(
+			array(
+				'filter' => array(
+					'secondary_id' => $post->ID,
+					'component' => 'docs',
+				),
+			)
+		);
+
+		foreach ( (array) $activities['activities'] as $activity ) {
+			bp_activity_delete( array( 'id' => $activity->id ) );
+		}
+	}
+
+	/**
 	 * MISCELLANEOUS
 	 */
 
@@ -876,6 +953,19 @@ class BP_Docs_Component extends BP_Component {
 	}
 
 	/**
+	 * Add a bp-docs class to bp-docs pages
+	 *
+	 * @since 1.3
+	 */
+	function body_class( $classes ) {
+		if ( bp_docs_is_docs_component() ) {
+			$classes[] = 'bp-docs';
+		}
+
+		return $classes;
+	}
+
+	/**
 	 * Loads JavaScript
 	 *
 	 * @package BuddyPress Docs
@@ -939,7 +1029,8 @@ class BP_Docs_Component extends BP_Component {
 			wp_enqueue_style( 'bp-docs-css', $this->includes_url . 'css/bp-docs.css' );
 		}
 
-		if ( !empty( $this->query->current_view ) && ( 'edit' == $this->query->current_view || 'create' == $this->query->current_view ) ) {
+		if ( bp_docs_is_doc_edit() || bp_docs_is_doc_create() ) {
+			wp_enqueue_style( 'bp-docs-edit-css', $this->includes_url . 'css/edit.css' );
 			wp_enqueue_style( 'thickbox' );
 		}
 	}

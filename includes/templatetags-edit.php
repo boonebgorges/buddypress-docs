@@ -25,7 +25,7 @@ function bp_docs_edit_doc_title() {
 	 * @return string Doc title
 	 */
 	function bp_docs_get_edit_doc_title() {
-		$title = esc_attr( get_the_title() );
+		$title = bp_docs_is_existing_doc() ? esc_attr( get_the_title() ) : '';
 		return apply_filters( 'bp_docs_get_edit_doc_title', $title );
 	}
 

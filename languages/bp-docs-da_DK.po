@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: BuddyPress Docs\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/buddypress-docs\n"
 "POT-Creation-Date: 2012-11-17 16:37:01+00:00\n"
-"PO-Revision-Date: 2012-11-23 09:43+0100\n"
+"PO-Revision-Date: 2013-01-22 11:13+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -207,11 +207,11 @@ msgstr "Søg i dokumenter"
 
 #: includes/component.php:232
 msgid "Docs <span>%d</span>"
-msgstr "Dokumenter <span>%d</span>"
+msgstr "Docs <span>%d</span>"
 
 #: includes/component.php:241
 msgid "My Docs "
-msgstr "Dokumenter"
+msgstr "Docs"
 
 #: includes/component.php:241
 msgid "%s&#8217;s Docs"
@@ -341,7 +341,7 @@ msgstr "%s <span>%d</span>"
 #: includes/integration-groups.php:720 includes/integration-groups.php:830
 #: includes/integration-groups.php:895
 msgid "Docs"
-msgstr "Dokumenter"
+msgstr "Docs"
 
 #: includes/integration-groups.php:733
 #: includes/templates/docs/docs-header.php:30 includes/templatetags.php:824

@@ -3,8 +3,8 @@ Contributors: boonebgorges, cuny-academic-commons
 Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.3, BuddyPress 1.5
-Tested up to: WordPress 3.5, BuddyPress 1.6.2
-Stable tag: 1.2.8
+Tested up to: WordPress 3.5.1, BuddyPress 1.6.4
+Stable tag: 1.3
  
 Adds collaborative Docs to BuddyPress.
 
@@ -34,6 +34,24 @@ This plugin is in active development. For feature requests and bug reports, visi
 1. Sit back and watch the jack roll in
 
 == Changelog ==
+
+= 1.3 =
+* Adds theme compatibility layer, for better formatting with all themes
+* Full compatibility with BuddyPress 1.7
+* Don't show permissions snapshot to non-logged-in users
+* Adds Docs link to My Account toolbar menu
+* Delete Doc activity when deleting Doc
+* Delete local Doc tags when deleting Doc from any location
+* Improved markup for Create New Docs button
+* Don't show History quicklink on directories when revisions are disabled
+
+= 1.2.10 =
+* Improved compatibility with BP Group Hierarchy
+* Fixes for global directory pagination
+
+= 1.2.9 =
+* Improved access protection, for better compatibility with bbPress 2.x and other plugins
+* Updated Russian translation
 
 = 1.2.8 =
 * Fixes problem with group associations and privacy levels of new docs

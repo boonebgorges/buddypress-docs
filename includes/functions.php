@@ -204,10 +204,22 @@ function bp_docs_locate_template( $template = '', $load = false, $require_once =
 
 	$template_path = apply_filters( 'bp_docs_locate_template', $template_path, $template );
 
-	if ( $load ) {
-		load_template( $template_path, $require_once );
-	} else {
-		return $template_path;
+	if ( $template_path ) {
+		if ( $load ) {
+			load_template( $template_path, $require_once );
+		} else {
+			return $template_path;
+		}
+	} else if ( function_exists( 'is_buddypress' ) ) {
+
+		if ( bp_docs_is_docs_component() ) {
+			status_header( 200 );
+			$wp_query->is_page     = true;
+			$wp_query->is_singular = true;
+			$wp_query->is_404      = false;
+		}
+
+		do_action( 'bp_setup_theme_compat' );
 	}
 }
 
@@ -406,7 +418,6 @@ function bp_docs_get_doc_settings( $doc_id = 0 ) {
 		$saved_settings = array();
 	}
 
-
 	$default_settings = array(
 		'read'          => 'anyone',
 		'edit'          => 'loggedin',
@@ -422,6 +433,31 @@ function bp_docs_get_doc_settings( $doc_id = 0 ) {
 
 function bp_docs_define_tiny_mce() {
 	BP_Docs_Query::define_wp_tiny_mce();
+}
+
+/**
+ * Send a Doc to the trash
+ *
+ * @since 1.3
+ * @param int $doc_id
+ * @return bool
+ */
+function bp_docs_trash_doc( $doc_id = 0 ) {
+	do_action( 'bp_docs_before_doc_delete', $doc_id );
+
+	$delete_args = array(
+		'ID' => $doc_id,
+		'post_status' => 'trash'
+	);
+
+	$deleted = wp_update_post( $delete_args );
+
+	if ( $deleted ) {
+		do_action( 'bp_docs_doc_deleted', $delete_args );
+		return true;
+	}
+
+	return false;
 }
 
 /**
@@ -602,9 +638,11 @@ function bp_docs_update_doc_access( $doc_id, $access_setting = 'anyone' ) {
 			break;
 	}
 
-	$retval = wp_set_post_terms( $doc_id, $access_term, bp_docs_get_access_tax_name() );
+	if ( isset( $access_term ) ) {
+		$retval = wp_set_post_terms( $doc_id, $access_term, bp_docs_get_access_tax_name() );
+	}
 
-	if ( ! $retval || is_wp_error( $retval ) ) {
+	if ( empty( $retval ) || is_wp_error( $retval ) ) {
 		return false;
 	} else {
 		return true;

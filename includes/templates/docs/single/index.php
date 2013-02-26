@@ -1,5 +1,4 @@
-
-<?php if ( have_posts() ) : while ( have_posts() ) : the_post() ?>
+<div id="buddypress">
 
 	<?php include( apply_filters( 'bp_docs_header_template', bp_docs_locate_template( 'docs-header.php' ) ) ) ?>
 
@@ -20,8 +19,10 @@
 		<?php bp_docs_inline_toggle_js() ?>
 	<?php endif ?>
 
+	<?php /* Quirk: We only need this if not running theme compat */ ?>
+
 	<div class="doc-content">
-		<?php the_content() ?>
+		<?php bp_docs_the_content() ?>
 	</div>
 
 	<div class="doc-meta">
@@ -31,14 +32,5 @@
 	<?php if ( apply_filters( 'bp_docs_allow_comment_section', true ) ) : ?>
 		<?php comments_template( '/docs/single/comments.php' ) ?>
 	<?php endif ?>
-
-	<?php endwhile; ?>
-
-<?php else : ?>
-
-	<p><?php _e( 'No Doc by this name exists.', 'bp-docs' ) ?></p>
-
-	<p><?php printf( __( '<a href="%1$s">View all Docs in this group</a> or <a href="%2$s">create a new Doc</a>.', 'bp-docs' ), bp_docs_get_item_docs_link(), bp_docs_get_item_docs_link() . 'create' ) ?></p>
-
-<?php endif; ?>
+</div>
 

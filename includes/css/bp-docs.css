@@ -18,12 +18,26 @@
 	font-weight: bold;
 }
 
+body.bp-docs div.page ul {
+	list-style-type: none;
+}
+
+#bp-docs-all-docs {
+	width: auto;
+}
+
+/* Make it look decent on theme compat */
+#buddypress #bp-docs-all-docs li {
+	background: #eee;
+}
+
 .doc-tabs {
 	overflow: hidden;
 }
 	.doc-tabs li {
 		float: left;
 		margin: 0 5px;
+		list-style-type: none;
 	}
 	.doc-tabs li:first-child {
 		margin-left: 0;
@@ -152,7 +166,8 @@ div.docs-info-header {
 
 /* TOGGLES */
 
-.toggle-switch {
+.toggle-switch,
+.entry-content p.toggle-switch {
 	display: block;
 	font-weight: bold;
 	font-size: 1.1em;
@@ -185,7 +200,8 @@ div.docs-info-header {
 		margin: 16px 0 0;
 	}
 
-.toggle-content{
+.toggle-content {
+	width: 100%;
 	-moz-border-radius-bottomleft: 3px;
 	-webkit-border-bottom-left-radius: 3px;
 	-moz-border-radius-bottomright: 3px;
@@ -240,7 +256,7 @@ p#filter-by-tag {
 }
 
 .groups-cell ul {
-	list-style-type: none;	
+	list-style-type: none;
 	padding-left: 0;
 }
 .groups-cell ul li {
@@ -293,6 +309,13 @@ div.doc-permissions {
 	div.doc-permissions div:last-child {
 		clear: both;
 	}
+
+/* On theme-compat, can't float next to title */
+#buddypress div.doc-permissions {
+	float: none;
+	width: auto;
+	margin-bottom: 1em;
+}
 
 #doc-permissions-summary, #doc-group-summary {
 	font-size: 1.0em;

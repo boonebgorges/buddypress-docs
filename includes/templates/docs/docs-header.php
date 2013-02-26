@@ -8,15 +8,11 @@
 <?php if ( bp_docs_is_existing_doc() ) : ?>
 
 	<div id="bp-docs-single-doc-header">
-		<h2 class="doc-title"><?php the_title() ?></h2>
-
-		<?php if ( apply_filters( 'bp_docs_allow_access_settings', true ) ) : ?>
-			<div class="doc-permissions">
-
-				<?php bp_docs_doc_permissions_snapshot() ?>
-
-			</div>
+		<?php if ( ! bp_docs_is_theme_compat_active() ) : ?>
+			<h2 class="doc-title"><?php the_title() ?></h2>
 		<?php endif ?>
+
+		<?php do_action( 'bp_docs_single_doc_header_fields' ) ?>
 	</div>
 
 	<div class="doc-tabs">

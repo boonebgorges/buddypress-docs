@@ -28,6 +28,12 @@ class BP_Docs_Wikitext {
 	 * @since 1.2
 	 */
 	function bracket_links( $content ) {
+		// Don't do this on a non-Doc
+		global $post;
+
+		if ( empty( $post->post_type ) || $post->post_type != bp_docs_get_post_type_name() ) {
+			return $content;
+		}
 
 		// Find the text enclosed in double brackets.
 		// Letters, numbers, spaces, parentheses, pipes
@@ -64,7 +70,7 @@ class BP_Docs_Wikitext {
 		}
 
 		// Exclude docs from other groups. Todo: move this out
-	
+
 		// Query for all the current group's docs
 		if ( isset( $bp->groups->current_group->id ) ) {
 			$query_args = array(
@@ -81,20 +87,20 @@ class BP_Docs_Wikitext {
 				'showposts' => '-1'
 			);
 		}
-		
+
 		$this_group_docs = new WP_Query( $query_args );
-		
+
 		$this_group_doc_ids = array();
 		foreach( $this_group_docs->posts as $gpost ) {
 			$this_group_doc_ids[] = $gpost->ID;
 		}
-		
+
 		if ( !empty( $this_group_doc_ids ) ) {
 			$in_clause = " AND $wpdb->posts.ID IN (" . implode(',', $this_group_doc_ids ) . ")";
 		} else {
 			$in_clause = '';
 		}
-		
+
 
 		// Look for a page with this title. WP_Query does not allow this for some reason
 		$docs = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->posts WHERE post_title = %s AND post_type = %s {$in_clause}", $link_page, bp_docs_get_post_type_name() ) );
