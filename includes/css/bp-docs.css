@@ -26,6 +26,11 @@ body.bp-docs div.page ul {
 	width: auto;
 }
 
+/* Make it look decent on theme compat */
+#buddypress #bp-docs-all-docs li {
+	background: #eee;
+}
+
 .doc-tabs {
 	overflow: hidden;
 }
