@@ -1234,7 +1234,7 @@ function bp_docs_slug() {
  * At the moment, the group-specific stuff is hard coded in here.
  * @todo Get the group stuff out
  */
-function bp_docs_tabs( $show_create_button = true) {
+function bp_docs_tabs( $show_create_button = true ) {
 	$current_view = '';
 
 	?>
@@ -1255,12 +1255,10 @@ function bp_docs_tabs( $show_create_button = true) {
 			<?php endif ?>
 
 		<?php endif ?>
-		
-  <?php if( $show_create_button && ! bp_docs_is_doc_create() && bp_docs_current_user_can( 'create' ) ) : ?>
-  		<li class="doc-tabs-create-button">
-				<?php bp_docs_create_button() ?>
-  		</li>
-  <?php endif; ?>
+
+		<?php if ( $show_create_button ) : ?>
+			<?php bp_docs_create_button() ?>
+		<?php endif ?>
 
 	</ul>
 	<?php
@@ -1273,7 +1271,7 @@ function bp_docs_tabs( $show_create_button = true) {
  */
 function bp_docs_create_button() {
 	if ( ! bp_docs_is_doc_create() && bp_docs_current_user_can( 'create' ) ) {
-		echo '<a class="button" id="bp-create-doc-button" href="' . bp_docs_get_create_link() . '">' . __( "Create New Doc", 'bp-docs' ) . '</a>';
+		echo apply_filters( 'bp_docs_create_button', '<a class="button" id="bp-create-doc-button" href="' . bp_docs_get_create_link() . '">' . __( "Create New Doc", 'bp-docs' ) . '</a>' );
 	}
 }
 
