@@ -15,11 +15,9 @@ class BP_Docs_UnitTest_Factory_For_Doc extends WP_UnitTest_Factory_For_Thing {
 	function create_object( $args ) {
 		$post_id = wp_insert_post( $args );
 
-		/*
-		if ( isset( $args['task_list_id'] ) ) {
-			update_post_meta( $post_id, '_cp-task-list-id', $args['task_list_id'] );
+		if ( isset( $args['group'] ) ) {
+			bp_docs_set_associated_group_id( $post_id, $args['group'] );
 		}
-		*/
 
 		return $post_id;
 	}

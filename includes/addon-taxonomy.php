@@ -46,7 +46,7 @@ class BP_Docs_Taxonomy {
 		add_action( 'bp_docs_doc_saved', 	array( $this, 'save_post' ) );
 
 		// When a doc is deleted, take its terms out of the local taxonomy
-		add_action( 'bp_docs_before_doc_delete', array( $this, 'delete_post' ) );
+		add_action( 'transition_post_status', array( $this, 'delete_post' ), 10, 3 );
 
 		// Display a doc's terms on its single doc page
 		add_action( 'bp_docs_single_doc_meta', 	array( $this, 'show_terms' ) );
@@ -167,7 +167,17 @@ class BP_Docs_Taxonomy {
 	 *
 	 * @param int $doc_id
 	 */
-	function delete_post( $doc_id ) {
+	function delete_post( $new_status, $old_status, $post ) {
+		if ( bp_docs_get_post_type_name() != $post->post_type ) {
+			return;
+		}
+
+		if ( 'trash' != $new_status ) {
+			return;
+		}
+
+		$doc_id = $post->ID;
+
 		// Terms for the item (group, user, etc)
 		$item_terms 	= $this->get_item_terms();
 		// Terms for the doc
