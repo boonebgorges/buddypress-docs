@@ -38,6 +38,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 = 1.3 =
 * Adds theme compatibility layer, for better formatting with all themes
 * Full compatibility with BuddyPress 1.7
+* Don't show permissions snapshot to non-logged-in users
 
 = 1.2.10 =
 * Improved compatibility with BP Group Hierarchy
