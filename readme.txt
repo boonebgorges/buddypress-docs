@@ -39,6 +39,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Adds theme compatibility layer, for better formatting with all themes
 * Full compatibility with BuddyPress 1.7
 * Don't show permissions snapshot to non-logged-in users
+* Adds Docs link to My Account toolbar menu
 
 = 1.2.10 =
 * Improved compatibility with BP Group Hierarchy
