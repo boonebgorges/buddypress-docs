@@ -223,6 +223,38 @@ function bp_docs_info_header() {
 	}
 
 /**
+ * Echoes the content of a Doc
+ *
+ * @since 1.3
+ */
+function bp_docs_the_content() {
+	echo bp_docs_get_the_content();
+}
+	/**
+	 * Returns the content of a Doc
+	 *
+	 * We need to use this special function, because the BP theme compat
+	 * layer messes with the filters on the_content, and we can't rely on
+	 * using that theme function within the context of a Doc
+	 *
+	 * @since 1.3
+	 *
+	 * @return string $content
+	 */
+	function bp_docs_get_the_content() {
+		if ( function_exists( 'bp_restore_all_filters' ) ) {
+			bp_restore_all_filters( 'the_content' );
+		}
+
+		$content = apply_filters( 'the_content', get_queried_object()->post_content );
+
+		if ( function_exists( 'bp_remove_all_filters' ) ) {
+			bp_remove_all_filters( 'the_content' );
+		}
+
+		return $content;
+	}
+/**
  * Filters the output of the doc list header for search terms
  *
  * @package BuddyPress Docs

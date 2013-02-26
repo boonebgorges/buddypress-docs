@@ -22,13 +22,7 @@
 	<?php /* Quirk: We only need this if not running theme compat */ ?>
 
 	<div class="doc-content">
-		<?php if ( bp_docs_is_theme_compat_active() ) : ?>
-			<?php the_content() ?>
-		<?php else : ?>
-			<?php if ( have_posts() ) : while ( have_posts() ) : the_post() ?>
-				<?php the_content() ?>
-			<?php endwhile; endif; ?>
-		<?php endif ?>
+		<?php bp_docs_the_content() ?>
 	</div>
 
 	<div class="doc-meta">
