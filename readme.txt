@@ -40,6 +40,8 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Full compatibility with BuddyPress 1.7
 * Don't show permissions snapshot to non-logged-in users
 * Adds Docs link to My Account toolbar menu
+* Delete Doc activity when deleting Doc
+* Delete local Doc tags when deleting Doc from any location
 
 = 1.2.10 =
 * Improved compatibility with BP Group Hierarchy
