@@ -1653,8 +1653,15 @@ function bp_docs_get_sidebar() {
 	}
 }
 
+/**
+ * Renders the Permissions Snapshot
+ *
+ * @since 1.3
+ */
 function bp_docs_render_permissions_snapshot() {
-	if ( apply_filters( 'bp_docs_allow_access_settings', true ) )  {
+	$show_snapshot = is_user_logged_in();
+
+	if ( apply_filters( 'bp_docs_allow_access_settings', $show_snapshot ) )  {
 		?>
 		<div class="doc-permissions">
 			<?php bp_docs_doc_permissions_snapshot() ?>
