@@ -163,6 +163,54 @@ class BP_Docs_Component extends BP_Component {
 	}
 
 	/**
+	 * Sets up Docs menu under My Account toolbar
+	 *
+	 * @since 1.3
+	 */
+	public function setup_admin_bar() {
+		global $bp;
+
+		$wp_admin_nav = array();
+
+		if ( is_user_logged_in() ) {
+
+			$title = __( 'Docs', 'buddypress' );
+
+			// Add the "My Account" sub menus
+			$wp_admin_nav[] = array(
+				'parent' => $bp->my_account_menu_id,
+				'id'     => 'my-account-' . $this->id,
+				'title'  => $title,
+				'href'   => bp_docs_get_mydocs_link(),
+			);
+
+			$wp_admin_nav[] = array(
+				'parent' => 'my-account-' . $this->id,
+				'id'     => 'my-account-' . $this->id . '-started',
+				'title'  => __( 'Started By Me', 'bp-docs' ),
+				'href'   => bp_docs_get_mydocs_started_link(),
+			);
+
+			$wp_admin_nav[] = array(
+				'parent' => 'my-account-' . $this->id,
+				'id'     => 'my-account-' . $this->id . '-edited',
+				'title'  => __( 'Edited By Me', 'bp-docs' ),
+				'href'   => bp_docs_get_mydocs_edited_link(),
+			);
+
+			$wp_admin_nav[] = array(
+				'parent' => 'my-account-' . $this->id,
+				'id'     => 'my-account-' . $this->id . '-create',
+				'title'  => __( 'Create New Doc', 'bp-docs' ),
+				'href'   => bp_docs_get_create_link(),
+			);
+
+		}
+
+		parent::setup_admin_bar( $wp_admin_nav );
+	}
+
+	/**
 	 * In Docs 1.2 through 1.2.2, there was an error in which Docs registered
 	 * a bp-pages entry. This fixes the error
 	 *
