@@ -100,6 +100,9 @@ class BP_Docs_Component extends BP_Component {
 		// Hook the create/edit activity function
 		add_action( 'bp_docs_doc_saved', array( &$this, 'post_activity' ) );
 
+		// Delete activity items when a post is trashed
+		add_action( 'transition_post_status', array( $this, 'delete_doc_activity' ), 10, 3 );
+
 		/**
 		 * MISC
 		 */
@@ -480,18 +483,11 @@ class BP_Docs_Component extends BP_Component {
 			if ( bp_docs_current_user_can( 'manage' ) ) {
 				$delete_doc_id = get_queried_object_id();
 
-				do_action( 'bp_docs_before_doc_delete', $delete_doc_id );
-
-				$delete_args = array(
-					'ID'		=> $delete_doc_id,
-					'post_status'	=> 'trash'
-				);
-
-				wp_update_post( $delete_args );
-
-				do_action( 'bp_docs_doc_deleted', $delete_args );
-
-				bp_core_add_message( __( 'Doc successfully deleted!', 'bp-docs' ) );
+				if ( bp_docs_trash_doc( $delete_doc_id ) ) {
+					bp_core_add_message( __( 'Doc successfully deleted!', 'bp-docs' ) );
+				} else {
+					bp_core_add_message( __( 'Could not delete doc.', 'bp-docs' ) );
+				}
 			} else {
 				bp_core_add_message( __( 'You do not have permission to delete that doc.', 'bp-docs' ), 'error' );
 			}
@@ -814,6 +810,41 @@ class BP_Docs_Component extends BP_Component {
 		do_action( 'bp_docs_after_activity_save', $activity_id, $args );
 
 		return $activity_id;
+	}
+
+	/**
+	 * Delete activity associated with a Doc
+	 *
+	 * Run on transition_post_status, to catch deletes from all locations
+	 *
+	 * @since 1.3
+	 *
+	 * @param string $new_status
+	 * @param string $old_status
+	 * @param obj WP_Post object
+	 */
+	public function delete_doc_activity( $new_status, $old_status, $post ) {
+		if ( bp_docs_get_post_type_name() != $post->post_type ) {
+			return;
+		}
+
+		if ( 'trash' != $new_status ) {
+			return;
+		}
+
+
+		$activities = bp_activity_get(
+			array(
+				'filter' => array(
+					'secondary_id' => $post->ID,
+					'component' => 'docs',
+				),
+			)
+		);
+
+		foreach ( (array) $activities['activities'] as $activity ) {
+			bp_activity_delete( array( 'id' => $activity->id ) );
+		}
 	}
 
 	/**

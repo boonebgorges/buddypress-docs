@@ -436,6 +436,31 @@ function bp_docs_define_tiny_mce() {
 }
 
 /**
+ * Send a Doc to the trash
+ *
+ * @since 1.3
+ * @param int $doc_id
+ * @return bool
+ */
+function bp_docs_trash_doc( $doc_id = 0 ) {
+	do_action( 'bp_docs_before_doc_delete', $doc_id );
+
+	$delete_args = array(
+		'ID' => $doc_id,
+		'post_status' => 'trash'
+	);
+
+	$deleted = wp_update_post( $delete_args );
+
+	if ( $deleted ) {
+		do_action( 'bp_docs_doc_deleted', $delete_args );
+		return true;
+	}
+
+	return false;
+}
+
+/**
  * Outputs a list of access options
  *
  * Access options are things like 'anyone', 'loggedin', 'group-members', etc
