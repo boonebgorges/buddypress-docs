@@ -54,6 +54,21 @@ class BP_Docs_Tests extends WP_UnitTestCase {
 
 		$this->assertEquals( $activities['activities'], array() );
 	}
+
+	/**
+	 * see #286
+	 */
+	function test_change_group_association() {
+		$group = $this->factory->group->create();
+		$group2 = $this->factory->group->create();
+
+		$doc_id = $this->factory->doc->create( array( 'group' => $group->id ) );
+
+		bp_docs_set_associated_group_id( $doc_id, $group2->id );
+
+		$this->assertEquals( bp_docs_get_associated_group_id( $doc_id ), $group2->id );
+	}
+
 }
 
 
