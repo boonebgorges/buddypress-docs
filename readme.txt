@@ -37,6 +37,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 = 1.3.1 =
 * Fixed issues with Doc creation when groups are disabled
+* Fixed several bugs occurring when group association was changed or deleted
 * Updated translations: Danish, Spanish
 
 = 1.3 =
