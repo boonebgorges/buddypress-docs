@@ -24,16 +24,6 @@ class BP_Docs_Query {
 	var $query;
 
 	/**
-	 * PHP 4 constructor
-	 *
-	 * @package BuddyPress Docs
-	 * @since 1.0-beta
-	 */
-	function bp_docs_query() {
-		$this->__construct();
-	}
-
-	/**
 	 * PHP 5 constructor
 	 *
 	 * @package BuddyPress Docs
