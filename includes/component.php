@@ -368,8 +368,14 @@ class BP_Docs_Component extends BP_Component {
 		global $bp;
 
 		if ( !empty( $_POST['doc-edit-submit'] ) ) {
+
+			check_admin_referer( 'bp_docs_save' );
+
 			$this_doc = new BP_Docs_Query;
-			$this_doc->save();
+			$result = $this_doc->save();
+
+			bp_core_add_message( $result['message'], $result['message_type'] );
+			bp_core_redirect( trailingslashit( $result['redirect_url'] ) );
 		}
 
 		if ( !empty( $_POST['docs-filter-submit'] ) ) {

@@ -24,16 +24,6 @@ class BP_Docs_Query {
 	var $query;
 
 	/**
-	 * PHP 4 constructor
-	 *
-	 * @package BuddyPress Docs
-	 * @since 1.0-beta
-	 */
-	function bp_docs_query() {
-		$this->__construct();
-	}
-
-	/**
 	 * PHP 5 constructor
 	 *
 	 * @package BuddyPress Docs
@@ -400,8 +390,6 @@ class BP_Docs_Query {
 	function save( $args = false ) {
 		global $bp;
 
-		check_admin_referer( 'bp_docs_save' );
-
 		// bbPress plays naughty with revision saving
 		add_action( 'pre_post_update', 'wp_save_post_revision' );
 
@@ -425,13 +413,12 @@ class BP_Docs_Query {
 
 		// Check group associations
 		// @todo Move into group integration piece
-		if ( ! empty( $_POST['associated_group_id'] ) ) {
-			if ( ! BP_Docs_Groups_Integration::user_can_associate_doc_with_group( bp_loggedin_user_id(), intval( $_POST['associated_group_id'] ) ) ) {
+		if ( bp_is_active( 'groups' ) ) {
+			$associated_group_id = isset( $_POST['associated_group_id'] ) ? intval( $_POST['associated_group_id'] ) : 0;
+
+			if ( $associated_group_id && ! BP_Docs_Groups_Integration::user_can_associate_doc_with_group( bp_loggedin_user_id(), $associated_group_id ) ) {
 				bp_core_add_message( __( 'You are not allowed to associate a Doc with that group.', 'bp-docs' ), 'error' );
 				bp_core_redirect( bp_docs_get_create_link() );
-			} else {
-				// We use this later on
-				$associated_group_id = intval( $_POST['associated_group_id'] );
 			}
 		}
 
@@ -548,9 +535,7 @@ class BP_Docs_Query {
 		do_action( 'bp_docs_doc_saved', $this );
 
 		$message_type = $result['redirect'] == 'single' ? 'success' : 'error';
-		bp_core_add_message( $result['message'], $message_type );
 
-		// todo: abstract this out so I don't have to call group permalink here
 		$redirect_url = trailingslashit( bp_get_root_domain() . '/' . BP_DOCS_SLUG );
 
 		if ( $result['redirect'] == 'single' ) {
@@ -561,7 +546,13 @@ class BP_Docs_Query {
 			$redirect_url .= BP_DOCS_CREATE_SLUG;
 		}
 
-		bp_core_redirect( trailingslashit( $redirect_url ) );
+		$retval = array(
+			'message_type' => $message_type,
+			'message' => $result['message'],
+			'redirect_url' => $redirect_url,
+		);
+
+		return $retval;
 	}
 
 	/**

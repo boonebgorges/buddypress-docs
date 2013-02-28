@@ -1306,42 +1306,47 @@ function bp_docs_doc_permissions_snapshot( $args = array() ) {
 	$args = wp_parse_args( $args, $defaults );
 	extract( $args, EXTR_SKIP );
 
-	$doc_group_ids = bp_docs_get_associated_group_id( get_the_ID(), false, true );
-	$doc_groups = array();
-	foreach( $doc_group_ids as $dgid ) {
-		$maybe_group = groups_get_group( 'group_id=' . $dgid );
-		if ( !empty( $maybe_group->name ) ) {
-			$doc_groups[] = $maybe_group;
+	if ( bp_is_active( 'groups' ) ) {
+		$doc_group_ids = bp_docs_get_associated_group_id( get_the_ID(), false, true );
+		$doc_groups = array();
+		foreach( $doc_group_ids as $dgid ) {
+			$maybe_group = groups_get_group( 'group_id=' . $dgid );
+			if ( !empty( $maybe_group->name ) ) {
+				$doc_groups[] = $maybe_group;
+			}
 		}
+
+		// First set up the Group snapshot, if there is one
+		if ( ! empty( $doc_groups ) ) {
+			$group_link = bp_get_group_permalink( $doc_groups[0] );
+			$html .= '<div id="doc-group-summary">';
+
+			$html .= $summary_before_content ;
+			$html .= '<span>' . __('Group: ', 'bp-docs') . '</span>';
+
+			$html .= sprintf( __( ' %s', 'bp-docs' ), '<a href="' . $group_link . '">' . bp_core_fetch_avatar( 'item_id=' . $doc_groups[0]->id . '&object=group&type=thumb&width=25&height=25' ) . '</a> ' . '<a href="' . $group_link . '">' . esc_html( $doc_groups[0]->name ) . '</a>' );
+
+			$html .= $summary_after_content;
+
+			$html .= '</div>';
+		}
+
+		// we'll need a list of comma-separated group names
+		$group_names = implode( ', ', wp_list_pluck( $doc_groups, 'name' ) );
 	}
-
-	// First set up the Group snapshot, if there is one
-	if ( ! empty( $doc_groups ) ) {
-		$group_link = bp_get_group_permalink( $doc_groups[0] );
-		$html .= '<div id="doc-group-summary">';
-
-		$html .= $summary_before_content ;
-		$html .= '<span>' . __('Group: ', 'bp-docs') . '</span>';
-
-		$html .= sprintf( __( ' %s', 'bp-docs' ), '<a href="' . $group_link . '">' . bp_core_fetch_avatar( 'item_id=' . $doc_groups[0]->id . '&object=group&type=thumb&width=25&height=25' ) . '</a> ' . '<a href="' . $group_link . '">' . esc_html( $doc_groups[0]->name ) . '</a>' );
-
-		$html .= $summary_after_content;
-
-		$html .= '</div>';
-	}
-
-	// we'll need a list of comma-separated group names
-	$group_names = implode( ', ', wp_list_pluck( $doc_groups, 'name' ) );
 
 	$levels = array(
 		'anyone'        => __( 'Anyone', 'bp-docs' ),
 		'loggedin'      => __( 'Logged-in Users', 'bp-docs' ),
 		'friends'       => __( 'My Friends', 'bp-docs' ),
-		'group-members' => sprintf( __( 'Members of: %s', 'bp-docs' ), $group_names ),
-		'admins-mods'   => sprintf( __( 'Admins and mods of the group %s', 'bp-docs' ), $group_names ),
 		'creator'       => __( 'The Doc author only', 'bp-docs' ),
 		'no-one'        => __( 'Just Me', 'bp-docs' )
 	);
+
+	if ( bp_is_active( 'groups' ) ) {
+		$levels['group-members'] = sprintf( __( 'Members of: %s', 'bp-docs' ), $group_names );
+		$levels['admins-mods'] = sprintf( __( 'Admins and mods of the group %s', 'bp-docs' ), $group_names );
+	}
 
 	if ( get_the_author_meta( 'ID' ) == bp_loggedin_user_id() ) {
 		$levels['creator'] = __( 'The Doc author only (that\'s you!)', 'bp-docs' );
