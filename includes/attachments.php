@@ -8,6 +8,18 @@ class BP_Docs_Attachments {
 	}
 
 	/**
+	 * Workflow:
+	 *
+	 * - upload_dir is filtered on Docs to head to doc-specific directory
+	 * - When doc directory is created, create a default .htaccess file (todo). Don't have to do this for anyone-can-read Docs
+	 * - Must have script for recreating .htaccess files when privacy level changes; bulk changes when slug changed, etc
+	 * - When files are requested in the directories, redirect to <doc url>?bp-attachment=filename.ext
+	 * - Privacy protection is automatically handled because you're viewing under the Doc URL
+	 * - Sanitize filename.ext. Can probably remove all slashes. Can probably also do a file_exists() check within that single directory to be sure?
+	 * - Dynamically determine headers and readfile
+	 */
+
+	/**
 	 * .htaccess format:
 	 *
 	 *
