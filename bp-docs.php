@@ -102,6 +102,8 @@ class BP_Docs {
 
 		require( BP_DOCS_INCLUDES_PATH . 'templatetags-edit.php' );
 
+		require( BP_DOCS_INCLUDES_PATH . 'attachments.php' );
+
 		require( BP_DOCS_INCLUDES_PATH . 'ajax-validation.php' );
 
 		require( BP_DOCS_INCLUDES_PATH . 'theme-bridge.php' );

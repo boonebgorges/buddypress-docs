@@ -59,6 +59,8 @@ class BP_Docs_Component extends BP_Component {
 			$this->groups_integration = new BP_Docs_Groups_Integration;
 		}
 
+		$this->attachments = new BP_Docs_Attachments();
+
 		add_action( 'bp_actions', array( &$this, 'catch_page_load' ), 1 );
 
 		/**

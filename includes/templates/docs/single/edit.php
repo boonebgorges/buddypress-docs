@@ -48,7 +48,7 @@
 				<?php
 					if ( function_exists( 'wp_editor' ) ) {
 						wp_editor( bp_docs_get_edit_doc_content(), 'doc_content', array(
-							'media_buttons' => false,
+							'media_buttons' => true,
 							'dfw'		=> false
 						) );
 					} else {
