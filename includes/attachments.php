@@ -2,22 +2,54 @@
 
 class BP_Docs_Attachments {
 	function __construct() {
+		add_action( 'bp_actions', array( $this, 'catch_attachment_request' ), 0 );
 		add_filter( 'upload_dir', array( $this, 'filter_upload_dir' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 	}
 
-	function filter_upload_dir( $uploads ) {
-		if ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) {
-			return $uploads;
-		}
+	/**
+	 * .htaccess format:
+	 *
+	 *
+	 * RewriteEngine On
+	 * RewriteBase /wpmaster/poops/foo10/
+	 *
+	 * RewriteRule (.+) ?bp-attachment=$1 [R=302,NC]
+	 */
 
-		// In order to check if this is a doc, must check ajax referer
-		$this->doc_id = $this->get_doc_id_from_url( wp_get_referer() );
+	function catch_attachment_request() {
+		// Proof of concept only!
+		// This is massively unsecure
+		// Must send better headers
+		// Must send dynamic headers
+		// Must do everything much better than this
+		if ( ! empty( $_GET['bp-attachment'] ) ) {
+			$uploads = wp_upload_dir();
+			header( 'Content-type: image/jpeg' );
+//			var_dump( $uploads['path'] . '/' . $_GET['bp-attachment'] );
+			readfile( $uploads['path'] . '/' . $_GET['bp-attachment'] );
+		}
+	}
+
+	function filter_upload_dir( $uploads ) {
+
+		$this->doc_id = 0;
+
+		// @todo What about Create?
+		if ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) {
+			if ( bp_docs_is_existing_doc() ) {
+				$this->doc_id = get_queried_object_id();
+			}
+		} else {
+			// In order to check if this is a doc, must check ajax referer
+			$this->doc_id = $this->get_doc_id_from_url( wp_get_referer() );
+		}
 
 		if ( ! $this->doc_id ) {
 			return $uploads;
 		}
 
+		// Should do this earlier
 		$maybe_doc = get_post( $this->doc_id );
 		$is_doc = bp_docs_get_post_type_name() == $maybe_doc->post_type;
 
