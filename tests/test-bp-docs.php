@@ -6,18 +6,6 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 		parent::setUp();
 	}
 
-	/**
-	 * WP's core tests use wp_set_current_user() to change the current
-	 * user during tests. BP caches the current user differently, so we
-	 * have to do a bit more work to change it
-	 *
-	 * @global BuddyPres $bp
-	 */
-	function set_current_user( $user_id ) {
-		global $bp;
-		$bp->loggedin_user->id = $user_id;
-		wp_set_current_user( $user_id );
-	}
 
 	/**
 	 * Make sure doc activity is deleted when the doc is deleted
