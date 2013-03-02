@@ -1189,6 +1189,12 @@ function bp_docs_list_comments() {
  * @return bool True if it's an existing doc
  */
 function bp_docs_is_existing_doc() {
+	global $wp_query;
+
+	if ( ! isset( $wp_query ) || ! is_a( $wp_query, 'WP_Query' ) ) {
+		return false;
+	}
+
 	$post_type_obj = get_queried_object();
 	return is_single() && isset( $post_type_obj->post_type ) && bp_docs_get_post_type_name() == $post_type_obj->post_type;
 }
