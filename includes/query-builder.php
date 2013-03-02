@@ -417,8 +417,13 @@ class BP_Docs_Query {
 			$associated_group_id = isset( $_POST['associated_group_id'] ) ? intval( $_POST['associated_group_id'] ) : 0;
 
 			if ( $associated_group_id && ! BP_Docs_Groups_Integration::user_can_associate_doc_with_group( bp_loggedin_user_id(), $associated_group_id ) ) {
-				bp_core_add_message( __( 'You are not allowed to associate a Doc with that group.', 'bp-docs' ), 'error' );
-				bp_core_redirect( bp_docs_get_create_link() );
+				$retval = array(
+					'message_type' => 'error',
+					'message' => __( 'You are not allowed to associate a Doc with that group.', 'bp-docs' ),
+					'redirect_url' => bp_docs_get_create_link(),
+				);
+
+				return $retval;
 			}
 		}
 
