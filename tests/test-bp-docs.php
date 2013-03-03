@@ -6,7 +6,6 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 		parent::setUp();
 	}
 
-
 	/**
 	 * Make sure doc activity is deleted when the doc is deleted
 	 */

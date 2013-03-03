@@ -96,4 +96,23 @@ class BP_Docs_Attachments {
 			wp_enqueue_script( 'bp-docs-attachments', plugins_url( 'buddypress-docs/includes/js/attachments.js' ), array( 'media-editor', 'media-views' ), false, true );
 		}
 	}
+
+	public static function filename_is_safe( $filename ) {
+		// WP's core function handles most sanitization
+		if ( $filename !== sanitize_file_name( $filename ) ) {
+			return false;
+		}
+
+		// No directory walking means no slashes
+		if ( false !== strpos( $filename, '/' ) ) {
+			return false;
+		}
+
+		// No leading dots
+		if ( 0 === strpos( $filename, '.' ) ) {
+			return false;
+		}
+
+		return true;
+	}
 }
