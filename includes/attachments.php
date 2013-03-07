@@ -7,6 +7,7 @@ class BP_Docs_Attachments {
 	function __construct() {
 		add_action( 'template_redirect', array( $this, 'catch_attachment_request' ), 20 );
 		add_filter( 'upload_dir', array( $this, 'filter_upload_dir' ) );
+		add_filter( 'wp_handle_upload_prefilter', array( $this, 'maybe_create_htaccess' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 	}
 
@@ -17,19 +18,12 @@ class BP_Docs_Attachments {
 	 * - When doc directory is created, create a default .htaccess file (todo). Don't have to do this for anyone-can-read Docs
 	 * - Must have script for recreating .htaccess files when privacy level changes; bulk changes when slug changed, etc
 	 * - When files are requested in the directories, redirect to <doc url>?bp-attachment=filename.ext
-	 * - Privacy protection is automatically handled because you're viewing under the Doc URL
-	 * - Sanitize filename.ext. Can probably remove all slashes. Can probably also do a file_exists() check within that single directory to be sure?
-	 * - Dynamically determine headers and readfile
 	 */
 
 	/**
 	 * .htaccess format:
 	 *
 	 *
-	 * RewriteEngine On
-	 * RewriteBase /wpmaster/poops/foo10/
-	 *
-	 * RewriteRule (.+) ?bp-attachment=$1 [R=302,NC]
 	 */
 
 	/**
@@ -38,10 +32,6 @@ class BP_Docs_Attachments {
 	 * @since 1.4
 	 */
 	function catch_attachment_request() {
-		// Proof of concept only!
-		// Must send better headers
-		// Must send dynamic headers
-		// Must do everything much better than this
 		if ( ! empty( $_GET['bp-attachment'] ) ) {
 
 			$fn = $_GET['bp-attachment'];
@@ -78,6 +68,13 @@ class BP_Docs_Attachments {
 	/**
 	 * Attempts to customize upload_dir with our attachment paths
 	 *
+	 * @todo There's a quirk in wp_upload_dir() that will create the
+	 *   attachment directory if it doesn't already exist. This normally
+	 *   isn't a problem, because wp_upload_dir() is generally only called
+	 *   when a credentialed user is logged in and viewing the admin side.
+	 *   But the current code will force a folder to be created the first
+	 *   time the doc is viewed at all. Not sure whether this merits fixing
+	 *
 	 * @since 1.4
 	 */
 	function filter_upload_dir( $uploads ) {
@@ -92,6 +89,41 @@ class BP_Docs_Attachments {
 		$uploads = $this->mod_upload_dir( $uploads );
 
 		return $uploads;
+	}
+
+	/**
+	 * Creates an .htaccess file in the appropriate upload dir, if appropriate
+	 *
+	 * As a hack, we've hooked to wp_handle_upload_prefilter. We don't
+	 * actually do anything with the passed value; we just need a place
+	 * to hook in reliably before the file is written.
+	 *
+	 * @since 1.4
+	 * @param $file
+	 * @return $file
+	 */
+	function maybe_create_htaccess( $file ) {
+		if ( ! $this->get_doc_id() ) {
+			return $file;
+		}
+
+		if ( ! $this->get_is_private() ) {
+			return $file;
+		}
+
+		$upload_dir = wp_upload_dir();
+		$htaccess_path = $upload_dir['path'] . DIRECTORY_SEPARATOR . '.htaccess';
+		if ( file_exists( $htaccess_path ) ) {
+			return $file;
+		}
+
+		$rules = $this->generate_rewrite_rules();
+
+		if ( ! empty( $rules ) ) {
+			insert_with_markers( $htaccess_path, 'BuddyPress Docs', $rules );
+		}
+
+		return $file;
 	}
 
 	// @todo Create mode
@@ -149,6 +181,34 @@ class BP_Docs_Attachments {
 	}
 
 	/**
+	 * Generates the rewrite rules to be put in .htaccess of the upload dir
+	 *
+	 * @since 1.4
+	 * @return array $rules One per line, to be put together by insert_with_markers()
+	 */
+	public function generate_rewrite_rules() {
+		$rules = array();
+		$doc_id = $this->get_doc_id();
+
+		if ( ! $doc_id ) {
+			return $rules;
+		}
+
+		$url = bp_docs_get_doc_link( $doc_id );
+		$url_parts = parse_url( $url );
+
+		if ( ! empty( $url_parts['path'] ) ) {
+			$rules = array(
+				'RewriteEngine On',
+				'RewriteBase ' . $url_parts['path'],
+				'RewriteRule (.+) ?bp-attachment=$1 [R=302,NC]',
+			);
+		}
+
+		return $rules;
+	}
+
+	/**
 	 * Check to see whether a filename is safe
 	 *
 	 * This is used to sanitize file paths passed via $_GET params
@@ -183,6 +243,13 @@ class BP_Docs_Attachments {
 		return true;
 	}
 
+	/**
+	 * Generate download headers
+	 *
+	 * @since 1.4
+	 * @param string $filename Full path to file
+	 * @return array Headers in key=>value format
+	 */
 	public static function generate_headers( $filename ) {
 		// Disable compression
 		@apache_setenv( 'no-gzip', 1 );
