@@ -5,7 +5,7 @@ class BP_Docs_Attachments {
 	protected $is_private;
 
 	function __construct() {
-		add_action( 'bp_actions', array( $this, 'catch_attachment_request' ), 0 );
+		add_action( 'template_redirect', array( $this, 'catch_attachment_request' ), 20 );
 		add_filter( 'upload_dir', array( $this, 'filter_upload_dir' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 	}
@@ -32,19 +32,54 @@ class BP_Docs_Attachments {
 	 * RewriteRule (.+) ?bp-attachment=$1 [R=302,NC]
 	 */
 
+	/**
+	 * Catches bp-attachment requests and serves attachmens if appropriate
+	 *
+	 * @since 1.4
+	 */
 	function catch_attachment_request() {
 		// Proof of concept only!
-		// This is massively unsecure
 		// Must send better headers
 		// Must send dynamic headers
 		// Must do everything much better than this
 		if ( ! empty( $_GET['bp-attachment'] ) ) {
+
+			$fn = $_GET['bp-attachment'];
+
+			// Sanity check - don't do anything if this is not a Doc
+			if ( ! bp_docs_is_existing_doc() ) {
+				return;
+			}
+
+			if ( ! $this->filename_is_safe( $fn ) ) {
+				wp_die( __( 'File not found.', 'bp-docs' ) );
+			}
+
 			$uploads = wp_upload_dir();
-			header( 'Content-type: image/jpeg' );
-			readfile( $uploads['path'] . '/' . $_GET['bp-attachment'] );
+			$filepath = $uploads['path'] . DIRECTORY_SEPARATOR . $fn;
+
+			if ( ! file_exists( $filepath ) ) {
+				wp_die( __( 'File not found.', 'bp-docs' ) );
+			}
+
+			$headers = $this->generate_headers( $filepath );
+
+			// @todo Support xsendfile?
+			// @todo Better to send header('Location') instead?
+			//       Generate symlinks like Drupal. Needs FollowSymLinks
+			foreach( $headers as $name => $field_value ) {
+				@header("{$name}: {$field_value}");
+			}
+
+			readfile( $filepath );
 		}
 	}
 
+	/**
+	 * Attempts to customize upload_dir with our attachment paths
+	 *
+	 * @since 1.4
+	 */
 	function filter_upload_dir( $uploads ) {
 		if ( ! $this->get_doc_id() ) {
 			return $uploads;
@@ -134,7 +169,8 @@ class BP_Docs_Attachments {
 		}
 
 		// No directory walking means no slashes
-		if ( false !== strpos( $filename, '/' ) ) {
+		$filename_parts = pathinfo( $filename );
+		if ( $filename_parts['basename'] !== $filename ) {
 			return false;
 		}
 
@@ -145,5 +181,28 @@ class BP_Docs_Attachments {
 		}
 
 		return true;
+	}
+
+	public static function generate_headers( $filename ) {
+		// Disable compression
+		@apache_setenv( 'no-gzip', 1 );
+		@ini_set( 'zlib.output_compression', 'Off' );
+
+		// @todo Make this more configurable
+		$headers = wp_get_nocache_headers();
+
+		// Content-Disposition
+		$filename_parts = pathinfo( $filename );
+		$headers['Content-Disposition'] = 'attachment; filename="' . $filename_parts['basename'] . '"';
+
+		// Content-Type
+		$filetype = wp_check_filetype( $filename );
+		$headers['Content-Type'] = $filetype['type'];
+
+		// Content-Length
+		$filesize = filesize( $filename );
+		$headers['Content-Length'] = $filesize;
+
+		return $headers;
 	}
 }
