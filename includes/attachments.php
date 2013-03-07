@@ -1,6 +1,9 @@
 <?php
 
 class BP_Docs_Attachments {
+	protected $doc_id;
+	protected $is_private;
+
 	function __construct() {
 		add_action( 'bp_actions', array( $this, 'catch_attachment_request' ), 0 );
 		add_filter( 'upload_dir', array( $this, 'filter_upload_dir' ) );
@@ -38,42 +41,54 @@ class BP_Docs_Attachments {
 		if ( ! empty( $_GET['bp-attachment'] ) ) {
 			$uploads = wp_upload_dir();
 			header( 'Content-type: image/jpeg' );
-//			var_dump( $uploads['path'] . '/' . $_GET['bp-attachment'] );
 			readfile( $uploads['path'] . '/' . $_GET['bp-attachment'] );
 		}
 	}
 
 	function filter_upload_dir( $uploads ) {
-
-		$this->doc_id = 0;
-
-		// @todo What about Create?
-		if ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) {
-			if ( bp_docs_is_existing_doc() ) {
-				$this->doc_id = get_queried_object_id();
-			}
-		} else {
-			// In order to check if this is a doc, must check ajax referer
-			$this->doc_id = $this->get_doc_id_from_url( wp_get_referer() );
-		}
-
-		if ( ! $this->doc_id ) {
+		if ( ! $this->get_doc_id() ) {
 			return $uploads;
 		}
 
-		// Should do this earlier
-		$maybe_doc = get_post( $this->doc_id );
-		$is_doc = bp_docs_get_post_type_name() == $maybe_doc->post_type;
-
-		if ( $is_doc ) {
-			$uploads = $this->mod_upload_dir( $uploads );
+		if ( ! $this->get_is_private() ) {
+			return $uploads;
 		}
+
+		$uploads = $this->mod_upload_dir( $uploads );
 
 		return $uploads;
 	}
 
+	// @todo Create mode
+	function get_is_private() {
+//		if ( is_null( $this->is_private ) ) {
+			$doc_id = $this->get_doc_id();
+			$doc_settings = (array) get_post_meta( $doc_id, 'bp_docs_settings', true );
+			$this->is_private = isset( $doc_settings['read'] ) && 'anyone' !== $doc_settings['read'];
+//		}
+
+		return $this->is_private;
+	}
+
+	function get_doc_id() {
+//		if ( is_null( $this->doc_id ) ) {
+			// @todo What about Create?
+			if ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) {
+				if ( bp_docs_is_existing_doc() ) {
+					$this->doc_id = get_queried_object_id();
+				}
+			} else {
+				// In order to check if this is a doc, must check ajax referer
+				$this->doc_id = $this->get_doc_id_from_url( wp_get_referer() );
+			}
+//		}
+
+		return $this->doc_id;
+	}
+
+	// @todo create mode
 	function get_doc_id_from_url( $url ) {
-		$doc_id = 0;
+		$doc_id = null;
 		$url = untrailingslashit( $url );
 		$edit_location = strrpos( $url, BP_DOCS_EDIT_SLUG );
 		if ( false !== $edit_location && BP_DOCS_EDIT_SLUG == substr( $url, $edit_location ) ) {
