@@ -455,6 +455,10 @@ class BP_Docs_Query {
 				} else {
 					$this->doc_id = $post_id;
 
+					if ( isset( $_POST['auto_draft_id'] ) ) {
+						$this->move_autodraft_attachments( $post_id, $_POST['auto_draft_id'] );
+					}
+
 					$the_doc = get_post( $this->doc_id );
 					$this->doc_slug = $the_doc->post_name;
 
@@ -573,7 +577,19 @@ class BP_Docs_Query {
 		}
 	}
 
+	function move_autodraft_attachments( $post_id, $draft_id ) {
+		$attachments = get_posts( array(
+			'post_type' => 'attachment',
+			'post_parent' => $draft_id,
+		) );
 
+		foreach ( $attachments as $attachment ) {
+			wp_update_post( array(
+				'ID' => $attachment->ID,
+				'post_parent' => $post_id,
+			) );
+		}
+	}
 }
 
 ?>

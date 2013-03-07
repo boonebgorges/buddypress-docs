@@ -9,6 +9,7 @@ class BP_Docs_Attachments {
 		add_filter( 'upload_dir', array( $this, 'filter_upload_dir' ) );
 		add_filter( 'wp_handle_upload_prefilter', array( $this, 'maybe_create_htaccess' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+		add_action( 'wp_ajax_bp_docs_create_dummy_doc', array( $this, 'create_dummy_doc' ) );
 	}
 
 	/**
@@ -162,9 +163,22 @@ class BP_Docs_Attachments {
 	}
 
 	function enqueue_scripts() {
-		if ( bp_docs_is_doc_edit() ) {
+		if ( bp_docs_is_doc_edit() || bp_docs_is_doc_create() ) {
 			wp_enqueue_script( 'bp-docs-attachments', plugins_url( 'buddypress-docs/includes/js/attachments.js' ), array( 'media-editor', 'media-views' ), false, true );
 		}
+	}
+
+	/**
+	 * Ajax handler to create dummy doc on creation
+	 */
+	function create_dummy_doc() {
+		add_filter( 'wp_insert_post_empty_content', '__return_false' );
+		$doc_id = wp_insert_post( array(
+			'post_type' => bp_docs_get_post_type_name(),
+			'post_status' => 'auto-draft',
+		) );
+		remove_filter( 'wp_insert_post_empty_content', '__return_false' );
+		wp_send_json_success( array( 'doc_id' => $doc_id ) );
 	}
 
 	/**
