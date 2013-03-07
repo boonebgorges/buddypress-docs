@@ -12,18 +12,9 @@ class BP_Docs_Attachments {
 	}
 
 	/**
-	 * Workflow:
+	 * @todo
 	 *
-	 * - upload_dir is filtered on Docs to head to doc-specific directory
-	 * - When doc directory is created, create a default .htaccess file (todo). Don't have to do this for anyone-can-read Docs
 	 * - Must have script for recreating .htaccess files when privacy level changes; bulk changes when slug changed, etc
-	 * - When files are requested in the directories, redirect to <doc url>?bp-attachment=filename.ext
-	 */
-
-	/**
-	 * .htaccess format:
-	 *
-	 *
 	 */
 
 	/**
@@ -79,10 +70,6 @@ class BP_Docs_Attachments {
 	 */
 	function filter_upload_dir( $uploads ) {
 		if ( ! $this->get_doc_id() ) {
-			return $uploads;
-		}
-
-		if ( ! $this->get_is_private() ) {
 			return $uploads;
 		}
 
