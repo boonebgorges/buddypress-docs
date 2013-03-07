@@ -113,9 +113,23 @@ class BP_Docs_Attachments {
 		}
 	}
 
+	/**
+	 * Check to see whether a filename is safe
+	 *
+	 * This is used to sanitize file paths passed via $_GET params
+	 *
+	 * @since 1.4
+	 * @param string $filename Filename to validate
+	 * @return bool
+	 */
 	public static function filename_is_safe( $filename ) {
 		// WP's core function handles most sanitization
 		if ( $filename !== sanitize_file_name( $filename ) ) {
+			return false;
+		}
+
+		// No leading dots
+		if ( 0 === strpos( $filename, '.' ) ) {
 			return false;
 		}
 
@@ -124,8 +138,9 @@ class BP_Docs_Attachments {
 			return false;
 		}
 
-		// No leading dots
-		if ( 0 === strpos( $filename, '.' ) ) {
+		// Check filetype
+		$ft = wp_check_filetype( $filename );
+		if ( empty( $ft['ext'] ) ) {
 			return false;
 		}
 
