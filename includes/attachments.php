@@ -73,6 +73,7 @@ class BP_Docs_Attachments {
 	}
 
 	function get_doc_id_from_url( $url ) {
+		$doc_id = 0;
 		$url = untrailingslashit( $url );
 		$edit_location = strrpos( $url, BP_DOCS_EDIT_SLUG );
 		if ( false !== $edit_location && BP_DOCS_EDIT_SLUG == substr( $url, $edit_location ) ) {
