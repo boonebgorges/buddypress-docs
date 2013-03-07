@@ -37,10 +37,10 @@ class BP_Docs_Taxonomy {
 	 */
 	function __construct() {
 		// Register our custom taxonomy
-		add_filter( 'init', array( &$this, 'register_taxonomy' ), 11 );
+		add_filter( 'bp_docs_init', array( &$this, 'register_taxonomy' ), 11 );
 
 		// Make sure that the bp_docs post type supports our post taxonomies
-		add_filter( 'init', array( $this, 'register_with_post_type' ), 12 );
+		add_filter( 'bp_docs_init', array( $this, 'register_with_post_type' ), 12 );
 
 		// Hook into post saves to save any taxonomy terms.
 		add_action( 'bp_docs_doc_saved', 	array( $this, 'save_post' ) );
