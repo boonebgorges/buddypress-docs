@@ -582,19 +582,6 @@ class BP_Docs_Query {
 		}
 	}
 
-	function move_autodraft_attachments( $post_id, $draft_id ) {
-		$attachments = get_posts( array(
-			'post_type' => 'attachment',
-			'post_parent' => $draft_id,
-		) );
-
-		foreach ( $attachments as $attachment ) {
-			wp_update_post( array(
-				'ID' => $attachment->ID,
-				'post_parent' => $post_id,
-			) );
-		}
-	}
 }
 
 ?>
