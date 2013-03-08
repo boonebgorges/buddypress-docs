@@ -9,7 +9,9 @@ window.wp = window.wp || {};
 		options = {
 			success: function( response ) {
 				wp.media.model.settings.post.id = response.doc_id;
-				$('input#doc_id').after('<input type="hidden" name="auto_draft_id" value="'+response.doc_id+'" />');
+				$('input#doc_id').val(response.doc_id);
+//				$('input#doc_id').after('<input type="hidden" name="auto_draft_id" value="'+response.doc_id+'" />');
+				wp.media.model.Query.defaultArgs.auto_draft_id = response.doc_id;
 			}
 		};
 		wp.media.ajax( 'bp_docs_create_dummy_doc', options );

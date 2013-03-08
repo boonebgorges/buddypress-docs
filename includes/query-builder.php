@@ -448,16 +448,21 @@ class BP_Docs_Query {
 
 				$r['post_author'] = bp_loggedin_user_id();
 
-				// This is a new doc
-				if ( !$post_id = wp_insert_post( $r ) ) {
+				// If there's a 'doc_id' value in the POST, use
+				// the autodraft as a starting point
+				if ( isset( $_POST['doc_id'] ) ) {
+					$post_id = (int) $_POST['doc_id'];
+					$r['ID'] = $post_id;
+					wp_update_post( $r );
+				} else {
+					$post_id = wp_insert_post( $r );
+				}
+
+				if ( ! $post_id ) {
 					$result['message'] = __( 'There was an error when creating the doc.', 'bp-docs' );
 					$result['redirect'] = 'create';
 				} else {
 					$this->doc_id = $post_id;
-
-					if ( isset( $_POST['auto_draft_id'] ) ) {
-						$this->move_autodraft_attachments( $post_id, $_POST['auto_draft_id'] );
-					}
 
 					$the_doc = get_post( $this->doc_id );
 					$this->doc_slug = $the_doc->post_name;
