@@ -662,7 +662,7 @@ function bp_docs_inline_toggle_js() {
 
 			/* Append the static toggle text with a '+' sign and linkify */
 			var toggleid = type + '-toggle-link';
-			var plus = '<span class="plus-or-minus">+</span>';
+			var plus = '<span class="plus-or-minus">-</span>';
 
 			jQuery(ts).html('<a href="#" id="' + toggleid + '" class="toggle-link">' + plus + jQuery(ts).html() + '</a>');
 		});

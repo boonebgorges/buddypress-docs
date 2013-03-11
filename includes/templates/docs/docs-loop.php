@@ -1,8 +1,8 @@
-<div id="buddypress">
+<div id="buddypress"> <!-- This is going to conflict with #buddypress provided by BP theme compat -->
 
 <?php include( apply_filters( 'bp_docs_header_template', bp_docs_locate_template( 'docs-header.php' ) ) ) ?>
-
-<div class="docs-info-header">
+<!-- Match typical BP output -->
+<div class="docs-info-header pagination">
 	<div class="doc-search">
 		<form action="" method="get">
 			<input name="s" value="<?php the_search_query() ?>">
@@ -22,20 +22,20 @@
 		<tr valign="bottom">
 			<th scope="column"> </th>
 
-			<th scope="column" class="title-cell<?php bp_docs_is_current_orderby_class( 'title' ) ?>">
-				<a href="<?php bp_docs_order_by_link( 'title' ) ?>"><?php _e( 'Title', 'bp-docs' ); ?></a>
+			<th scope="column" class="title-cell sortable<?php bp_docs_is_current_orderby_class( 'title' ) ?>">
+				<a href="<?php bp_docs_order_by_link( 'title' ) ?>"><?php _e( 'Title', 'bp-docs' ); ?><span class="sorting-indicator"></span></a>
 			</th>
 
-			<th scope="column" class="author-cell<?php bp_docs_is_current_orderby_class( 'author' ) ?>">
-				<a href="<?php bp_docs_order_by_link( 'author' ) ?>"><?php _e( 'Author', 'bp-docs' ); ?></a>
+			<th scope="column" class="author-cell sortable<?php bp_docs_is_current_orderby_class( 'author' ) ?>">
+				<a href="<?php bp_docs_order_by_link( 'author' ) ?>"><?php _e( 'Author', 'bp-docs' ); ?><span class="sorting-indicator"></span></a>
 			</th>
 
-			<th scope="column" class="created-date-cell<?php bp_docs_is_current_orderby_class( 'created' ) ?>">
-				<a href="<?php bp_docs_order_by_link( 'created' ) ?>"><?php _e( 'Created', 'bp-docs' ); ?></a>
+			<th scope="column" class="created-date-cell sortable<?php bp_docs_is_current_orderby_class( 'created' ) ?>">
+				<a href="<?php bp_docs_order_by_link( 'created' ) ?>"><?php _e( 'Created', 'bp-docs' ); ?><span class="sorting-indicator"></span></a>
 			</th>
 
-			<th scope="column" class="edited-date-cell<?php bp_docs_is_current_orderby_class( 'modified' ) ?>">
-				<a href="<?php bp_docs_order_by_link( 'modified' ) ?>"><?php _e( 'Last Edited', 'bp-docs' ); ?></a>
+			<th scope="column" class="edited-date-cell sortable<?php bp_docs_is_current_orderby_class( 'modified' ) ?>">
+				<a href="<?php bp_docs_order_by_link( 'modified' ) ?>"><?php _e( 'Last Edited', 'bp-docs' ); ?><span class="sorting-indicator"></span></a>
 			</th>
 
 			<?php do_action( 'bp_docs_loop_additional_th' ) ?>

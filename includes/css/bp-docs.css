@@ -25,35 +25,70 @@ body.bp-docs div.page ul {
 #bp-docs-all-docs {
 	width: auto;
 }
+	#bp-docs-all-docs li {
+		margin-right: .5em;
+	}
 
 /* Make it look decent on theme compat */
 #buddypress #bp-docs-all-docs li {
 	background: #eee;
+	margin-right: .5em;
 }
 
 .doc-tabs {
-	overflow: hidden;
+	/*overflow: hidden;*/
+	z-index:4;
+	margin-bottom: -1px;
 }
+	
+	.doc-tabs ul {
+	border-bottom: 1px solid #CCC;
+	/*overflow: hidden;*/
+	margin-bottom: 0;
+	}
+	.doc-tabs ul:after, .doc-content:after {
+	    clear: both;
+	}
+	.doc-tabs ul:before, .doc-tabs ul:after,
+	.doc-content:before, .doc-content:after 
+	 { /*This forces the content box and the doc-tabs div to contain their contents*/
+	    content: "";
+	    display: table;
+	    line-height: 0;
+	}
 	.doc-tabs li {
 		float: left;
-		margin: 0 5px;
+		/*margin: 0 5px;*/
 		list-style-type: none;
+		margin:0 5px -1px;
+				
+	}
+	.doc-tabs li.current {
+/*		margin-bottom: -1px;*/
+
 	}
 	.doc-tabs li:first-child {
 		margin-left: 0;
 	}
 	.doc-tabs li a {
-		background: #f1f1f1;
 		text-decoration: none;
 		display: block;
+		background: #f1f1f1;
 		padding: 4px 10px;
 		font-size: 1.2em;
 		border-radius: 5px 5px 0 0;
+		border-style: solid;
+	    border-width: 1px;
+	    border-color: #CCC;
+
+	
 	}
 	.doc-tabs li.current a {
-		background: #eaeaea;
 		color: #555;
 		font-weight: bold;
+		background: #FFF;
+		border-color: #CCC #CCC transparent;
+		
 	}
 
 .doc-header h4 {
@@ -69,7 +104,7 @@ body.bp-docs div.page ul {
 
 .doc-search {
 	float: right;
-	width: 250px;
+	/*width: 250px;*/
 	text-align: right;
 }
 
@@ -84,7 +119,10 @@ body.bp-docs div.page ul {
 	padding: 6px;
 }
 
-.doctable p {
+.doctable {
+	float: left;
+}
+	.doctable p {
 	padding: 0;
 	margin: 0;
 }
@@ -107,7 +145,7 @@ body.bp-docs div.page ul {
 }
 
 .doctable tr:nth-child(even) {
-	background-color: #eaeaea;
+	/*background-color: #EFEFEF;*/
 }
 
 
@@ -121,19 +159,33 @@ body.bp-docs div.page ul {
 
 .author-cell, .created-date-cell, .edited-date-cell {
 	text-align: center;
-	width: 100px;
+	/*width: 100px;*/
+	width: 10%;
 }
 
-.current-orderby a {
-	padding-left: 20px;
-}
+.sorting-indicator {
+background-image: url("../images/sort.gif");
+background-repeat: no-repeat;
+/*display: none;*/
+display: inline-block;
+height: 6px;
+width: 7px;
+margin-left: 7px;
+margin-top: 8px;
+background-position: -100px -100px;
 
-.asc a {
-	background: url(../images/sort-col-asc.gif) no-repeat;
 }
-
-.desc a {
-	background: url(../images/sort-col-desc.gif) no-repeat;
+th.sortable:hover .sorting-indicator {
+    background-position: 0 0;
+    /*display: inline-block;*/
+}
+th.current-orderby.asc .sorting-indicator, th.desc:hover span.sorting-indicator {
+    background-position: 0 0;
+	/*display: inline-block;*/
+}
+th.current-orderby.desc .sorting-indicator, th.asc:hover span.sorting-indicator {
+    background-position: -7px 0;
+    /*display: inline-block;*/
 }
 
 .doc-edit-link {
@@ -171,30 +223,30 @@ div.docs-info-header {
 	display: block;
 	font-weight: bold;
 	font-size: 1.1em;
-	-moz-border-radius: 3px;
+	/*-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
-	border-radius: 3px;
-	background: #bbb;
-	border: 1px solid #333;
+	border-radius: 3px;*/
+	background: #eaeaea;
+	/*border: 1px solid #333;*/
 	padding: 3px 16px;
 	margin: 16px 0 0;
 }
 	.toggle-switch.active-switch {
-		-moz-border-radius-bottomleft: 10px;
+		/*-moz-border-radius-bottomleft: 10px;
 		-webkit-border-bottom-left-radius: 10px;
 		-moz-border-radius-bottomright: 10px;
 		-webkit-border-bottom-right-radius: 10px;
-		border-radius: 3px 3px 0px 0px;
+		border-radius: 3px 3px 0px 0px;*/
 	}
 	.toggle-switch a {
 		text-decoration: none;
 		display: block;
 		width: 100%;
 		height: 100%;
-		color: #fff;
+		color: #777;
 	}
 	.toggle-switch a:hover {
-		color: #eee;
+		color: #000;
 	}
 	.standard-form label.toggle-switch {
 		margin: 16px 0 0;
@@ -202,11 +254,11 @@ div.docs-info-header {
 
 .toggle-content {
 	width: 100%;
-	-moz-border-radius-bottomleft: 3px;
+	/*-moz-border-radius-bottomleft: 3px;
 	-webkit-border-bottom-left-radius: 3px;
 	-moz-border-radius-bottomright: 3px;
-	-webkit-border-bottom-right-radius: 3px;
-	border: 1px solid #333;
+	-webkit-border-bottom-right-radius: 3px;*/
+	border: 1px solid #eaeaea;
 	border-top: none;
 	overflow: hidden;
 }
@@ -217,6 +269,7 @@ span.plus-or-minus {
 	display: block;
 	float: left;
 	width: 20px;
+	line-height: 1.3;
 }
 
 td.desc-column {
@@ -266,6 +319,7 @@ p#filter-by-tag {
 div#bp-docs-pagination {
 	position: relative;
 	height: 30px;
+	clear:both;
 }
 	div#bp-docs-pagination-count {
 		position: absolute;
@@ -286,7 +340,9 @@ div#bp-docs-pagination {
 /* Single doc view */
 div.doc-content {
 	padding: 20px;
-	border: 3px solid #eaeaea;
+	border: 1px solid #CCC;
+	z-index: 1;
+	/*margin-top: -1px*/
 }
 	div.doc-content img {
 		margin: 10px;
