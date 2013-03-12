@@ -66,6 +66,10 @@ class BP_Docs_Hierarchy {
 	 * @return int $post_id Returns the doc's post_id on success
 	 */
 	function save_post( $query ) {
+		if ( empty( $query->doc_id ) ) {
+			return false;
+		}
+
 		$post_parent = !empty( $_POST['parent_id'] ) ? $_POST['parent_id'] : 0;
 
 		$args = array(

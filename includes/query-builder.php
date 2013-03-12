@@ -509,38 +509,42 @@ class BP_Docs_Query {
 			}
 		}
 
-		// Add to a group, if necessary
-		if ( isset( $associated_group_id ) ) {
-			bp_docs_set_associated_group_id( $post_id, $associated_group_id );
-		}
+		// If the Doc was successfully created, run some more stuff
+		if ( ! empty( $post_id ) ) {
 
-		// Make sure the current user is added as one of the authors
-		wp_set_post_terms( $post_id, $this->user_term_id, $this->associated_item_tax_name, true );
-
-		// Save the last editor id. We'll use this to create an activity item
-		update_post_meta( $this->doc_id, 'bp_docs_last_editor', bp_loggedin_user_id() );
-
-		// Save settings
-		$settings = ! empty( $_POST['settings'] ) ? $_POST['settings'] : array();
-		$verified_settings = bp_docs_verify_settings( $settings, $post_id, bp_loggedin_user_id() );
-
-		$new_settings = array();
-		foreach ( $verified_settings as $verified_setting_name => $verified_setting ) {
-			$new_settings[ $verified_setting_name ] = $verified_setting['verified_value'];
-			if ( $verified_setting['verified_value'] != $verified_setting['original_value'] ) {
-				$result['message'] = __( 'Your Doc was successfully saved, but some of your access settings have been changed to match the Doc\'s permissions.', 'bp-docs' );
+			// Add to a group, if necessary
+			if ( isset( $associated_group_id ) ) {
+				bp_docs_set_associated_group_id( $post_id, $associated_group_id );
 			}
+
+			// Make sure the current user is added as one of the authors
+			wp_set_post_terms( $post_id, $this->user_term_id, $this->associated_item_tax_name, true );
+
+			// Save the last editor id. We'll use this to create an activity item
+			update_post_meta( $this->doc_id, 'bp_docs_last_editor', bp_loggedin_user_id() );
+
+			// Save settings
+			$settings = ! empty( $_POST['settings'] ) ? $_POST['settings'] : array();
+			$verified_settings = bp_docs_verify_settings( $settings, $post_id, bp_loggedin_user_id() );
+
+			$new_settings = array();
+			foreach ( $verified_settings as $verified_setting_name => $verified_setting ) {
+				$new_settings[ $verified_setting_name ] = $verified_setting['verified_value'];
+				if ( $verified_setting['verified_value'] != $verified_setting['original_value'] ) {
+					$result['message'] = __( 'Your Doc was successfully saved, but some of your access settings have been changed to match the Doc\'s permissions.', 'bp-docs' );
+				}
+			}
+			update_post_meta( $this->doc_id, 'bp_docs_settings', $new_settings );
+
+			// The 'read' setting must also be saved to a taxonomy, for
+			// easier directory queries
+			$read_setting = isset( $new_settings['read'] ) ? $new_settings['read'] : 'anyone';
+			bp_docs_update_doc_access( $this->doc_id, $read_setting );
+
+			// Increment the revision count
+			$revision_count = get_post_meta( $this->doc_id, 'bp_docs_revision_count', true );
+			update_post_meta( $this->doc_id, 'bp_docs_revision_count', intval( $revision_count ) + 1 );
 		}
-		update_post_meta( $this->doc_id, 'bp_docs_settings', $new_settings );
-
-		// The 'read' setting must also be saved to a taxonomy, for
-		// easier directory queries
-		$read_setting = isset( $new_settings['read'] ) ? $new_settings['read'] : 'anyone';
-		bp_docs_update_doc_access( $this->doc_id, $read_setting );
-
-		// Increment the revision count
-		$revision_count = get_post_meta( $this->doc_id, 'bp_docs_revision_count', true );
-		update_post_meta( $this->doc_id, 'bp_docs_revision_count', intval( $revision_count ) + 1 );
 
 		// Provide a custom hook for plugins and optional components.
 		// WP's default save_post isn't enough, because we need something that fires
