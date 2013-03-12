@@ -2,11 +2,15 @@
 
 class BP_Docs_Attachments {
 	protected $doc_id;
+	protected $override_doc_id;
+
 	protected $is_private;
+	protected $htaccess_path;
 
 	function __construct() {
 		add_action( 'template_redirect', array( $this, 'catch_attachment_request' ), 20 );
 		add_filter( 'upload_dir', array( $this, 'filter_upload_dir' ) );
+		add_action( 'bp_docs_doc_saved', array( $this, 'check_privacy' ) );
 		add_filter( 'wp_handle_upload_prefilter', array( $this, 'maybe_create_htaccess' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 		add_action( 'wp_ajax_bp_docs_create_dummy_doc', array( $this, 'create_dummy_doc' ) );
@@ -80,6 +84,44 @@ class BP_Docs_Attachments {
 	}
 
 	/**
+	 * After a Doc is saved, check to see whether any action is necessary
+	 *
+	 * @since 1.4
+	 */
+	public function check_privacy( $query ) {
+		if ( empty( $query->doc_id ) ) {
+			return;
+		}
+
+		$this->set_doc_id( $query->doc_id );
+
+		if ( $this->get_is_private() ) {
+			$this->create_htaccess();
+		} else {
+			$this->delete_htaccess();
+		}
+	}
+
+	/**
+	 * Delete an htaccess file for the current Doc
+	 *
+	 * @since 1.4
+	 * @return bool
+	 */
+	public function delete_htaccess() {
+		if ( ! $this->get_doc_id() ) {
+			return false;
+		}
+
+		$path = $this->get_htaccess_path();
+		if ( file_exists( $path ) ) {
+			unlink( $path );
+		}
+
+		return true;
+	}
+
+	/**
 	 * Creates an .htaccess file in the appropriate upload dir, if appropriate
 	 *
 	 * As a hack, we've hooked to wp_handle_upload_prefilter. We don't
@@ -90,7 +132,7 @@ class BP_Docs_Attachments {
 	 * @param $file
 	 * @return $file
 	 */
-	function maybe_create_htaccess( $file ) {
+	public function maybe_create_htaccess( $file ) {
 		if ( ! $this->get_doc_id() ) {
 			return $file;
 		}
@@ -99,10 +141,15 @@ class BP_Docs_Attachments {
 			return $file;
 		}
 
-		$upload_dir = wp_upload_dir();
-		$htaccess_path = $upload_dir['path'] . DIRECTORY_SEPARATOR . '.htaccess';
+		$this->create_htaccess();
+
+		return $file;
+	}
+
+	public function create_htaccess() {
+		$htaccess_path = $this->get_htaccess_path();
 		if ( file_exists( $htaccess_path ) ) {
-			return $file;
+			return false;
 		}
 
 		$rules = $this->generate_rewrite_rules();
@@ -110,8 +157,15 @@ class BP_Docs_Attachments {
 		if ( ! empty( $rules ) ) {
 			insert_with_markers( $htaccess_path, 'BuddyPress Docs', $rules );
 		}
+	}
 
-		return $file;
+	public function get_htaccess_path() {
+		if ( empty( $this->htaccess_path ) ) {
+			$upload_dir = wp_upload_dir();
+			$this->htaccess_path = $upload_dir['path'] . DIRECTORY_SEPARATOR . '.htaccess';
+		}
+
+		return $this->htaccess_path;
 	}
 
 	// @todo Create mode
@@ -125,9 +179,29 @@ class BP_Docs_Attachments {
 		return $this->is_private;
 	}
 
-	function get_doc_id() {
-//		if ( is_null( $this->doc_id ) ) {
-			// @todo What about Create?
+	/**
+	 * Set a doc id for this object
+	 *
+	 * This is a hack that lets you manually bypass the doc sniffing in
+	 * get_doc_id()
+	 */
+	public function set_doc_id( $doc_id ) {
+		$this->override_doc_id = intval( $doc_id );
+	}
+
+	/**
+	 * Attempt to auto-detect a doc ID
+	 *
+	 * Marked protected because it sucks and is subject to change
+	 */
+	protected function get_doc_id() {
+
+		if ( ! empty( $this->override_doc_id ) ) {
+
+			$this->doc_id = $this->override_doc_id;
+
+		} else {
+
 			if ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) {
 				if ( bp_docs_is_existing_doc() ) {
 					$this->doc_id = get_queried_object_id();
@@ -150,7 +224,8 @@ class BP_Docs_Attachments {
 					$this->doc_id = $this->get_doc_id_from_url( wp_get_referer() );
 				}
 			}
-//		}
+		}
+
 		return $this->doc_id;
 	}
 
