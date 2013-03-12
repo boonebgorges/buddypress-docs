@@ -19,7 +19,9 @@ class BP_Docs_Attachments {
 	/**
 	 * @todo
 	 *
-	 * - Must have script for recreating .htaccess files when privacy level changes; bulk changes when slug changed, etc
+	 * - Must have script for recreating .htaccess files when:
+	 *	- top-level Docs slug changes
+	 *	- single Doc slug changes
 	 */
 
 	/**
@@ -146,6 +148,14 @@ class BP_Docs_Attachments {
 		return $file;
 	}
 
+	/**
+	 * Creates an .htaccess for a Doc upload directory, if it doesn't exist
+	 *
+	 * No check happens here to see whether an .htaccess is necessary. Make
+	 * sure you check $this->get_is_private() before running.
+	 *
+	 * @since 1.4
+	 */
 	public function create_htaccess() {
 		$htaccess_path = $this->get_htaccess_path();
 		if ( file_exists( $htaccess_path ) ) {
@@ -159,6 +169,12 @@ class BP_Docs_Attachments {
 		}
 	}
 
+	/**
+	 * Generates a path to htaccess for the Doc in question
+	 *
+	 * @since 1.4
+	 * @return string
+	 */
 	public function get_htaccess_path() {
 		if ( empty( $this->htaccess_path ) ) {
 			$upload_dir = wp_upload_dir();
@@ -168,8 +184,13 @@ class BP_Docs_Attachments {
 		return $this->htaccess_path;
 	}
 
-	// @todo Create mode
-	function get_is_private() {
+	/**
+	 * Check whether the current Doc is private ('read' != 'anyone')
+	 *
+	 * @since 1.4
+	 * @return bool
+	 */
+	public function get_is_private() {
 //		if ( is_null( $this->is_private ) ) {
 			$doc_id = $this->get_doc_id();
 			$doc_settings = (array) get_post_meta( $doc_id, 'bp_docs_settings', true );
@@ -229,8 +250,17 @@ class BP_Docs_Attachments {
 		return $this->doc_id;
 	}
 
-	// @todo create mode
-	function get_doc_id_from_url( $url ) {
+	/**
+	 * Get a Doc's ID from its URL
+	 *
+	 * Note that this only works for existing Docs, because (duh) new Docs
+	 * don't yet have a URL
+	 *
+	 * @since 1.4
+	 * @param string $url
+	 * @return int $doc_id
+	 */
+	public static function get_doc_id_from_url( $url ) {
 		$doc_id = null;
 		$url = untrailingslashit( $url );
 		$edit_location = strrpos( $url, BP_DOCS_EDIT_SLUG );
@@ -240,6 +270,12 @@ class BP_Docs_Attachments {
 		return $doc_id;
 	}
 
+	/**
+	 * Filter upload_dir to customize Doc upload locations
+	 *
+	 * @since 1.4
+	 * @return array $uploads
+	 */
 	function mod_upload_dir( $uploads ) {
 		$subdir = DIRECTORY_SEPARATOR . 'bp-attachments' . DIRECTORY_SEPARATOR . $this->doc_id;
 
@@ -258,6 +294,8 @@ class BP_Docs_Attachments {
 
 	/**
 	 * Ajax handler to create dummy doc on creation
+	 *
+	 * @since 1.4
 	 */
 	function create_dummy_doc() {
 		add_filter( 'wp_insert_post_empty_content', '__return_false' );
