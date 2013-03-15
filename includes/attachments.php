@@ -14,6 +14,8 @@ class BP_Docs_Attachments {
 		add_filter( 'wp_handle_upload_prefilter', array( $this, 'maybe_create_htaccess' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 		add_action( 'wp_ajax_bp_docs_create_dummy_doc', array( $this, 'create_dummy_doc' ) );
+
+		add_action( 'pre_get_posts', array( $this, 'filter_gallery_posts' ) );
 	}
 
 	/**
@@ -305,6 +307,40 @@ class BP_Docs_Attachments {
 		) );
 		remove_filter( 'wp_insert_post_empty_content', '__return_false' );
 		wp_send_json_success( array( 'doc_id' => $doc_id ) );
+	}
+
+	/**
+	 * Filter the posts query on attachment pages, to ensure that only the
+	 * specific Doc's attachments show up in the Gallery
+	 *
+	 * Hooked to 'pre_get_posts'. Bail out if we're not in a Gallery
+	 * request for a Doc
+	 *
+	 * @since 1.4
+	 */
+	public function filter_gallery_posts( $query ) {
+		if ( ! defined( 'DOING_AJAX' || ! DOING_AJAX ) ) {
+			return;
+		}
+
+		if ( ! isset( $_POST['action'] ) || 'query-attachments' !== $_POST['action'] ) {
+			return;
+		}
+
+		$post_id = isset( $_POST['post_id'] ) ? intval( $_POST['post_id'] ) : 0;
+
+		if ( ! $post_id ) {
+			return;
+		}
+
+		$post = get_post( $post_id );
+
+		if ( empty( $post ) || is_wp_error( $post ) || bp_docs_get_post_type_name() !== $post->post_type ) {
+			return;
+		}
+
+		// Phew
+		$query->set( 'post_parent', $_REQUEST['post_id'] );
 	}
 
 	/**
