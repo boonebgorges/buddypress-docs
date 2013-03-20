@@ -1701,3 +1701,30 @@ function bp_docs_render_permissions_snapshot() {
 	}
 }
 add_action( 'bp_docs_single_doc_header_fields', 'bp_docs_render_permissions_snapshot' );
+
+/**
+ * Renders the Upload Media area
+ */
+function bp_docs_media_buttons( $editor_id ) {
+	$post = get_post();
+	if ( ! $post && ! empty( $GLOBALS['post_ID'] ) )
+		$post = $GLOBALS['post_ID'];
+
+	wp_enqueue_media( array(
+		'post' => $post
+	) );
+
+	$img = '<span class="wp-media-buttons-icon"></span> ';
+
+	echo '<a href="#" id="insert-media-button" class="button insert-media add_media" data-editor="' . esc_attr( $editor_id ) . '" title="' . esc_attr__( 'Add Files', 'bp-docs' ) . '">' . $img . __( 'Add Files', 'bp-docs' ) . '</a>';
+}
+
+function bp_docs_get_doc_attachments() {
+	$doc = get_post();
+	$atts = get_posts( array(
+		'post_type' => 'attachment',
+		'post_parent' => $doc->ID,
+		'posts_per_page' => -1,
+	) );
+	return $atts;
+}

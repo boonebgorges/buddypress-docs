@@ -42,13 +42,15 @@
 			</div>
 		<?php endif ?>
 
+		<?php include ( bp_docs_locate_template( 'single/attachments.php' ) ) ?>
+
 		<div id="doc-content-textarea">
 			<label id="content-label" for="doc_content"><?php _e( 'Content', 'bp-docs' ) ?></label>
 			<div id="editor-toolbar">
 				<?php
 					if ( function_exists( 'wp_editor' ) ) {
 						wp_editor( bp_docs_get_edit_doc_content(), 'doc_content', array(
-							'media_buttons' => true,
+							'media_buttons' => false,
 							'dfw'		=> false
 						) );
 					} else {
