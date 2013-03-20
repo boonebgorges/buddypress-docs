@@ -877,7 +877,8 @@ class BP_Docs_Component extends BP_Component {
 	 */
 	function filter_permalinks( $link, $post, $leavename, $sample ) {
 		if ( bp_docs_get_post_type_name() == $post->post_type && ! empty( $post->post_parent ) ) {
-			$link = $post->guid;
+			$parent = get_post( $post->post_parent );
+			$link = str_replace( '/' . $parent->post_name, '', $link );
 		}
 
 		return html_entity_decode( $link );

@@ -134,6 +134,22 @@ class BP_Docs_Tests extends WP_UnitTestCase {
 		$this->assertFalse( (bool) $maybe_group_id );
 	}
 
+	function test_bp_docs_get_doc_link() {
+		// rewrite - @todo This stinks
+		global $wp_rewrite;
+		$GLOBALS['wp_rewrite']->init();
+		flush_rewrite_rules();
+
+		$doc_id = $this->factory->doc->create( array( 'post_name' => 'foo' ) );
+		$this->assertEquals( bp_docs_get_doc_link( $doc_id ), 'http://example.org/docs/foo/' );
+
+		// Set a parent to make sure it still works
+		$doc_id2 = $this->factory->doc->create();
+		wp_update_post( array( 'ID' => $doc_id, 'post_parent' => $doc_id2 ) );
+		$this->assertEquals( bp_docs_get_doc_link( $doc_id ), 'http://example.org/docs/foo/' );
+
+	}
+
 }
 
 

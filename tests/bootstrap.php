@@ -1,5 +1,12 @@
 <?php
 
+require_once getenv( 'WP_TESTS_DIR' ) . '/includes/functions.php';
+
+function _set_permalinks() {
+	update_option( 'permalink_structure', '/%year%/%monthnum%/%day%/%postname%/' );
+}
+tests_add_filter( 'init', '_set_permalinks', 1 );
+
 $GLOBALS['wp_tests_options'] = array(
     'active_plugins' => array(
 	basename( dirname( dirname( __FILE__ ) ) ) . '/loader.php',
