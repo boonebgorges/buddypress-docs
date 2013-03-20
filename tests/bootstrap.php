@@ -23,6 +23,11 @@ if ( file_exists( BP_TESTS_DIR . '/bootstrap.php' ) ) :
 	}
 	tests_add_filter( 'init', '_set_permalinks', 1 );
 
+	// We need pretty permalinks for some tests
+	function _flush() {
+		flush_rewrite_rules();
+	}
+	tests_add_filter( 'init', '_flush', 1000 );
 
 	require getenv( 'WP_TESTS_DIR' ) . '/includes/bootstrap.php';
 
