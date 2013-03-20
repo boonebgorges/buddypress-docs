@@ -35,6 +35,10 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.3.2 =
+* Fixed bug with tab permalinks on some setups
+* Fixed bug in the way parent Doc is pre-selected on Edit screen dropdown
+
 = 1.3.1 =
 * Fixed issues with Doc creation when groups are disabled
 * Fixed several bugs occurring when group association was changed or deleted
