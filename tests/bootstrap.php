@@ -1,16 +1,28 @@
 <?php
 
-$GLOBALS['wp_tests_options'] = array(
-    'active_plugins' => array(
-	basename( dirname( dirname( __FILE__ ) ) ) . '/loader.php',
-	'buddypress/bp-loader.php',
-    ),
-);
+if ( ! defined( 'BP_TESTS_DIR' ) ) {
+	define( 'BP_TESTS_DIR', dirname( __FILE__ ) . '/../../buddypress/tests' );
+}
 
-require getenv( 'WP_TESTS_DIR' ) . '/includes/bootstrap.php';
+if ( file_exists( BP_TESTS_DIR . '/bootstrap.php' ) ) :
 
-require_once( BP_PLUGIN_DIR . 'bp-core/admin/bp-core-schema.php' );
-$components = array( 'groups' => 1, 'activity' => 1 );
-bp_core_install( $components );
-bp_update_option( 'bp-active-components', $components );
-bp_core_add_page_mappings( $components, 'delete' );
+	require_once getenv( 'WP_TESTS_DIR' ) . '/includes/functions.php';
+
+	function _bootstrap_bpdocs() {
+		// Make sure BP is installed and loaded first
+		require BP_TESTS_DIR . '/includes/loader.php';
+
+		// Then load BP Docs
+		require dirname( __FILE__ ) . '/../loader.php';
+	}
+	tests_add_filter( 'muplugins_loaded', '_bootstrap_bpdocs' );
+
+	require getenv( 'WP_TESTS_DIR' ) . '/includes/bootstrap.php';
+
+	// Load the BP test files
+	require BP_TESTS_DIR . '/includes/testcase.php';
+
+	// include our testcase
+	require( dirname(__FILE__) . '/bp-docs-testcase.php' );
+
+endif;
