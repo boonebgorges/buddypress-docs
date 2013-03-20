@@ -17,6 +17,13 @@ if ( file_exists( BP_TESTS_DIR . '/bootstrap.php' ) ) :
 	}
 	tests_add_filter( 'muplugins_loaded', '_bootstrap_bpdocs' );
 
+	// We need pretty permalinks for some tests
+	function _set_permalinks() {
+		update_option( 'permalink_structure', '/%year%/%monthnum%/%day%/%postname%/' );
+	}
+	tests_add_filter( 'init', '_set_permalinks', 1 );
+
+
 	require getenv( 'WP_TESTS_DIR' ) . '/includes/bootstrap.php';
 
 	// Load the BP test files
