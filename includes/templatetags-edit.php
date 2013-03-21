@@ -98,11 +98,13 @@ function bp_docs_edit_parent_dropdown() {
 		}
 	}
 
-	// Exclude the current doc, if this is 'edit' and not 'create' mode
-	$exclude = ! empty( $bp->bp_docs->current_post->ID ) ? array( $bp->bp_docs->current_post->ID ) : false;
+	$current_doc = get_queried_object();
+	$exclude = $parent = false;
 
-	// Highlight the existing parent doc, if any
-	$parent  = ! empty( $bp->bp_docs->current_post->post_parent ) ? $bp->bp_docs->current_post->post_parent : false;
+	if ( isset( $current_doc->post_type ) && bp_docs_get_post_type_name() === $current_doc->post_type ) {
+		$exclude = array( $current_doc->ID );
+		$parent = $current_doc->post_parent;
+	}
 
 	$pages = wp_dropdown_pages( array(
 		'post_type' 	=> $bp->bp_docs->post_type_name,
