@@ -1737,13 +1737,68 @@ function bp_docs_attachment_item_markup( $attachment_id ) {
 
 	$attachment = get_post( $attachment_id );
 
+	$attachment_img = bp_docs_get_attachment_image_src( $attachment->ID, 'thumbnail', true );
+
 	$markup = sprintf(
-		'<li id="doc-attachment-%d"><a href="%s" title="%s">%s</a></li>',
+		'<li id="doc-attachment-%d"><a href="%s" title="%s"><img class="doc-attachment-icon" src="%s" /> %s</a></li>',
 		$attachment->ID,
 		$attachment->guid,
 		esc_attr( $attachment->post_title ),
+		$attachment_img[0],
 		esc_html( $attachment->post_title )
 	);
 
 	return $markup;
 }
+
+/**
+ * Retrieve an image to represent an attachment.
+ *
+ * Torn from WP's wp_get_attachment_image_src(), and modified so as not to
+ * show image thumbnails (as well as to use our custom image location)
+ *
+ * @since 1.4
+ *
+ * @param int $attachment_id Image attachment ID.
+ * @param string $size Optional, default is 'thumbnail'.
+ * @param bool $icon Optional, default is false. Whether it is an icon.
+ * @return bool|array Returns an array (url, width, height), or false, if no image is available.
+ */
+function bp_docs_get_attachment_image_src($attachment_id, $size='thumbnail', $icon = false) {
+	$src = $fn = false;
+
+	// Brute force check because WP's functions are impossible
+	$post = get_post( $attachment_id );
+	$ext = preg_replace('/^.+?\.([^.]+)$/', '$1', $post->guid);
+
+	switch ( $ext ) {
+		case 'doc' :
+		case 'docx' :
+		case 'odt' :
+			$fn = 'wordprocessing.png';
+			break;
+
+		case 'pdf' :
+			$fn = 'pdf.png';
+			break;
+	}
+
+	if ( $fn ) {
+		$src = plugins_url( 'buddypress-docs/lib/nuvola/' ) . $fn;
+	}
+
+	if ( $icon ) {
+		if ( ! $src ) {
+			$src = wp_mime_type_icon( $attachment_id );
+		}
+
+		$icon_dir = apply_filters( 'icon_dir', ABSPATH . WPINC . '/images/crystal' );
+		$src_file = $icon_dir . '/' . wp_basename($src);
+		@list($width, $height) = getimagesize($src_file);
+	}
+
+	if ( $src && $width && $height )
+		return array( $src, $width, $height );
+	return false;
+}
+

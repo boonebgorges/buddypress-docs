@@ -16,6 +16,10 @@ class BP_Docs_Attachments {
 
 		add_action( 'pre_get_posts', array( $this, 'filter_gallery_posts' ) );
 
+		// Icon display
+		add_filter( 'icon_dir', 'BP_Docs_Attachments::icon_dir' );
+		add_filter( 'icon_dir_uri', 'BP_Docs_Attachments::icon_dir_uri' );
+
 		require( dirname( __FILE__ ) . '/attachments-ajax.php' );
 	}
 
@@ -420,6 +424,20 @@ class BP_Docs_Attachments {
 		$headers['Content-Length'] = $filesize;
 
 		return $headers;
+	}
+
+	public static function icon_dir( $dir ) {
+		if ( bp_docs_is_docs_component() ) {
+			$dir = BP_DOCS_INSTALL_PATH . 'lib/nuvola';
+		}
+		return $dir;
+	}
+
+	public static function icon_dir_uri( $url ) {
+		if ( bp_docs_is_docs_component() ) {
+			$url = plugins_url( 'buddypress-docs/lib/nuvola' );
+		}
+		return $url;
 	}
 }
 
