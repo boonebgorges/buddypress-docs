@@ -1728,3 +1728,22 @@ function bp_docs_get_doc_attachments() {
 	) );
 	return $atts;
 }
+
+// @todo make <li> optional?
+// @todo delete action
+// @todo mime type for icons
+function bp_docs_attachment_item_markup( $attachment_id ) {
+	$markup = '';
+
+	$attachment = get_post( $attachment_id );
+
+	$markup = sprintf(
+		'<li id="doc-attachment-%d"><a href="%s" title="%s">%s</a></li>',
+		$attachment->ID,
+		$attachment->guid,
+		esc_attr( $attachment->post_title ),
+		esc_html( $attachment->post_title )
+	);
+
+	return $markup;
+}

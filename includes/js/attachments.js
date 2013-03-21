@@ -3,6 +3,23 @@ window.wp = window.wp || {};
 (function($){
 	var doc_id;
 
+	// Upload handler. Sends attached files to the list
+	wp.Uploader.prototype.success = function(r) {
+		$.ajax( ajaxurl, { 
+			type: 'POST',
+			data: {
+				'action': 'doc_attachment_item_markup',
+				'attachment_id': r.id,
+				
+			},
+			success: function(s) {
+				$('#doc-attachments').append(s.data);
+			}
+		} );
+	};
+
+	console.log(wp);
+
 	doc_id = wp.media.model.settings.post.id;
 
 	if ( 0 == doc_id ) {
@@ -10,7 +27,6 @@ window.wp = window.wp || {};
 			success: function( response ) {
 				wp.media.model.settings.post.id = response.doc_id;
 				$('input#doc_id').val(response.doc_id);
-//				$('input#doc_id').after('<input type="hidden" name="auto_draft_id" value="'+response.doc_id+'" />');
 				wp.media.model.Query.defaultArgs.auto_draft_id = response.doc_id;
 			}
 		};

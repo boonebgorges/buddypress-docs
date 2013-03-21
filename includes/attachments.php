@@ -13,9 +13,10 @@ class BP_Docs_Attachments {
 		add_action( 'bp_docs_doc_saved', array( $this, 'check_privacy' ) );
 		add_filter( 'wp_handle_upload_prefilter', array( $this, 'maybe_create_htaccess' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
-		add_action( 'wp_ajax_bp_docs_create_dummy_doc', array( $this, 'create_dummy_doc' ) );
 
 		add_action( 'pre_get_posts', array( $this, 'filter_gallery_posts' ) );
+
+		require( dirname( __FILE__ ) . '/attachments-ajax.php' );
 	}
 
 	/**
@@ -295,21 +296,6 @@ class BP_Docs_Attachments {
 	}
 
 	/**
-	 * Ajax handler to create dummy doc on creation
-	 *
-	 * @since 1.4
-	 */
-	function create_dummy_doc() {
-		add_filter( 'wp_insert_post_empty_content', '__return_false' );
-		$doc_id = wp_insert_post( array(
-			'post_type' => bp_docs_get_post_type_name(),
-			'post_status' => 'auto-draft',
-		) );
-		remove_filter( 'wp_insert_post_empty_content', '__return_false' );
-		wp_send_json_success( array( 'doc_id' => $doc_id ) );
-	}
-
-	/**
 	 * Filter the posts query on attachment pages, to ensure that only the
 	 * specific Doc's attachments show up in the Gallery
 	 *
@@ -436,3 +422,4 @@ class BP_Docs_Attachments {
 		return $headers;
 	}
 }
+
