@@ -69,7 +69,7 @@ class BP_Docs_Component extends BP_Component {
 		add_action( 'comment_post_redirect', array( &$this, 'comment_post_redirect' ), 99, 2 );
 
 		// Doc comments are always from trusted members (for the moment), so approve them
-		add_action( 'pre_comment_approved', create_function( '', 'return 1;' ), 999 );
+		add_action( 'pre_comment_approved', array( $this, 'approve_doc_comments' ), 999, 2 );
 
 		// Hook the doc comment activity function
 		add_action( 'comment_post', array( &$this, 'post_comment_activity' ), 8 );
@@ -505,6 +505,25 @@ class BP_Docs_Component extends BP_Component {
 	/**
 	 * METHODS RELATED TO DOC COMMENTS
 	 */
+
+	/**
+	 * Approve all Doc comments
+	 *
+	 * Docs handles its own comment permissions, so we override WP's value
+	 *
+	 * @since 1.3.3
+	 * @param string $approved
+	 * @param array $commentdata
+	 * @return string $approved
+	 */
+	public function approve_doc_comments( $approved, $commentdata ) {
+		$post = get_post( $commentdata['comment_post_ID'] );
+		if ( bp_docs_get_post_type_name() === $post->post_type ) {
+			$approved = 1;
+		}
+
+		return $approved;
+	}
 
 	/**
 	 * Filters the comment_post_direct URL so that the user gets sent back to the true

@@ -35,6 +35,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.3.3 =
+* Fixed bug that incorrectly approved some post comments
+
 = 1.3.2 =
 * Fixed bug with tab permalinks on some setups
 * Fixed bug in the way parent Doc is pre-selected on Edit screen dropdown
