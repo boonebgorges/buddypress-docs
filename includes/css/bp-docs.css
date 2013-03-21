@@ -164,6 +164,23 @@ div.docs-info-header {
 	margin-left: 0;
 }
 
+/* ATTACHMENTS */
+#doc-attachments {
+	margin-top: 1em;
+	list-style-type: none;
+}
+
+#doc-attachments li {
+	margin-bottom: .3em;
+	margin-left: 0;
+}
+
+#doc-attachments img.doc-attachment-icon {
+	margin: 0 4px;
+	height: 1.6em;
+}
+
+
 /* TOGGLES */
 
 .toggle-switch,
