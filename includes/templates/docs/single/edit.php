@@ -182,4 +182,6 @@
 	</div>
 	</div>
 
+	<?php bp_docs_attachments_media_template() ?>
+
 </div><!-- /#buddypress -->

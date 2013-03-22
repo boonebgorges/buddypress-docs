@@ -1716,7 +1716,7 @@ function bp_docs_media_buttons( $editor_id ) {
 
 	$img = '<span class="wp-media-buttons-icon"></span> ';
 
-	echo '<a href="#" id="insert-media-button" class="button insert-media add_media" data-editor="' . esc_attr( $editor_id ) . '" title="' . esc_attr__( 'Add Files', 'bp-docs' ) . '">' . $img . __( 'Add Files', 'bp-docs' ) . '</a>';
+	echo '<a href="#" id="insert-media-button" class="button add-attachment add_media" data-editor="' . esc_attr( $editor_id ) . '" title="' . esc_attr__( 'Add Files', 'bp-docs' ) . '">' . $img . __( 'Add Files', 'bp-docs' ) . '</a>';
 }
 
 function bp_docs_get_doc_attachments() {
@@ -1802,3 +1802,15 @@ function bp_docs_get_attachment_image_src($attachment_id, $size='thumbnail', $ic
 	return false;
 }
 
+function bp_docs_attachments_media_template() {
+	?>
+	<script type="text/html" id="tmpl-bpdocs-upload-frame">
+		<div class="media-frame-menu"></div>
+		<div class="media-frame-title"></div>
+		<div class="media-frame-router"></div>
+		<div class="media-frame-content"></div>
+		<div class="media-frame-toolbar"></div>
+		<div class="media-frame-uploader"></div>
+	</script>
+	<?php
+}
