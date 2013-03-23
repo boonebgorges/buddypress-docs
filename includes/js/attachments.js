@@ -3,37 +3,10 @@ window.wp = window.wp || {};
 (function($){
 	var doc_id;
 
-	var BP_Docs_Upload = Backbone.View.extend({
-		el: $('body'), 	
-		
-		events: {
-			'click .add-attachment': 'render' 
-		},
-
-		initialize: function() {
-			this.uploader = new wp.media.view.UploaderWindow({
-				controller: this,
-				uploader: {
-					dropzone:  this.modal ? this.modal.$el : this.$el,
-					container: this.$el
-				}
-			});
-		},
-
-		render: function() {
-			$(this.el).append('<div class="uploader-window"></div>');
-			$('div.uploader-window').css('opacity', 1);
-			this.uploader.show();
-			return this;
-		}
-	});
-
-	wp.bp_docs_upload = new BP_Docs_Upload();
-
 	// Uploading files
-	var file_frame;
+	var file_frame, BP_Docs_MediaFrame, Library;
 
-	$('.add-attachment').live('click', function( event ){
+	$('.add-attachment').on('click', function( event ){
 
 		event.preventDefault();
 
@@ -43,16 +16,34 @@ window.wp = window.wp || {};
 			return;
 		}
 
-		// Create the media frame.
-		file_frame = wp.media.frames.file_frame = wp.media({
-			title: jQuery( this ).data( 'uploader_title' ),
+		BP_Docs_MediaFrame = wp.media.view.MediaFrame.Select.extend({
+			browseRouter: function( view ) {
+				view.set({
+					upload: {
+						text:     l10n.uploadFilesTitle,
+						priority: 20
+					}
+				});
+			}
+		});
+
+		file_frame = new BP_Docs_MediaFrame({
+			title: 'foo',
 			button: {
-				text: jQuery( this ).data( 'uploader_button_text' ),
+				text: 'Bar',
 			},
-			multiple: false  // Set to true to allow multiple files to be selected
+			multiple: false
 		});
 
 		file_frame.open();
+
+		// Change to upload mode
+		Library = file_frame.states.get('library');
+		Library.frame.content.mode('upload');
+
+		console.log(Library);
+
+		return;
 	});
 
 	// Upload handler. Sends attached files to the list
