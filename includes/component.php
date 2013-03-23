@@ -1039,7 +1039,9 @@ class BP_Docs_Component extends BP_Component {
 			wp_enqueue_script( 'bp-docs-js' );
 			wp_enqueue_script( 'comment-reply' );
 			wp_localize_script( 'bp-docs-js', 'bp_docs', array(
-				'still_working'	=> __( 'Still working?', 'bp-docs' )
+				'upload_title' => __( 'Upload File', 'bp-docs' ),
+				'upload_button' => __( 'OK', 'bp-docs' ),
+				'still_working'	=> __( 'Still working?', 'bp-docs' ),
 			) );
 		}
 	}

@@ -20,7 +20,7 @@ window.wp = window.wp || {};
 			browseRouter: function( view ) {
 				view.set({
 					upload: {
-						text:     l10n.uploadFilesTitle,
+						text:     wp.media.view.l10n.uploadFilesTitle,
 						priority: 20
 					}
 				});
@@ -28,9 +28,9 @@ window.wp = window.wp || {};
 		});
 
 		file_frame = new BP_Docs_MediaFrame({
-			title: 'foo',
+			title: bp_docs.upload_title,
 			button: {
-				text: 'Bar',
+				text: bp_docs.upload_button,
 			},
 			multiple: false
 		});
@@ -40,8 +40,6 @@ window.wp = window.wp || {};
 		// Change to upload mode
 		Library = file_frame.states.get('library');
 		Library.frame.content.mode('upload');
-
-		console.log(Library);
 
 		return;
 	});
