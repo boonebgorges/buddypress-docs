@@ -1703,9 +1703,15 @@ function bp_docs_render_permissions_snapshot() {
 add_action( 'bp_docs_single_doc_header_fields', 'bp_docs_render_permissions_snapshot' );
 
 /**
- * Renders the Upload Media area
+ * Renders the Add Files button area
+ *
+ * @since 1.4
  */
 function bp_docs_media_buttons( $editor_id ) {
+	if ( ! bp_docs_current_user_can( 'edit' ) ) {
+		return;
+	}
+
 	$post = get_post();
 	if ( ! $post && ! empty( $GLOBALS['post_ID'] ) )
 		$post = $GLOBALS['post_ID'];

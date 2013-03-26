@@ -24,6 +24,7 @@
 	</div>
 
 	<div class="doc-attachments">
+		<h3><?php _e( 'Files', 'bp-docs' ) ?></h3>
 		<?php include ( bp_docs_locate_template( 'single/attachments.php' ) ) ?>
 	</div>
 
