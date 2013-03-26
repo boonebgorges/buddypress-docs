@@ -1807,15 +1807,3 @@ function bp_docs_get_attachment_image_src($attachment_id, $size='thumbnail', $ic
 	return false;
 }
 
-function bp_docs_attachments_media_template() {
-	?>
-	<script type="text/html" id="tmpl-bpdocs-upload-frame">
-		<div class="media-frame-menu"></div>
-		<div class="media-frame-title"></div>
-		<div class="media-frame-router"></div>
-		<div class="media-frame-content"></div>
-		<div class="media-frame-toolbar"></div>
-		<div class="media-frame-uploader"></div>
-	</script>
-	<?php
-}
