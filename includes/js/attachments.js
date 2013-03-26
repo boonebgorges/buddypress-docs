@@ -54,7 +54,7 @@ window.wp = window.wp || {};
 				
 			},
 			success: function(s) {
-				$('#doc-attachments').prepend(s.data);
+				$('#doc-attachments-ul').prepend(s.data);
 				file_frame.close();
 			}
 		} );

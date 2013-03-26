@@ -19,10 +19,12 @@
 		<?php bp_docs_inline_toggle_js() ?>
 	<?php endif ?>
 
-	<?php /* Quirk: We only need this if not running theme compat */ ?>
-
 	<div class="doc-content">
 		<?php bp_docs_the_content() ?>
+	</div>
+
+	<div class="doc-attachments">
+		<?php include ( bp_docs_locate_template( 'single/attachments.php' ) ) ?>
 	</div>
 
 	<div class="doc-meta">

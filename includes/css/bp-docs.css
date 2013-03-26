@@ -165,17 +165,17 @@ div.docs-info-header {
 }
 
 /* ATTACHMENTS */
-#doc-attachments {
+#doc-attachments-ul {
 	margin-top: 1em;
 	list-style-type: none;
 }
 
-#doc-attachments li {
+#doc-attachments-ul li {
 	margin-bottom: .3em;
 	margin-left: 0;
 }
 
-#doc-attachments img.doc-attachment-icon {
+#doc-attachments-ul img.doc-attachment-icon {
 	margin: 0 4px;
 	height: 1.6em;
 }
