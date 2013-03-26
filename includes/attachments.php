@@ -309,10 +309,7 @@ class BP_Docs_Attachments {
 	 * @since 1.4
 	 */
 	public function filter_gallery_posts( $query ) {
-		if ( ! defined( 'DOING_AJAX' || ! DOING_AJAX ) ) {
-			return;
-		}
-
+		// This is also a surrogate check for DOING_AJAX
 		if ( ! isset( $_POST['action'] ) || 'query-attachments' !== $_POST['action'] ) {
 			return;
 		}
