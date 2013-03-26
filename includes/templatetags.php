@@ -1741,16 +1741,24 @@ function bp_docs_attachment_item_markup( $attachment_id ) {
 	$markup = '';
 
 	$attachment = get_post( $attachment_id );
+	$attachmentdata = wp_get_attachment_metadata( $attachment_id );
+	$attachment_img = bp_docs_get_attachment_image_src( $attachment_id, 'thumbnail', true );
 
-	$attachment_img = bp_docs_get_attachment_image_src( $attachment->ID, 'thumbnail', true );
+	if ( ! $attachmentdata ) {
+		$attachment_url = $attachment->guid;
+		$attachment_filename = basename( $attachment_url );
+	} else {
+		$attachment_url = bp_docs_get_doc_link( $attachment->post_parent ) . $attachmentdata['file'];
+		$attachment_filename = basename( $attachmentdata['file'] );
+	}
 
 	$markup = sprintf(
 		'<li id="doc-attachment-%d"><a href="%s" title="%s"><img class="doc-attachment-icon" src="%s" /> %s</a></li>',
-		$attachment->ID,
-		$attachment->guid,
-		esc_attr( $attachment->post_title ),
+		$attachment_id,
+		$attachment_url,
+		esc_attr( $attachment_filename ),
 		$attachment_img[0],
-		esc_html( $attachment->post_title )
+		esc_html( $attachment_filename )
 	);
 
 	return $markup;
