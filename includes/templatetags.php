@@ -1769,7 +1769,7 @@ function bp_docs_attachment_item_markup( $attachment_id ) {
  * @param bool $icon Optional, default is false. Whether it is an icon.
  * @return bool|array Returns an array (url, width, height), or false, if no image is available.
  */
-function bp_docs_get_attachment_image_src($attachment_id, $size='thumbnail', $icon = false) {
+function bp_docs_get_attachment_image_src( $attachment_id, $size='thumbnail', $icon = true ) {
 	$src = $fn = false;
 
 	// Brute force check because WP's functions are impossible
@@ -1786,6 +1786,15 @@ function bp_docs_get_attachment_image_src($attachment_id, $size='thumbnail', $ic
 		case 'pdf' :
 			$fn = 'pdf.png';
 			break;
+
+		case 'jpg' :
+		case 'jpeg' :
+		case 'gif' :
+		case 'bmp' :
+		case 'png' :
+		case 'tiff' :
+			$fn = 'image.png';
+			break;
 	}
 
 	if ( $fn ) {
@@ -1797,7 +1806,8 @@ function bp_docs_get_attachment_image_src($attachment_id, $size='thumbnail', $ic
 			$src = wp_mime_type_icon( $attachment_id );
 		}
 
-		$icon_dir = apply_filters( 'icon_dir', ABSPATH . WPINC . '/images/crystal' );
+		$icon_dir = BP_DOCS_INSTALL_PATH . '/lib/nuvola';
+//		$icon_dir = apply_filters( 'icon_dir', ABSPATH . WPINC . '/images/crystal' );
 		$src_file = $icon_dir . '/' . wp_basename($src);
 		@list($width, $height) = getimagesize($src_file);
 	}
