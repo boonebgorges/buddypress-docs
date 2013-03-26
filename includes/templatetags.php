@@ -1721,6 +1721,11 @@ function bp_docs_media_buttons( $editor_id ) {
 
 function bp_docs_get_doc_attachments() {
 	$doc = get_post();
+
+	if ( empty( $doc->ID ) ) {
+		return array();
+	}
+
 	$atts = get_posts( array(
 		'post_type' => 'attachment',
 		'post_parent' => $doc->ID,
