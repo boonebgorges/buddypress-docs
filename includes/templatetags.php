@@ -1741,16 +1741,10 @@ function bp_docs_attachment_item_markup( $attachment_id ) {
 	$markup = '';
 
 	$attachment = get_post( $attachment_id );
-	$attachmentdata = wp_get_attachment_metadata( $attachment_id );
 	$attachment_img = bp_docs_get_attachment_image_src( $attachment_id, 'thumbnail', true );
 
-	if ( ! $attachmentdata ) {
-		$attachment_url = $attachment->guid;
-		$attachment_filename = basename( $attachment_url );
-	} else {
-		$attachment_url = bp_docs_get_doc_link( $attachment->post_parent ) . $attachmentdata['file'];
-		$attachment_filename = basename( $attachmentdata['file'] );
-	}
+	$attachment_url = $attachment->guid;
+	$attachment_filename = basename( $attachment_url );
 
 	$markup = sprintf(
 		'<li id="doc-attachment-%d"><a href="%s" title="%s"><img class="doc-attachment-icon" src="%s" /> %s</a></li>',
