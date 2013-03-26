@@ -156,7 +156,7 @@ class BP_Docs_Attachments {
 	}
 
 	/**
-	 * Creates an .htaccess for a Doc upload directory, if it doesn't exist
+	 * Creates an .htaccess for a Doc upload directory
 	 *
 	 * No check happens here to see whether an .htaccess is necessary. Make
 	 * sure you check $this->get_is_private() before running.
@@ -165,13 +165,13 @@ class BP_Docs_Attachments {
 	 */
 	public function create_htaccess() {
 		$htaccess_path = $this->get_htaccess_path();
-		if ( file_exists( $htaccess_path ) ) {
-			return false;
-		}
 
 		$rules = $this->generate_rewrite_rules();
 
 		if ( ! empty( $rules ) ) {
+			if ( ! file_exists( 'insert_with_markers' ) ) {
+				require_once( ABSPATH . 'wp-admin/includes/misc.php' );
+			}
 			insert_with_markers( $htaccess_path, 'BuddyPress Docs', $rules );
 		}
 	}
