@@ -1035,7 +1035,7 @@ class BP_Docs_Component extends BP_Component {
 
 		// Only load our JS on the right sorts of pages. Generous to account for
 		// different item types
-		if ( in_array( BP_DOCS_SLUG, $this->slugstocheck ) || bp_docs_is_single_doc() || bp_docs_is_global_directory() ) {
+		if ( in_array( BP_DOCS_SLUG, $this->slugstocheck ) || bp_docs_is_single_doc() || bp_docs_is_global_directory() || bp_docs_is_doc_create() ) {
 			wp_enqueue_script( 'bp-docs-js' );
 			wp_enqueue_script( 'comment-reply' );
 			wp_localize_script( 'bp-docs-js', 'bp_docs', array(
