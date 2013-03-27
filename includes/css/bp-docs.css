@@ -180,6 +180,15 @@ div.docs-info-header {
 	height: 1.6em;
 }
 
+#doc-attachments-ul .doc-attachment-delete {
+	text-decoration: none;
+	color: #f00;
+	font-size: .9em;
+	display: block;
+	float: left;
+	margin-top: 2px;
+}
+
 
 /* TOGGLES */
 
