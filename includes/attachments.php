@@ -20,6 +20,9 @@ class BP_Docs_Attachments {
 		add_filter( 'icon_dir', 'BP_Docs_Attachments::icon_dir' );
 		add_filter( 'icon_dir_uri', 'BP_Docs_Attachments::icon_dir_uri' );
 
+		// Catch delete request
+		add_action( 'bp_actions', array( $this, 'catch_delete_request' ) );
+
 		require( dirname( __FILE__ ) . '/attachments-ajax.php' );
 	}
 
@@ -255,6 +258,32 @@ class BP_Docs_Attachments {
 		}
 
 		return $this->doc_id;
+	}
+
+	public function catch_delete_request() {
+		if ( ! bp_docs_is_existing_doc() ) {
+			return;
+		}
+
+		if ( ! isset( $_GET['delete_attachment'] ) ) {
+			return;
+		}
+
+		if ( ! bp_docs_current_user_can( 'edit' ) ) {
+			return;
+		}
+
+		$attachment_id = intval( $_GET['delete_attachment'] );
+
+		check_admin_referer( 'bp_docs_delete_attachment_' . $attachment_id );
+
+		if ( wp_delete_attachment( $attachment_id ) ) {
+			bp_core_add_message( __( 'Attachment deleted', 'bp-docs' ) );
+		} else {
+			bp_core_add_message( __( 'Could not delete attachment', 'bp-docs' ), 'error' );
+		}
+
+		wp_redirect( wp_get_referer() );
 	}
 
 	/**

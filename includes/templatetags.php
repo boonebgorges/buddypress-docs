@@ -1752,9 +1752,23 @@ function bp_docs_attachment_item_markup( $attachment_id ) {
 	$attachment_url = $attachment->guid;
 	$attachment_filename = basename( $attachment_url );
 
+	$attachment_delete_html = '';
+	if ( bp_docs_current_user_can( 'edit' ) ) {
+		$doc_url = bp_docs_get_doc_link( $attachment->post_parent );
+		$attachment_delete_url = wp_nonce_url( $doc_url, 'bp_docs_delete_attachment_' . $attachment_id );
+		$attachment_delete_url = add_query_arg( array(
+			'delete_attachment' => $attachment_id,
+		), $attachment_delete_url );
+		$attachment_delete_html = sprintf(
+			'<a href="%s" class="doc-attachment-delete">x</a> ',
+			$attachment_delete_url
+		);
+	}
+
 	$markup = sprintf(
-		'<li id="doc-attachment-%d"><a href="%s" title="%s"><img class="doc-attachment-icon" src="%s" /> %s</a></li>',
+		'<li id="doc-attachment-%d">%s<a href="%s" title="%s"><img class="doc-attachment-icon" src="%s" /> %s</a></li>',
 		$attachment_id,
+		$attachment_delete_html,
 		$attachment_url,
 		esc_attr( $attachment_filename ),
 		$attachment_img[0],
