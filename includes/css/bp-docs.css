@@ -188,7 +188,7 @@ div.docs-info-header {
 	margin-right: .3em;
 }
 
-#buddypress table td.attachment-clip-cell {
+#buddypress table.doctable td {
 	vertical-align: top;
 }
 

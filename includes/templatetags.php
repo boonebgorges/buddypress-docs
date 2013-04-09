@@ -1725,16 +1725,30 @@ function bp_docs_media_buttons( $editor_id ) {
 	echo '<a href="#" id="insert-media-button" class="button add-attachment add_media" data-editor="' . esc_attr( $editor_id ) . '" title="' . esc_attr__( 'Add Files', 'bp-docs' ) . '">' . $img . __( 'Add Files', 'bp-docs' ) . '</a>';
 }
 
-function bp_docs_get_doc_attachments() {
-	$doc = get_post();
+/**
+ * Fetch the attachments for a Doc
+ *
+ * @since 1.4
+ * @return array
+ */
+function bp_docs_get_doc_attachments( $doc_id = null ) {
 
-	if ( empty( $doc->ID ) ) {
+	if ( is_null( $doc_id ) ) {
+		$doc = get_post();
+		if ( ! empty( $doc->ID ) ) {
+			$doc_id = $doc->ID;
+		}
+	}
+
+	if ( empty( $doc_id ) ) {
 		return array();
 	}
 
 	$atts = get_posts( array(
 		'post_type' => 'attachment',
-		'post_parent' => $doc->ID,
+		'post_parent' => $doc_id,
+		'update_post_meta_cache' => false,
+		'update_post_term_cache' => false,
 		'posts_per_page' => -1,
 	) );
 	return $atts;
@@ -1743,7 +1757,7 @@ function bp_docs_get_doc_attachments() {
 // @todo make <li> optional?
 // @todo delete action
 // @todo mime type for icons
-function bp_docs_attachment_item_markup( $attachment_id ) {
+function bp_docs_attachment_item_markup( $attachment_id, $format = 'full' ) {
 	$markup = '';
 
 	$attachment = get_post( $attachment_id );
@@ -1752,29 +1766,41 @@ function bp_docs_attachment_item_markup( $attachment_id ) {
 	$attachment_url = $attachment->guid;
 	$attachment_filename = basename( $attachment_url );
 
-	$attachment_delete_html = '';
-	if ( bp_docs_current_user_can( 'edit' ) ) {
-		$doc_url = bp_docs_get_doc_link( $attachment->post_parent );
-		$attachment_delete_url = wp_nonce_url( $doc_url, 'bp_docs_delete_attachment_' . $attachment_id );
-		$attachment_delete_url = add_query_arg( array(
-			'delete_attachment' => $attachment_id,
-		), $attachment_delete_url );
-		$attachment_delete_html = sprintf(
-			'<a href="%s" class="doc-attachment-delete confirm button">%s</a> ',
-			$attachment_delete_url,
-			__( 'Delete', 'buddypress' )
-		);
-	}
+	if ( 'full' === $format ) {
+		$attachment_delete_html = '';
+		if ( bp_docs_current_user_can( 'edit' ) ) {
+			$doc_url = bp_docs_get_doc_link( $attachment->post_parent );
+			$attachment_delete_url = wp_nonce_url( $doc_url, 'bp_docs_delete_attachment_' . $attachment_id );
+			$attachment_delete_url = add_query_arg( array(
+				'delete_attachment' => $attachment_id,
+			), $attachment_delete_url );
+			$attachment_delete_html = sprintf(
+				'<a href="%s" class="doc-attachment-delete confirm button">%s</a> ',
+				$attachment_delete_url,
+				__( 'Delete', 'buddypress' )
+			);
+		}
 
-	$markup = sprintf(
-		'<li id="doc-attachment-%d"><a href="%s" title="%s"><img class="doc-attachment-icon" src="%s" /> %s</a>%s</li>',
-		$attachment_id,
-		$attachment_url,
-		esc_attr( $attachment_filename ),
-		$attachment_img[0],
-		esc_html( $attachment_filename ),
-		$attachment_delete_html
-	);
+		$markup = sprintf(
+			'<li id="doc-attachment-%d"><a href="%s" title="%s"><img class="doc-attachment-icon" src="%s" /> %s</a>%s</li>',
+			$attachment_id,
+			$attachment_url,
+			esc_attr( $attachment_filename ),
+			$attachment_img[0],
+			esc_html( $attachment_filename ),
+			$attachment_delete_html
+		);
+	} else {
+
+		$markup = sprintf(
+			'<li id="doc-attachment-%d"><a href="%s" title="%s">%s</a></li>',
+			$attachment_id,
+			$attachment_url,
+			esc_attr( $attachment_filename ),
+			esc_html( $attachment_filename )
+		);
+
+	}
 
 	return $markup;
 }
@@ -1840,13 +1866,13 @@ function bp_docs_get_attachment_image_src( $attachment_id, $size='thumbnail', $i
 	return false;
 }
 
+/**
+ * Gets the markup for the paperclip icon in directories
+ *
+ * @since 1.4
+ */
 function bp_docs_attachment_icon() {
-	$atts = get_posts( array(
-		'post_type' => 'attachment',
-		'post_parent' => get_the_ID(),
-		'update_post_meta_cache' => false,
-		'update_post_term_cache' => false,
-	) );
+	$atts = bp_docs_get_doc_attachments( get_the_ID() );
 
 	if ( empty( $atts ) ) {
 		return;
@@ -1855,6 +1881,29 @@ function bp_docs_attachment_icon() {
 	$pc = plugins_url( 'buddypress-docs/includes/images/paperclip.png' );
 
 	$html = '<a class="bp-docs-attachment-clip" id="bp-docs-attachment-clip-' . get_the_ID() . '"><img src="' . $pc . '" height="25"></a>';
+
+	echo $html;
+}
+
+/**
+ * Builds the markup for the attachment drawer in directories
+ *
+ * @since 1.4
+ */
+function bp_docs_doc_attachment_drawer() {
+	$atts = bp_docs_get_doc_attachments( get_the_ID() );
+	$html = '';
+
+	if ( ! empty( $atts ) ) {
+		$html .= '<ul>';
+		$html .= '<h4>' . __( 'Attachments', 'bp-docs' ) . '</h4>';
+
+		foreach ( $atts as $att ) {
+			$html .= bp_docs_attachment_item_markup( $att->ID, 'simple' );
+		}
+
+		$html .= '</ul>';
+	}
 
 	echo $html;
 }

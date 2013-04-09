@@ -58,7 +58,9 @@
 					<?php bp_docs_doc_action_links() ?>
 				</div>
 
-				<div class="bp-docs-attachment-drawer" id="bp-docs-attachment-drawer-<?php echo get_the_ID() ?>">foo</div>
+				<div class="bp-docs-attachment-drawer" id="bp-docs-attachment-drawer-<?php echo get_the_ID() ?>">
+					<?php bp_docs_doc_attachment_drawer() ?>
+				</div>
 			</td>
 
 			<td class="author-cell">
