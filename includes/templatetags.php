@@ -1760,19 +1760,20 @@ function bp_docs_attachment_item_markup( $attachment_id ) {
 			'delete_attachment' => $attachment_id,
 		), $attachment_delete_url );
 		$attachment_delete_html = sprintf(
-			'<a href="%s" class="doc-attachment-delete">x</a> ',
-			$attachment_delete_url
+			'<a href="%s" class="doc-attachment-delete confirm button">%s</a> ',
+			$attachment_delete_url,
+			__( 'Delete', 'buddypress' )
 		);
 	}
 
 	$markup = sprintf(
-		'<li id="doc-attachment-%d">%s<a href="%s" title="%s"><img class="doc-attachment-icon" src="%s" /> %s</a></li>',
+		'<li id="doc-attachment-%d"><a href="%s" title="%s"><img class="doc-attachment-icon" src="%s" /> %s</a>%s</li>',
 		$attachment_id,
-		$attachment_delete_html,
 		$attachment_url,
 		esc_attr( $attachment_filename ),
 		$attachment_img[0],
-		esc_html( $attachment_filename )
+		esc_html( $attachment_filename ),
+		$attachment_delete_html
 	);
 
 	return $markup;
