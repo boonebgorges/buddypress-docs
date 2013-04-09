@@ -1840,3 +1840,21 @@ function bp_docs_get_attachment_image_src( $attachment_id, $size='thumbnail', $i
 	return false;
 }
 
+function bp_docs_attachment_icon() {
+	$atts = get_posts( array(
+		'post_type' => 'attachment',
+		'post_parent' => get_the_ID(),
+		'update_post_meta_cache' => false,
+		'update_post_term_cache' => false,
+	) );
+
+	if ( empty( $atts ) ) {
+		return;
+	}
+
+	$pc = plugins_url( 'buddypress-docs/includes/images/paperclip.png' );
+
+	$html = '<a class="bp-docs-attachment-clip" id="bp-docs-attachment-clip-' . get_the_ID() . '"><img src="' . $pc . '" height="25"></a>';
+
+	echo $html;
+}

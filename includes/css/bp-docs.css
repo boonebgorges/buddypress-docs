@@ -188,6 +188,19 @@ div.docs-info-header {
 	margin-right: .3em;
 }
 
+#buddypress table td.attachment-clip-cell {
+	vertical-align: top;
+}
+
+.bp-docs-attachment-clip {
+	cursor: pointer;
+	display: block;
+	margin-top: 10px;
+}
+
+body.js .bp-docs-attachment-drawer {
+	display: none;
+}
 
 /* TOGGLES */
 
