@@ -2,6 +2,13 @@ jQuery(document).ready(function($){
 	/* Unhide JS content */
 	$('.hide-if-no-js').show();
 
+	$('.bp-docs-attachment-clip').on('click', function(e) {
+//		var att_doc_id = e.target;
+		var att_doc_id = $(e.target).closest('.bp-docs-attachment-clip').attr('id').split('-').pop();
+		var att_doc_drawer = $('#bp-docs-attachment-drawer-'+att_doc_id);
+		att_doc_drawer.slideToggle( 400 );
+	});
+
 	/* When a toggle is clicked, show the toggle-content */
 	$('.toggle-link').click(function(){
 		// Traverse for some items

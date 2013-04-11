@@ -20,7 +20,7 @@
 
 	<thead>
 		<tr valign="bottom">
-			<th scope="column"> </th>
+			<th scope="column" class="attachment-clip-cell"> </th>
 
 			<th scope="column" class="title-cell<?php bp_docs_is_current_orderby_class( 'title' ) ?>">
 				<a href="<?php bp_docs_order_by_link( 'title' ) ?>"><?php _e( 'Title', 'bp-docs' ); ?></a>
@@ -45,7 +45,9 @@
         <tbody>
 	<?php while ( bp_docs_has_docs() ) : bp_docs_the_doc() ?>
 		<tr>
-			<td> </td>
+			<td class="attachment-clip-cell">
+				<?php bp_docs_attachment_icon() ?>
+			</td>
 
 			<td class="title-cell">
 				<a href="<?php bp_docs_doc_link() ?>"><?php the_title() ?></a>
@@ -54,6 +56,10 @@
 
 				<div class="row-actions">
 					<?php bp_docs_doc_action_links() ?>
+				</div>
+
+				<div class="bp-docs-attachment-drawer" id="bp-docs-attachment-drawer-<?php echo get_the_ID() ?>">
+					<?php bp_docs_doc_attachment_drawer() ?>
 				</div>
 			</td>
 

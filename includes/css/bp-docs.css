@@ -171,9 +171,11 @@ div.docs-info-header {
 }
 
 #doc-attachments-ul li {
-	margin-bottom: .3em;
-	margin-left: 0;
+	margin: .3em .3em .3em 0;
 }
+	#doc-attachments-ul li:hover {
+		background: #ddd;
+	}
 
 #doc-attachments-ul img.doc-attachment-icon {
 	margin: 0 4px;
@@ -181,14 +183,24 @@ div.docs-info-header {
 }
 
 #doc-attachments-ul .doc-attachment-delete {
-	text-decoration: none;
-	color: #f00;
-	font-size: .9em;
-	display: block;
-	float: left;
-	margin-top: 2px;
+	float: right;
+	margin-top: .15em;
+	margin-right: .3em;
 }
 
+#buddypress table.doctable td {
+	vertical-align: top;
+}
+
+.bp-docs-attachment-clip {
+	cursor: pointer;
+	display: block;
+	margin-top: 10px;
+}
+
+body.js .bp-docs-attachment-drawer {
+	display: none;
+}
 
 /* TOGGLES */
 
