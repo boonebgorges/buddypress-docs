@@ -3,10 +3,13 @@ jQuery(document).ready(function($){
 	$('.hide-if-no-js').show();
 
 	$('.bp-docs-attachment-clip').on('click', function(e) {
-//		var att_doc_id = e.target;
 		var att_doc_id = $(e.target).closest('.bp-docs-attachment-clip').attr('id').split('-').pop();
 		var att_doc_drawer = $('#bp-docs-attachment-drawer-'+att_doc_id);
 		att_doc_drawer.slideToggle( 400 );
+	});
+
+	$('#doc-attachments-ul > li').each( function( i ) {
+		$(this).addClass( (i + 1) % 2 ? 'odd' : 'even' );
 	});
 
 	/* When a toggle is clicked, show the toggle-content */

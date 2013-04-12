@@ -173,8 +173,8 @@ div.docs-info-header {
 #doc-attachments-ul li {
 	margin: .3em .3em .3em 0;
 }
-	#doc-attachments-ul li:hover {
-		background: #ddd;
+	#doc-attachments-ul li.even {
+		background-color: #eaeaea;
 	}
 
 #doc-attachments-ul img.doc-attachment-icon {
