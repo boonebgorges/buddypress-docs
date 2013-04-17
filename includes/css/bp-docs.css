@@ -171,16 +171,12 @@ div.docs-info-header {
 }
 
 #doc-attachments-ul li {
-	margin: .3em .3em .3em 0;
+	margin: 0px 5px 0px 0;
+	padding: 5px 0;
 }
 	#doc-attachments-ul li.even {
 		background-color: #eaeaea;
 	}
-
-#doc-attachments-ul img.doc-attachment-icon {
-	margin: 0 4px;
-	height: 1.6em;
-}
 
 #doc-attachments-ul .doc-attachment-delete {
 	float: right;
@@ -197,6 +193,127 @@ div.docs-info-header {
 	display: block;
 	margin-top: 10px;
 }
+
+.doc-attachment-mime-icon {
+	display: block;
+	float: left;
+	width: 24px;
+	height: 24px;
+	margin-right: 5px;
+	background: transparent url('../images/mime-type-sprites.png') no-repeat;
+}
+	/* Archive */
+	.doc-attachment-mime-tar,
+	.doc-attachment-mime-zip,
+	.doc-attachment-mime-gz,
+	.doc-attachment-mime-gzip,
+	.doc-attachment-mime-rar,
+	.doc-attachment-mime-7z {
+		background-position: 0 0px;
+	}
+
+	/* Audio */
+	.doc-attachment-mime-mp3,
+	.doc-attachment-mime-m4a,
+	.doc-attachment-mime-m4b,
+	.doc-attachment-mime-ra,
+	.doc-attachment-mime-ram,
+	.doc-attachment-mime-wav,
+	.doc-attachment-mime-ogg,
+	.doc-attachment-mime-oga,
+	.doc-attachment-mime-mid,
+	.doc-attachment-mime-midi,
+	.doc-attachment-mime-wma,
+	.doc-attachment-mime-mka {
+		background-position: 0 -40px;
+	}
+
+	/* Calendar */
+	.doc-attachment-mime-ics {
+		background-position: 0 -80px;
+	}
+
+	/* Database */
+	.doc-attachment-mime-mdb,
+	.doc-attachment-mime-odb {
+		background-position: 0 -120px;
+	}
+
+	/* Drawing */
+	.doc-attachment-mime-odg {
+		background-position: 0 -120px;
+	}
+
+	/* Image */
+	.doc-attachment-mime-jpg,
+	.doc-attachment-mime-jpeg,
+	.doc-attachment-mime-gif,
+	.doc-attachment-mime-png,
+	.doc-attachment-mime-bmp,
+	.doc-attachment-mime-tif,
+	.doc-attachment-mime-tiff,
+	.doc-attachment-mime-ico {
+		background-position: 0 -160px;
+	}
+
+	/* Report */
+	.doc-attachment-mime-pdf {
+		background-position: 0 -240px;
+	}
+
+	/* Spreadsheet */
+	.doc-attachment-mime-xla,
+	.doc-attachment-mime-xls,
+	.doc-attachment-mime-xlt,
+	.doc-attachment-mime-xlw,
+	.doc-attachment-mime-xlsx,
+	.doc-attachment-mime-xlsm,
+	.doc-attachment-mime-xlsb,
+	.doc-attachment-mime-xlsb,
+	.doc-attachment-mime-xlsx,
+	.doc-attachment-mime-xlsm,
+	.doc-attachment-mime-xlam,
+	.doc-attachment-mime-ods,
+	.doc-attachment-mime-odc {
+		background-position: 0 -280px;
+	}
+
+	/* Text */
+	.doc-attachment-mime-txt,
+	.doc-attachment-mime-asc,
+	.doc-attachment-mime-c,
+	.doc-attachment-mime-cc,
+	.doc-attachment-mime-h,
+	.doc-attachment-mime-csv,
+	.doc-attachment-mime-tsv,
+	.doc-attachment-mime-ics,
+	.doc-attachment-mime-rtx,
+	.doc-attachment-mime-css,
+	.doc-attachment-mime-htm,
+	.doc-attachment-mime-html {
+		background-position: 0 -320px;
+	}
+
+	/* Video */
+	.doc-attachment-mime-asf,
+	.doc-attachment-mime-asx,
+	.doc-attachment-mime-wax,
+	.doc-attachment-mime-wmv,
+	.doc-attachment-mime-wmx,
+	.doc-attachment-mime-avi,
+	.doc-attachment-mime-divx,
+	.doc-attachment-mime-flv,
+	.doc-attachment-mime-mov,
+	.doc-attachment-mime-qt,
+	.doc-attachment-mime-mpeg,
+	.doc-attachment-mime-mpg,
+	.doc-attachment-mime-mpe,
+	.doc-attachment-mime-mp4,
+	.doc-attachment-mime-m4v,
+	.doc-attachment-mime-ogv,
+	.doc-attachment-mime-mkv {
+		background-position: 0 -360px;
+	}
 
 body.js .bp-docs-attachment-drawer {
 	display: none;
