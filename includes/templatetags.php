@@ -38,7 +38,7 @@ function bp_docs_has_docs( $args = array() ) {
 		// Build some intelligent defaults
 
 		// Default to current group id, if available
-		$d_group_id  = bp_is_group() ? bp_get_current_group_id() : array();
+		$d_group_id = bp_is_group() ? bp_get_current_group_id() : array();
 
 		// If this is a Started By tab, set the author ID
 		$d_author_id = bp_docs_is_started_by() ? bp_displayed_user_id() : array();
@@ -50,7 +50,7 @@ function bp_docs_has_docs( $args = array() ) {
 		$d_tags = isset( $_REQUEST['bpd_tag'] ) ? explode( ',', urldecode( $_REQUEST['bpd_tag'] ) ) : array();
 
 		// Order and orderby arguments
-		$d_orderby = !empty( $_GET['orderby'] ) ? urldecode( $_GET['orderby'] ) : apply_filters( 'bp_docs_default_sort_order', 'modified' ) ;
+		$d_orderby = !empty( $_GET['orderby'] ) ? urldecode( $_GET['orderby'] ) : apply_filters( 'bp_docs_default_sort_order', 'modified' );
 
 		if ( empty( $_GET['order'] ) ) {
 			// If no order is explicitly stated, we must provide one.
@@ -94,7 +94,7 @@ function bp_docs_has_docs( $args = array() ) {
 			'orderby'        => $d_orderby,   // 'modified', 'title', 'author', 'created'
 			'paged'	         => $d_paged,
 			'posts_per_page' => $d_posts_per_page,
-			'search_terms'   => $d_search_terms
+			'search_terms'   => $d_search_terms,
 		);
 		$r = wp_parse_args( $args, $defaults );
 
@@ -218,7 +218,6 @@ function bp_docs_info_header() {
 
 		</form>
 
-
 		<?php
 	}
 
@@ -287,7 +286,7 @@ function bp_docs_get_current_filters() {
 		// The bpd_tag argument may be comma-separated
 		$tags = explode( ',', urldecode( $_REQUEST['bpd_tag'] ) );
 
-		foreach( $tags as $tag ) {
+		foreach ( $tags as $tag ) {
 			$filters['tags'][] = $tag;
 		}
 	}
@@ -361,15 +360,15 @@ function bp_docs_doc_edit_link( $doc_id = false ) {
 function bp_docs_archive_link() {
         echo bp_docs_get_archive_link();
 }
-        /**
+	/**
          * Get the link to the main site Docs archive
          *
          * @package BuddyPress_Docs
          * @since 1.2
          */
-        function bp_docs_get_archive_link() {
-                return apply_filters( 'bp_docs_get_archive_link', trailingslashit( get_post_type_archive_link( bp_docs_get_post_type_name() ) ) );
-        }
+	function bp_docs_get_archive_link() {
+		return apply_filters( 'bp_docs_get_archive_link', trailingslashit( get_post_type_archive_link( bp_docs_get_post_type_name() ) ) );
+	}
 
 /**
  * Echoes the output of bp_docs_get_mygroups_link()
@@ -380,15 +379,15 @@ function bp_docs_archive_link() {
 function bp_docs_mygroups_link() {
         echo bp_docs_get_mygroups_link();
 }
-        /**
+	/**
          * Get the link the My Groups tab of the Docs archive
          *
          * @package BuddyPress_Docs
          * @since 1.2
          */
-        function bp_docs_get_mygroups_link() {
-                return apply_filters( 'bp_docs_get_mygroups_link', trailingslashit( bp_docs_get_archive_link() . BP_DOCS_MY_GROUPS_SLUG ) );
-        }
+	function bp_docs_get_mygroups_link() {
+		return apply_filters( 'bp_docs_get_mygroups_link', trailingslashit( bp_docs_get_archive_link() . BP_DOCS_MY_GROUPS_SLUG ) );
+	}
 
 /**
  * Echoes the output of bp_docs_get_mydocs_link()
@@ -399,15 +398,15 @@ function bp_docs_mygroups_link() {
 function bp_docs_mydocs_link() {
         echo bp_docs_get_mydocs_link();
 }
-        /**
+	/**
          * Get the link to the My Docs tab of the logged in user
          *
          * @package BuddyPress_Docs
          * @since 1.2
          */
-        function bp_docs_get_mydocs_link() {
-                return apply_filters( 'bp_docs_get_mydocs_link', trailingslashit( bp_loggedin_user_domain() . bp_docs_get_slug() ) );
-        }
+	function bp_docs_get_mydocs_link() {
+		return apply_filters( 'bp_docs_get_mydocs_link', trailingslashit( bp_loggedin_user_domain() . bp_docs_get_slug() ) );
+	}
 
 /**
  * Echoes the output of bp_docs_get_mydocs_started_link()
@@ -418,15 +417,15 @@ function bp_docs_mydocs_link() {
 function bp_docs_mydocs_started_link() {
         echo bp_docs_get_mydocs_started_link();
 }
-        /**
+	/**
          * Get the link to the Started By Me tab of the logged in user
          *
          * @package BuddyPress_Docs
          * @since 1.2
          */
-        function bp_docs_get_mydocs_started_link() {
-                return apply_filters( 'bp_docs_get_mydocs_started_link', trailingslashit( bp_docs_get_mydocs_link() . BP_DOCS_STARTED_SLUG ) );
-        }
+	function bp_docs_get_mydocs_started_link() {
+		return apply_filters( 'bp_docs_get_mydocs_started_link', trailingslashit( bp_docs_get_mydocs_link() . BP_DOCS_STARTED_SLUG ) );
+	}
 
 /**
  * Echoes the output of bp_docs_get_mydocs_edited_link()
@@ -437,18 +436,15 @@ function bp_docs_mydocs_started_link() {
 function bp_docs_mydocs_edited_link() {
         echo bp_docs_get_mydocs_edited_link();
 }
-        /**
+	/**
          * Get the link to the Edited By Me tab of the logged in user
          *
          * @package BuddyPress_Docs
          * @since 1.2
          */
-        function bp_docs_get_mydocs_edited_link() {
-                return apply_filters( 'bp_docs_get_mydocs_edited_link', trailingslashit( bp_docs_get_mydocs_link() . BP_DOCS_EDITED_SLUG ) );
-        }
-
-
-
+	function bp_docs_get_mydocs_edited_link() {
+		return apply_filters( 'bp_docs_get_mydocs_edited_link', trailingslashit( bp_docs_get_mydocs_link() . BP_DOCS_EDITED_SLUG ) );
+	}
 
 /**
  * Echoes the output of bp_docs_get_create_link()
@@ -459,15 +455,15 @@ function bp_docs_mydocs_edited_link() {
 function bp_docs_create_link() {
         echo bp_docs_get_create_link();
 }
-        /**
+	/**
          * Get the link to create a Doc
          *
          * @package BuddyPress_Docs
          * @since 1.2
          */
-        function bp_docs_get_create_link() {
-                return apply_filters( 'bp_docs_get_create_link', trailingslashit( bp_docs_get_archive_link() . BP_DOCS_CREATE_SLUG ) );
-        }
+	function bp_docs_get_create_link() {
+		return apply_filters( 'bp_docs_get_create_link', trailingslashit( bp_docs_get_archive_link() . BP_DOCS_CREATE_SLUG ) );
+	}
 
 /**
  * Echoes the output of bp_docs_get_item_docs_link()
@@ -509,8 +505,8 @@ function bp_docs_item_docs_link() {
 		}
 
 		$defaults = array(
-			'item_id'	=> $d_item_id,
-			'item_type'	=> $d_item_type
+			'item_id'   => $d_item_id,
+			'item_type' => $d_item_type,
 		);
 
 		$r = wp_parse_args( $args, $defaults );
@@ -611,10 +607,10 @@ function bp_docs_order_by_link( $orderby = 'modified' ) {
  */
 function bp_docs_is_current_orderby_class( $orderby = 'modified' ) {
 	// Get the current orderby column
-	$current_orderby	= !empty( $_GET['orderby'] ) ? $_GET['orderby'] : apply_filters( 'bp_docs_default_sort_order', 'modified' );
+	$current_orderby = !empty( $_GET['orderby'] ) ? $_GET['orderby'] : apply_filters( 'bp_docs_default_sort_order', 'modified' );
 
 	// Does the current orderby match the $orderby parameter?
-	$is_current_orderby 	= $current_orderby == $orderby ? true : false;
+	$is_current_orderby = $current_orderby == $orderby ? true : false;
 
 	$class = '';
 
@@ -685,7 +681,7 @@ function bp_docs_doc_associated_group_markup() {
 		$selected_group_slug = substr( $selected_group_slug, $slash + 1 );
 	}
 
-	$selected_group      = BP_Groups_Group::get_id_from_slug( $selected_group_slug );
+	$selected_group = BP_Groups_Group::get_id_from_slug( $selected_group_slug );
 	if ( $selected_group && ! BP_Docs_Groups_Integration::user_can_associate_doc_with_group( bp_loggedin_user_id(), $selected_group ) ) {
 		$selected_group = 0;
 	}
@@ -718,7 +714,7 @@ function bp_docs_doc_associated_group_markup() {
 		<td class="content-column">
 			<select name="associated_group_id" id="associated_group_id">
 				<option value=""><?php _e( 'None', 'bp-docs' ) ?></option>
-				<?php foreach( $groups_template->groups as $g ) : ?>
+				<?php foreach ( $groups_template->groups as $g ) : ?>
 					<option value="<?php echo esc_attr( $g->id ) ?>" <?php selected( $selected_group, $g->id ) ?>><?php echo esc_html( $g->name ) ?></option>
 				<?php endforeach ?>
 			</select>
@@ -878,7 +874,7 @@ function bp_docs_access_options_helper( $settings_field, $doc_id = 0, $group_id 
  * @package BuddyPress Docs
  */
 function bp_docs_doc_action_links() {
-	$links   = array();
+	$links = array();
 
 	$links[] = '<a href="' . bp_docs_get_doc_link() . '">' . __( 'Read', 'bp-docs' ) . '</a>';
 
@@ -1789,7 +1785,6 @@ function bp_docs_attachment_item_markup( $attachment_id, $format = 'full' ) {
 			$attachment_delete_html
 		);
 	} else {
-
 		$markup = sprintf(
 			'<li id="doc-attachment-%d"><a href="%s" title="%s">%s</a></li>',
 			$attachment_id,
@@ -1797,10 +1792,28 @@ function bp_docs_attachment_item_markup( $attachment_id, $format = 'full' ) {
 			esc_attr( $attachment_filename ),
 			esc_html( $attachment_filename )
 		);
-
 	}
 
 	return $markup;
+}
+
+/**
+ * Gets the markup for the paperclip icon in directories
+ *
+ * @since 1.4
+ */
+function bp_docs_attachment_icon() {
+	$atts = bp_docs_get_doc_attachments( get_the_ID() );
+
+	if ( empty( $atts ) ) {
+		return;
+	}
+
+	$pc = plugins_url( 'buddypress-docs/includes/images/paperclip.png' );
+
+	$html = '<a class="bp-docs-attachment-clip" id="bp-docs-attachment-clip-' . get_the_ID() . '"><img src="' . $pc . '" height="25"></a>';
+
+	echo $html;
 }
 
 /**
