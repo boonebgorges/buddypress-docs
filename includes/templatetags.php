@@ -1755,16 +1755,14 @@ function bp_docs_get_doc_attachments( $doc_id = null ) {
 }
 
 // @todo make <li> optional?
-// @todo delete action
-// @todo mime type for icons
 function bp_docs_attachment_item_markup( $attachment_id, $format = 'full' ) {
 	$markup = '';
 
 	$attachment = get_post( $attachment_id );
-	$attachment_img = bp_docs_get_attachment_image_src( $attachment_id, 'thumbnail', true );
+	$attachment_ext = preg_replace( '/^.+?\.([^.]+)$/', '$1', $attachment->guid );
 
 	$attachment_url = $attachment->guid;
-	$attachment_filename = basename( $attachment_url );
+	$attachment_filename = basename( $attachment->guid );
 
 	if ( 'full' === $format ) {
 		$attachment_delete_html = '';
@@ -1782,11 +1780,11 @@ function bp_docs_attachment_item_markup( $attachment_id, $format = 'full' ) {
 		}
 
 		$markup = sprintf(
-			'<li id="doc-attachment-%d"><a href="%s" title="%s"><img class="doc-attachment-icon" src="%s" /> %s</a>%s</li>',
+			'<li id="doc-attachment-%d"><span class="doc-attachment-mime-icon doc-attachment-mime-%s"></span><a href="%s" title="%s">%s</a>%s</li>',
 			$attachment_id,
+			$attachment_ext,
 			$attachment_url,
 			esc_attr( $attachment_filename ),
-			$attachment_img[0],
 			esc_html( $attachment_filename ),
 			$attachment_delete_html
 		);
@@ -1803,86 +1801,6 @@ function bp_docs_attachment_item_markup( $attachment_id, $format = 'full' ) {
 	}
 
 	return $markup;
-}
-
-/**
- * Retrieve an image to represent an attachment.
- *
- * Torn from WP's wp_get_attachment_image_src(), and modified so as not to
- * show image thumbnails (as well as to use our custom image location)
- *
- * @since 1.4
- *
- * @param int $attachment_id Image attachment ID.
- * @param string $size Optional, default is 'thumbnail'.
- * @param bool $icon Optional, default is false. Whether it is an icon.
- * @return bool|array Returns an array (url, width, height), or false, if no image is available.
- */
-function bp_docs_get_attachment_image_src( $attachment_id, $size='thumbnail', $icon = true ) {
-	$src = $fn = false;
-
-	// Brute force check because WP's functions are impossible
-	$post = get_post( $attachment_id );
-	$ext = preg_replace('/^.+?\.([^.]+)$/', '$1', $post->guid);
-
-	switch ( $ext ) {
-		case 'doc' :
-		case 'docx' :
-		case 'odt' :
-			$fn = 'wordprocessing.png';
-			break;
-
-		case 'pdf' :
-			$fn = 'pdf.png';
-			break;
-
-		case 'jpg' :
-		case 'jpeg' :
-		case 'gif' :
-		case 'bmp' :
-		case 'png' :
-		case 'tiff' :
-			$fn = 'image.png';
-			break;
-	}
-
-	if ( $fn ) {
-		$src = plugins_url( 'buddypress-docs/lib/nuvola/' ) . $fn;
-	}
-
-	if ( $icon ) {
-		if ( ! $src ) {
-			$src = wp_mime_type_icon( $attachment_id );
-		}
-
-		$icon_dir = BP_DOCS_INSTALL_PATH . '/lib/nuvola';
-//		$icon_dir = apply_filters( 'icon_dir', ABSPATH . WPINC . '/images/crystal' );
-		$src_file = $icon_dir . '/' . wp_basename($src);
-		@list($width, $height) = getimagesize($src_file);
-	}
-
-	if ( $src && $width && $height )
-		return array( $src, $width, $height );
-	return false;
-}
-
-/**
- * Gets the markup for the paperclip icon in directories
- *
- * @since 1.4
- */
-function bp_docs_attachment_icon() {
-	$atts = bp_docs_get_doc_attachments( get_the_ID() );
-
-	if ( empty( $atts ) ) {
-		return;
-	}
-
-	$pc = plugins_url( 'buddypress-docs/includes/images/paperclip.png' );
-
-	$html = '<a class="bp-docs-attachment-clip" id="bp-docs-attachment-clip-' . get_the_ID() . '"><img src="' . $pc . '" height="25"></a>';
-
-	echo $html;
 }
 
 /**

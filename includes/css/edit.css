@@ -34,6 +34,11 @@ form.standard-form input[type="text"]#doc-title {
 	margin-bottom: -30px;
 }
 
+td.content-column select {
+	width: 90%;
+	min-width: 150px;
+}
+
 /* HTML mode tweaks */
 #quicktags {
 	border: none;
