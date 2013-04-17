@@ -36,6 +36,7 @@ form.standard-form input[type="text"]#doc-title {
 
 td.content-column select {
 	width: 90%;
+	min-width: 150px;
 }
 
 /* HTML mode tweaks */
