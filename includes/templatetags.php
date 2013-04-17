@@ -1792,10 +1792,28 @@ function bp_docs_attachment_item_markup( $attachment_id, $format = 'full' ) {
 			esc_attr( $attachment_filename ),
 			esc_html( $attachment_filename )
 		);
-
 	}
 
 	return $markup;
+}
+
+/**
+ * Gets the markup for the paperclip icon in directories
+ *
+ * @since 1.4
+ */
+function bp_docs_attachment_icon() {
+	$atts = bp_docs_get_doc_attachments( get_the_ID() );
+
+	if ( empty( $atts ) ) {
+		return;
+	}
+
+	$pc = plugins_url( 'buddypress-docs/includes/images/paperclip.png' );
+
+	$html = '<a class="bp-docs-attachment-clip" id="bp-docs-attachment-clip-' . get_the_ID() . '"><img src="' . $pc . '" height="25"></a>';
+
+	echo $html;
 }
 
 /**
