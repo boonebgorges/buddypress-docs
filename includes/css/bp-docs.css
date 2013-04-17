@@ -241,7 +241,7 @@ div.docs-info-header {
 
 	/* Drawing */
 	.doc-attachment-mime-odg {
-		background-position: 0 -120px;
+		background-position: 0 -160px;
 	}
 
 	/* Image */
@@ -253,7 +253,7 @@ div.docs-info-header {
 	.doc-attachment-mime-tif,
 	.doc-attachment-mime-tiff,
 	.doc-attachment-mime-ico {
-		background-position: 0 -160px;
+		background-position: 0 -200px;
 	}
 
 	/* Report */
