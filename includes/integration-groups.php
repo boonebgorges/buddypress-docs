@@ -965,9 +965,9 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 
 		/* To post an error/success message to the screen, use the following */
 		if ( !$success )
-			bp_core_add_message( __( 'There was an error saving, please try again', 'buddypress' ), 'error' );
+			bp_core_add_message( __( 'There was an error saving, please try again', 'bp-docs' ), 'error' );
 		else
-			bp_core_add_message( __( 'Settings saved successfully', 'buddypress' ) );
+			bp_core_add_message( __( 'Settings saved successfully', 'bp-docs' ) );
 
 		bp_core_redirect( bp_get_group_permalink( $bp->groups->current_group ) . 'admin/' . $this->slug );
 	}

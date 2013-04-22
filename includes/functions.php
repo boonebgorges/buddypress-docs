@@ -365,7 +365,7 @@ function bp_docs_update_doc_count( $item_id = 0, $item_type = '' ) {
 			break;
 
 		case 'user' :
-			update_user_meta( $item_id, 'bp_docs_count', $doc_count );
+			bp_update_user_meta( $item_id, 'bp_docs_count', $doc_count );
 			break;
 
 		default :

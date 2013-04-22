@@ -144,7 +144,7 @@ class BP_Docs_Component extends BP_Component {
 			'root_slug'             => isset( $bp->pages->{$this->id}->slug ) ? $bp->pages->{$this->id}->slug : BP_DOCS_SLUG,
 			'has_directory'         => false, // Set to false if not required
 			'notification_callback' => 'bp_docs_format_notifications',
-			'search_string'         => __( 'Search Docs...', 'buddypress' ),
+			'search_string'         => __( 'Search Docs...', 'bp-docs' ),
 		);
 
 		// Let BP_Component::setup_globals() do its work.
@@ -177,7 +177,7 @@ class BP_Docs_Component extends BP_Component {
 
 		if ( is_user_logged_in() ) {
 
-			$title = __( 'Docs', 'buddypress' );
+			$title = __( 'Docs', 'bp-docs' );
 
 			// Add the "My Account" sub menus
 			$wp_admin_nav[] = array(

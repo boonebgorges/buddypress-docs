@@ -1480,7 +1480,7 @@ function bp_docs_get_doc_count( $item_id = 0, $item_type = '' ) {
 
 	switch ( $item_type ) {
 		case 'user' :
-			$doc_count = get_user_meta( $item_id, 'bp_docs_count', true );
+			$doc_count = bp_get_user_meta( $item_id, 'bp_docs_count', true );
 
 			if ( '' === $doc_count ) {
 				$doc_count = bp_docs_update_doc_count( $item_id, 'user' );
