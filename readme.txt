@@ -35,6 +35,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.3.4 =
+* Fixed some incorrect textdomains
+
 = 1.3.3 =
 * Fixed bug that incorrectly approved some post comments
 
