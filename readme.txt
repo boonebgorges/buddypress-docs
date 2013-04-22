@@ -36,6 +36,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 == Changelog ==
 
 = 1.3.4 =
+* Improved support for multinetwork installations
 * Fixed some incorrect textdomains
 
 = 1.3.3 =
