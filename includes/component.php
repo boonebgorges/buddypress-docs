@@ -1011,17 +1011,10 @@ class BP_Docs_Component extends BP_Component {
 		}
 
 		// Get list of docs the user has access to
-		// Direct query for speeeeeeed
-		$exclude = bp_docs_access_query()->get_doc_ids();
-		if ( empty( $exclude ) ) {
-			$exclude = array( 0 );
-		}
-		$exclude_sql = '(' . implode( ',', $exclude ) . ')';
-		$items_sql = $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post_type = %s AND ID NOT IN $exclude_sql", bp_docs_get_post_type_name() );
-		$items = $wpdb->get_col( $items_sql );
+		$item_ids = bp_docs_get_doc_ids_accessible_to_current_user();
 
 		// Pass to wp_get_object_terms()
-		$terms = wp_get_object_terms( $items, array( $bp->bp_docs->docs_tag_tax_name ) );
+		$terms = wp_get_object_terms( $item_ids, array( $bp->bp_docs->docs_tag_tax_name ) );
 
 		// Reformat
 		$terms_array = array();
