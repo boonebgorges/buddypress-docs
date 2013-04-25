@@ -374,6 +374,10 @@ body.js .bp-docs-attachment-drawer {
 	overflow: hidden;
 }
 
+.toggle-content *:first-child {
+	margin-left: 10px;
+}
+
 span.plus-or-minus {
 	font-size: 1.3em;
 	font-weight: normal;
@@ -405,8 +409,8 @@ p#filter-by-tag {
 	margin-top: 8px;
 }
 
-#tags-list {
-	padding-left: 10px;
+.entry-content #tags-list li {
+	margin-left: 0;
 }
 
 .groups-cell ul li img.avatar {
@@ -424,6 +428,10 @@ p#filter-by-tag {
 }
 .groups-cell ul li {
 	margin-bottom: .5em;
+}
+
+select#has-attachment {
+	margin: 8px 10px;
 }
 
 div#bp-docs-pagination {
