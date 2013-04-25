@@ -431,9 +431,9 @@ class BP_Docs_Taxonomy {
 
 			<ul id="tags-list" class="toggle-content">
 			<?php foreach( $existing_terms as $term => $posts ) : ?>
-
+				<?php $term_count = is_int( $posts ) ? $posts : count( $posts ) ?>
 				<li>
-				<a href="<?php echo bp_docs_get_tag_link( array( 'tag' => $term, 'type' => 'url' ) ) ?>" title="<?php echo esc_html( $term ) ?>"><?php echo esc_html( $term ) ?> <?php printf( __( '(%d)', 'bp-docs' ), count( $posts ) ) ?></a>
+				<a href="<?php echo bp_docs_get_tag_link( array( 'tag' => $term, 'type' => 'url' ) ) ?>" title="<?php echo esc_html( $term ) ?>"><?php echo esc_html( $term ) ?> <?php printf( __( '(%d)', 'bp-docs' ), $term_count ) ?></a>
 
 				<?php /* Going with tag cloud type fix for now */ ?>
 				<?php /*
