@@ -18,7 +18,8 @@ class BP_Docs_Attachments {
 		add_action( 'pre_get_posts', array( $this, 'filter_directory_posts' ) );
 
 		// Add the tags filter markup
-		add_filter( 'bp_docs_filter_markup', array( $this, 'filter_markup' ) );
+		add_filter( 'bp_docs_filter_types', array( $this, 'filter_type' ) );
+		add_filter( 'bp_docs_filter_sections', array( $this, 'filter_markup' ) );
 
 		// Icon display
 		add_filter( 'icon_dir', 'BP_Docs_Attachments::icon_dir' );
@@ -497,23 +498,33 @@ class BP_Docs_Attachments {
 		return $url;
 	}
 
+	public static function filter_type( $types ) {
+		$types[] = array(
+			'slug' => 'attachments',
+			'title' => __( 'Attachments', 'bp-docs' ),
+			'query_arg' => 'has-attachment',
+		);
+		return $types;
+	}
+
 	public static function filter_markup() {
 		$has_attachment = isset( $_REQUEST['has-attachment'] ) && in_array( $_REQUEST['has-attachment'], array( 'yes', 'no' ) ) ? $_REQUEST['has-attachment'] : '';
-
+		$form_action = wp_guess_url();
+		foreach ( $_GET as $k => $v ) {
+			$form_action = remove_query_arg( $k, $form_action );
+		}
 		?>
-		<div class="docs-filter docs-filter-tags toggleable">
-			<p id="attachments-toggle" class="toggle-switch"><?php _e( 'Filter by attachment', 'bp-docs' ) ?></p>
-			<div class="toggle-content">
-				<form method="get" action="">
-					<label for="docs-attachment-filter"><?php _e( 'Has attachment?', 'bp-docs' ) ?></label>
-					<select id="has-attachment" name="has-attachment">
-						<option value="yes"<?php selected( $has_attachment, 'yes' ) ?>><?php _e( 'Yes', 'bp-docs' ) ?></option>
-						<option value="no"<?php selected( $has_attachment, 'no' ) ?>><?php _e( 'No', 'bp-docs' ) ?></option>
-						<option value=""<?php selected( $has_attachment, '' ) ?>><?php _e( 'Doesn&#8217;t matter', 'bp-docs' ) ?></option>
-					</select>
-					<input type="submit" value="<?php _e( 'Filter', 'bp-docs' ) ?>" />
-				</form>
-			</div>
+
+		<div id="docs-filter-section-attachments" class="docs-filter-section<?php if ( $has_attachment ) : ?> docs-filter-section-open<?php endif ?>">
+			<form method="get" action="<?php echo $form_action ?>">
+				<label for="docs-attachment-filter"><?php _e( 'Has attachment?', 'bp-docs' ) ?></label>
+				<select id="has-attachment" name="has-attachment">
+					<option value="yes"<?php selected( $has_attachment, 'yes' ) ?>><?php _e( 'Yes', 'bp-docs' ) ?></option>
+					<option value="no"<?php selected( $has_attachment, 'no' ) ?>><?php _e( 'No', 'bp-docs' ) ?></option>
+					<option value=""<?php selected( $has_attachment, '' ) ?>><?php _e( 'Doesn&#8217;t matter', 'bp-docs' ) ?></option>
+				</select>
+				<input type="submit" value="<?php _e( 'Filter', 'bp-docs' ) ?>" />
+			</form>
 		</div>
 
 		<?php

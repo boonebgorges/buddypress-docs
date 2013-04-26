@@ -204,22 +204,43 @@ function bp_docs_info_header() {
 
 		<p class="currently-viewing"><?php echo $message ?></p>
 
-		<form action="<?php bp_docs_item_docs_link() ?>" method="post">
-
+		<?php if ( $filter_titles = bp_docs_filter_titles() ) : ?>
 			<div class="docs-filters">
-				<?php do_action( 'bp_docs_filter_markup' ) ?>
+				<p id="docs-filter-meta">
+					<?php printf( __( 'Filter by: %s', 'bp-docs' ), $filter_titles ) ?>
+				</p>
+
+				<div id="docs-filter-sections">
+					<?php do_action( 'bp_docs_filter_sections' ) ?>
+				</div>
 			</div>
 
 			<div class="clear"> </div>
-
-			<?php /*
-			<input class="button" id="docs-filter-submit" name="docs-filter-submit" value="<?php _e( 'Submit', 'bp-docs' ) ?>" type="submit" />
-			*/ ?>
-
-		</form>
+		<?php endif ?>
 
 		<?php
 	}
+
+/**
+ * Links/Titles for the filter types
+ *
+ * @since 1.4
+ */
+function bp_docs_filter_titles() {
+	$filter_types = apply_filters( 'bp_docs_filter_types', array() );
+	$links = array();
+	foreach ( $filter_types as $filter_type ) {
+		$current = isset( $_GET[ $filter_type['query_arg'] ] ) ? ' current' : '';
+		$links[] = sprintf(
+			'<a href="#" class="docs-filter-title%s" id="docs-filter-title-%s">%s</a>',
+			$current,
+			$filter_type['slug'],
+			$filter_type['title']
+		);
+	}
+
+	return implode( '', $links );
+}
 
 /**
  * Echoes the content of a Doc
@@ -1838,3 +1859,4 @@ function bp_docs_doc_attachment_drawer() {
 
 	echo $html;
 }
+

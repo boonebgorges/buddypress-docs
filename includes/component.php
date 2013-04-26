@@ -86,6 +86,10 @@ class BP_Docs_Component extends BP_Component {
 		// Keep comment notifications from being sent
 		add_filter( 'comment_post', array( $this, 'check_comment_type' ) );
 
+		// Add the Search filter markup
+		add_filter( 'bp_docs_filter_types', array( $this, 'filter_type' ) );
+		add_filter( 'bp_docs_filter_sections', array( $this, 'filter_markup' ) );
+
 		/**
 		 * Methods related to BuddyPress activity
 		 */
@@ -1025,6 +1029,27 @@ class BP_Docs_Component extends BP_Component {
 		unset( $items, $terms );
 
 		return $terms_array;
+	}
+
+	public static function filter_type( $types ) {
+		$types[] = array(
+			'slug' => 'search',
+			'title' => __( 'Search', 'bp-docs' ),
+			'query_arg' => 's',
+		);
+		return $types;
+	}
+
+	public static function filter_markup() {
+		$has_search = ! empty( $_GET['s'] );
+		?>
+		<div id="docs-filter-section-search" class="docs-filter-section<?php if ( $has_search ) : ?> docs-filter-section-open<?php endif ?>">
+			<form action="" method="get">
+				<input name="s" value="<?php the_search_query() ?>">
+				<input name="search_submit" type="submit" value="<?php _e( 'Search', 'bp-docs' ) ?>" />
+			</form>
+		</div>
+		<?php
 	}
 
 	/**

@@ -395,9 +395,43 @@ td.desc-column {
 	margin-bottom: 0;
 }
 
+#docs-filter-meta {
+	font-size: .8em;
+	color: #666;
+	margin-bottom: 0;
+}
+
+a.docs-filter-title {
+	margin: 0 7px;
+	text-decoration: none;
+}
+
+a.docs-filter-title:visited {
+	color: inherit;
+}
+
+a.docs-filter-title.current {
+	font-weight: bold;
+}
+
+.docs-filter-section {
+	border: 1px solid #ccc;
+	border-radius: 2px;
+	font-size: .8em;
+	padding: 6px 10px;
+	margin-top: 8px;
+}
+
+body.js .docs-filter-section {
+	display: none;
+}
+	body.js .docs-filter-section.docs-filter-section-open {
+		display: block;
+	}
+
 p.currently-viewing {
 	margin-bottom: 5px;
-	font-size: 1.1em;
+	font-size: .8em;
 	margin-top: 8px;
 }
 
@@ -407,6 +441,11 @@ p#filter-by-tag {
 
 .docs-info-header .toggle-switch {
 	margin-top: 8px;
+}
+
+.entry-content ul#tags-list {
+	list-style-type: none;
+	margin-bottom: 0;
 }
 
 .entry-content #tags-list li {

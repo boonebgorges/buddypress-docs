@@ -68,6 +68,27 @@ jQuery(document).ready(function($){
 			$('#doc-permissions-' + hidden).slideDown(100);
 		});
 	});
+
+	$('.docs-filter-title').on('click',function(e){
+		var filter_title = $(this);
+		var filter_title_id = filter_title.attr('id');
+		var filter_id = filter_title_id.split('-').pop();
+
+		$('.docs-filter-title').removeClass( 'current' );
+		filter_title.addClass( 'current' );
+
+		var filter_sections = $('.docs-filter-section');
+		filter_sections.removeClass( 'docs-filter-section-open' );
+
+		var all_section_slideup = function() {
+			$('.docs-filter-section').slideUp(100);
+		}
+
+		$.when( all_section_slideup() ).done(function(){
+			$('#docs-filter-section-' + filter_id).fadeIn();
+		});
+		return false;
+	});
 },(jQuery));
 
 function bp_docs_load_idle() {
