@@ -201,8 +201,17 @@ class BP_Docs_Groups_Integration {
 	function get_group_terms( $terms = array() ) {
 		global $bp;
 
-		if ( ! empty( $bp->groups->current_group->id ) ) {
-			$terms = groups_get_groupmeta( $bp->groups->current_group->id, 'bp_docs_terms' );
+		// Either it's a group directory...
+		if ( ! $group_id = bp_get_current_group_id() ) {
+			// ... or a single doc associated with a group...
+			if ( bp_docs_is_existing_doc() ) {
+				$doc = get_post();
+				$group_id = bp_docs_get_associated_group_id( $doc->ID, $doc );
+			}
+		}
+
+		if ( $group_id ) {
+			$terms = groups_get_groupmeta( $group_id, 'bp_docs_terms' );
 
 			if ( empty( $terms ) )
 				$terms = array();
@@ -220,10 +229,16 @@ class BP_Docs_Groups_Integration {
 	 * @param array $terms The terms to be saved to groupmeta
 	 */
 	function save_group_terms( $terms ) {
-		global $bp;
+		$doc = get_post();
 
-		if ( ! empty( $bp->groups->current_group->id ) ) {
-			groups_update_groupmeta( $bp->groups->current_group->id, 'bp_docs_terms', $terms );
+		if ( ! isset( $doc->post_type ) || $doc->post_type !== bp_docs_get_post_type_name() ) {
+			return $terms;
+		}
+
+		$group_id = bp_docs_get_associated_group_id( $doc->ID, $doc );
+
+		if ( $group_id ) {
+			groups_update_groupmeta( $group_id, 'bp_docs_terms', $terms );
 		}
 	}
 

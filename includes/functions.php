@@ -702,3 +702,16 @@ function bp_docs_check_post_lock( $post_id ) {
 		return $user;
 	return false;
 }
+
+function bp_docs_get_doc_ids_accessible_to_current_user() {
+	global $wpdb;
+
+	// Direct query for speeeeeeed
+	$exclude = bp_docs_access_query()->get_doc_ids();
+	if ( empty( $exclude ) ) {
+		$exclude = array( 0 );
+	}
+	$exclude_sql = '(' . implode( ',', $exclude ) . ')';
+	$items_sql = $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post_type = %s AND ID NOT IN $exclude_sql", bp_docs_get_post_type_name() );
+	return $wpdb->get_col( $items_sql );
+}

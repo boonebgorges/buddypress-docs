@@ -103,19 +103,26 @@ class BP_Docs_Access_Query {
 			$tq['operator'] = "NOT IN";
 		}
 
-		$forbidden_fruit = get_posts( array(
-			'post_type' => bp_docs_get_post_type_name(),
-			'posts_per_page' => -1,
-			'nopaging' => true,
-			'tax_query' => $tax_query,
-			'update_post_term_cache' => false,
-			'update_post_meta_cache' => false,
-			'no_found_rows' => 1,
-		) );
+		// If the tax_query is empty, no docs are forbidden
+		if ( empty( $tax_query ) ) {
+			$forbidden_fruit_ids = array();
+		} else {
+			$forbidden_fruit = get_posts( array(
+				'post_type' => bp_docs_get_post_type_name(),
+				'posts_per_page' => -1,
+				'nopaging' => true,
+				'tax_query' => $tax_query,
+				'update_post_term_cache' => false,
+				'update_post_meta_cache' => false,
+				'no_found_rows' => 1,
+			) );
+
+			$forbidden_fruit_ids = wp_list_pluck( $forbidden_fruit, 'ID' );
+		}
 
 		add_action( 'pre_get_posts', 'bp_docs_general_access_protection' );
 
-		return wp_list_pluck( $forbidden_fruit, 'ID' );
+		return $forbidden_fruit_ids;
 	}
 }
 

@@ -86,6 +86,10 @@ class BP_Docs_Component extends BP_Component {
 		// Keep comment notifications from being sent
 		add_filter( 'comment_post', array( $this, 'check_comment_type' ) );
 
+		// Add the Search filter markup
+		add_filter( 'bp_docs_filter_types', array( $this, 'filter_type' ) );
+		add_filter( 'bp_docs_filter_sections', array( $this, 'filter_markup' ) );
+
 		/**
 		 * Methods related to BuddyPress activity
 		 */
@@ -120,6 +124,9 @@ class BP_Docs_Component extends BP_Component {
 
 		// Add body class
 		add_filter( 'bp_get_the_body_class', array( $this, 'body_class' ) );
+
+		// Global directory tags
+		add_filter( 'bp_docs_taxonomy_get_item_terms', array( $this, 'get_item_terms' ) );
 
 		add_action( 'bp_docs_init',             array( $this, 'set_includes_url' 	) );
 		add_action( 'wp_enqueue_scripts',       array( $this, 'enqueue_scripts' 	) );
@@ -992,6 +999,57 @@ class BP_Docs_Component extends BP_Component {
 		}
 
 		return $classes;
+	}
+
+	/**
+	 * When on a global directory, get terms for the tag cloud
+	 *
+	 * @since 1.4
+	 */
+	public function get_item_terms( $terms ) {
+		global $wpdb, $bp;
+
+		// Only on global directories
+		if ( ! bp_docs_is_global_directory() ) {
+			return $terms;
+		}
+
+		// Get list of docs the user has access to
+		$item_ids = bp_docs_get_doc_ids_accessible_to_current_user();
+
+		// Pass to wp_get_object_terms()
+		$terms = wp_get_object_terms( $item_ids, array( $bp->bp_docs->docs_tag_tax_name ) );
+
+		// Reformat
+		$terms_array = array();
+		foreach ( $terms as $t ) {
+			$terms_array[ $t->slug ] = $t->count;
+		}
+
+		unset( $items, $terms );
+
+		return $terms_array;
+	}
+
+	public static function filter_type( $types ) {
+		$types[] = array(
+			'slug' => 'search',
+			'title' => __( 'Search', 'bp-docs' ),
+			'query_arg' => 's',
+		);
+		return $types;
+	}
+
+	public static function filter_markup() {
+		$has_search = ! empty( $_GET['s'] );
+		?>
+		<div id="docs-filter-section-search" class="docs-filter-section<?php if ( $has_search ) : ?> docs-filter-section-open<?php endif ?>">
+			<form action="" method="get">
+				<input name="s" value="<?php the_search_query() ?>">
+				<input name="search_submit" type="submit" value="<?php _e( 'Search', 'bp-docs' ) ?>" />
+			</form>
+		</div>
+		<?php
 	}
 
 	/**

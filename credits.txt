@@ -21,3 +21,4 @@ Huge thanks go out to the individuals who donate their translations, making plug
 - Romanian: Web Geek Science  (http://webhostinggeeks.com/)
 - Danish: Morten Nalholm
 - Russian: Igor M., Eugene Efimenko
+- Dutch: Zé Vandenhoeck

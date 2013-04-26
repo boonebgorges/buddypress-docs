@@ -62,7 +62,8 @@ class BP_Docs_Taxonomy {
 		add_filter( 'bp_docs_info_header_message', array( $this, 'info_header_message' ), 10, 2 );
 
 		// Add the tags filter markup
-		add_filter( 'bp_docs_filter_markup',	array( $this, 'filter_markup' ) );
+		add_filter( 'bp_docs_filter_types', array( $this, 'filter_type' ) );
+		add_filter( 'bp_docs_filter_sections', array( $this, 'filter_markup' ) );
 
 		// Adds filter arguments to a URL
 		add_filter( 'bp_docs_handle_filters',	array( $this, 'handle_filters' ) );
@@ -411,6 +412,15 @@ class BP_Docs_Taxonomy {
 		return $message;
 	}
 
+	public function filter_type( $types ) {
+		$types[] = array(
+			'slug' => 'tags',
+			'title' => __( 'Tag', 'bp-docs' ),
+			'query_arg' => 'bpd_tag',
+		);
+		return $types;
+	}
+
 	/**
 	 * Creates the markup for the tags filter checkboxes on the docs loop
 	 *
@@ -424,16 +434,16 @@ class BP_Docs_Taxonomy {
 		if ( empty( $existing_terms ) )
 			return;
 
+		$tag_filter = ! empty( $_GET['bpd_tag'] );
+
 		?>
 
-		<div class="docs-filter docs-filter-tags toggleable">
-			<p id="tags-toggle" class="toggle-switch"><?php _e( 'Filter by tag', 'bp-docs' ) ?></p>
-
-			<ul id="tags-list" class="toggle-content">
+		<div id="docs-filter-section-tags" class="docs-filter-section<?php if ( $tag_filter ) : ?> docs-filter-section-open<?php endif ?>">
+			<ul id="tags-list">
 			<?php foreach( $existing_terms as $term => $posts ) : ?>
-
+				<?php $term_count = is_int( $posts ) ? $posts : count( $posts ) ?>
 				<li>
-				<a href="<?php echo bp_docs_get_tag_link( array( 'tag' => $term, 'type' => 'url' ) ) ?>" title="<?php echo esc_html( $term ) ?>"><?php echo esc_html( $term ) ?> <?php printf( __( '(%d)', 'bp-docs' ), count( $posts ) ) ?></a>
+				<a href="<?php echo bp_docs_get_tag_link( array( 'tag' => $term, 'type' => 'url' ) ) ?>" title="<?php echo esc_html( $term ) ?>"><?php echo esc_html( $term ) ?> <?php printf( __( '(%d)', 'bp-docs' ), $term_count ) ?></a>
 
 				<?php /* Going with tag cloud type fix for now */ ?>
 				<?php /*

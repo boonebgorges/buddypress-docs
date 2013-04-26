@@ -15,6 +15,11 @@ class BP_Docs_Attachments {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 
 		add_action( 'pre_get_posts', array( $this, 'filter_gallery_posts' ) );
+		add_action( 'pre_get_posts', array( $this, 'filter_directory_posts' ) );
+
+		// Add the tags filter markup
+		add_filter( 'bp_docs_filter_types', array( $this, 'filter_type' ) );
+		add_filter( 'bp_docs_filter_sections', array( $this, 'filter_markup' ) );
 
 		// Icon display
 		add_filter( 'icon_dir', 'BP_Docs_Attachments::icon_dir' );
@@ -359,6 +364,33 @@ class BP_Docs_Attachments {
 		$query->set( 'post_parent', $_REQUEST['post_id'] );
 	}
 
+	public function filter_directory_posts( $query ) {
+		if ( bp_docs_get_post_type_name() !== $query->get( 'post_type' ) ) {
+			return;
+		}
+
+		$has_attachment = isset( $_REQUEST['has-attachment'] ) && in_array( $_REQUEST['has-attachment'], array( 'yes', 'no' ) ) ? $_REQUEST['has-attachment'] : '';
+
+		if ( $has_attachment ) {
+			$post__in = $query->get( 'post__in' );
+			$att_posts = $this->get_docs_with_attachments();
+			$query_arg = 'yes' === $has_attachment ? 'post__in' : 'post__not_in';
+			$query->set( $query_arg, array_merge( (array) $post__in, (array) $att_posts ) );
+		}
+	}
+
+	public function get_docs_with_attachments() {
+		$atts = get_posts( array(
+			'update_meta_cache' => false,
+			'update_term_cache' => false,
+			'post_type' => 'attachment',
+			'post_parent__in' => bp_docs_get_doc_ids_accessible_to_current_user(),
+			'posts_per_page' => -1,
+		) );
+
+		return array_unique( wp_list_pluck( $atts, 'post_parent' ) );
+	}
+
 	/**
 	 * Generates the rewrite rules to be put in .htaccess of the upload dir
 	 *
@@ -464,6 +496,38 @@ class BP_Docs_Attachments {
 			$url = plugins_url( 'buddypress-docs/lib/nuvola' );
 		}
 		return $url;
+	}
+
+	public static function filter_type( $types ) {
+		$types[] = array(
+			'slug' => 'attachments',
+			'title' => __( 'Attachments', 'bp-docs' ),
+			'query_arg' => 'has-attachment',
+		);
+		return $types;
+	}
+
+	public static function filter_markup() {
+		$has_attachment = isset( $_REQUEST['has-attachment'] ) && in_array( $_REQUEST['has-attachment'], array( 'yes', 'no' ) ) ? $_REQUEST['has-attachment'] : '';
+		$form_action = wp_guess_url();
+		foreach ( $_GET as $k => $v ) {
+			$form_action = remove_query_arg( $k, $form_action );
+		}
+		?>
+
+		<div id="docs-filter-section-attachments" class="docs-filter-section<?php if ( $has_attachment ) : ?> docs-filter-section-open<?php endif ?>">
+			<form method="get" action="<?php echo $form_action ?>">
+				<label for="docs-attachment-filter"><?php _e( 'Has attachment?', 'bp-docs' ) ?></label>
+				<select id="has-attachment" name="has-attachment">
+					<option value="yes"<?php selected( $has_attachment, 'yes' ) ?>><?php _e( 'Yes', 'bp-docs' ) ?></option>
+					<option value="no"<?php selected( $has_attachment, 'no' ) ?>><?php _e( 'No', 'bp-docs' ) ?></option>
+					<option value=""<?php selected( $has_attachment, '' ) ?>><?php _e( 'Doesn&#8217;t matter', 'bp-docs' ) ?></option>
+				</select>
+				<input type="submit" value="<?php _e( 'Filter', 'bp-docs' ) ?>" />
+			</form>
+		</div>
+
+		<?php
 	}
 }
 
