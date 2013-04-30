@@ -203,20 +203,21 @@ div.docs-info-header {
 #doc-attachments-ul {
 	margin-top: 1em;
 	list-style-type: none;
-}
 
-#doc-attachments-ul li {
-	margin: 0px 5px 0px 0;
-	padding: 5px 0;
-}
-	#doc-attachments-ul li.even {
-		background-color: $grey;
+	li {
+		margin: 0px 5px 0px 0;
+		padding: 6px;
+
+		&.even {
+			background-color: $grey;
+		}
 	}
 
-#doc-attachments-ul .doc-attachment-delete {
-	float: right;
-	margin-top: .15em;
-	margin-right: .3em;
+	.doc-attachment-delete {
+		float: right;
+		margin-top: .15em;
+		margin-right: .3em;
+	}
 }
 
 .bp-docs-attachment-clip {
