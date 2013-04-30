@@ -33,11 +33,6 @@ body.bp-docs div.page ul {
 	width: auto;
 }
 
-/* Make it look decent on theme compat */
-#buddypress #bp-docs-all-docs li {
-	background: #eee;
-}
-
 .doc-tabs {
 	overflow: hidden;
 }
@@ -108,13 +103,29 @@ body.bp-docs div.page ul {
 
 /* Theme compat overrides */
 #buddypress {
-	table.doctable tr {
-		&:nth-child(even) {
-			background-color: $grey;
+	#bp-docs-all-docs li {
+		background: #eee;
+	}
+
+	div.doc-permissions {
+		float: none;
+		width: auto;
+		margin-bottom: 1em;
+	}
+
+	table.doctable {
+		td {
+			vertical-align: top;
 		}
 
-		th {
-			background-color: $grey;
+		tr {
+			&:nth-child(even) {
+				background-color: $grey;
+			}
+
+			th {
+				background-color: $grey;
+			}
 		}
 	}
 }
@@ -206,10 +217,6 @@ div.docs-info-header {
 	float: right;
 	margin-top: .15em;
 	margin-right: .3em;
-}
-
-#buddypress table.doctable td {
-	vertical-align: top;
 }
 
 .bp-docs-attachment-clip {
@@ -543,13 +550,6 @@ div.doc-permissions {
 	div.doc-permissions div:last-child {
 		clear: both;
 	}
-
-/* On theme-compat, can't float next to title */
-#buddypress div.doc-permissions {
-	float: none;
-	width: auto;
-	margin-bottom: 1em;
-}
 
 #doc-permissions-summary, #doc-group-summary {
 	font-size: 1.0em;
