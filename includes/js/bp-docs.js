@@ -36,16 +36,17 @@ jQuery(document).ready(function($){
 
 		// Slide the tags up or down
 		$(tc).slideToggle(400, function(){
-			// Swap the +/- in the link
-			var c = $(pom).html();
-
-			if ( c == '+' ) {
-				var mop = '-';
+			var rclass, aclass;	
+			if ( $(pom).hasClass('show-pane') ) {
+				rclass = 'show-pane';
+				aclass = 'hide-pane';
 			} else {
-				var mop = '+';
+				rclass = 'hide-pane';
+				aclass = 'show-pane';
 			}
 
-			$(pom).html(mop);
+			$(pom).removeClass(rclass);
+			$(pom).addClass(aclass);
 		});
 
 		return false;
