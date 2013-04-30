@@ -1819,6 +1819,21 @@ function bp_docs_attachment_item_markup( $attachment_id, $format = 'full' ) {
 }
 
 /**
+ * Does this doc have attachments?
+ *
+ * @since 1.4
+ * @return bool
+ */
+function bp_docs_doc_has_attachments( $doc_id = null ) {
+	if ( is_null( $doc_id ) ) {
+		$doc_id = get_the_ID();
+	}
+
+	$atts = bp_docs_get_doc_attachments( $doc_id );
+
+	return ! empty( $atts );
+}
+/**
  * Gets the markup for the paperclip icon in directories
  *
  * @since 1.4

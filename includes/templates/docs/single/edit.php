@@ -43,7 +43,7 @@
 		<?php endif ?>
 
 		<div id="doc-attachments">
-			<label for="insert-media-button"><?php _e( 'Files', 'bp-docs' ) ?></label>
+			<label for="insert-media-button"><?php _e( 'Attachments', 'bp-docs' ) ?></label>
 			<?php include ( bp_docs_locate_template( 'single/attachments.php' ) ) ?>
 		</div>
 
