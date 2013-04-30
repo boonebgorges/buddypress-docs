@@ -38,28 +38,31 @@ body.bp-docs div.page ul {
 
 .doc-tabs {
 	overflow: hidden;
-}
-	.doc-tabs li {
+
+	li {
 		float: left;
 		margin: 0 5px;
 		list-style-type: none;
+
+		&:first-child {
+			margin-left: 0;
+		}
+
+		a {
+			background: #f1f1f1;
+			text-decoration: none;
+			display: block;
+			padding: 4px 10px;
+			border-radius: 5px 5px 0 0;
+		}
+		
+		&.current a {
+			background: $grey;
+			color: #555;
+			font-weight: bold;
+		}
 	}
-	.doc-tabs li:first-child {
-		margin-left: 0;
-	}
-	.doc-tabs li a {
-		background: #f1f1f1;
-		text-decoration: none;
-		display: block;
-		padding: 4px 10px;
-		font-size: 1.2em;
-		border-radius: 5px 5px 0 0;
-	}
-	.doc-tabs li.current a {
-		background: $grey;
-		color: #555;
-		font-weight: bold;
-	}
+}
 
 .doc-header h4 {
 	margin-bottom: 15px !important;
