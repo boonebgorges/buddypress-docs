@@ -1833,6 +1833,7 @@ function bp_docs_doc_has_attachments( $doc_id = null ) {
 
 	return ! empty( $atts );
 }
+
 /**
  * Gets the markup for the paperclip icon in directories
  *
