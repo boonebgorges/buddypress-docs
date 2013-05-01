@@ -679,7 +679,7 @@ function bp_docs_inline_toggle_js() {
 
 			/* Append the static toggle text with a '+' sign and linkify */
 			var toggleid = type + '-toggle-link';
-			var plus = '<span class="plus-or-minus">+</span>';
+			var plus = '<span class="show-pane plus-or-minus"></span>';
 
 			jQuery(ts).html('<a href="#" id="' + toggleid + '" class="toggle-link">' + plus + jQuery(ts).html() + '</a>');
 		});
@@ -1816,6 +1816,22 @@ function bp_docs_attachment_item_markup( $attachment_id, $format = 'full' ) {
 	}
 
 	return $markup;
+}
+
+/**
+ * Does this doc have attachments?
+ *
+ * @since 1.4
+ * @return bool
+ */
+function bp_docs_doc_has_attachments( $doc_id = null ) {
+	if ( is_null( $doc_id ) ) {
+		$doc_id = get_the_ID();
+	}
+
+	$atts = bp_docs_get_doc_attachments( $doc_id );
+
+	return ! empty( $atts );
 }
 
 /**

@@ -30,6 +30,7 @@ form.standard-form input[type="text"]#doc-title {
 	width: 98%;
 }
 
+#buddypress .standard-form label#content-label,
 #content-label {
 	margin-bottom: -30px;
 }
