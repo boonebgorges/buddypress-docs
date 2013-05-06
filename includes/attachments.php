@@ -28,6 +28,9 @@ class BP_Docs_Attachments {
 		// Catch delete request
 		add_action( 'bp_actions', array( $this, 'catch_delete_request' ) );
 
+		// Ensure that all logged-in users have the 'upload_files' cap
+		add_filter( 'map_meta_cap', array( __CLASS__, 'map_meta_cap' ), 10, 4 );
+
 		require( dirname( __FILE__ ) . '/attachments-ajax.php' );
 	}
 
@@ -528,6 +531,78 @@ class BP_Docs_Attachments {
 		</div>
 
 		<?php
+	}
+
+	/**
+	 * Give users the 'upload_files' cap, when appropriate
+	 *
+	 * @since 1.4
+	 *
+	 * @param array $caps The mapped caps
+	 * @param string $cap The cap being mapped
+	 * @param int $user_id The user id in question
+	 * @param $args
+	 * @return array $caps
+	 */
+	public static function map_meta_cap( $caps, $cap, $user_id, $args ) {
+		if ( 'upload_files' !== $cap ) {
+			return $caps;
+		}
+
+		if ( ! (int) $user_id && ! user_exists( $user_id ) ) {
+			return $caps;
+		}
+
+		$is_doc = false;
+
+		// DOING_AJAX is not set yet, so we cheat
+		$is_ajax = isset( $_SERVER['REQUEST_METHOD'] ) && 'POST' === $_SERVER['REQUEST_METHOD'] && 'async-upload.php' === substr( $_SERVER['REQUEST_URI'], strrpos( $_SERVER['REQUEST_URI'], '/' ) + 1 );
+
+		if ( $is_ajax ) {
+			// Existing Doc
+			$item_id = self::get_doc_id_from_url( $_SERVER['HTTP_REFERER'] );
+			if ( $item_id ) {
+				$item = get_post( $item_id );
+				$is_doc = bp_docs_get_post_type_name() === $item->post_type;
+			}
+
+			// Create Doc
+			if ( ! $is_doc ) {
+				$is_doc = $_SERVER['HTTP_REFERER'] === bp_docs_get_create_link();
+			}
+		} else {
+			$is_doc = bp_docs_is_existing_doc() || bp_docs_is_doc_create();
+		}
+
+		if ( $is_doc ) {
+			$caps = array( 'exist' );
+
+			// Since we've already done the permissions check,
+			// we can filter future current_user_can() checks on
+			// this pageload
+			add_filter( 'map_meta_cap', array( __CLASS__, 'map_meta_cap_supp' ), 10, 4 );
+		}
+
+		return $caps;
+	}
+
+	/**
+	 * Make sure the current user has the 'edit_post' cap, when appropriate
+	 *
+	 * We do the necessary permissions checks in self::map_meta_cap(). If
+	 * the checks pass, then we can blindly hook this filter without doing
+	 * the permissions logic again. *Do not call this filter directly.* I'd
+	 * mark it private but it's not possible given the way that WP's filter
+	 * system works.
+	 *
+	 * @since 1.4
+	 */
+	public static function map_meta_cap_supp( $caps, $cap, $user_id, $args ) {
+		if ( 'edit_post' !== $cap ) {
+			return $caps;
+		}
+
+		return array( 'exist' );
 	}
 }
 
