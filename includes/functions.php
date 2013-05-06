@@ -259,6 +259,11 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
 
 	$doc_id = false;
 
+	// Grant all permissions on documents being created
+	if ( false === $doc_id && bp_docs_is_doc_create() ) {
+		return true;
+	}
+
 	if ( in_array( $action, $need_doc_ids_actions ) ) {
 		if ( !$doc_id ) {
 			if ( !empty( $post->ID ) ) {
