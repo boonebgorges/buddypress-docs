@@ -1725,7 +1725,7 @@ add_action( 'bp_docs_single_doc_header_fields', 'bp_docs_render_permissions_snap
  * @since 1.4
  */
 function bp_docs_media_buttons( $editor_id ) {
-	if ( ! bp_docs_current_user_can( 'edit' ) ) {
+	if ( bp_docs_is_existing_doc() && ! bp_docs_current_user_can( 'edit' ) ) {
 		return;
 	}
 
