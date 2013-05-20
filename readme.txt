@@ -9,9 +9,13 @@ Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.3, BuddyPress 1.5
 
 Tested up to: WordPress 3.5.1, BuddyPress 1.7
+<<<<<<< HEAD
 
 Stable tag: 1.3.3
 
+=======
+Stable tag: 1.3.4
+>>>>>>> upstream/master
  
 
 Adds collaborative Docs to BuddyPress.
@@ -70,6 +74,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+<<<<<<< HEAD
 
 
 = 1.3.4 =
@@ -77,6 +82,11 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Updated italian translation
 
 
+=======
+= 1.3.4 =
+* Improved support for multinetwork installations
+* Fixed some incorrect textdomains
+>>>>>>> upstream/master
 
 = 1.3.3 =
 
