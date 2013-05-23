@@ -208,6 +208,8 @@ function bp_docs_add_idle_function_to_tinymce( $initArray ) {
 
 					bp_docs_kitchen_sink(ed);
 
+					/* Remove TinyMCE editor toolbar buttons from tab order */
+					jQuery(\'#qt_doc_content_toolbar > *\').attr(\'tabIndex\', \'-1\');
 				}
 			);
 
