@@ -12,6 +12,21 @@ jQuery(document).ready(function($){
 		$(this).addClass( (i + 1) % 2 ? 'odd' : 'even' );
 	});
 
+	// Fix the wonky tabindex on Text mode
+	$('input#doc-permalink').on('keydown',function(e){
+		var code = e.keyCode || e.which;
+		if ( code == 9 ) {
+			$doc_content = $('textarea#doc_content');
+			if ( $doc_content.is(':visible') ) {
+				var doccontent = $doc_content.val();
+				$doc_content.val('');	
+				$doc_content.focus();
+				$doc_content.val(doccontent);
+				return false;
+			}
+		}
+	});
+
 	/* When a toggle is clicked, show the toggle-content */
 	$('.toggle-link').click(function(){
 		// Traverse for some items
