@@ -5,6 +5,23 @@ jQuery(document).ready(function($){
 	// Binders
 	$('#associated_group_id').on('change',function(){ bpdv_refresh_access_settings(); });
 	$('#associated_group_id').on('change',function(){ bpdv_refresh_associated_group(); });
+
+	doc_id = $('#doc_id').val(); 
+
+	// Cascade permissions - new docs only
+	$('#toggle-table-settings tbody').on('change', 'select[name="settings[read]"]', function(e) { 
+		// Only cascade if the other permissions haven't been changed yet
+		if ( ! window.bpdv_permissions_changed && 0 == doc_id ) {
+			jQuery(e.target).closest('tbody').find('select[name*="settings"]').val(jQuery(e.target).val());	
+		}
+	});
+
+	// When a non-read permission is manually set, don't allow further mods
+	$('#toggle-table-settings tbody').on('change', 'select[name*="settings"]', function(e) {
+		if ( $(e.target).attr('name') != 'settings[read]' && 0 == doc_id ) {
+			window.bpdv_permissions_changed = true;
+		}
+	});
 },(jQuery));
 
 function bpdv_refresh_access_settings() {
