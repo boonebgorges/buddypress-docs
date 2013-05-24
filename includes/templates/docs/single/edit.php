@@ -58,6 +58,11 @@
 			</div>
 		</div>
 
+		<div id="doc-attachments">
+			<label for="insert-media-button"><?php _e( 'Attachments', 'bp-docs' ) ?></label>
+			<?php include ( bp_docs_locate_template( 'single/attachments.php' ) ) ?>
+		</div>
+
 		<div id="doc-meta">
 			<?php if ( bp_is_active( 'groups' ) && bp_docs_current_user_can( 'manage' ) && apply_filters( 'bp_docs_allow_associated_group', true ) ) : ?>
 				<div id="doc-associated-group" class="doc-meta-box">
@@ -73,7 +78,7 @@
 				</div>
 			<?php endif ?>
 
-			<?php if ( bp_is_active( 'groups' ) && bp_docs_current_user_can( 'manage' ) && apply_filters( 'bp_docs_allow_access_settings', true ) ) : ?>
+			<?php if ( bp_docs_current_user_can( 'manage' ) && apply_filters( 'bp_docs_allow_access_settings', true ) ) : ?>
 				<div id="doc-settings" class="doc-meta-box">
 					<div class="toggleable">
 						<p class="toggle-switch" id="settings-toggle"><?php _e( 'Access', 'bp-docs' ) ?></p>

@@ -1,3 +1,13 @@
+/* Welcome to Compass.
+ * In this file you should write your main styles. (or centralize your imports)
+ * Import this file using the following HTML or equivalent:
+ * <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" /> */
+
+$grey: #f3f3f3;
+$dark_grey: #ccc;
+$grey_text: #757575;
+$toggle_radius: 2px;
+
 .hide-if-no-js {
 	display: none;
 }
@@ -26,35 +36,33 @@ body.bp-docs div.page ul {
 	width: auto;
 }
 
-/* Make it look decent on theme compat */
-#buddypress #bp-docs-all-docs li {
-	background: #eee;
-}
-
 .doc-tabs {
 	overflow: hidden;
-}
-	.doc-tabs li {
+
+	li {
 		float: left;
 		margin: 0 5px;
 		list-style-type: none;
+
+		&:first-child {
+			margin-left: 0;
+		}
+
+		a {
+			background: #f1f1f1;
+			text-decoration: none;
+			display: block;
+			padding: 4px 10px;
+			border-radius: 5px 5px 0 0;
+		}
+		
+		&.current a {
+			background: $grey;
+			color: #555;
+			font-weight: bold;
+		}
 	}
-	.doc-tabs li:first-child {
-		margin-left: 0;
-	}
-	.doc-tabs li a {
-		background: #f1f1f1;
-		text-decoration: none;
-		display: block;
-		padding: 4px 10px;
-		font-size: 1.2em;
-		border-radius: 5px 5px 0 0;
-	}
-	.doc-tabs li.current a {
-		background: #eaeaea;
-		color: #555;
-		font-weight: bold;
-	}
+}
 
 .doc-header h4 {
 	margin-bottom: 15px !important;
@@ -84,9 +92,48 @@ body.bp-docs div.page ul {
 	padding: 6px;
 }
 
-.doctable p {
-	padding: 0;
-	margin: 0;
+.doctable {
+	p {
+		padding: 0;
+		margin: 0;
+	}
+	
+	table tr:hover .row-actions {
+		visibility: visible;
+	}
+
+	table tr:nth-child(even) {
+		background-color: $grey;
+	}
+}
+
+/* Theme compat overrides */
+#buddypress {
+	#bp-docs-all-docs li {
+		background: #eee;
+	}
+
+	div.doc-permissions {
+		float: none;
+		width: auto;
+		margin-bottom: 1em;
+	}
+
+	table.doctable {
+		td {
+			vertical-align: top;
+		}
+
+		tr {
+			&:nth-child(even) {
+				background-color: $grey;
+			}
+
+			th {
+				background-color: $grey;
+			}
+		}
+	}
 }
 
 .row-actions {
@@ -102,13 +149,7 @@ body.bp-docs div.page ul {
 		color: #f00;
 	}
 
-.doctable tr:hover .row-actions {
-	visibility: visible;
-}
 
-.doctable tr:nth-child(even) {
-	background-color: #eaeaea;
-}
 
 
 #docs-filter-submit {
@@ -146,7 +187,7 @@ body.bp-docs div.page ul {
 }
 
 div.docs-info-header {
-	background: #eaeaea;
+	background: $grey;
 	padding: 5px 10px;
 	margin-bottom: 10px;
 }
@@ -168,24 +209,21 @@ div.docs-info-header {
 #doc-attachments-ul {
 	margin-top: 1em;
 	list-style-type: none;
-}
 
-#doc-attachments-ul li {
-	margin: 0px 5px 0px 0;
-	padding: 5px 0;
-}
-	#doc-attachments-ul li.even {
-		background-color: #eaeaea;
+	li {
+		margin: 0px 5px 0px 0;
+		padding: 6px;
+
+		&.even {
+			background-color: $grey;
+		}
 	}
 
-#doc-attachments-ul .doc-attachment-delete {
-	float: right;
-	margin-top: .15em;
-	margin-right: .3em;
-}
-
-#buddypress table.doctable td {
-	vertical-align: top;
+	.doc-attachment-delete {
+		float: right;
+		margin-top: .15em;
+		margin-right: .3em;
+	}
 }
 
 .bp-docs-attachment-clip {
@@ -328,62 +366,84 @@ body.js .bp-docs-attachment-drawer {
 }
 
 /* TOGGLES */
+.hide-pane, .show-pane, .paperclip-vertical, .paperclip-jaunty{
+	background: url('../images/bp-docs-ui-sprites.png') no-repeat;
+	display: block;
+	float: left;
+	margin-left: 10px;
+	margin-top: 5px;
+}
+
+.hide-pane{
+	background-position: 0 0;
+	width: 16px;
+	height: 16px;
+}
+
+.show-pane{
+	background-position: 0 -28px ;
+	width: 16px;
+	height: 16px;
+}
+
+.paperclip-vertical{
+	background-position: 0 -55px ;
+	width: 13px;
+	height: 36px;
+}
+
+.paperclip-jaunty{
+	background-position: 0 -105px ;
+	width: 17px;
+	height: 36px;
+}
 
 .toggle-switch,
 .entry-content p.toggle-switch {
 	display: block;
-	font-weight: bold;
-	font-size: 1.1em;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	border-radius: 3px;
-	background: #bbb;
-	border: 1px solid #333;
-	padding: 3px 16px;
+	font-size: 1em;
+	-moz-border-radius: $toggle_radius;
+	-webkit-border-radius: $toggle_radius;
+	border-radius: $toggle_radius;
+	border: 1px solid $dark_grey;
+	background-color: $grey;
+	padding: 3px 0;
+	text-indent: 16px;
 	margin: 16px 0 0;
-}
-	.toggle-switch.active-switch {
+
+	&.active-switch {
 		-moz-border-radius-bottomleft: 10px;
 		-webkit-border-bottom-left-radius: 10px;
 		-moz-border-radius-bottomright: 10px;
 		-webkit-border-bottom-right-radius: 10px;
 		border-radius: 3px 3px 0px 0px;
 	}
-	.toggle-switch a {
+	
+	a {
+		color: $grey_text; 
 		text-decoration: none;
 		display: block;
 		width: 100%;
 		height: 100%;
-		color: #fff;
+
+		&:hover {
+			font-weight: bold;
+		}
 	}
-	.toggle-switch a:hover {
-		color: #eee;
-	}
-	.standard-form label.toggle-switch {
-		margin: 16px 0 0;
-	}
+}
+
+.standard-form label.toggle-switch {
+	margin: 16px 0 0;
+}
 
 .toggle-content {
-	width: 100%;
-	-moz-border-radius-bottomleft: 3px;
-	-webkit-border-bottom-left-radius: 3px;
-	-moz-border-radius-bottomright: 3px;
-	-webkit-border-bottom-right-radius: 3px;
-	border: 1px solid #333;
+	-moz-border-radius-bottomleft: $toggle_radius;
+	-webkit-border-bottom-left-radius: $toggle_radius;
+	-moz-border-radius-bottomright: $toggle_radius;
+	-webkit-border-bottom-right-radius: $toggle_radius;
+	border: 1px solid $dark_grey;
 	border-top: none;
 	overflow: hidden;
-}
-
-.toggle-content *:first-child {
-	margin-left: 10px;
-}
-
-span.plus-or-minus {
-	font-size: 1.3em;
-	font-weight: normal;
-	display: block;
-	float: left;
-	width: 20px;
 }
 
 td.desc-column {
@@ -496,7 +556,7 @@ div#bp-docs-pagination {
 /* Single doc view */
 div.doc-content {
 	padding: 20px;
-	border: 3px solid #eaeaea;
+	border: 3px solid $grey;
 }
 	div.doc-content img {
 		margin: 10px;
@@ -519,13 +579,6 @@ div.doc-permissions {
 	div.doc-permissions div:last-child {
 		clear: both;
 	}
-
-/* On theme-compat, can't float next to title */
-#buddypress div.doc-permissions {
-	float: none;
-	width: auto;
-	margin-bottom: 1em;
-}
 
 #doc-permissions-summary, #doc-group-summary {
 	font-size: 1.0em;
@@ -638,7 +691,7 @@ h2.doc-title {
 /* Comment section */
 .comments-closed {
 	padding: 10px 20px;
-	background: #eaeaea;
+	background: $grey;
 	margin-top: 10px;
 }
 
@@ -660,7 +713,7 @@ h2.doc-title {
 }
 
 .doc-content blockquote {
-	background: #eaeaea;
+	background: $grey;
 	padding: 5px;
 	margin: 10px 30px;
 }

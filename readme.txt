@@ -3,18 +3,19 @@ Contributors: boonebgorges, cuny-academic-commons
 Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.3, BuddyPress 1.5
-Tested up to: WordPress 3.5.1, BuddyPress 1.7
-Stable tag: 1.3.4
+Tested up to: WordPress 3.5.1, BuddyPress 1.7.2
+Stable tag: 1.4
  
 Adds collaborative Docs to BuddyPress.
 
 == Description ==
 
-BuddyPress Docs adds collaborative work spaces to your BuddyPress community. Part wiki, part document editing, think of these Docs as a BuddyPress version of the Docs service offered by the Big G *ifyouknowwhatimean*
+BuddyPress Docs adds collaborative work spaces to your BuddyPress community. Part wiki, part document editing, part shared dropbox, think of these Docs as a BuddyPress version of the Docs service offered by the Big G *ifyouknowwhatimean*
 
 Features include:
 
 * Docs that can be linked to groups or users, with a variety of privacy levels
+* Support for fully-private document uploads
 * Doc taxonomy, using tags
 * Fully sortable and filterable doc lists
 * TinyMCE front-end doc editing
@@ -22,22 +23,30 @@ Features include:
 * Full access to revision history
 * Dashboard access and management of Docs for the site admin
 
-<strong>NOTE</strong> This plugin <em>REQUIRES</em> WordPress 3.1 or higher. Lower versions of WP may appear to work, but <em>will</em> compromise the privacy of your Docs.
-
 This plugin is in active development. For feature requests and bug reports, visit http://github.com/boonebgorges/buddypress-docs. If you have translated the plugin and would like to provide your translation for distribution with BuddyPress Docs, please contact the plugin author.
 
 == Installation ==
 
 1. Install
 1. Activate
-1. For each group where you want Docs activated, visit Group Admin > Docs and check the checkbox
 1. Sit back and watch the jack roll in
 
 == Changelog ==
 
+= 1.4 =
+* Adds support for Doc Attachments, which obey Doc privacy levels
+* Directory filters redesigned and streamlined
+* Improves appearance across WP themes
+* Improves tab navigation on Edit screen
+* Adds cascading Doc permissions for new documents
+* Fixes bug that hid the Dashboard settings
+* Improves performance with custom bp_moderate capability maps
+* Reintroduces global directory tag clouds
+* Adds nl_NL language pack
+* Improves the appearance of edit mode dropdowns for fields with long text
+
 = 1.3.4 =
-* Improved support for multinetwork installations
-* Fixed some incorrect textdomains
+* Updated italian translation
 
 = 1.3.3 =
 * Fixed bug that incorrectly approved some post comments
@@ -293,5 +302,3 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 = 1.2 =
 * Major plugin rewrite. See http://dev.commons.gc.cuny.edu/2012/11/15/buddypress-docs-1-2/ for more details.
-
-

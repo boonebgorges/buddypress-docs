@@ -86,6 +86,7 @@ class BP_Docs_Groups_Integration {
 
 		// Add settings to the BuddyPress settings admin panel
 		add_action( 'bp_core_admin_screen_fields', 	array( $this, 'admin_screen_fields' ) );
+		add_action( 'bp_register_admin_settings', array( $this, 'register_admin_settings' ) );
 	}
 
 	/**
@@ -201,8 +202,17 @@ class BP_Docs_Groups_Integration {
 	function get_group_terms( $terms = array() ) {
 		global $bp;
 
-		if ( ! empty( $bp->groups->current_group->id ) ) {
-			$terms = groups_get_groupmeta( $bp->groups->current_group->id, 'bp_docs_terms' );
+		// Either it's a group directory...
+		if ( ! $group_id = bp_get_current_group_id() ) {
+			// ... or a single doc associated with a group...
+			if ( bp_docs_is_existing_doc() ) {
+				$doc = get_post();
+				$group_id = bp_docs_get_associated_group_id( $doc->ID, $doc );
+			}
+		}
+
+		if ( $group_id ) {
+			$terms = groups_get_groupmeta( $group_id, 'bp_docs_terms' );
 
 			if ( empty( $terms ) )
 				$terms = array();
@@ -220,10 +230,16 @@ class BP_Docs_Groups_Integration {
 	 * @param array $terms The terms to be saved to groupmeta
 	 */
 	function save_group_terms( $terms ) {
-		global $bp;
+		$doc = get_post();
 
-		if ( ! empty( $bp->groups->current_group->id ) ) {
-			groups_update_groupmeta( $bp->groups->current_group->id, 'bp_docs_terms', $terms );
+		if ( ! isset( $doc->post_type ) || $doc->post_type !== bp_docs_get_post_type_name() ) {
+			return $terms;
+		}
+
+		$group_id = bp_docs_get_associated_group_id( $doc->ID, $doc );
+
+		if ( $group_id ) {
+			groups_update_groupmeta( $group_id, 'bp_docs_terms', $terms );
 		}
 	}
 
@@ -771,13 +787,6 @@ class BP_Docs_Groups_Integration {
 	 * @since 1.1.6
 	 */
 	function admin_screen_fields() {
-		$bp_docs_tab_name = get_option( 'bp-docs-tab-name' );
-
-		if ( empty( $bp_docs_tab_name ) )
-			$bp_docs_tab_name = __( 'Docs', 'bp-docs' );
-
-		if ( !bp_is_active( 'groups' ) )
-			return;
 
 		?>
 
@@ -787,14 +796,43 @@ class BP_Docs_Groups_Integration {
 			</td>
 
 			<td>
-				<input name="bp-admin[bp-docs-tab-name]" id="bp-docs-tab-name" type="text" value="<?php echo esc_html( $bp_docs_tab_name ) ?>" />
-				<p class="description">Change the word on the BuddyPress group tab from 'Docs' to whatever you'd like. Keep in mind that this will not change the text anywhere else on the page. For a more thorough text change, create a <a href="http://codex.buddypress.org/extending-buddypress/customizing-labels-messages-and-urls/">language file</a> for BuddyPress Docs.</p>
-
-				<p class="description">To change the URL slug for Docs, put <code>define( 'BP_DOCS_SLUG', 'collaborations' );</code> in your wp-config.php file, replacing 'collaborations' with your custom slug.</p>
+				<?php $this->group_tab_name_setting_markup() ?>
 			</td>
 		</tr>
 
 		<?php
+	}
+
+	public function group_tab_name_setting_markup() {
+		$bp_docs_tab_name = bp_get_option( 'bp-docs-tab-name' );
+
+		if ( empty( $bp_docs_tab_name ) )
+			$bp_docs_tab_name = __( 'Docs', 'bp-docs' );
+
+		?>
+		<input name="bp-admin[bp-docs-tab-name]" id="bp-docs-tab-name" type="text" value="<?php echo esc_html( $bp_docs_tab_name ) ?>" />
+		<p class="description">Change the word on the BuddyPress group tab from 'Docs' to whatever you'd like. Keep in mind that this will not change the text anywhere else on the page. For a more thorough text change, create a <a href="http://codex.buddypress.org/extending-buddypress/customizing-labels-messages-and-urls/">language file</a> for BuddyPress Docs.</p>
+
+		<p class="description">To change the URL slug for Docs, put <code>define( 'BP_DOCS_SLUG', 'collaborations' );</code> in your wp-config.php file, replacing 'collaborations' with your custom slug.</p>
+		<?php
+	}
+
+	public function register_admin_settings() {
+		// Add the main section
+		add_settings_section( 'bp_docs', __( 'BuddyPress Docs Settings', 'bp-docs' ), 'bp_admin_setting_callback_xprofile_section', 'buddypress' );
+
+		// Allow avatar uploads
+		add_settings_field( 'bp-docs-group-tab-name', __( 'Group Tab Name', 'bp-docs' ), array( $this, 'group_tab_name_setting_markup' ), 'buddypress', 'bp_docs' );
+		register_setting( 'buddypress', 'bp-docs-group-tab-name', array( $this, 'admin_setting_callback' ) );
+	}
+
+	/**
+	 * A hack for backward compatibility
+	 */
+	public function admin_setting_callback() {
+		if ( isset( $_POST['bp-admin']['bp-docs-tab-name'] ) ) {
+			bp_update_option( 'bp-docs-tab-name', $_POST['bp-admin']['bp-docs-tab-name'] );
+		}
 	}
 }
 

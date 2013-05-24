@@ -417,8 +417,13 @@ class BP_Docs_Query {
 			$associated_group_id = isset( $_POST['associated_group_id'] ) ? intval( $_POST['associated_group_id'] ) : 0;
 
 			if ( $associated_group_id && ! BP_Docs_Groups_Integration::user_can_associate_doc_with_group( bp_loggedin_user_id(), $associated_group_id ) ) {
-				bp_core_add_message( __( 'You are not allowed to associate a Doc with that group.', 'bp-docs' ), 'error' );
-				bp_core_redirect( bp_docs_get_create_link() );
+				$retval = array(
+					'message_type' => 'error',
+					'message' => __( 'You are not allowed to associate a Doc with that group.', 'bp-docs' ),
+					'redirect_url' => bp_docs_get_create_link(),
+				);
+
+				return $retval;
 			}
 		}
 
@@ -443,8 +448,17 @@ class BP_Docs_Query {
 
 				$r['post_author'] = bp_loggedin_user_id();
 
-				// This is a new doc
-				if ( !$post_id = wp_insert_post( $r ) ) {
+				// If there's a 'doc_id' value in the POST, use
+				// the autodraft as a starting point
+				if ( isset( $_POST['doc_id'] ) ) {
+					$post_id = (int) $_POST['doc_id'];
+					$r['ID'] = $post_id;
+					wp_update_post( $r );
+				} else {
+					$post_id = wp_insert_post( $r );
+				}
+
+				if ( ! $post_id ) {
 					$result['message'] = __( 'There was an error when creating the doc.', 'bp-docs' );
 					$result['redirect'] = 'create';
 				} else {
@@ -495,38 +509,42 @@ class BP_Docs_Query {
 			}
 		}
 
-		// Add to a group, if necessary
-		if ( isset( $associated_group_id ) ) {
-			bp_docs_set_associated_group_id( $post_id, $associated_group_id );
-		}
+		// If the Doc was successfully created, run some more stuff
+		if ( ! empty( $post_id ) ) {
 
-		// Make sure the current user is added as one of the authors
-		wp_set_post_terms( $post_id, $this->user_term_id, $this->associated_item_tax_name, true );
-
-		// Save the last editor id. We'll use this to create an activity item
-		update_post_meta( $this->doc_id, 'bp_docs_last_editor', bp_loggedin_user_id() );
-
-		// Save settings
-		$settings = ! empty( $_POST['settings'] ) ? $_POST['settings'] : array();
-		$verified_settings = bp_docs_verify_settings( $settings, $post_id, bp_loggedin_user_id() );
-
-		$new_settings = array();
-		foreach ( $verified_settings as $verified_setting_name => $verified_setting ) {
-			$new_settings[ $verified_setting_name ] = $verified_setting['verified_value'];
-			if ( $verified_setting['verified_value'] != $verified_setting['original_value'] ) {
-				$result['message'] = __( 'Your Doc was successfully saved, but some of your access settings have been changed to match the Doc\'s permissions.', 'bp-docs' );
+			// Add to a group, if necessary
+			if ( isset( $associated_group_id ) ) {
+				bp_docs_set_associated_group_id( $post_id, $associated_group_id );
 			}
+
+			// Make sure the current user is added as one of the authors
+			wp_set_post_terms( $post_id, $this->user_term_id, $this->associated_item_tax_name, true );
+
+			// Save the last editor id. We'll use this to create an activity item
+			update_post_meta( $this->doc_id, 'bp_docs_last_editor', bp_loggedin_user_id() );
+
+			// Save settings
+			$settings = ! empty( $_POST['settings'] ) ? $_POST['settings'] : array();
+			$verified_settings = bp_docs_verify_settings( $settings, $post_id, bp_loggedin_user_id() );
+
+			$new_settings = array();
+			foreach ( $verified_settings as $verified_setting_name => $verified_setting ) {
+				$new_settings[ $verified_setting_name ] = $verified_setting['verified_value'];
+				if ( $verified_setting['verified_value'] != $verified_setting['original_value'] ) {
+					$result['message'] = __( 'Your Doc was successfully saved, but some of your access settings have been changed to match the Doc\'s permissions.', 'bp-docs' );
+				}
+			}
+			update_post_meta( $this->doc_id, 'bp_docs_settings', $new_settings );
+
+			// The 'read' setting must also be saved to a taxonomy, for
+			// easier directory queries
+			$read_setting = isset( $new_settings['read'] ) ? $new_settings['read'] : 'anyone';
+			bp_docs_update_doc_access( $this->doc_id, $read_setting );
+
+			// Increment the revision count
+			$revision_count = get_post_meta( $this->doc_id, 'bp_docs_revision_count', true );
+			update_post_meta( $this->doc_id, 'bp_docs_revision_count', intval( $revision_count ) + 1 );
 		}
-		update_post_meta( $this->doc_id, 'bp_docs_settings', $new_settings );
-
-		// The 'read' setting must also be saved to a taxonomy, for
-		// easier directory queries
-		$read_setting = isset( $new_settings['read'] ) ? $new_settings['read'] : 'anyone';
-		bp_docs_update_doc_access( $this->doc_id, $read_setting );
-
-		// Increment the revision count
-		$revision_count = get_post_meta( $this->doc_id, 'bp_docs_revision_count', true );
-		update_post_meta( $this->doc_id, 'bp_docs_revision_count', intval( $revision_count ) + 1 );
 
 		// Provide a custom hook for plugins and optional components.
 		// WP's default save_post isn't enough, because we need something that fires
@@ -567,7 +585,6 @@ class BP_Docs_Query {
 			return;
 		}
 	}
-
 
 }
 

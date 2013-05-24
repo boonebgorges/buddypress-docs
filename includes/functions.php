@@ -259,6 +259,11 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
 
 	$doc_id = false;
 
+	// Grant all permissions on documents being created
+	if ( false === $doc_id && bp_docs_is_doc_create() ) {
+		return true;
+	}
+
 	if ( in_array( $action, $need_doc_ids_actions ) ) {
 		if ( !$doc_id ) {
 			if ( !empty( $post->ID ) ) {
@@ -701,4 +706,17 @@ function bp_docs_check_post_lock( $post_id ) {
 	if ( $time && $time > time() - $time_window && $user != get_current_user_id() )
 		return $user;
 	return false;
+}
+
+function bp_docs_get_doc_ids_accessible_to_current_user() {
+	global $wpdb;
+
+	// Direct query for speeeeeeed
+	$exclude = bp_docs_access_query()->get_doc_ids();
+	if ( empty( $exclude ) ) {
+		$exclude = array( 0 );
+	}
+	$exclude_sql = '(' . implode( ',', $exclude ) . ')';
+	$items_sql = $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post_type = %s AND ID NOT IN $exclude_sql", bp_docs_get_post_type_name() );
+	return $wpdb->get_col( $items_sql );
 }
