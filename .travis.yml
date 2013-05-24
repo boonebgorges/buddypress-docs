@@ -26,7 +26,7 @@ env:
 before_script:
     - wget https://raw.github.com/benbalter/wordpress-plugin-tests/setup/setup.sh
     - source setup.sh
-    - ./setup.sh
+    - ./setup-bp.sh
 
 script: phpunit
 
