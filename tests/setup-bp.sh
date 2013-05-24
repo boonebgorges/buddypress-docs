@@ -10,6 +10,6 @@ mkdir -p $buddypress_dir
 tar --strip-components=1 -zxmf /tmp/buddypress.tar.gz -C $buddypress_dir
 
 # go back to the plugin dir
-cd $plugin_dir
+cd .. 
 
 set +x
