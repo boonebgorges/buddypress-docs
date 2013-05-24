@@ -11,7 +11,7 @@ tar --strip-components=1 -zxmf /tmp/buddypress.tar.gz -C $buddypress_dir
 
 # go back to the plugin dir
 pwd
-
 cd .. 
+pwd
 
 set +x
