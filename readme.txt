@@ -35,6 +35,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 = 1.4.1 =
 * Fixes bug that caused fatal errors when using Docs with some upload-related plugins
+* Turns off attempts at auto-detecting upgrades, to get rid of erroneous admin notice
 
 = 1.4 =
 * Adds support for Doc Attachments, which obey Doc privacy levels
