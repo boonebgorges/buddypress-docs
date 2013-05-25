@@ -33,6 +33,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.4.1 =
+* Fixes bug that caused fatal errors when using Docs with some upload-related plugins
+
 = 1.4 =
 * Adds support for Doc Attachments, which obey Doc privacy levels
 * Directory filters redesigned and streamlined
