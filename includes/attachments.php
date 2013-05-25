@@ -549,7 +549,8 @@ class BP_Docs_Attachments {
 			return $caps;
 		}
 
-		if ( ! (int) $user_id && ! user_exists( $user_id ) ) {
+		$maybe_user = new WP_User( $user_id );
+		if ( ! is_a( $maybe_user, 'WP_User' ) || empty( $maybe_user->ID ) ) {
 			return $caps;
 		}
 
