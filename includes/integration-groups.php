@@ -639,6 +639,16 @@ class BP_Docs_Groups_Integration {
 				<?php foreach( $groups as $group_id ) : ?>
 					<?php
 					$group = groups_get_group( array( 'group_id' => $group_id ) );
+
+					// Don't show hidden groups if the
+					// current user is not a member
+					if ( isset( $group->status ) && 'hidden' === $group->status ) {
+						// @todo this is slow
+						if ( ! current_user_can( 'bp_moderate' ) && ! groups_is_user_member( bp_loggedin_user_id(), $group_id ) ) {
+							continue;
+						}
+					}
+
 					$group_permalink = bp_get_group_permalink( $group ) ?>
 
 					<li><a href="<?php echo $group_permalink ?>">

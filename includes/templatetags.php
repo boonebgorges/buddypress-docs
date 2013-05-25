@@ -1334,6 +1334,16 @@ function bp_docs_doc_permissions_snapshot( $args = array() ) {
 		$doc_groups = array();
 		foreach( $doc_group_ids as $dgid ) {
 			$maybe_group = groups_get_group( 'group_id=' . $dgid );
+
+			// Don't show hidden groups if the
+			// current user is not a member
+			if ( isset( $maybe_group->status ) && 'hidden' === $maybe_group->status ) {
+				// @todo this is slow
+				if ( ! current_user_can( 'bp_moderate' ) && ! groups_is_user_member( bp_loggedin_user_id(), $dgid ) ) {
+					continue;
+				}
+			}
+
 			if ( !empty( $maybe_group->name ) ) {
 				$doc_groups[] = $maybe_group;
 			}
