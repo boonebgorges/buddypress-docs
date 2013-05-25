@@ -4,7 +4,7 @@ Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.3, BuddyPress 1.5
 Tested up to: WordPress 3.5.1, BuddyPress 1.7.2
-Stable tag: 1.4.1
+Stable tag: 1.4
  
 Adds collaborative Docs to BuddyPress.
 
@@ -32,11 +32,6 @@ This plugin is in active development. For feature requests and bug reports, visi
 1. Sit back and watch the jack roll in
 
 == Changelog ==
-
-= 1.4.1 =
-* Fixes bug that caused fatal errors when using Docs with some upload-related plugins
-* Turns off attempts at auto-detecting upgrades, to get rid of erroneous admin notice
-* Prevents group affiliation from displaying when group is hidden and user is not a member
 
 = 1.4 =
 * Adds support for Doc Attachments, which obey Doc privacy levels
