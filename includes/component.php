@@ -892,8 +892,9 @@ class BP_Docs_Component extends BP_Component {
 	 * This function filters 'post_type_link', which in turn powers get_permalink() and related
 	 * functions.
 	 *
-	 * As of 1.2, the only role of this function is to ensure that child
-	 * Doc permalinks are returned correctly (without the parent slug)
+	 * BuddyPress Docs has a completely flat architecture for URLs, where
+	 * parent slugs never appear in the URL (as they do in the case of WP
+	 * pages). So we reconstruct the link completely.
 	 *
 	 * @package BuddyPress Docs
 	 * @since 1.1.8
@@ -905,9 +906,8 @@ class BP_Docs_Component extends BP_Component {
 	 * @return str $link The filtered permalink
 	 */
 	function filter_permalinks( $link, $post, $leavename, $sample ) {
-		if ( bp_docs_get_post_type_name() == $post->post_type && ! empty( $post->post_parent ) ) {
-			$parent = get_post( $post->post_parent );
-			$link = str_replace( '/' . $parent->post_name, '', $link );
+		if ( bp_docs_get_post_type_name() == $post->post_type ) {
+			$link = trailingslashit( bp_docs_get_archive_link() . $post->post_name );
 		}
 
 		return html_entity_decode( $link );
