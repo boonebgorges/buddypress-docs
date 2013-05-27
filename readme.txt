@@ -33,6 +33,10 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.4.2 =
+* Fixes problem where nested child Docs would not resolve properly in some cases
+* Improves tab navigation on Create Doc screen
+
 = 1.4.1 =
 * Fixes bug that caused fatal errors when using Docs with some upload-related plugins
 * Turns off attempts at auto-detecting upgrades, to get rid of erroneous admin notice
