@@ -357,12 +357,18 @@ body.js .bp-docs-attachment-drawer {
 	display: none;
 }
 
-.bp-docs-attachment-drawer h4 {
-	margin: .5em 0;
-}
+.bp-docs-attachment-drawer {
+	h4 {
+		margin: .5em 0;
+	}
 
-.bp-docs-attachment-drawer > ul > li {
-	margin-left: 0;
+	& > ul {
+		list-style-type: none;
+	}
+
+	& > ul > li {
+		margin-left: 0;
+	}
 }
 
 /* TOGGLES */

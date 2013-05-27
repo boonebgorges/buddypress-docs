@@ -47,11 +47,11 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 
 	function test_bp_docs_is_existing_doc() {
 		$doc_id = $this->factory->doc->create();
-		$this->go_to( get_permalink( $doc_id ) );
+		$this->go_to( bp_docs_get_doc_link( $doc_id ) );
 		$this->assertTrue( bp_docs_is_existing_doc() );
 
 		$post_id = $this->factory->post->create();
-		$this->go_to( get_permalink( $post_id ) );
+		$this->go_to( bp_docs_get_doc_link( $post_id ) );
 		$this->assertFalse( bp_docs_is_existing_doc() );
 
 		// Fake that we're pre-query

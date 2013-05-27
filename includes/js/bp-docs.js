@@ -14,16 +14,15 @@ jQuery(document).ready(function($){
 
 	// Fix the wonky tabindex on Text mode
 	$('input#doc-permalink').on('keydown',function(e){
-		var code = e.keyCode || e.which;
-		if ( code == 9 ) {
-			$doc_content = $('textarea#doc_content');
-			if ( $doc_content.is(':visible') ) {
-				var doccontent = $doc_content.val();
-				$doc_content.val('');	
-				$doc_content.focus();
-				$doc_content.val(doccontent);
-				return false;
-			}
+		focus_in_content_area(e);	
+		return false;
+	});
+
+	// When a Doc is created new, there is no Permalink input
+	$('input#doc-title').on('keydown',function(e){
+		if ( ! document.getElementById( 'doc-permalink' ) ) {  
+			focus_in_content_area(e);	
+			return false;
 		}
 	});
 
@@ -112,6 +111,20 @@ jQuery(document).ready(function($){
 		});
 		return false;
 	});
+
+	function focus_in_content_area(e){
+		var code = e.keyCode || e.which;
+		if ( code == 9 ) {
+			$doc_content = $('textarea#doc_content');
+			if ( $doc_content.is(':visible') ) {
+				var doccontent = $doc_content.val();
+				$doc_content.val('');	
+				$doc_content.focus();
+				$doc_content.val(doccontent);
+				return false;
+			}
+		}
+	}
 },(jQuery));
 
 function bp_docs_load_idle() {

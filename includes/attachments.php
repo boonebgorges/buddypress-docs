@@ -8,6 +8,10 @@ class BP_Docs_Attachments {
 	protected $htaccess_path;
 
 	function __construct() {
+		if ( ! apply_filters( 'bp_docs_enable_attachments', true ) ) {
+			return;
+		}
+
 		add_action( 'template_redirect', array( $this, 'catch_attachment_request' ), 20 );
 		add_filter( 'upload_dir', array( $this, 'filter_upload_dir' ) );
 		add_action( 'bp_docs_doc_saved', array( $this, 'check_privacy' ) );

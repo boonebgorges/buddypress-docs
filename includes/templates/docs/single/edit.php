@@ -58,10 +58,12 @@
 			</div>
 		</div>
 
-		<div id="doc-attachments">
-			<label for="insert-media-button"><?php _e( 'Attachments', 'bp-docs' ) ?></label>
-			<?php include ( bp_docs_locate_template( 'single/attachments.php' ) ) ?>
-		</div>
+		<?php if ( apply_filters( 'bp_docs_enable_attachments', true ) ) : ?>
+			<div id="doc-attachments">
+				<label for="insert-media-button"><?php _e( 'Attachments', 'bp-docs' ) ?></label>
+				<?php include ( bp_docs_locate_template( 'single/attachments.php' ) ) ?>
+			</div>
+		<?php endif ?>
 
 		<div id="doc-meta">
 			<?php if ( bp_is_active( 'groups' ) && bp_docs_current_user_can( 'manage' ) && apply_filters( 'bp_docs_allow_associated_group', true ) ) : ?>
