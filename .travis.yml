@@ -55,3 +55,8 @@ script: phpunit
 branches:
   except:
     - setup
+
+notifications:
+  email:
+    recipients:
+      - boone@gorg.es
