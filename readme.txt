@@ -37,6 +37,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Fixes problem where nested child Docs would not resolve properly in some cases
 * Improves tab navigation on Create Doc screen
 * Adds a filter that allows the Attachments component to be disabled
+* Removes Delete Attachment link from Read mode
 
 = 1.4.1 =
 * Fixes bug that caused fatal errors when using Docs with some upload-related plugins
