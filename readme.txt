@@ -35,6 +35,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 = 1.4.4 =
 * Fixes incorrect tag directory links at the bottom of individual Docs
+* Fixes CSS for hover actions in Docs directory
 
 = 1.4.3 =
 * Fixes bug introduced in 1.4.2 that prevents certain sorts of Doc editing
