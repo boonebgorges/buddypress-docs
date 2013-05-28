@@ -35,6 +35,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 = 1.4.3 =
 * Fixes bug introduced in 1.4.2 that prevents certain sorts of Doc editing
+* Improved localization
 
 = 1.4.2 =
 * Fixes problem where nested child Docs would not resolve properly in some cases
