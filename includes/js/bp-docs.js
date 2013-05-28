@@ -15,14 +15,12 @@ jQuery(document).ready(function($){
 	// Fix the wonky tabindex on Text mode
 	$('input#doc-permalink').on('keydown',function(e){
 		focus_in_content_area(e);	
-		return false;
 	});
 
 	// When a Doc is created new, there is no Permalink input
 	$('input#doc-title').on('keydown',function(e){
 		if ( ! document.getElementById( 'doc-permalink' ) ) {  
 			focus_in_content_area(e);	
-			return false;
 		}
 	});
 
