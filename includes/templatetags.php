@@ -1209,13 +1209,10 @@ function bp_docs_is_existing_doc() {
 	global $wp_query;
 
 	if ( ! isset( $wp_query ) || ! is_a( $wp_query, 'WP_Query' ) ) {
-		var_dump( 'no wp_query object' );
 		return false;
 	}
 
 	$post_type_obj = get_queried_object();
-	var_dump( is_single() );
-	var_dump( $post_type_obj );
 	return is_single() && isset( $post_type_obj->post_type ) && bp_docs_get_post_type_name() == $post_type_obj->post_type;
 }
 
