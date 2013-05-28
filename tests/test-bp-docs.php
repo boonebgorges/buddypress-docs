@@ -48,9 +48,6 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 	public function test_bp_docs_is_existing_doc_true() {
 		$doc_id = $this->factory->doc->create();
 		$this->go_to( bp_docs_get_doc_link( $doc_id ) );
-		var_dump( bp_docs_get_doc_link( $doc_id ) );
-		var_dump( wp_guess_url() );
-
 		$this->assertTrue( bp_docs_is_existing_doc() );
 	}
 
