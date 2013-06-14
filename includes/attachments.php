@@ -474,7 +474,9 @@ class BP_Docs_Attachments {
 	 */
 	public static function generate_headers( $filename ) {
 		// Disable compression
-		@apache_setenv( 'no-gzip', 1 );
+		if ( function_exists( 'apache_setenv' ) ) {
+			@apache_setenv( 'no-gzip', 1 );
+		}
 		@ini_set( 'zlib.output_compression', 'Off' );
 
 		// @todo Make this more configurable
