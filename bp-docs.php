@@ -168,9 +168,13 @@ class BP_Docs {
 	 * @since 1.0-beta
 	 */
 	function load_constants() {
+		if ( ! defined( 'BP_DOCS_PLUGIN_SLUG' ) ) {
+			define( 'BP_DOCS_PLUGIN_SLUG', 'buddypress-docs' );
+		}
+
 		// You should never really need to override this bad boy
 		if ( !defined( 'BP_DOCS_INSTALL_PATH' ) )
-			define( 'BP_DOCS_INSTALL_PATH', WP_PLUGIN_DIR . '/buddypress-docs/' );
+			define( 'BP_DOCS_INSTALL_PATH', WP_PLUGIN_DIR . DIRECTORY_SEPARATOR . BP_DOCS_PLUGIN_SLUG . DIRECTORY_SEPARATOR );
 
 		// Ditto
 		if ( !defined( 'BP_DOCS_INCLUDES_PATH' ) )

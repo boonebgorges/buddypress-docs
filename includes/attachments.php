@@ -336,7 +336,7 @@ class BP_Docs_Attachments {
 
 	function enqueue_scripts() {
 		if ( bp_docs_is_doc_edit() || bp_docs_is_doc_create() ) {
-			wp_enqueue_script( 'bp-docs-attachments', plugins_url( 'buddypress-docs/includes/js/attachments.js' ), array( 'media-editor', 'media-views' ), false, true );
+			wp_enqueue_script( 'bp-docs-attachments', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/attachments.js' ), array( 'media-editor', 'media-views' ), false, true );
 		}
 	}
 
@@ -506,7 +506,7 @@ class BP_Docs_Attachments {
 
 	public static function icon_dir_uri( $url ) {
 		if ( bp_docs_is_docs_component() ) {
-			$url = plugins_url( 'buddypress-docs/lib/nuvola' );
+			$url = plugins_url( BP_DOCS_PLUGIN_SLUG . '/lib/nuvola' );
 		}
 		return $url;
 	}

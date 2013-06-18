@@ -862,7 +862,7 @@ class BP_Docs_Component extends BP_Component {
 		if ( ! bp_is_active( 'activity' ) ) {
 			return;
 		}
-		
+
 		if ( bp_docs_get_post_type_name() != $post->post_type ) {
 			return;
 		}
@@ -989,7 +989,7 @@ class BP_Docs_Component extends BP_Component {
 	 * @since 1.0-beta
 	 */
 	function set_includes_url() {
-		$this->includes_url = plugins_url() . '/buddypress-docs/includes/';
+		$this->includes_url = plugins_url() . BP_DOCS_PLUGIN_SLUG . '/includes/';
 	}
 
 	/**
@@ -1063,7 +1063,7 @@ class BP_Docs_Component extends BP_Component {
 	 * @since 1.0-beta
 	 */
 	function enqueue_scripts() {
-		wp_register_script( 'bp-docs-js', plugins_url( 'buddypress-docs/includes/js/bp-docs.js' ), array( 'jquery' ) );
+		wp_register_script( 'bp-docs-js', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/bp-docs.js' ), array( 'jquery' ) );
 
 		// This is for edit/create scripts
 		if ( bp_docs_is_doc_edit()
@@ -1080,19 +1080,19 @@ class BP_Docs_Component extends BP_Component {
 			wp_enqueue_script( 'editor' );
 			wp_enqueue_script( 'utils' );
 
-			wp_register_script( 'bp-docs-idle-js', plugins_url( 'buddypress-docs/includes/js/idle.js' ), array( 'jquery', 'bp-docs-js' ) );
+			wp_register_script( 'bp-docs-idle-js', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/idle.js' ), array( 'jquery', 'bp-docs-js' ) );
 			wp_enqueue_script( 'bp-docs-idle-js' );
 
-			wp_register_script( 'jquery-colorbox', plugins_url( 'buddypress-docs/lib/js/colorbox/jquery.colorbox-min.js' ), array( 'jquery' ) );
+			wp_register_script( 'jquery-colorbox', plugins_url( BP_DOCS_PLUGIN_SLUG . '/lib/js/colorbox/jquery.colorbox-min.js' ), array( 'jquery' ) );
 			wp_enqueue_script( 'jquery-colorbox' );
 			// Edit mode requires bp-docs-js to be dependent on TinyMCE, so we must
 			// reregister bp-docs-js with the correct dependencies
 			wp_deregister_script( 'bp-docs-js' );
-			wp_register_script( 'bp-docs-js', plugins_url( 'buddypress-docs/includes/js/bp-docs.js' ), array( 'jquery', 'editor' ) );
+			wp_register_script( 'bp-docs-js', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/bp-docs.js' ), array( 'jquery', 'editor' ) );
 
 			wp_register_script( 'word-counter', site_url() . '/wp-admin/js/word-count.js', array( 'jquery' ) );
 
-			wp_enqueue_script( 'bp-docs-edit-validation', plugins_url( 'buddypress-docs/includes/js/edit-validation.js' ), array( 'jquery' ) );
+			wp_enqueue_script( 'bp-docs-edit-validation', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/edit-validation.js' ), array( 'jquery' ) );
 		}
 
 		// Only load our JS on the right sorts of pages. Generous to account for

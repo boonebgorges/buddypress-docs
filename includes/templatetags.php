@@ -1856,7 +1856,7 @@ function bp_docs_attachment_icon() {
 		return;
 	}
 
-	$pc = plugins_url( 'buddypress-docs/includes/images/paperclip.png' );
+	$pc = plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/images/paperclip.png' );
 
 	$html = '<a class="bp-docs-attachment-clip" id="bp-docs-attachment-clip-' . get_the_ID() . '"><img src="' . $pc . '" height="25"></a>';
 
