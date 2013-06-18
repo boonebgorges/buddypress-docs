@@ -336,7 +336,7 @@ class BP_Docs_Attachments {
 
 	function enqueue_scripts() {
 		if ( bp_docs_is_doc_edit() || bp_docs_is_doc_create() ) {
-			wp_enqueue_script( 'bp-docs-attachments', plugins_url( 'buddypress-docs/includes/js/attachments.js' ), array( 'media-editor', 'media-views' ), false, true );
+			wp_enqueue_script( 'bp-docs-attachments', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/attachments.js' ), array( 'media-editor', 'media-views' ), false, true );
 		}
 	}
 
@@ -376,6 +376,8 @@ class BP_Docs_Attachments {
 			return;
 		}
 
+		remove_action( 'pre_get_posts', array( $this, 'filter_directory_posts' ) );
+
 		$has_attachment = isset( $_REQUEST['has-attachment'] ) && in_array( $_REQUEST['has-attachment'], array( 'yes', 'no' ) ) ? $_REQUEST['has-attachment'] : '';
 
 		if ( $has_attachment ) {
@@ -384,6 +386,8 @@ class BP_Docs_Attachments {
 			$query_arg = 'yes' === $has_attachment ? 'post__in' : 'post__not_in';
 			$query->set( $query_arg, array_merge( (array) $post__in, (array) $att_posts ) );
 		}
+
+		add_action( 'pre_get_posts', array( $this, 'filter_directory_posts' ) );
 	}
 
 	public function get_docs_with_attachments() {
@@ -502,7 +506,7 @@ class BP_Docs_Attachments {
 
 	public static function icon_dir_uri( $url ) {
 		if ( bp_docs_is_docs_component() ) {
-			$url = plugins_url( 'buddypress-docs/lib/nuvola' );
+			$url = plugins_url( BP_DOCS_PLUGIN_SLUG . '/lib/nuvola' );
 		}
 		return $url;
 	}

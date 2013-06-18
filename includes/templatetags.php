@@ -1513,7 +1513,7 @@ function bp_docs_get_doc_count( $item_id = 0, $item_type = '' ) {
 
 	switch ( $item_type ) {
 		case 'user' :
-			$doc_count = bp_get_user_meta( $item_id, 'bp_docs_count', true );
+			$doc_count = get_user_meta( $item_id, 'bp_docs_count', true );
 
 			if ( '' === $doc_count ) {
 				$doc_count = bp_docs_update_doc_count( $item_id, 'user' );
@@ -1856,7 +1856,7 @@ function bp_docs_attachment_icon() {
 		return;
 	}
 
-	$pc = plugins_url( 'buddypress-docs/includes/images/paperclip.png' );
+	$pc = plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/images/paperclip.png' );
 
 	$html = '<a class="bp-docs-attachment-clip" id="bp-docs-attachment-clip-' . get_the_ID() . '"><img src="' . $pc . '" height="25"></a>';
 

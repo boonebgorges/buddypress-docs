@@ -238,9 +238,9 @@ add_filter( 'tiny_mce_before_init', 'bp_docs_add_idle_function_to_tinymce' );
  */
 function bp_docs_add_external_tinymce_plugins( $plugins ) {
 	if ( bp_docs_is_bp_docs_page() ) {
-		$plugins['table'] 	= WP_PLUGIN_URL . '/buddypress-docs/lib/js/tinymce/plugins/table/editor_plugin.js';
-		$plugins['tabindent'] 	= WP_PLUGIN_URL . '/buddypress-docs/lib/js/tinymce/plugins/tabindent/editor_plugin.js';
-		$plugins['print'] 	= WP_PLUGIN_URL . '/buddypress-docs/lib/js/tinymce/plugins/print/editor_plugin.js';
+		$plugins['table']     = WP_PLUGIN_URL . '/'. BP_DOCS_PLUGIN_SLUG . '/lib/js/tinymce/plugins/table/editor_plugin.js';
+		$plugins['tabindent'] = WP_PLUGIN_URL . '/'. BP_DOCS_PLUGIN_SLUG . '/lib/js/tinymce/plugins/tabindent/editor_plugin.js';
+		$plugins['print']     = WP_PLUGIN_URL . '/'. BP_DOCS_PLUGIN_SLUG . '/lib/js/tinymce/plugins/print/editor_plugin.js';
 	}
 
 	return $plugins;

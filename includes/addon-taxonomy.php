@@ -518,7 +518,7 @@ function bp_docs_get_tag_link( $args = array() ) {
 	$r = wp_parse_args( $args, $defaults );
 	extract( $r, EXTR_SKIP );
 
-	$item_docs_url = bp_docs_get_item_docs_link();
+	$item_docs_url = bp_docs_get_archive_link();
 
 	$url = apply_filters( 'bp_docs_get_tag_link_url', add_query_arg( 'bpd_tag', urlencode( $tag ), $item_docs_url ), $args, $item_docs_url );
 

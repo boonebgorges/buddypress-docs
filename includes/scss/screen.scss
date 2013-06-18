@@ -98,11 +98,11 @@ body.bp-docs div.page ul {
 		margin: 0;
 	}
 	
-	table tr:hover .row-actions {
+	tr:hover .row-actions {
 		visibility: visible;
 	}
 
-	table tr:nth-child(even) {
+	tr:nth-child(even) {
 		background-color: $grey;
 	}
 }
