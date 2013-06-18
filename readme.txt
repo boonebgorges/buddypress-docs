@@ -38,6 +38,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Fixes incorrect tag directory links at the bottom of individual Docs
 * Fixes CSS for hover actions in Docs directory
 * Fixes bug that may cause fatal errors when using private attachments on setups other than vanilla Apache
+* Removes incidental dependencies on Activity and Groups components
 
 = 1.4.3 =
 * Fixes bug introduced in 1.4.2 that prevents certain sorts of Doc editing
