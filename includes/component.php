@@ -859,6 +859,10 @@ class BP_Docs_Component extends BP_Component {
 	 * @param obj WP_Post object
 	 */
 	public function delete_doc_activity( $new_status, $old_status, $post ) {
+		if ( ! bp_is_active( 'activity' ) ) {
+			return;
+		}
+		
 		if ( bp_docs_get_post_type_name() != $post->post_type ) {
 			return;
 		}
