@@ -989,7 +989,7 @@ class BP_Docs_Component extends BP_Component {
 	 * @since 1.0-beta
 	 */
 	function set_includes_url() {
-		$this->includes_url = plugins_url() . BP_DOCS_PLUGIN_SLUG . '/includes/';
+		$this->includes_url = plugins_url() . '/' . BP_DOCS_PLUGIN_SLUG . '/includes/';
 	}
 
 	/**
