@@ -98,11 +98,11 @@ body.bp-docs div.page ul {
 		margin: 0;
 	}
 	
-	table tr:hover .row-actions {
+	tr:hover .row-actions {
 		visibility: visible;
 	}
 
-	table tr:nth-child(even) {
+	tr:nth-child(even) {
 		background-color: $grey;
 	}
 }
@@ -357,12 +357,18 @@ body.js .bp-docs-attachment-drawer {
 	display: none;
 }
 
-.bp-docs-attachment-drawer h4 {
-	margin: .5em 0;
-}
+.bp-docs-attachment-drawer {
+	h4 {
+		margin: .5em 0;
+	}
 
-.bp-docs-attachment-drawer > ul > li {
-	margin-left: 0;
+	& > ul {
+		list-style-type: none;
+	}
+
+	& > ul > li {
+		margin-left: 0;
+	}
 }
 
 /* TOGGLES */

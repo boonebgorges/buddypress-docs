@@ -30,7 +30,7 @@ function bp_docs_upgrade_init() {
 	bp_docs_upgrade_menu();
 	add_action( 'admin_notices', 'bp_docs_upgrade_notice' );
 }
-add_action( 'admin_menu', 'bp_docs_upgrade_init' );
+//add_action( 'admin_menu', 'bp_docs_upgrade_init' );
 
 function bp_docs_upgrade_notice() {
 	global $pagenow;

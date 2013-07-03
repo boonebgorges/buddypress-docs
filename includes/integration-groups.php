@@ -639,6 +639,16 @@ class BP_Docs_Groups_Integration {
 				<?php foreach( $groups as $group_id ) : ?>
 					<?php
 					$group = groups_get_group( array( 'group_id' => $group_id ) );
+
+					// Don't show hidden groups if the
+					// current user is not a member
+					if ( isset( $group->status ) && 'hidden' === $group->status ) {
+						// @todo this is slow
+						if ( ! current_user_can( 'bp_moderate' ) && ! groups_is_user_member( bp_loggedin_user_id(), $group_id ) ) {
+							continue;
+						}
+					}
+
 					$group_permalink = bp_get_group_permalink( $group ) ?>
 
 					<li><a href="<?php echo $group_permalink ?>">
@@ -811,9 +821,9 @@ class BP_Docs_Groups_Integration {
 
 		?>
 		<input name="bp-admin[bp-docs-tab-name]" id="bp-docs-tab-name" type="text" value="<?php echo esc_html( $bp_docs_tab_name ) ?>" />
-		<p class="description">Change the word on the BuddyPress group tab from 'Docs' to whatever you'd like. Keep in mind that this will not change the text anywhere else on the page. For a more thorough text change, create a <a href="http://codex.buddypress.org/extending-buddypress/customizing-labels-messages-and-urls/">language file</a> for BuddyPress Docs.</p>
+		<p class="description"><?php _e( "Change the word on the BuddyPress group tab from 'Docs' to whatever you'd like. Keep in mind that this will not change the text anywhere else on the page. For a more thorough text change, create a <a href='http://codex.buddypress.org/extending-buddypress/customizing-labels-messages-and-urls/'>language file</a> for BuddyPress Docs.", 'bp-docs' ) ?></p>
 
-		<p class="description">To change the URL slug for Docs, put <code>define( 'BP_DOCS_SLUG', 'collaborations' );</code> in your wp-config.php file, replacing 'collaborations' with your custom slug.</p>
+		<p class="description"><?php _e( "To change the URL slug for Docs, put <code>define( 'BP_DOCS_SLUG', 'collaborations' );</code> in your wp-config.php file, replacing 'collaborations' with your custom slug.", 'bp-docs' ) ?></p>
 		<?php
 	}
 

@@ -8,6 +8,10 @@ class BP_Docs_Attachments {
 	protected $htaccess_path;
 
 	function __construct() {
+		if ( ! apply_filters( 'bp_docs_enable_attachments', true ) ) {
+			return;
+		}
+
 		add_action( 'template_redirect', array( $this, 'catch_attachment_request' ), 20 );
 		add_filter( 'upload_dir', array( $this, 'filter_upload_dir' ) );
 		add_action( 'bp_docs_doc_saved', array( $this, 'check_privacy' ) );
@@ -332,7 +336,7 @@ class BP_Docs_Attachments {
 
 	function enqueue_scripts() {
 		if ( bp_docs_is_doc_edit() || bp_docs_is_doc_create() ) {
-			wp_enqueue_script( 'bp-docs-attachments', plugins_url( 'buddypress-docs/includes/js/attachments.js' ), array( 'media-editor', 'media-views' ), false, true );
+			wp_enqueue_script( 'bp-docs-attachments', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/attachments.js' ), array( 'media-editor', 'media-views' ), false, true );
 		}
 	}
 
@@ -372,6 +376,8 @@ class BP_Docs_Attachments {
 			return;
 		}
 
+		remove_action( 'pre_get_posts', array( $this, 'filter_directory_posts' ) );
+
 		$has_attachment = isset( $_REQUEST['has-attachment'] ) && in_array( $_REQUEST['has-attachment'], array( 'yes', 'no' ) ) ? $_REQUEST['has-attachment'] : '';
 
 		if ( $has_attachment ) {
@@ -380,6 +386,8 @@ class BP_Docs_Attachments {
 			$query_arg = 'yes' === $has_attachment ? 'post__in' : 'post__not_in';
 			$query->set( $query_arg, array_merge( (array) $post__in, (array) $att_posts ) );
 		}
+
+		add_action( 'pre_get_posts', array( $this, 'filter_directory_posts' ) );
 	}
 
 	public function get_docs_with_attachments() {
@@ -466,7 +474,9 @@ class BP_Docs_Attachments {
 	 */
 	public static function generate_headers( $filename ) {
 		// Disable compression
-		@apache_setenv( 'no-gzip', 1 );
+		if ( function_exists( 'apache_setenv' ) ) {
+			@apache_setenv( 'no-gzip', 1 );
+		}
 		@ini_set( 'zlib.output_compression', 'Off' );
 
 		// @todo Make this more configurable
@@ -496,7 +506,7 @@ class BP_Docs_Attachments {
 
 	public static function icon_dir_uri( $url ) {
 		if ( bp_docs_is_docs_component() ) {
-			$url = plugins_url( 'buddypress-docs/lib/nuvola' );
+			$url = plugins_url( BP_DOCS_PLUGIN_SLUG . '/lib/nuvola' );
 		}
 		return $url;
 	}
@@ -549,7 +559,8 @@ class BP_Docs_Attachments {
 			return $caps;
 		}
 
-		if ( ! (int) $user_id && ! user_exists( $user_id ) ) {
+		$maybe_user = new WP_User( $user_id );
+		if ( ! is_a( $maybe_user, 'WP_User' ) || empty( $maybe_user->ID ) ) {
 			return $caps;
 		}
 

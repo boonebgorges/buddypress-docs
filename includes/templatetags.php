@@ -1334,6 +1334,16 @@ function bp_docs_doc_permissions_snapshot( $args = array() ) {
 		$doc_groups = array();
 		foreach( $doc_group_ids as $dgid ) {
 			$maybe_group = groups_get_group( 'group_id=' . $dgid );
+
+			// Don't show hidden groups if the
+			// current user is not a member
+			if ( isset( $maybe_group->status ) && 'hidden' === $maybe_group->status ) {
+				// @todo this is slow
+				if ( ! current_user_can( 'bp_moderate' ) && ! groups_is_user_member( bp_loggedin_user_id(), $dgid ) ) {
+					continue;
+				}
+			}
+
 			if ( !empty( $maybe_group->name ) ) {
 				$doc_groups[] = $maybe_group;
 			}
@@ -1783,7 +1793,7 @@ function bp_docs_attachment_item_markup( $attachment_id, $format = 'full' ) {
 
 	if ( 'full' === $format ) {
 		$attachment_delete_html = '';
-		if ( bp_docs_current_user_can( 'edit' ) ) {
+		if ( bp_docs_current_user_can( 'edit' ) && ( bp_docs_is_doc_edit() || bp_docs_is_doc_create() ) ) {
 			$doc_url = bp_docs_get_doc_link( $attachment->post_parent );
 			$attachment_delete_url = wp_nonce_url( $doc_url, 'bp_docs_delete_attachment_' . $attachment_id );
 			$attachment_delete_url = add_query_arg( array(
@@ -1846,7 +1856,7 @@ function bp_docs_attachment_icon() {
 		return;
 	}
 
-	$pc = plugins_url( 'buddypress-docs/includes/images/paperclip.png' );
+	$pc = plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/images/paperclip.png' );
 
 	$html = '<a class="bp-docs-attachment-clip" id="bp-docs-attachment-clip-' . get_the_ID() . '"><img src="' . $pc . '" height="25"></a>';
 
