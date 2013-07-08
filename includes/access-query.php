@@ -30,7 +30,7 @@ class BP_Docs_Access_Query {
 		// Note that we're not verifying that the user actually exists
 		// For now this kind of check is up to whoever's instantiating
 		if ( $this->user_id != 0 ) {
-			$levels[] = bp_docs_get_access_term_loggedin();
+			$this->levels[] = bp_docs_get_access_term_loggedin();
 			
 			if ( bp_is_active('groups') ) {
 
