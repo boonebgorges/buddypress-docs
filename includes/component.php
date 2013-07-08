@@ -154,7 +154,7 @@ class BP_Docs_Component extends BP_Component {
 			'root_slug'             => isset( $bp->pages->{$this->id}->slug ) ? $bp->pages->{$this->id}->slug : BP_DOCS_SLUG,
 			'has_directory'         => false, // Set to false if not required
 			'notification_callback' => 'bp_docs_format_notifications',
-			'search_string'         => __( 'Search Docs...', 'buddypress' ),
+			'search_string'         => __( 'Search Docs...', 'bp-docs' ),
 		);
 
 		// Let BP_Component::setup_globals() do its work.
@@ -187,7 +187,7 @@ class BP_Docs_Component extends BP_Component {
 
 		if ( is_user_logged_in() ) {
 
-			$title = __( 'Docs', 'buddypress' );
+			$title = __( 'Docs', 'bp-docs' );
 
 			// Add the "My Account" sub menus
 			$wp_admin_nav[] = array(
@@ -291,9 +291,10 @@ class BP_Docs_Component extends BP_Component {
 	 * @todo Make the 'Docs' label customizable by the admin
 	 */
 	function setup_nav() {
+		$bp_docs_user_profile_tab_name = get_option( 'bp-docs-user-profile-tab-name' );
 
 		$main_nav = array(
-			'name' 		      => __( 'Docs', 'bp-docs' ),
+			'name' 		      => !empty( $bp_docs_user_profile_tab_name ) ? esc_html( $bp_docs_user_profile_tab_name ) : __( 'Docs', 'bp-docs' ),
 
 			// Disabled count for now. See https://github.com/boonebgorges/buddypress-docs/issues/261
 			//'name' 		      => sprintf( __( 'Docs <span>%d</span>', 'bp-docs' ), bp_docs_get_doc_count( bp_displayed_user_id(), 'user' ) ),

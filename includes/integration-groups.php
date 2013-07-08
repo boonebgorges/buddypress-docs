@@ -814,16 +814,43 @@ class BP_Docs_Groups_Integration {
 	}
 
 	public function group_tab_name_setting_markup() {
-		$bp_docs_tab_name = bp_get_option( 'bp-docs-tab-name' );
+		//Try to retrieve newer option first?
+		$bp_docs_group_tab_name = bp_get_option( 'bp-docs-group-tab-name' );
 
-		if ( empty( $bp_docs_tab_name ) )
-			$bp_docs_tab_name = __( 'Docs', 'bp-docs' );
+		if ( empty( $bp_docs_group_tab_name ) ) 
+			$bp_docs_group_tab_name = bp_get_option( 'bp-docs-tab-name' );
+
+		if ( empty( $bp_docs_group_tab_name ) )
+			$bp_docs_group_tab_name = __( 'Docs', 'bp-docs' );
 
 		?>
-		<input name="bp-admin[bp-docs-tab-name]" id="bp-docs-tab-name" type="text" value="<?php echo esc_html( $bp_docs_tab_name ) ?>" />
+		<input name="bp-docs-group-tab-name" id="bp-docs-group-tab-name" type="text" value="<?php echo esc_html( $bp_docs_group_tab_name ); ?>" />
 		<p class="description"><?php _e( "Change the word on the BuddyPress group tab from 'Docs' to whatever you'd like. Keep in mind that this will not change the text anywhere else on the page. For a more thorough text change, create a <a href='http://codex.buddypress.org/extending-buddypress/customizing-labels-messages-and-urls/'>language file</a> for BuddyPress Docs.", 'bp-docs' ) ?></p>
 
-		<p class="description"><?php _e( "To change the URL slug for Docs, put <code>define( 'BP_DOCS_SLUG', 'collaborations' );</code> in your wp-config.php file, replacing 'collaborations' with your custom slug.", 'bp-docs' ) ?></p>
+		<!-- <p class="description"><?php _e( "To change the URL slug for Docs, put <code>define( 'BP_DOCS_SLUG', 'collaborations' );</code> in your wp-config.php file, replacing 'collaborations' with your custom slug.", 'bp-docs' ) ?></p> -->
+		<?php
+	}
+	
+	public function user_profile_tab_name_setting_markup() {
+		$bp_docs_user_profile_tab_name = get_option( 'bp-docs-user-profile-tab-name' );
+
+		if ( empty( $bp_docs_user_profile_tab_name ) )
+			$bp_docs_user_profile_tab_name = __( 'Docs', 'bp-docs' );
+		?>
+		<input name="bp-docs-user-profile-tab-name" id="bp-docs-user-profile-tab-name" type="text" value="<?php echo esc_html( $bp_docs_user_profile_tab_name ); ?>" />
+		<p class="description"><?php _e( "Change the label on the BuddyPress user profile tab from 'Docs' to whatever you'd like. Keep in mind that this will not change the text anywhere else on the page.", 'bp-docs' ) ?></p>
+		<?php
+	}
+
+	public function bp_docs_slug_setting_markup() {
+		$bp_docs_slug = get_option( 'bp-docs-slug' );
+
+		if ( empty( $bp_docs_slug ) )
+			$bp_docs_slug = __( 'docs', 'bp-docs' );
+		?>
+		<input name="bp-docs-slug" id="bp-docs-slug" type="text" value="<?php echo esc_html( $bp_docs_slug ); ?>" />
+		<p class="description"><?php _e( "Change the URL slug for Docs. You'll avoid disappointment by sticking to lowercase letters and avoiding symbols (/?&.;) and spaces.", 'bp-docs' ) ?></p>
+		<p class="description"><?php _e( "If you've previously set the slug by defining <code>BP_DOCS_SLUG</code> in your wp-config.php file, you'll need to remove that code for this setting to take effect.", 'bp-docs' ) ?></p>
 		<?php
 	}
 
@@ -831,9 +858,16 @@ class BP_Docs_Groups_Integration {
 		// Add the main section
 		add_settings_section( 'bp_docs', __( 'BuddyPress Docs Settings', 'bp-docs' ), 'bp_admin_setting_callback_xprofile_section', 'buddypress' );
 
-		// Allow avatar uploads
+		// Allow users to change the label on the Docs tab within the GROUP context
+		// This setting isn't used anywhere? bp-docs-tab-name is, though
 		add_settings_field( 'bp-docs-group-tab-name', __( 'Group Tab Name', 'bp-docs' ), array( $this, 'group_tab_name_setting_markup' ), 'buddypress', 'bp_docs' );
-		register_setting( 'buddypress', 'bp-docs-group-tab-name', array( $this, 'admin_setting_callback' ) );
+		register_setting( 'buddypress', 'bp-docs-group-tab-name', array( $this, 'bp_docs_sanitize_option' ) );
+		// Allow users to change the label on the Docs tab within the USER PROFILE
+		add_settings_field( 'bp-docs-user-profile-tab-name', __( 'User Profile Tab Name', 'bp-docs' ), array( $this, 'user_profile_tab_name_setting_markup' ), 'buddypress', 'bp_docs' );
+		register_setting( 'buddypress', 'bp-docs-user-profile-tab-name', array( $this, 'bp_docs_sanitize_option' ) );
+		// Allow users to change the slug that BP Docs uses.
+		add_settings_field( 'bp-docs-slug', __( 'BuddyPress Docs Slug', 'bp-docs' ), array( $this, 'bp_docs_slug_setting_markup' ), 'buddypress', 'bp_docs' );
+		register_setting( 'buddypress', 'bp-docs-slug', 'rawurlencode' );
 	}
 
 	/**
@@ -843,6 +877,10 @@ class BP_Docs_Groups_Integration {
 		if ( isset( $_POST['bp-admin']['bp-docs-tab-name'] ) ) {
 			bp_update_option( 'bp-docs-tab-name', $_POST['bp-admin']['bp-docs-tab-name'] );
 		}
+	}
+	public function bp_docs_sanitize_option($value) {
+		$value = sanitize_text_field($value);
+		return $value;
 	}
 }
 
@@ -874,7 +912,14 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	function bp_docs_group_extension() {
 		global $bp;
 
-		$bp_docs_tab_name = get_option( 'bp-docs-tab-name' );
+		//Try to retrieve newer tab name option first
+		$bp_docs_group_tab_name = bp_get_option( 'bp-docs-group-tab-name' );
+
+		if ( empty( $bp_docs_group_tab_name ) ) 
+			$bp_docs_group_tab_name = bp_get_option( 'bp-docs-tab-name' );
+
+		if ( empty( $bp_docs_group_tab_name ) )
+			$bp_docs_group_tab_name = __( 'Docs', 'bp-docs' );
 
 		if ( !empty( $bp->groups->current_group->id ) )
 			$this->maybe_group_id	= $bp->groups->current_group->id;
@@ -887,7 +932,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 		$this->settings			= groups_get_groupmeta( $this->maybe_group_id, 'bp-docs' );
 		$this->group_enable		= !empty( $this->settings['group-enable'] ) ? true : false;
 
-		$this->name 			= !empty( $bp_docs_tab_name ) ? $bp_docs_tab_name : __( 'Docs', 'bp-docs' );
+		$this->name 			= esc_html( $bp_docs_group_tab_name );
 
 		$this->slug 			= BP_DOCS_SLUG;
 
@@ -1013,9 +1058,9 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 
 		/* To post an error/success message to the screen, use the following */
 		if ( !$success )
-			bp_core_add_message( __( 'There was an error saving, please try again', 'buddypress' ), 'error' );
+			bp_core_add_message( __( 'There was an error saving, please try again', 'bp-docs' ), 'error' );
 		else
-			bp_core_add_message( __( 'Settings saved successfully', 'buddypress' ) );
+			bp_core_add_message( __( 'Settings saved successfully', 'bp-docs' ) );
 
 		bp_core_redirect( bp_get_group_permalink( $bp->groups->current_group ) . 'admin/' . $this->slug );
 	}
