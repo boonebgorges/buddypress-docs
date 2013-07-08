@@ -827,7 +827,7 @@ class BP_Docs_Groups_Integration {
 		<input name="bp-docs-group-tab-name" id="bp-docs-group-tab-name" type="text" value="<?php echo esc_html( $bp_docs_group_tab_name ); ?>" />
 		<p class="description"><?php _e( "Change the word on the BuddyPress group tab from 'Docs' to whatever you'd like. Keep in mind that this will not change the text anywhere else on the page. For a more thorough text change, create a <a href='http://codex.buddypress.org/extending-buddypress/customizing-labels-messages-and-urls/'>language file</a> for BuddyPress Docs.", 'bp-docs' ) ?></p>
 
-		<p class="description"><?php _e( "To change the URL slug for Docs, put <code>define( 'BP_DOCS_SLUG', 'collaborations' );</code> in your wp-config.php file, replacing 'collaborations' with your custom slug.", 'bp-docs' ) ?></p>
+		<!-- <p class="description"><?php _e( "To change the URL slug for Docs, put <code>define( 'BP_DOCS_SLUG', 'collaborations' );</code> in your wp-config.php file, replacing 'collaborations' with your custom slug.", 'bp-docs' ) ?></p> -->
 		<?php
 	}
 	
@@ -842,6 +842,18 @@ class BP_Docs_Groups_Integration {
 		<?php
 	}
 
+	public function bp_docs_slug_setting_markup() {
+		$bp_docs_slug = get_option( 'bp-docs-slug' );
+
+		if ( empty( $bp_docs_slug ) )
+			$bp_docs_slug = __( 'docs', 'bp-docs' );
+		?>
+		<input name="bp-docs-slug" id="bp-docs-slug" type="text" value="<?php echo esc_html( $bp_docs_slug ); ?>" />
+		<p class="description"><?php _e( "Change the URL slug for Docs. You'll avoid disappointment by sticking to lowercase letters and avoiding symbols (/?&.;) and spaces.", 'bp-docs' ) ?></p>
+		<p class="description"><?php _e( "If you've previously set the slug by defining <code>BP_DOCS_SLUG</code> in your wp-config.php file, you'll need to remove that code for this setting to take effect.", 'bp-docs' ) ?></p>
+		<?php
+	}
+
 	public function register_admin_settings() {
 		// Add the main section
 		add_settings_section( 'bp_docs', __( 'BuddyPress Docs Settings', 'bp-docs' ), 'bp_admin_setting_callback_xprofile_section', 'buddypress' );
@@ -853,6 +865,9 @@ class BP_Docs_Groups_Integration {
 		// Allow users to change the label on the Docs tab within the USER PROFILE
 		add_settings_field( 'bp-docs-user-profile-tab-name', __( 'User Profile Tab Name', 'bp-docs' ), array( $this, 'user_profile_tab_name_setting_markup' ), 'buddypress', 'bp_docs' );
 		register_setting( 'buddypress', 'bp-docs-user-profile-tab-name', array( $this, 'bp_docs_sanitize_option' ) );
+		// Allow users to change the slug that BP Docs uses.
+		add_settings_field( 'bp-docs-slug', __( 'BuddyPress Docs Slug', 'bp-docs' ), array( $this, 'bp_docs_slug_setting_markup' ), 'buddypress', 'bp_docs' );
+		register_setting( 'buddypress', 'bp-docs-slug', 'rawurlencode' );
 	}
 
 	/**
