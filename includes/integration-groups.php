@@ -849,10 +849,10 @@ class BP_Docs_Groups_Integration {
 		// Allow users to change the label on the Docs tab within the GROUP context
 		// This setting isn't used anywhere? bp-docs-tab-name is, though
 		add_settings_field( 'bp-docs-group-tab-name', __( 'Group Tab Name', 'bp-docs' ), array( $this, 'group_tab_name_setting_markup' ), 'buddypress', 'bp_docs' );
-		register_setting( 'buddypress', 'bp-docs-group-tab-name', 'sanitize_text_field' );
+		register_setting( 'buddypress', 'bp-docs-group-tab-name', array( $this, 'bp_docs_sanitize_option' ) );
 		// Allow users to change the label on the Docs tab within the USER PROFILE
 		add_settings_field( 'bp-docs-user-profile-tab-name', __( 'User Profile Tab Name', 'bp-docs' ), array( $this, 'user_profile_tab_name_setting_markup' ), 'buddypress', 'bp_docs' );
-		register_setting( 'buddypress', 'bp-docs-user-profile-tab-name', 'sanitize_text_field' );
+		register_setting( 'buddypress', 'bp-docs-user-profile-tab-name', array( $this, 'bp_docs_sanitize_option' ) );
 	}
 
 	/**
@@ -862,6 +862,10 @@ class BP_Docs_Groups_Integration {
 		if ( isset( $_POST['bp-admin']['bp-docs-tab-name'] ) ) {
 			bp_update_option( 'bp-docs-tab-name', $_POST['bp-admin']['bp-docs-tab-name'] );
 		}
+	}
+	public function bp_docs_sanitize_option($value) {
+		$value = sanitize_text_field($value);
+		return $value;
 	}
 }
 
