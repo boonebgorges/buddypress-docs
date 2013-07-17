@@ -35,6 +35,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 = 1.4.5 =
 * Fixes bug in access filter for "logged-in users" setting
+* Removes stripslashes() on post content, which was causing problems with LaTeX plugins
 
 = 1.4.4 =
 * Fixes recursion problem that caused fatal errors when filtering by has-attachment on some setups
