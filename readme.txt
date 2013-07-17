@@ -4,7 +4,7 @@ Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.3, BuddyPress 1.5
 Tested up to: WordPress 3.5.1, BuddyPress 1.8
-Stable tag: 1.4.4
+Stable tag: 1.4.5
  
 Adds collaborative Docs to BuddyPress.
 
@@ -32,6 +32,10 @@ This plugin is in active development. For feature requests and bug reports, visi
 1. Sit back and watch the jack roll in
 
 == Changelog ==
+
+= 1.4.5 =
+* Fixes bug in access filter for "logged-in users" setting
+* Removes stripslashes() on post content, which was causing problems with LaTeX plugins
 
 = 1.4.4 =
 * Fixes recursion problem that caused fatal errors when filtering by has-attachment on some setups

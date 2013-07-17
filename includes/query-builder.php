@@ -437,7 +437,7 @@ class BP_Docs_Query {
 				'post_type'    => $this->post_type_name,
 				'post_title'   => $_POST['doc']['title'],
 				'post_name'    => isset( $_POST['doc']['permalink'] ) ? sanitize_title( $_POST['doc']['permalink'] ) : sanitize_title( $_POST['doc']['title'] ),
-				'post_content' => stripslashes( sanitize_post_field( 'post_content', $doc_content, 0, 'db' ) ),
+				'post_content' => sanitize_post_field( 'post_content', $doc_content, 0, 'db' ),
 				'post_status'  => 'publish'
 			);
 
