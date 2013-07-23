@@ -33,6 +33,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.4.6 =
+* Improved compatibility with PHP 5.4+
+
 = 1.4.5 =
 * Fixes bug in access filter for "logged-in users" setting
 * Removes stripslashes() on post content, which was causing problems with LaTeX plugins
