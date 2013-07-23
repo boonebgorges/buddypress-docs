@@ -949,7 +949,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
-	function create_screen() {
+	function create_screen( $group_id = null ) {
 		if ( !bp_is_group_creation_step( $this->slug ) )
 			return false;
 
@@ -965,7 +965,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	 * @since 1.0-beta
 	 */
 
-	function create_screen_save() {
+	function create_screen_save( $group_id = null ) {
 		global $bp;
 
 		check_admin_referer( 'groups_create_save_' . $this->slug );
@@ -979,7 +979,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
-	function edit_screen() {
+	function edit_screen( $group_id = null ) {
 		if ( !bp_is_group_admin_screen( $this->slug ) )
 			return false;
 
@@ -1001,7 +1001,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
-	function edit_screen_save() {
+	function edit_screen_save( $group_id = null ) {
 		global $bp;
 
 		if ( !isset( $_POST['save'] ) )

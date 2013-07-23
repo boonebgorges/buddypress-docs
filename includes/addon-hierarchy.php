@@ -12,16 +12,6 @@ class BP_Docs_Hierarchy {
 	var $children;
 
 	/**
-	 * PHP 4 constructor
-	 *
-	 * @package BuddyPress Docs
-	 * @since 1.0-beta
-	 */
-	function bp_docs_hierarchy() {
-		$this->__construct();
-	}
-
-	/**
 	 * PHP 5 constructor
 	 *
 	 * @package BuddyPress Docs
@@ -39,6 +29,16 @@ class BP_Docs_Hierarchy {
 
 		// Display a doc's children on its single doc page
 		add_action( 'bp_docs_single_doc_meta', array( $this, 'show_children' ) );
+	}
+
+	/**
+	 * PHP 4 constructor
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0-beta
+	 */
+	function bp_docs_hierarchy() {
+		$this->__construct();
 	}
 
 	/**
