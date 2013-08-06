@@ -186,8 +186,16 @@ class BP_Docs {
 			define( 'BP_DOCS_INCLUDES_PATH_ABS', str_replace( ABSPATH, '', BP_DOCS_INCLUDES_PATH ) );
 
 		// The main slug
-		if ( !defined( 'BP_DOCS_SLUG' ) )
-			define( 'BP_DOCS_SLUG', 'docs' );
+		if ( !defined( 'BP_DOCS_SLUG' ) ) {
+			//Setting this slug in wp-config trumps all
+			//If not defined, use the user-specified slug if it exists.
+			$bp_docs_slug = get_option( 'bp-docs-slug' );
+			if ( !empty( $bp_docs_slug ) ) {
+				define( 'BP_DOCS_SLUG', esc_html($bp_docs_slug) );
+			} else {
+				define( 'BP_DOCS_SLUG', 'docs' );
+			}
+		}
 
 		// The slug used when viewing a doc category
 		if ( !defined( 'BP_DOCS_CATEGORY_SLUG' ) )
