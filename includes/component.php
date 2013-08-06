@@ -145,7 +145,7 @@ class BP_Docs_Component extends BP_Component {
 	 * @see BP_Docs_Component::enqueue_scripts()
 	 * @see BP_Docs_Component::enqueue_styles()
 	 */
-	function setup_globals() {
+	function setup_globals( $args = array() ) {
 		global $bp_docs;
 
 		// Set up the $globals array to be passed along to parent::setup_globals()
@@ -180,7 +180,7 @@ class BP_Docs_Component extends BP_Component {
 	 *
 	 * @since 1.3
 	 */
-	public function setup_admin_bar() {
+	public function setup_admin_bar( $wp_admin_nav = array() ) {
 		global $bp;
 
 		$wp_admin_nav = array();
@@ -290,7 +290,7 @@ class BP_Docs_Component extends BP_Component {
 	 * @since 1.2
 	 * @todo Make the 'Docs' label customizable by the admin
 	 */
-	function setup_nav() {
+	function setup_nav( $main_nav = array(), $sub_nav = array() ) {
 
 		$main_nav = array(
 			'name' 		      => __( 'Docs', 'bp-docs' ),

@@ -6,7 +6,7 @@ class BP_Docs_Access_Query {
 	protected $user_groups = array();
 	protected $levels = array();
 
-	public function init( $user_id = 0 ) {
+	public static function init( $user_id = 0 ) {
 		static $instance;
 
 		if ( empty( $instance ) ) {
@@ -30,18 +30,18 @@ class BP_Docs_Access_Query {
 		// Note that we're not verifying that the user actually exists
 		// For now this kind of check is up to whoever's instantiating
 		if ( $this->user_id != 0 ) {
-			$levels[] = bp_docs_get_access_term_loggedin();
-			
+			$this->levels[] = bp_docs_get_access_term_loggedin();
+
 			if ( bp_is_active('groups') ) {
 
 				$this->set_up_user_groups();
-				
+
 				if ( isset($this->user_groups['groups']) ) {
 					foreach ( $this->user_groups['groups'] as $member_group ) {
 						$this->levels[] = bp_docs_get_access_term_group_member( $member_group );
 					}
 				}
-				
+
 				// admins-mods
 				if ( isset($this->user_groups['admin_mod_of']) ) {
 					foreach ( $this->user_groups['admin_mod_of'] as $adminmod_group ) {

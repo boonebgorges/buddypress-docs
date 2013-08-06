@@ -5,16 +5,6 @@ class BP_Docs {
 	var $associated_item_tax_name;
 
 	/**
-	 * PHP 4 constructor
-	 *
-	 * @package BuddyPress Docs
-	 * @since 1.0-beta
-	 */
-	function bp_docs() {
-		$this->__construct();
-	}
-
-	/**
 	 * PHP 5 constructor
 	 *
 	 * @package BuddyPress Docs
@@ -62,6 +52,16 @@ class BP_Docs {
 		add_action( 'template_redirect', array( $this, 'protect_doc_access' ) );
 
 		add_action( 'admin_init', array( $this, 'flush_rewrite_rules' ) );
+	}
+
+	/**
+	 * PHP 4 constructor
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0-beta
+	 */
+	function bp_docs() {
+		$this->__construct();
 	}
 
 	/**
@@ -341,7 +341,7 @@ class BP_Docs {
 		// Don't load the History component if post revisions are disabled
 		if ( defined( 'WP_POST_REVISIONS' ) && WP_POST_REVISIONS ) {
 			require_once( BP_DOCS_INCLUDES_PATH . 'addon-history.php' );
-			$this->history =& new BP_Docs_History;
+			$this->history = new BP_Docs_History;
 		}
 
 		// Load the wikitext addon
