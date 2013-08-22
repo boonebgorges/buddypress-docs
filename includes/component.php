@@ -846,7 +846,7 @@ class BP_Docs_Component extends BP_Component {
 
 		do_action( 'bp_docs_before_activity_save', $args );
 
-		$activity_id = bp_activity_add( apply_filters( 'bp_docs_activity_args', $args ) );
+		$activity_id = bp_activity_add( apply_filters( 'bp_docs_activity_args', $args, $query ) );
 
 		do_action( 'bp_docs_after_activity_save', $activity_id, $args );
 
