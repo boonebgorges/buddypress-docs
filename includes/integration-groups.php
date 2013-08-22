@@ -497,8 +497,10 @@ class BP_Docs_Groups_Integration {
 	 * @return str $action The filtered action text
 	 */
 	function activity_action( $action, $user_link, $doc_link, $is_new_doc, $query ) {
-		if ( $query->item_type == 'group' ) {
-			$group 		= groups_get_group( array( 'group_id' => $query->item_id ) );
+		$group_id = ! empty( $_POST['associated_group_id'] ) ? intval( $_POST['associated_group_id'] ) : 0;
+
+		if ( ! empty( $group_id ) ) {
+			$group 		= groups_get_group( array( 'group_id' => $group_id ) );
 			$group_url	= bp_get_group_permalink( $group );
 			$group_link	= '<a href="' . $group_url . '">' . $group->name . '</a>';
 
