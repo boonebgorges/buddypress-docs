@@ -36,6 +36,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 = 1.4.6 =
 * Improved compatibility with PHP 5.4+
 * Fix bug that prevented the activity action from being modified for the associated group
+* Fix bug that prevented activity from appearing in group activity streams
 
 = 1.4.5 =
 * Fixes bug in access filter for "logged-in users" setting
