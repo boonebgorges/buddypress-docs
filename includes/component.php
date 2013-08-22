@@ -763,10 +763,12 @@ class BP_Docs_Component extends BP_Component {
 		if ( !$doc_id )
 			return false;
 
-		$last_editor	= get_post_meta( $doc_id, 'bp_docs_last_editor', true );
+		$last_editor = get_post_meta( $doc_id, 'bp_docs_last_editor', true );
+
+		$activity_id = false;
 
 		// Throttle 'doc edited' posts. By default, one per user per hour
-		if ( !$query->is_new_doc ) {
+		if ( ! $query->is_new_doc ) {
 			// Look for an existing activity item corresponding to this user editing
 			// this doc
 			$already_args = array(
@@ -786,6 +788,9 @@ class BP_Docs_Component extends BP_Component {
 			// see if it's within the allotted throttle time. If so, don't record the
 			// activity item
 			if ( !empty( $already_activity['activities'] ) ) {
+				// record existing activity ID for later
+				$activity_id    = $already_activity['activities'][0]->id;
+
 				$date_recorded 	= $already_activity['activities'][0]->date_recorded;
 				$drunix 	= strtotime( $date_recorded );
 				if ( time() - $drunix <= apply_filters( 'bp_docs_edit_activity_throttle_time', 60*60 ) )
@@ -827,6 +832,7 @@ class BP_Docs_Component extends BP_Component {
 		$type = $query->is_new_doc ? 'bp_doc_created' : 'bp_doc_edited';
 
 		$args = array(
+			'id'                    => $activity_id,
 			'user_id'		=> $last_editor,
 			'action'		=> $action,
 			'primary_link'		=> $doc_url,
@@ -840,7 +846,7 @@ class BP_Docs_Component extends BP_Component {
 
 		do_action( 'bp_docs_before_activity_save', $args );
 
-		$activity_id = bp_activity_add( apply_filters( 'bp_docs_activity_args', $args ) );
+		$activity_id = bp_activity_add( apply_filters( 'bp_docs_activity_args', $args, $query ) );
 
 		do_action( 'bp_docs_after_activity_save', $activity_id, $args );
 
