@@ -72,6 +72,10 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 * Improved compatibility with PHP 5.4+
 
+* Fix bug that prevented the activity action from being modified for the associated group
+
+* Fix bug that prevented activity from appearing in group activity streams
+
 
 
 = 1.4.5 =
@@ -669,5 +673,3 @@ This plugin is in active development. For feature requests and bug reports, visi
 = 1.2 =
 
 * Major plugin rewrite. See http://dev.commons.gc.cuny.edu/2012/11/15/buddypress-docs-1-2/ for more details.
-
->>>>>>> upstream/1.4.x

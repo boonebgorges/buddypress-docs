@@ -53,6 +53,7 @@ class BP_Docs_Groups_Integration {
 
 		// Filter the activity actions for group docs-related activity
 		add_filter( 'bp_docs_activity_action',		array( $this, 'activity_action' ), 10, 5 );
+		add_filter( 'bp_docs_activity_args',            array( $this, 'activity_args' ), 10, 2 );
 		add_filter( 'bp_docs_comment_activity_action',	array( $this, 'comment_activity_action' ), 10, 5 );
 
 		// Filter the activity hide_sitewide parameter to respect group privacy levels
@@ -497,8 +498,11 @@ class BP_Docs_Groups_Integration {
 	 * @return str $action The filtered action text
 	 */
 	function activity_action( $action, $user_link, $doc_link, $is_new_doc, $query ) {
-		if ( $query->item_type == 'group' ) {
-			$group 		= groups_get_group( array( 'group_id' => $query->item_id ) );
+		$doc_id = isset( $query->doc_id ) ? (int) $query->doc_id : 0;
+		$group_id = bp_docs_get_associated_group_id( $doc_id );
+
+		if ( $group_id ) {
+			$group 		= groups_get_group( array( 'group_id' => $group_id ) );
 			$group_url	= bp_get_group_permalink( $group );
 			$group_link	= '<a href="' . $group_url . '">' . $group->name . '</a>';
 
@@ -512,6 +516,29 @@ class BP_Docs_Groups_Integration {
 		return $action;
 	}
 
+	/**
+	 * Modify activity arguments before saving so newly-created group docs are
+	 * added into the group activity stream.
+	 *
+	 * @since 1.4.6
+	 *
+	 * @param array $args Activity arguments
+	 * @param obj $query The BP Docs query object
+	 * @return array
+	 */
+	public function activity_args( $args, $query ) {
+		global $bp;
+
+		$doc_id = isset( $query->doc_id ) ? (int) $query->doc_id : 0;
+		$group_id = bp_docs_get_associated_group_id( $doc_id );
+
+		if ( ! empty( $group_id ) ) {
+			$args['component'] = $bp->groups->id;
+			$args['item_id'] = $group_id;
+		}
+
+		return $args;
+	}
 
 	/**
 	 * Filters the activity action of 'new doc comment' activity to include the group name
