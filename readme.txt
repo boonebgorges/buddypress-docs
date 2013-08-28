@@ -76,6 +76,8 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 * Fix bug that prevented activity from appearing in group activity streams
 
+* Fix bug that prevented attachment uploads on group Doc creation pages
+
 
 
 = 1.4.5 =

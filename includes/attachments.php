@@ -570,8 +570,16 @@ class BP_Docs_Attachments {
 		$is_ajax = isset( $_SERVER['REQUEST_METHOD'] ) && 'POST' === $_SERVER['REQUEST_METHOD'] && 'async-upload.php' === substr( $_SERVER['REQUEST_URI'], strrpos( $_SERVER['REQUEST_URI'], '/' ) + 1 );
 
 		if ( $is_ajax ) {
+			// Clean up referer
+			$referer = $_SERVER['HTTP_REFERER'];
+			$qp = strpos( $referer, '?' );
+			if ( false !== $qp ) {
+				$referer = substr( $referer, 0, $qp );
+			}
+			$referer = trailingslashit( $referer );
+
 			// Existing Doc
-			$item_id = self::get_doc_id_from_url( $_SERVER['HTTP_REFERER'] );
+			$item_id = self::get_doc_id_from_url( $referer );
 			if ( $item_id ) {
 				$item = get_post( $item_id );
 				$is_doc = bp_docs_get_post_type_name() === $item->post_type;
@@ -579,7 +587,7 @@ class BP_Docs_Attachments {
 
 			// Create Doc
 			if ( ! $is_doc ) {
-				$is_doc = $_SERVER['HTTP_REFERER'] === bp_docs_get_create_link();
+				$is_doc = $referer === bp_docs_get_create_link();
 			}
 		} else {
 			$is_doc = bp_docs_is_existing_doc() || bp_docs_is_doc_create();
