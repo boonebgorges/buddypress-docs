@@ -427,12 +427,11 @@ class BP_Docs_Query {
 			}
 		}
 
-		if ( empty( $_POST['doc']['title'] ) || empty( $doc_content ) ) {
-			// Both the title and the content fields are required
-			$result['message'] = __( 'Both the title and the content fields are required.', 'bp-docs' );
-			$result['redirect'] = $this->current_view;
+		if ( empty( $_POST['doc']['title'] ) ) {
+			// The title field is required
+			$result['message'] = __( 'The title field is required.', 'bp-docs' );
+			$result['redirect'] = ! empty( $this->doc_slug ) ? 'edit' : 'create';
 		} else {
-			// If both the title and content fields are filled in, we can proceed
 			$defaults = array(
 				'post_type'    => $this->post_type_name,
 				'post_title'   => $_POST['doc']['title'],
