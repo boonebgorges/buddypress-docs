@@ -427,12 +427,18 @@ class BP_Docs_Query {
 			}
 		}
 
-		if ( empty( $_POST['doc']['title'] ) || empty( $doc_content ) ) {
-			// Both the title and the content fields are required
-			$result['message'] = __( 'Both the title and the content fields are required.', 'bp-docs' );
-			$result['redirect'] = $this->current_view;
+		if ( empty( $_POST['doc']['title'] ) ) {
+			// The title field is required
+			$result['message'] = __( 'The title field is required.', 'bp-docs' );
+			//Redirect user to correct form, "edit" or "create." ($this->current_view was used to do this, but appears to be undefined.) It looks like edited docs have a doc_slug, while new docs do not. 
+			//The user loses his most recent work in either case! Maybe need to repopulate form with $_POST data, if it exists?
+			if ( !empty( $this->doc_slug ) ) {
+				$result['redirect'] = 'edit';
+			} else {
+				$result['redirect'] = 'create';
+			}
 		} else {
-			// If both the title and content fields are filled in, we can proceed
+			// If the title is filled in, we can proceed
 			$defaults = array(
 				'post_type'    => $this->post_type_name,
 				'post_title'   => $_POST['doc']['title'],
