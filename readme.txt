@@ -38,6 +38,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Fix bug that prevented the activity action from being modified for the associated group
 * Fix bug that prevented activity from appearing in group activity streams
 * Fix bug that prevented attachment uploads on group Doc creation pages
+* Fix some textdomain errors
 
 = 1.4.5 =
 * Fixes bug in access filter for "logged-in users" setting
