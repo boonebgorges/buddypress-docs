@@ -150,8 +150,8 @@ class BP_Docs_Component extends BP_Component {
 
 		// Set up the $globals array to be passed along to parent::setup_globals()
 		$globals = array(
-			'slug'                  => BP_DOCS_SLUG,
-			'root_slug'             => isset( $bp->pages->{$this->id}->slug ) ? $bp->pages->{$this->id}->slug : BP_DOCS_SLUG,
+			'slug'                  => bp_docs_get_docs_slug(),
+			'root_slug'             => isset( $bp->pages->{$this->id}->slug ) ? $bp->pages->{$this->id}->slug : bp_docs_get_docs_slug(),
 			'has_directory'         => false, // Set to false if not required
 			'notification_callback' => 'bp_docs_format_notifications',
 			'search_string'         => __( 'Search Docs...', 'buddypress' ),
@@ -297,13 +297,13 @@ class BP_Docs_Component extends BP_Component {
 
 			// Disabled count for now. See https://github.com/boonebgorges/buddypress-docs/issues/261
 			//'name' 		      => sprintf( __( 'Docs <span>%d</span>', 'bp-docs' ), bp_docs_get_doc_count( bp_displayed_user_id(), 'user' ) ),
-			'slug' 		      => bp_docs_get_slug(),
+			'slug' 		      => bp_docs_get_docs_slug(),
 			'position' 	      => 80,
 			'screen_function'     => array( &$this, 'template_loader' ),
 			'default_subnav_slug' => BP_DOCS_STARTED_SLUG
 		);
 
-		$parent_url = trailingslashit( bp_displayed_user_domain() . bp_docs_get_slug() );
+		$parent_url = trailingslashit( bp_displayed_user_domain() . bp_docs_get_docs_slug() );
 
 		$mydocs_label = bp_is_my_profile() ? __( 'My Docs ', 'bp-docs' ) : sprintf( __( '%s&#8217;s Docs' ), bp_get_user_firstname( bp_get_displayed_user_fullname() ) );
 
@@ -311,7 +311,7 @@ class BP_Docs_Component extends BP_Component {
 			'name'            => bp_is_my_profile() ? __( 'Started By Me', 'bp-docs' ) : sprintf( __( 'Started By %s', 'bp-docs' ), bp_get_user_firstname() ),
 			'slug'            => BP_DOCS_STARTED_SLUG,
 			'parent_url'      => $parent_url,
-			'parent_slug'     => bp_docs_get_slug(),
+			'parent_slug'     => bp_docs_get_docs_slug(),
 			'screen_function' => array( &$this, 'template_loader' ),
 			'position'        => 10
 		);
@@ -320,7 +320,7 @@ class BP_Docs_Component extends BP_Component {
 			'name'            => bp_is_my_profile() ? __( 'Edited By Me', 'bp-docs' ) : sprintf( __( 'Edited By %s', 'bp-docs' ), bp_get_user_firstname() ),
 			'slug'            => BP_DOCS_EDITED_SLUG,
 			'parent_url'      => $parent_url,
-			'parent_slug'     => bp_docs_get_slug(),
+			'parent_slug'     => bp_docs_get_docs_slug(),
 			'screen_function' => array( &$this, 'template_loader' ),
 			'position'        => 20,
 		);
@@ -508,7 +508,7 @@ class BP_Docs_Component extends BP_Component {
 				bp_core_add_message( __( 'You do not have permission to delete that doc.', 'bp-docs' ), 'error' );
 			}
 
-			bp_core_redirect( home_url( bp_docs_get_slug() ) );
+			bp_core_redirect( home_url( bp_docs_get_docs_slug() ) );
 		}
 	}
 
@@ -618,7 +618,7 @@ class BP_Docs_Component extends BP_Component {
 			$component = 'groups';
 			$item = $group_id;
 		} else {
-			$component = bp_docs_get_slug();
+			$component = bp_docs_get_docs_slug();
 			$item = 0;
 		}
 
@@ -1097,7 +1097,7 @@ class BP_Docs_Component extends BP_Component {
 
 		// Only load our JS on the right sorts of pages. Generous to account for
 		// different item types
-		if ( in_array( BP_DOCS_SLUG, $this->slugstocheck ) || bp_docs_is_single_doc() || bp_docs_is_global_directory() || bp_docs_is_doc_create() ) {
+		if ( in_array( bp_docs_get_docs_slug(), $this->slugstocheck ) || bp_docs_is_single_doc() || bp_docs_is_global_directory() || bp_docs_is_doc_create() ) {
 			wp_enqueue_script( 'bp-docs-js' );
 			wp_enqueue_script( 'comment-reply' );
 			wp_localize_script( 'bp-docs-js', 'bp_docs', array(
@@ -1118,7 +1118,7 @@ class BP_Docs_Component extends BP_Component {
 		global $bp;
 
 		// Load the main CSS only on the proper pages
-		if ( in_array( BP_DOCS_SLUG, $this->slugstocheck ) || bp_docs_is_docs_component() ) {
+		if ( in_array( bp_docs_get_docs_slug(), $this->slugstocheck ) || bp_docs_is_docs_component() ) {
 			wp_enqueue_style( 'bp-docs-css', $this->includes_url . 'css/screen.css' );
 		}
 

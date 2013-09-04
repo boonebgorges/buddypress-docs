@@ -426,7 +426,7 @@ function bp_docs_mydocs_link() {
          * @since 1.2
          */
 	function bp_docs_get_mydocs_link() {
-		return apply_filters( 'bp_docs_get_mydocs_link', trailingslashit( bp_loggedin_user_domain() . bp_docs_get_slug() ) );
+		return apply_filters( 'bp_docs_get_mydocs_link', trailingslashit( bp_loggedin_user_domain() . bp_docs_get_docs_slug() ) );
 	}
 
 /**
@@ -1250,6 +1250,31 @@ function bp_docs_slug() {
 		global $bp;
 		return apply_filters( 'bp_docs_get_slug', $bp->bp_docs->slug );
 	}
+
+function bp_docs_get_docs_slug() {
+	global $bp;
+
+	if ( defined( 'BP_DOCS_SLUG' ) ) {
+		$slug = BP_DOCS_SLUG;
+		$is_in_wp_config = true;
+	} else {
+		$slug = bp_get_option( 'bp-docs-slug' );
+		if ( empty( $slug ) ) {
+			$slug = 'docs';
+		}
+
+		// for backward compatibility
+		define( 'BP_DOCS_SLUG', $slug );
+		$is_in_wp_config = false;
+	}
+
+	// For the settings page
+	if ( ! isset( $bp->bp_docs->docs_slug_defined_in_wp_config ) ) {
+		$bp->bp_docs->docs_slug_defined_in_wp_config = $is_in_wp_config;
+	}
+
+	return apply_filters( 'bp_docs_get_docs_slug', $slug );
+}
 
 /**
  * Outputs the tabs at the top of the Docs view (All Docs, New Doc, etc)

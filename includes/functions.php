@@ -393,7 +393,7 @@ function bp_docs_is_docs_component() {
 		$retval = true;
 	} else if ( isset( $p->post_type ) && bp_docs_get_post_type_name() == $p->post_type ) {
 		$retval = true;
-	} else if ( bp_is_current_component( bp_docs_get_slug() ) ) {
+	} else if ( bp_is_current_component( bp_docs_get_docs_slug() ) ) {
 		// This covers cases where we're looking at the Docs component of a user
 		$retval = true;
 	}

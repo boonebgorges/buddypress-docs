@@ -112,16 +112,16 @@ class BP_Docs_Users_Integration {
 	 */
 	function setup_single_doc_subnav() {
 		global $bp;
-		
+
 		if ( bp_is_user() && !empty( $bp->bp_docs->current_view ) && in_array( $bp->bp_docs->current_view, array( 'single', 'edit', 'history', 'delete' ) ) ) {
 			$doc = bp_docs_get_current_doc();
-			
+
 			if ( !empty( $doc ) ) {
 				bp_core_new_subnav_item( array(
 					'name'            => $doc->post_title,
 					'slug'            => $doc->post_name,
-					'parent_url'      => trailingslashit( bp_loggedin_user_domain() . bp_docs_get_slug() ),
-					'parent_slug'     => bp_docs_get_slug(),
+					'parent_url'      => trailingslashit( bp_loggedin_user_domain() . bp_docs_get_docs_slug() ),
+					'parent_slug'     => bp_docs_get_docs_slug(),
 					'screen_function' => array( $bp->bp_docs, 'template_loader' ),
 					'position'        => 30,
 					'user_has_access' => true // todo

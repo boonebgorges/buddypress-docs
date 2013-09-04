@@ -282,7 +282,7 @@ class BP_Docs {
 			'query_var'    => false,
 			'has_archive'  => true,
 			'rewrite'      => array(
-				'slug'       => bp_docs_get_slug(),
+				'slug'       => bp_docs_get_docs_slug(),
 				'with_front' => false
 			)
 		) );
@@ -376,11 +376,11 @@ class BP_Docs {
 			 */
 
 			// Create
-			BP_DOCS_SLUG . '/' . BP_DOCS_CREATE_SLUG . '/?$' =>
+			bp_docs_get_docs_slug() . '/' . BP_DOCS_CREATE_SLUG . '/?$' =>
 				'index.php?post_type=' . $this->post_type_name . '&name=' . $wp_rewrite->preg_index( 1 ) . '&' . BP_DOCS_CREATE_SLUG . '=1',
 
 			// My Groups
-			BP_DOCS_SLUG . '/' . BP_DOCS_MY_GROUPS_SLUG . '/?$' =>
+			bp_docs_get_docs_slug() . '/' . BP_DOCS_MY_GROUPS_SLUG . '/?$' =>
 				'index.php?post_type=' . $this->post_type_name . '&name=' . $wp_rewrite->preg_index( 1 ) . '&' . BP_DOCS_MY_GROUPS_SLUG . '=1',
 
 			/**
@@ -388,15 +388,15 @@ class BP_Docs {
 			 */
 
 			// Edit
-			BP_DOCS_SLUG . '/([^/]+)/' . BP_DOCS_EDIT_SLUG . '/?$' =>
+			bp_docs_get_docs_slug() . '/([^/]+)/' . BP_DOCS_EDIT_SLUG . '/?$' =>
 				'index.php?post_type=' . $this->post_type_name . '&name=' . $wp_rewrite->preg_index( 1 ) . '&' . BP_DOCS_EDIT_SLUG . '=1',
 
 			// History
-			BP_DOCS_SLUG . '/([^/]+)/' . BP_DOCS_HISTORY_SLUG . '/?$' =>
+			bp_docs_get_docs_slug() . '/([^/]+)/' . BP_DOCS_HISTORY_SLUG . '/?$' =>
 				'index.php?post_type=' . $this->post_type_name . '&name=' . $wp_rewrite->preg_index( 1 ) . '&' . BP_DOCS_HISTORY_SLUG . '=1',
 
 			// Delete
-			BP_DOCS_SLUG . '/([^/]+)/' . BP_DOCS_DELETE_SLUG . '/?$' =>
+			bp_docs_get_docs_slug() . '/([^/]+)/' . BP_DOCS_DELETE_SLUG . '/?$' =>
 				'index.php?post_type=' . $this->post_type_name . '&name=' . $wp_rewrite->preg_index( 1 ) . '&' . BP_DOCS_HISTORY_SLUG . '=1'
 
 
@@ -522,7 +522,7 @@ class BP_Docs {
 		// Check to see whether our rules have been registered yet, by
 		// finding a Docs rule and then comparing it to the registered rules
 		foreach ( $wp_rewrite->extra_rules_top as $rewrite => $rule ) {
-			if ( 0 === strpos( $rewrite, bp_docs_get_slug() ) ) {
+			if ( 0 === strpos( $rewrite, bp_docs_get_docs_slug() ) ) {
 				$test_rule = $rule;
 			}
 		}

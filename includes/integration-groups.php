@@ -741,8 +741,9 @@ class BP_Docs_Groups_Integration {
 		}
 
 		// This will probably only work on BP 1.3+
-		if ( !empty( $bp->bp_options_nav[$group_slug] ) && !empty( $bp->bp_options_nav[$group_slug][BP_DOCS_SLUG] ) ) {
-			$current_tab_name = $bp->bp_options_nav[$group_slug][BP_DOCS_SLUG]['name'];
+		$docs_slug = bp_docs_get_docs_slug();
+		if ( !empty( $bp->bp_options_nav[$group_slug] ) && !empty( $bp->bp_options_nav[$group_slug][ $docs_slug ] ) ) {
+			$current_tab_name = $bp->bp_options_nav[$group_slug][ $docs_slug ]['name'];
 
 			$doc_count = groups_get_groupmeta( $bp->groups->current_group->id, 'bp-docs-count' );
 
@@ -916,7 +917,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 
 		$this->name 			= !empty( $bp_docs_tab_name ) ? $bp_docs_tab_name : __( 'Docs', 'bp-docs' );
 
-		$this->slug 			= BP_DOCS_SLUG;
+		$this->slug 			= bp_docs_get_docs_slug();
 
 		$this->enable_create_step	= $this->enable_create_step();
 		$this->create_step_position 	= 18;
