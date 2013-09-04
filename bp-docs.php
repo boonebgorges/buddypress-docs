@@ -185,10 +185,6 @@ class BP_Docs {
 		if ( !defined( 'BP_DOCS_INCLUDES_PATH_ABS' ) )
 			define( 'BP_DOCS_INCLUDES_PATH_ABS', str_replace( ABSPATH, '', BP_DOCS_INCLUDES_PATH ) );
 
-		// The main slug
-		if ( !defined( 'BP_DOCS_SLUG' ) )
-			define( 'BP_DOCS_SLUG', 'docs' );
-
 		// The slug used when viewing a doc category
 		if ( !defined( 'BP_DOCS_CATEGORY_SLUG' ) )
 			define( 'BP_DOCS_CATEGORY_SLUG', 'category' );
