@@ -753,7 +753,7 @@ class BP_Docs_Groups_Integration {
 				$doc_count = groups_get_groupmeta( $bp->groups->current_group->id, 'bp-docs-count' );
 			}
 
-			$bp->bp_options_nav[$group_slug][BP_DOCS_SLUG]['name'] = sprintf( __( '%s <span>%d</span>', 'bp-docs' ), $current_tab_name, $doc_count );
+			$bp->bp_options_nav[$group_slug][ $docs_slug ]['name'] = sprintf( __( '%s <span>%d</span>', 'bp-docs' ), $current_tab_name, $doc_count );
 		}
 	}
 

@@ -14,19 +14,19 @@ class BP_Docs_Users_Integration {
 		add_filter( 'bp_docs_get_item_type',    array( &$this, 'get_item_type' ) );
 		add_filter( 'bp_docs_get_current_view', array( &$this, 'get_current_view' ), 10, 2 );
 		add_filter( 'bp_docs_this_doc_slug',    array( &$this, 'get_doc_slug' ) );
-	
+
 		// Add the approriate navigation item for single docs
 		add_action( 'wp', array( &$this, 'setup_single_doc_subnav' ), 1 );
-	
+
 		// These functions are used to keep the user's Doc count up to date
 		add_filter( 'bp_docs_doc_saved',   array( $this, 'update_doc_count' )  );
 		add_filter( 'bp_docs_doc_deleted', array( $this, 'update_doc_count' ) );
-	
+
 		// Taxonomy helpers
 		add_filter( 'bp_docs_taxonomy_get_item_terms', 	array( &$this, 'get_user_terms' ) );
 		add_action( 'bp_docs_taxonomy_save_item_terms', array( &$this, 'save_user_terms' ) );
 	}
-	
+
 	/**
 	 * Check to see whether the query object's item type should be 'user'
 	 *
@@ -43,7 +43,7 @@ class BP_Docs_Users_Integration {
 
 		return $type;
 	}
-	
+
 	/**
 	 * Sets up the current view when viewing a user page
 	 *
@@ -75,10 +75,10 @@ class BP_Docs_Users_Integration {
 				$view = 'history';
 			}
 		}
-		
+
 		return $view;
 	}
-	
+
 	/**
 	 * Set the doc slug when we are viewing a user doc
 	 *
@@ -87,7 +87,7 @@ class BP_Docs_Users_Integration {
 	 */
 	function get_doc_slug( $slug ) {
 		global $bp;
-		
+
 		if ( bp_is_user() ) {
 			// Doc slug can't be my-docs or create
 			if ( !in_array( bp_current_action(), array( 'my-docs', 'create' ) ) ) {
@@ -129,7 +129,7 @@ class BP_Docs_Users_Integration {
 			}
 		}
 	}
-	
+
 	/**
 	 * Update's a user's Doc count
 	 *
@@ -138,7 +138,7 @@ class BP_Docs_Users_Integration {
 	function update_doc_count() {
 		bp_docs_update_doc_count( bp_loggedin_user_id(), 'user' );
 	}
-	
+
 	/**
 	 * Gets the list of terms used by a user's docs
 	 *

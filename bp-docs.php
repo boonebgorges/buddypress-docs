@@ -545,5 +545,3 @@ class BP_Docs {
 		$bp->bp_docs = new BP_Docs_Component;
 	}
 }
-
-?>

@@ -36,5 +36,3 @@ function bp_docs_init() {
 	$bp_docs = new BP_Docs;
 }
 add_action( 'bp_include', 'bp_docs_init' );
-
-?>
