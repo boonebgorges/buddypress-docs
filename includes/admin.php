@@ -116,6 +116,24 @@ class BP_Docs_Admin {
 			);
 			register_setting( 'bp-docs-settings', 'bp-docs-tab-name' );
 		}
+
+		// Attachments
+		add_settings_section(
+			'bp-docs-attachments',
+			__( 'Attachments', 'bp-docs' ),
+			array( $this, 'attachments_section' ),
+			'bp-docs-settings'
+		);
+
+		// Users - Tab name
+		add_settings_field(
+			'bp-docs-enable-attachments',
+			__( 'Enable Attachments', 'bp-docs' ),
+			array( $this, 'enable_attachments_setting_markup' ),
+			'bp-docs-settings',
+			'bp-docs-attachments'
+		);
+		register_setting( 'bp-docs-settings', 'bp-docs-enable-attachments' );
 	}
 
 	public function slug_setting_markup() {
@@ -150,6 +168,20 @@ class BP_Docs_Admin {
 
 		<?php
 	}
+
+	public function enable_attachments_setting_markup() {
+		$enabled = bp_docs_enable_attachments();
+
+		?>
+		<select name="bp-docs-enable-attachments" id="bp-docs-enable-attachments">
+			<option value="yes" <?php selected( $enabled, true ) ?>><?php _e( 'Enabled', 'bp-docs' ) ?></option>
+			<option value="no" <?php selected( $enabled, false ) ?>><?php _e( 'Disabled', 'bp-docs' ) ?></option>
+		</select>
+		<p class="description"><?php _e( "Allow users to add attachments to their Docs.", 'bp-docs' ) ?></p>
+
+		<?php
+	}
+
 	function replace_recent_comments_dashboard_widget() {
 		global $wp_meta_boxes;
 

@@ -58,7 +58,7 @@
 			</div>
 		</div>
 
-		<?php if ( apply_filters( 'bp_docs_enable_attachments', true ) ) : ?>
+		<?php if ( bp_docs_enable_attachments() ) : ?>
 			<div id="doc-attachments">
 				<label for="insert-media-button"><?php _e( 'Attachments', 'bp-docs' ) ?></label>
 				<?php include ( bp_docs_locate_template( 'single/attachments.php' ) ) ?>

@@ -8,7 +8,7 @@ class BP_Docs_Attachments {
 	protected $htaccess_path;
 
 	function __construct() {
-		if ( ! apply_filters( 'bp_docs_enable_attachments', true ) ) {
+		if ( ! bp_docs_enable_attachments() ) {
 			return;
 		}
 
@@ -625,3 +625,13 @@ class BP_Docs_Attachments {
 	}
 }
 
+/**
+ * Are attachments enabled?
+ *
+ * @since 1.5
+ * @return bool
+ */
+function bp_docs_enable_attachments() {
+	$enabled = get_option( 'bp-docs-enable-attachments', 'yes' );
+	return apply_filters( 'bp_docs_enable_attachments', 'yes' === $enabled );
+}

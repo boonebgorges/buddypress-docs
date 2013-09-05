@@ -23,7 +23,7 @@
 		<?php bp_docs_the_content() ?>
 	</div>
 
-	<?php if ( bp_docs_doc_has_attachments() ) : ?>
+	<?php if ( bp_docs_enable_attachments() && bp_docs_doc_has_attachments() ) : ?>
 		<div class="doc-attachments">
 			<h3><?php _e( 'Attachments', 'bp-docs' ) ?></h3>
 			<?php include ( bp_docs_locate_template( 'single/attachments.php' ) ) ?>
