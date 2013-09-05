@@ -353,13 +353,21 @@ class BP_Docs_Groups_Integration {
 						break;
 
 					case 'creator' :
-						if ( $doc->post_author == $user_id )
+						if ( $doc->post_author == $user_id ) {
 							$user_can = true;
+						}
 						break;
 
 					case 'group-members' :
-						if ( groups_is_user_member( $user_id, $group_id ) )
+						if ( groups_is_user_member( $user_id, $group_id ) ) {
 							$user_can = true;
+						}
+						break;
+
+					case 'admins-mods' :
+						if ( groups_is_user_admin( $user_id, $group_id ) || groups_is_user_mod( $user_id, $group_id ) ) {
+							$user_can = true;
+						}
 						break;
 
 					case 'no-one' :
