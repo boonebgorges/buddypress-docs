@@ -1811,10 +1811,10 @@ function bp_docs_attachment_item_markup( $attachment_id, $format = 'full' ) {
 	$markup = '';
 
 	$attachment = get_post( $attachment_id );
-	$attachment_ext = preg_replace( '/^.+?\.([^.]+)$/', '$1', $attachment->guid );
+	$attachment_url = apply_filters( 'bp_docs_attachment_url_base', wp_get_attachment_url( $attachment->ID ), $attachment );
 
-	$attachment_url = $attachment->guid;
-	$attachment_filename = basename( $attachment->guid );
+	$attachment_ext = preg_replace( '/^.+?\.([^.]+)$/', '$1', $attachment_url );
+	$attachment_filename = basename( $attachment_url );
 
 	if ( 'full' === $format ) {
 		$attachment_delete_html = '';
