@@ -46,9 +46,7 @@ function bp_docs_tags_comma_space( $tags ) {
 		$tags = explode( ',', $tags );
 		$tags = implode( ', ', $tags );
 	}
-	
+
 	return $tags;
 }
 add_filter( 'terms_to_edit', 'bp_docs_tags_comma_space' );
-
-?>
