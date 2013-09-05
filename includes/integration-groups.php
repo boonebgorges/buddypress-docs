@@ -430,10 +430,18 @@ class BP_Docs_Groups_Integration {
 				'label' => sprintf( __( 'Members of %s', 'bp-docs' ), $group->name )
 			);
 
-			$options[50] = array(
-				'name'  => 'admins-mods',
-				'label' => sprintf( __( 'Admins and mods of %s', 'bp-docs' ), $group->name )
-			);
+			// "Admins and mods" setting only available to admins and mods
+			// Otherwise users end up locking themselves out
+			$group_settings = groups_get_groupmeta( $group_id, 'bp-docs' );
+			$is_admin = groups_is_user_admin( bp_loggedin_user_id(), $group_id );
+			$is_mod = groups_is_user_mod( bp_loggedin_user_id(), $group_id );
+
+			if ( $is_admin || $is_mod ) {
+				$options[50] = array(
+					'name'  => 'admins-mods',
+					'label' => sprintf( __( 'Admins and mods of %s', 'bp-docs' ), $group->name )
+				);
+			}
 
 			// Group-associated docs should have the edit/post
 			// permissions limited to group-members by default. If
