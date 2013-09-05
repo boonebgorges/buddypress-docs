@@ -325,6 +325,25 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
 }
 
 /**
+ * Can the current user create a Doc in this context?
+ *
+ * Is sensitive to group contexts (and the "associated with" permissions
+ * levels)
+ *
+ * @since 1.5
+ * @return bool
+ */
+function bp_docs_current_user_can_create_in_context() {
+	if ( function_exists( 'bp_is_group' ) && bp_is_group() ) {
+		$can_create = bp_docs_current_user_can( 'associate_with_group' );
+	} else {
+		$can_create = bp_docs_current_user_can( 'create' );
+	}
+
+	return apply_filters( 'bp_docs_current_user_can_create_in_context', $can_create );
+}
+
+/**
  * Update the Doc count for a given item
  *
  * @since 1.2

@@ -267,8 +267,9 @@ class BP_Docs_Groups_Integration {
 			$doc = bp_docs_get_current_doc();
 
 		// If we still haven't got a post by now, query based on doc id
-		if ( empty( $doc ) )
+		if ( empty( $doc ) && ! empty( $doc_id ) ) {
 			$doc = get_post( $doc_id );
+		}
 
 		if ( ! empty( $doc ) ) {
 			$doc_settings = get_post_meta( $doc->ID, 'bp_docs_settings', true );
@@ -290,8 +291,8 @@ class BP_Docs_Groups_Integration {
 		}
 
 		// Default to the current group, but get the associated doc if not
-		$group_id = 0;
-		if ( ! empty( $doc ) ) {
+		$group_id = bp_get_current_group_id();
+		if ( ! $group_id && ! empty( $doc ) ) {
 			$group_id = bp_docs_get_associated_group_id( $doc->ID, $doc );
 			$group = groups_get_group( array( 'group_id' => $group_id ) );
 		}
@@ -301,7 +302,7 @@ class BP_Docs_Groups_Integration {
 		}
 
 		switch ( $action ) {
-			case 'create' :
+			case 'associate_with_group' :
 				$group_settings = groups_get_groupmeta( $group_id, 'bp-docs' );
 
 				// Provide a default value for legacy backpat
@@ -1060,7 +1061,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 			<table class="group-docs-options">
 				<tr>
 					<td class="label">
-						<label for="bp-docs[can-create-admins]"><?php _e( 'Minimum role to create new Docs:', 'bp-docs' ) ?></label>
+						<label for="bp-docs[can-create-admins]"><?php _e( 'Minimum role to associate Docs with this group:', 'bp-docs' ) ?></label>
 					</td>
 
 					<td>

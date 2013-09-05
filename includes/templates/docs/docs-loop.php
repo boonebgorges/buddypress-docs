@@ -93,7 +93,7 @@
 
 <?php else: ?>
 
-        <?php if ( bp_docs_current_user_can( 'create' ) ) : ?>
+        <?php if ( bp_docs_current_user_can_create_in_context() ) : ?>
                 <p class="no-docs"><?php printf( __( 'There are no docs for this view. Why not <a href="%s">create one</a>?', 'bp-docs' ), bp_docs_get_create_link() ) ?>
 	<?php else : ?>
 		<p class="no-docs"><?php _e( 'There are no docs for this view.', 'bp-docs' ) ?></p>

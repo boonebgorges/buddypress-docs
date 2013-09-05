@@ -725,6 +725,33 @@ function bp_docs_doc_associated_group_markup() {
 	global $groups_template;
 	bp_has_groups( $groups_args );
 
+	// Filter out the groups where associate_with permissions forbid
+	$removed = 0;
+	foreach ( $groups_template->groups as $gtg_key => $gtg ) {
+		$this_group_settings = groups_get_groupmeta( $gtg->id, 'bp-docs' );
+		if ( isset( $this_group_settings['can-create'] ) && in_array( $this_group_settings['can-create'], array( 'admin', 'mod' ) ) ) {
+			$is_admin = groups_is_user_admin( bp_loggedin_user_id(), $gtg->id );
+			if ( 'mod' == $this_group_settings['can-create'] ) {
+				$is_mod = groups_is_user_mod( bp_loggedin_user_id(), $gtg->id );
+				$remove = ! $is_mod && ! $is_admin;
+			} else {
+				$remove = ! $is_admin;
+			}
+
+			if ( $remove ) {
+				unset( $groups_template->groups[ $gtg_key ] );
+				$removed++;
+			}
+		}
+	}
+
+	// cleanup, if necessary from filter above
+	if ( $removed ) {
+		$groups_template->groups = array_values( $groups_template->groups );
+		$groups_template->group_count = $groups_template->group_count - $removed;
+		$groups_template->total_group_count = $groups_template->total_group_count - $removed;
+	}
+
 	?>
 	<tr>
 		<td class="desc-column">
