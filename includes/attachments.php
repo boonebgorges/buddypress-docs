@@ -522,7 +522,7 @@ class BP_Docs_Attachments {
 
 	public static function filter_markup() {
 		$has_attachment = isset( $_REQUEST['has-attachment'] ) && in_array( $_REQUEST['has-attachment'], array( 'yes', 'no' ) ) ? $_REQUEST['has-attachment'] : '';
-		$form_action = wp_guess_url();
+		$form_action = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 		foreach ( $_GET as $k => $v ) {
 			$form_action = remove_query_arg( $k, $form_action );
 		}
