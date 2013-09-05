@@ -589,14 +589,10 @@ function bp_docs_get_access_term_user( $user_id = false ) {
  * Get the access term corresponding to group-members for a given group
  *
  * @since 1.2
- * @param int|bool $user_id Defaults to logged in user
+ * @param int $group_id
  * @return string The term slug
  */
 function bp_docs_get_access_term_group_member( $user_id = false ) {
-	if ( false === $user_id ) {
-		$user_id = bp_loggedin_user_id();
-	}
-
 	return apply_filters( 'bp_docs_get_access_term_group_member', 'bp_docs_access_group_member_' . intval( $user_id ) );
 }
 
@@ -604,14 +600,10 @@ function bp_docs_get_access_term_group_member( $user_id = false ) {
  * Get the access term corresponding to admins-mods for a given group
  *
  * @since 1.2
- * @param int|bool $user_id Defaults to logged in user
+ * @param int $group_id
  * @return string The term slug
  */
 function bp_docs_get_access_term_group_adminmod( $user_id = false ) {
-	if ( false === $user_id ) {
-		$user_id = bp_loggedin_user_id();
-	}
-
 	return apply_filters( 'bp_docs_get_access_term_group_adminmod', 'bp_docs_access_group_adminmod_' . intval( $user_id ) );
 }
 
