@@ -531,10 +531,6 @@ class BP_Docs {
 		}
 	}
 
-	function activation() {
-		error_log('activating');
-	}
-
 	/**
 	 * Initiates the BP Component extension
 	 *
