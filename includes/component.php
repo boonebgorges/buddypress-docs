@@ -187,7 +187,7 @@ class BP_Docs_Component extends BP_Component {
 
 		if ( is_user_logged_in() ) {
 
-			$title = __( 'Docs', 'buddypress' );
+			$title = bp_docs_get_user_tab_name();
 
 			// Add the "My Account" sub menus
 			$wp_admin_nav[] = array(
@@ -293,7 +293,7 @@ class BP_Docs_Component extends BP_Component {
 	function setup_nav( $main_nav = array(), $sub_nav = array() ) {
 
 		$main_nav = array(
-			'name' 		      => __( 'Docs', 'bp-docs' ),
+			'name' 		      => bp_docs_get_user_tab_name(),
 
 			// Disabled count for now. See https://github.com/boonebgorges/buddypress-docs/issues/261
 			//'name' 		      => sprintf( __( 'Docs <span>%d</span>', 'bp-docs' ), bp_docs_get_doc_count( bp_displayed_user_id(), 'user' ) ),

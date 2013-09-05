@@ -79,6 +79,24 @@ class BP_Docs_Admin {
 		);
 		register_setting( 'bp-docs-settings', 'bp-docs-slug', 'rawurlencode' );
 
+		// Users
+		add_settings_section(
+			'bp-docs-users',
+			__( 'Users', 'bp-docs' ),
+			array( $this, 'users_section' ),
+			'bp-docs-settings'
+		);
+
+		// Users - Tab name
+		add_settings_field(
+			'bp-docs-user-tab-name',
+			__( 'User Tab Name', 'bp-docs' ),
+			array( $this, 'user_tab_name_setting_markup' ),
+			'bp-docs-settings',
+			'bp-docs-users'
+		);
+		register_setting( 'bp-docs-settings', 'bp-docs-user-tab-name' );
+
 		// Groups
 		if ( bp_is_active( 'groups' ) ) {
 			add_settings_section(
@@ -123,6 +141,15 @@ class BP_Docs_Admin {
 		<?php
 	}
 
+	public function user_tab_name_setting_markup() {
+		$name = bp_docs_get_user_tab_name();
+
+		?>
+		<input name="bp-docs-user-tab-name" id="bp-docs-user-tab-name" type="text" value="<?php echo esc_html( $name ) ?>" />
+		<p class="description"><?php _e( "Change the word on users' Docs tabs from 'Docs' to whatever you'd like. Keep in mind that this will not change the text anywhere else on the page. For a more thorough text change, create a <a href='http://codex.buddypress.org/extending-buddypress/customizing-labels-messages-and-urls/'>language file</a> for BuddyPress Docs.", 'bp-docs' ) ?></p>
+
+		<?php
+	}
 	function replace_recent_comments_dashboard_widget() {
 		global $wp_meta_boxes;
 

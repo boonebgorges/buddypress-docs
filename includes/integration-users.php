@@ -180,4 +180,16 @@ class BP_Docs_Users_Integration {
 
 }
 
-?>
+/**
+ * Get the name to show in the users tab
+ *
+ * @since 1.5
+ * @return string
+ */
+function bp_docs_get_user_tab_name() {
+	$name = get_option( 'bp-docs-user-tab-name' );
+	if ( empty( $name ) ) {
+		$name = __( 'Docs', 'bp-docs' );
+	}
+	return apply_filters( 'bp_docs_get_user_tab_name', $name );
+}
