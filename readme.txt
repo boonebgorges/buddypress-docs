@@ -40,6 +40,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Fix bug that prevented activity from appearing in group activity streams
 * Fix bug that prevented attachment uploads on group Doc creation pages
 * Fix some textdomain errors
+* Add Directory Excerpt Length admin option
 * Fix "admins and mods of..." permissions setting
 * More accurate list of items on "Edited by..." tab
 * Improve the way attachment URLs are built

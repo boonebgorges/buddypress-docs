@@ -79,6 +79,16 @@ class BP_Docs_Admin {
 		);
 		register_setting( 'bp-docs-settings', 'bp-docs-slug', 'rawurlencode' );
 
+		// General - Excerpt length
+		add_settings_field(
+			'bp-docs-excerpt-length',
+			__( 'Directory Excerpt Length', 'bp-docs' ),
+			array( $this, 'excerpt_length_setting_markup' ),
+			'bp-docs-settings',
+			'bp-docs-general'
+		);
+		register_setting( 'bp-docs-settings', 'bp-docs-excerpt-length', 'absint' );
+
 		// Users
 		add_settings_section(
 			'bp-docs-users',
@@ -145,6 +155,16 @@ class BP_Docs_Admin {
 		?>
 		<input name="bp-docs-slug" id="bp-docs-slug" type="text" value="<?php echo esc_html( $slug ) ?>" <?php if ( $is_in_wp_config ) : ?>disabled="disabled" <?php endif ?>/>
 		<p class="description"><?php _e( "Change the slug used to build Docs URLs.", 'bp-docs' ) ?><?php if ( $is_in_wp_config ) : ?> <?php _e( 'You have already defined this value in <code>wp-config.php</code>, so it cannot be edited here.', 'bp-docs' ) ?><?php endif ?></p>
+
+		<?php
+	}
+
+	public function excerpt_length_setting_markup() {
+		$length = bp_docs_get_excerpt_length();
+
+		?>
+		<input name="bp-docs-excerpt-length" id="bp-docs-excerpt-length" type="text" value="<?php echo esc_html( $length ) ?>" />
+		<p class="description"><?php _e( "Excerpts are shown on Docs directories, to provide better context. If your theme or language requires longer or shorter excerpts, change this value. Set to <code>0</code> to disable these excerpts.", 'bp-docs' ) ?></p>
 
 		<?php
 	}

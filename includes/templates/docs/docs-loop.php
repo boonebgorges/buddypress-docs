@@ -49,7 +49,9 @@
 			<td class="title-cell">
 				<a href="<?php bp_docs_doc_link() ?>"><?php the_title() ?></a>
 
-				<?php the_excerpt() ?>
+				<?php if ( bp_docs_get_excerpt_length() ) : ?>
+					<?php the_excerpt() ?>
+				<?php endif ?>
 
 				<div class="row-actions">
 					<?php bp_docs_doc_action_links() ?>
