@@ -42,6 +42,8 @@
 			</div>
 		<?php endif ?>
 
+		<?php do_action( 'bp_docs_before_doc_edit_content' ) ?>
+
 		<div id="doc-content-textarea">
 			<label id="content-label" for="doc_content"><?php _e( 'Content', 'bp-docs' ) ?></label>
 			<div id="editor-toolbar">
@@ -57,6 +59,8 @@
 				?>
 			</div>
 		</div>
+
+		<?php do_action( 'bp_docs_after_doc_edit_content' ) ?>
 
 		<?php if ( bp_docs_enable_attachments() ) : ?>
 			<div id="doc-attachments">
