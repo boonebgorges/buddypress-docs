@@ -902,7 +902,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	function bp_docs_group_extension() {
 		global $bp;
 
-		$bp_docs_tab_name = get_option( 'bp-docs-tab-name' );
+		$bp_docs_tab_name = bp_docs_get_group_tab_name();
 
 		if ( !empty( $bp->groups->current_group->id ) )
 			$this->maybe_group_id	= $bp->groups->current_group->id;
@@ -1448,4 +1448,14 @@ function bp_docs_get_group_id_from_term_slug( $term_slug ) {
 
 function bp_docs_get_term_slug_from_group_id( $group_id ) {
 	return 'bp_docs_associated_group_' . (int) $group_id;
+}
+
+/**
+ * Get the name to show in the group tab
+ *
+ * @since 1.5
+ * @return string
+ */
+function bp_docs_get_group_tab_name() {
+	return apply_filters( 'bp_docs_get_group_tab_name', get_option( 'bp-docs-tab-name', __( 'Docs', 'bp-docs' ) ) );
 }
