@@ -42,7 +42,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Recast "minimum role to create Doc in group" in terms of group association
 * Fix some textdomain errors
 * Add Directory Excerpt Length admin option
-* Fix "admins and mods of..." permissions setting
+* Fix "admins and mods of..." permissions setting and prevent non-admin-mods from locking themselves out of Docs
 * More accurate list of items on "Edited by..." tab
 * Improve the way attachment URLs are built
 * Allow Docs with empty content field
