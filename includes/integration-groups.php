@@ -176,10 +176,14 @@ class BP_Docs_Groups_Integration {
 	 */
 	function pre_query_args( $query_args, $bp_docs_query ) {
 		if ( ! empty( $bp_docs_query->query_args['group_id'] ) ) {
+			$terms = array();
+			foreach ( (array) $bp_docs_query->query_args['group_id'] as $gid ) {
+				$terms[] = bp_docs_get_term_slug_from_group_id( $gid );
+			}
 			$query_args['tax_query'][] = array(
 				'taxonomy' => bp_docs_get_associated_item_tax_name(),
 				'field'    => 'slug',
-				'terms'    => bp_docs_get_term_slug_from_group_id( $bp_docs_query->query_args['group_id'] ),
+				'terms'    => $terms,
 			);
 		}
 		return $query_args;

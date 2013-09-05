@@ -38,7 +38,14 @@ function bp_docs_has_docs( $args = array() ) {
 		// Build some intelligent defaults
 
 		// Default to current group id, if available
-		$d_group_id = bp_is_group() ? bp_get_current_group_id() : array();
+		if ( bp_is_group() ) {
+			$d_group_id = bp_get_current_group_id();
+		} else if ( bp_docs_is_mygroups_directory() ) {
+			$my_groups = groups_get_user_groups( bp_loggedin_user_id() );
+			$d_group_id = ! empty( $my_groups['total'] ) ? $my_groups['groups'] : array( 0 );
+		} else {
+			$d_group_id = array();
+		}
 
 		// If this is a Started By tab, set the author ID
 		$d_author_id = bp_docs_is_started_by() ? bp_displayed_user_id() : array();
@@ -1753,6 +1760,22 @@ function bp_docs_is_global_directory() {
 	}
 
 	return apply_filters( 'bp_docs_is_global_directory', $is_global_directory );
+}
+
+/**
+ * Is this the My Groups directory?
+ *
+ * @since 1.5
+ * @return bool
+ */
+function bp_docs_is_mygroups_directory() {
+	$is_mygroups_directory = false;
+
+	if ( is_post_type_archive( bp_docs_get_post_type_name() ) && get_query_var( BP_DOCS_MY_GROUPS_SLUG ) && ! get_query_var( BP_DOCS_CREATE_SLUG ) ) {
+		$is_mygroups_directory = true;
+	}
+
+	return apply_filters( 'bp_docs_is_mygroups_directory', $is_mygroups_directory );
 }
 
 function bp_docs_get_sidebar() {

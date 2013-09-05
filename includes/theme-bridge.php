@@ -96,7 +96,7 @@ class BP_Docs_Theme_Compat {
 
 		add_filter( 'bp_get_buddypress_template', array( $this, 'query_templates' ) );
 
-		if ( bp_docs_is_global_directory() ) {
+		if ( bp_docs_is_global_directory() || bp_docs_is_mygroups_directory() ) {
 
 			bp_update_is_directory( true, 'docs' );
 			do_action( 'bp_docs_screen_index' );
