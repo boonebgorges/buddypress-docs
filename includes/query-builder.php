@@ -258,14 +258,22 @@ class BP_Docs_Query {
 			// @todo - Not sure how this will scale
 			$posts = get_posts( array(
 				'author'                 => $editor_id,
-				'post_status'            => 'inherit',
-				'post_type'              => 'revision',
+				'post_status'            => array( 'inherit', 'publish' ),
+				'post_type'              => array( 'revision', bp_docs_get_post_type_name() ),
 				'posts_per_page'         => -1,
 				'update_post_meta_cache' => false,
 				'update_post_term_cache' => false,
 			) );
 
-			$post_ids = array_merge( $post_ids, array_unique( wp_list_pluck( $posts, 'post_parent' ) ) );
+			$this_author_post_ids = array();
+			foreach ( $posts as $post ) {
+				if ( 'revision' === $post->post_type ) {
+					$this_author_post_ids[] = $post->post_parent;
+				} else {
+					$this_author_post_ids[] = $post->ID;
+				}
+			}
+			$post_ids = array_merge( $post_ids, $this_author_post_ids );
 		}
 
 		// @todo Might be faster to let the dupes through and let MySQL optimize
