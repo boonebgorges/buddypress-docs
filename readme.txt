@@ -40,6 +40,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Fix bug that prevented activity from appearing in group activity streams
 * Fix bug that prevented attachment uploads on group Doc creation pages
 * Fix some textdomain errors
+* Fix "admins and mods of..." permissions setting
 * Allow Docs with empty content field
 * Improved compatibility with PHP 5.4+
 
