@@ -39,6 +39,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Fix bug that prevented the activity action from being modified for the associated group
 * Fix bug that prevented activity from appearing in group activity streams
 * Fix bug that prevented attachment uploads on group Doc creation pages
+* Recast "minimum role to create Doc in group" in terms of group association
 * Fix some textdomain errors
 * Add Directory Excerpt Length admin option
 * Fix "admins and mods of..." permissions setting
