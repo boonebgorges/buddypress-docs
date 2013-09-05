@@ -41,6 +41,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Fix bug that prevented attachment uploads on group Doc creation pages
 * Recast "minimum role to create Doc in group" in terms of group association
 * Fix some textdomain errors
+* Fix incorrect form action for "has-attachment" filter in some cases
 * Fix My Groups view
 * Add Directory Excerpt Length admin option
 * Fix "admins and mods of..." permissions setting and prevent non-admin-mods from locking themselves out of Docs
