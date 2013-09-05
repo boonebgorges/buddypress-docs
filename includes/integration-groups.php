@@ -1383,7 +1383,8 @@ function bp_docs_get_group_term( $group_id ) {
 }
 
 function bp_docs_get_group_id_from_term_slug( $term_slug ) {
-	return intval( array_pop( explode( 'bp_docs_associated_group_', $term_slug ) ) );
+	$ts = explode( 'bp_docs_associated_group_', $term_slug );
+	return intval( array_pop( $ts ) );
 }
 
 function bp_docs_get_term_slug_from_group_id( $group_id ) {
