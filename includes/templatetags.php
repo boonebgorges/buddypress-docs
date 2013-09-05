@@ -1269,8 +1269,8 @@ function bp_docs_get_docs_slug() {
 	}
 
 	// For the settings page
-	if ( ! isset( $bp->bp_docs->docs_slug_defined_in_wp_config ) ) {
-		$bp->bp_docs->docs_slug_defined_in_wp_config = $is_in_wp_config;
+	if ( ! isset( $bp->bp_docs->slug_defined_in_wp_config['slug'] ) ) {
+		$bp->bp_docs->slug_defined_in_wp_config['slug'] = (int) $is_in_wp_config;
 	}
 
 	return apply_filters( 'bp_docs_get_docs_slug', $slug );

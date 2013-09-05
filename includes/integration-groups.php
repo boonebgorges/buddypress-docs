@@ -84,10 +84,6 @@ class BP_Docs_Groups_Integration {
 
 		// When object terms are set, delete the transient
 		add_action( 'set_object_terms', array( &$this, 'delete_transient' ), 10, 4 );
-
-		// Add settings to the BuddyPress settings admin panel
-		add_action( 'bp_core_admin_screen_fields', 	array( $this, 'admin_screen_fields' ) );
-		add_action( 'bp_register_admin_settings', array( $this, 'register_admin_settings' ) );
 	}
 
 	/**
@@ -817,63 +813,7 @@ class BP_Docs_Groups_Integration {
 			delete_transient( 'associated_groups-' . $object_id );
 		}
 	}
-
-	/**
-	 * Adds admin fields to Dashboard > BuddyPress > Settings
-	 *
-	 * @package BuddyPress Docs
-	 * @since 1.1.6
-	 */
-	function admin_screen_fields() {
-
-		?>
-
-		<tr>
-			<td class="label">
-				<label for="bp-admin[bp-docs-tab-name]"><?php _e( 'BuddyPress Docs group tab name:', 'bp-docs' ) ?></label>
-			</td>
-
-			<td>
-				<?php $this->group_tab_name_setting_markup() ?>
-			</td>
-		</tr>
-
-		<?php
-	}
-
-	public function group_tab_name_setting_markup() {
-		$bp_docs_tab_name = bp_get_option( 'bp-docs-tab-name' );
-
-		if ( empty( $bp_docs_tab_name ) )
-			$bp_docs_tab_name = __( 'Docs', 'bp-docs' );
-
-		?>
-		<input name="bp-admin[bp-docs-tab-name]" id="bp-docs-tab-name" type="text" value="<?php echo esc_html( $bp_docs_tab_name ) ?>" />
-		<p class="description"><?php _e( "Change the word on the BuddyPress group tab from 'Docs' to whatever you'd like. Keep in mind that this will not change the text anywhere else on the page. For a more thorough text change, create a <a href='http://codex.buddypress.org/extending-buddypress/customizing-labels-messages-and-urls/'>language file</a> for BuddyPress Docs.", 'bp-docs' ) ?></p>
-
-		<p class="description"><?php _e( "To change the URL slug for Docs, put <code>define( 'BP_DOCS_SLUG', 'collaborations' );</code> in your wp-config.php file, replacing 'collaborations' with your custom slug.", 'bp-docs' ) ?></p>
-		<?php
-	}
-
-	public function register_admin_settings() {
-		// Add the main section
-		add_settings_section( 'bp_docs', __( 'BuddyPress Docs Settings', 'bp-docs' ), 'bp_admin_setting_callback_xprofile_section', 'buddypress' );
-
-		// Allow avatar uploads
-		add_settings_field( 'bp-docs-group-tab-name', __( 'Group Tab Name', 'bp-docs' ), array( $this, 'group_tab_name_setting_markup' ), 'buddypress', 'bp_docs' );
-		register_setting( 'buddypress', 'bp-docs-group-tab-name', array( $this, 'admin_setting_callback' ) );
-	}
-
-	/**
-	 * A hack for backward compatibility
-	 */
-	public function admin_setting_callback() {
-		if ( isset( $_POST['bp-admin']['bp-docs-tab-name'] ) ) {
-			bp_update_option( 'bp-docs-tab-name', $_POST['bp-admin']['bp-docs-tab-name'] );
-		}
-	}
 }
-
 
 /**
  * Implementation of BP_Group_Extension

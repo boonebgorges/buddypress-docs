@@ -29,8 +29,100 @@ class BP_Docs_Admin {
 		if ( !defined( BP_DOCS_REPLACE_RECENT_COMMENTS_DASHBOARD_WIDGET ) || !BP_DOCS_REPLACE_RECENT_COMMENTS_DASHBOARD_WIDGET ) {
 			add_action( 'wp_dashboard_setup', array( $this, 'replace_recent_comments_dashboard_widget' ) );
 		}
+
+		// Set up menus
+		add_action( 'admin_menu', array( $this, 'setup_menus' ) );
+		add_action( 'admin_menu', array( $this, 'setup_settings' ) );
 	}
-	
+
+	public function setup_menus() {
+		// Settings
+		add_submenu_page(
+			'edit.php?post_type=' . bp_docs_get_post_type_name(),
+			__( 'BuddyPress Docs Settings', 'bp-docs' ),
+			__( 'Settings', 'bp-docs' ),
+			'manage_options',
+			'bp-docs-settings',
+			array( $this, 'settings_cb' )
+		);
+	}
+
+	public function settings_cb() {
+		?>
+<div class="wrap">
+	<form method="post" action="<?php echo admin_url( 'options.php' ) ?>">
+		<h2><?php _e( 'BuddyPress Docs Settings', 'bp-docs' ) ?></h2>
+		<?php settings_fields( 'bp-docs-settings' ) ?>
+		<?php do_settings_sections( 'bp-docs-settings' ) ?>
+		<?php submit_button() ?>
+	</form>
+</div>
+		<?php
+	}
+
+	public function setup_settings() {
+		// General
+		add_settings_section(
+			'bp-docs-general',
+			__( 'General', 'bp-docs' ),
+			array( $this, 'general_section' ),
+			'bp-docs-settings'
+		);
+
+		// General - Docs slug
+		add_settings_field(
+			'bp-docs-slug',
+			__( 'Slug', 'bp-docs' ),
+			array( $this, 'slug_setting_markup' ),
+			'bp-docs-settings',
+			'bp-docs-general'
+		);
+		register_setting( 'bp-docs-settings', 'bp-docs-slug', 'rawurlencode' );
+
+		// Groups
+		if ( bp_is_active( 'groups' ) ) {
+			add_settings_section(
+				'bp-docs-groups',
+				__( 'Groups', 'bp-docs' ),
+				array( $this, 'groups_section' ),
+				'bp-docs-settings'
+			);
+
+			// Groups - Tab name
+			add_settings_field(
+				'bp-docs-tab-name',
+				__( 'Group Tab Name', 'bp-docs' ),
+				array( $this, 'group_tab_name_setting_markup' ),
+				'bp-docs-settings',
+				'bp-docs-groups'
+			);
+			register_setting( 'bp-docs-settings', 'bp-docs-tab-name' );
+		}
+	}
+
+	public function slug_setting_markup() {
+		global $bp;
+
+		$slug = bp_docs_get_docs_slug();
+		$is_in_wp_config = 1 === $bp->bp_docs->docs_slug_defined_in_wp_config['slug'];
+
+		?>
+		<input name="bp-docs-slug" id="bp-docs-slug" type="text" value="<?php echo esc_html( $slug ) ?>" <?php if ( $is_in_wp_config ) : ?>disabled="disabled" <?php endif ?>/>
+		<p class="description"><?php _e( "Change the slug used to build Docs URLs.", 'bp-docs' ) ?><?php if ( $is_in_wp_config ) : ?> <?php _e( 'You have already defined this value in <code>wp-config.php</code>, so it cannot be edited here.', 'bp-docs' ) ?><?php endif ?></p>
+
+		<?php
+	}
+
+	public function group_tab_name_setting_markup() {
+		$name = bp_docs_get_group_tab_name();
+
+		?>
+		<input name="bp-docs-tab-name" id="bp-docs-tab-name" type="text" value="<?php echo esc_html( $name ) ?>" />
+		<p class="description"><?php _e( "Change the word on the BuddyPress group tab from 'Docs' to whatever you'd like. Keep in mind that this will not change the text anywhere else on the page. For a more thorough text change, create a <a href='http://codex.buddypress.org/extending-buddypress/customizing-labels-messages-and-urls/'>language file</a> for BuddyPress Docs.", 'bp-docs' ) ?></p>
+
+		<?php
+	}
+
 	function replace_recent_comments_dashboard_widget() {
 		global $wp_meta_boxes;
 
