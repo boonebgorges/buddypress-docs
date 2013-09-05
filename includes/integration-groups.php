@@ -1406,5 +1406,9 @@ function bp_docs_get_term_slug_from_group_id( $group_id ) {
  * @return string
  */
 function bp_docs_get_group_tab_name() {
-	return apply_filters( 'bp_docs_get_group_tab_name', get_option( 'bp-docs-tab-name', __( 'Docs', 'bp-docs' ) ) );
+	$name = get_option( 'bp-docs-tab-name' );
+	if ( empty( $name ) ) {
+		$name = __( 'Docs', 'bp-docs' );
+	}
+	return apply_filters( 'bp_docs_get_group_tab_name', $name );
 }
