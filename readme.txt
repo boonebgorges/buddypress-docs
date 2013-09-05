@@ -44,6 +44,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * More accurate list of items on "Edited by..." tab
 * Improve the way attachment URLs are built
 * Allow Docs with empty content field
+* Add hooks to templates
 * Improved compatibility with PHP 5.4+
 
 = 1.4.5 =
