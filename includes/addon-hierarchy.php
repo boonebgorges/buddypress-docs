@@ -29,6 +29,9 @@ class BP_Docs_Hierarchy {
 
 		// Display a doc's children on its single doc page
 		add_action( 'bp_docs_single_doc_meta', array( $this, 'show_children' ) );
+
+		// When a Doc is deleted, mark its children as parentless
+		add_action( 'bp_docs_doc_deleted', array( $this, 'deleted_parent' ) );
 	}
 
 	/**
@@ -171,5 +174,29 @@ class BP_Docs_Hierarchy {
 		}
 
 		echo apply_filters( 'bp_docs_hierarchy_show_children', $html, $child_data );
+	}
+
+	/**
+	 * When a Doc is deleted, mark its children as having no parent
+	 *
+	 * @since 1.5
+	 * @param array $args The $delete_args array from bp_docs_trash_dac()
+	 */
+	public function deleted_parent( $args ) {
+		if ( ! isset( $args['ID'] ) ) {
+			return;
+		}
+
+		$children = get_children( array(
+			'post_parent' => $args['ID'],
+			'post_type' => bp_docs_get_post_type_name(),
+		), ARRAY_A );
+
+		foreach ( $children as $cid => $child ) {
+			wp_update_post( array(
+				'ID' => $child['ID'],
+				'post_parent' => 0,
+			) );
+		}
 	}
 }
