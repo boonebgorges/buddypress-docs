@@ -41,7 +41,7 @@ class BP_Docs_Admin {
 			'edit.php?post_type=' . bp_docs_get_post_type_name(),
 			__( 'BuddyPress Docs Settings', 'bp-docs' ),
 			__( 'Settings', 'bp-docs' ),
-			'manage_options',
+			'bp_moderate',
 			'bp-docs-settings',
 			array( $this, 'settings_cb' )
 		);
