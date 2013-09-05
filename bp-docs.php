@@ -519,12 +519,14 @@ class BP_Docs {
 		// finding a Docs rule and then comparing it to the registered rules
 		foreach ( $wp_rewrite->extra_rules_top as $rewrite => $rule ) {
 			if ( 0 === strpos( $rewrite, bp_docs_get_docs_slug() ) ) {
+				$test_rewrite = $rewrite;
 				$test_rule = $rule;
+				break;
 			}
 		}
 		$registered_rules = get_option( 'rewrite_rules' );
 
-		if ( is_array( $registered_rules ) && ! in_array( $test_rule, $registered_rules ) ) {
+		if ( is_array( $registered_rules ) && ( ! isset( $registered_rules[ $test_rewrite ] ) || $test_rule !== $registered_rules[ $test_rewrite ] ) ) {
 			flush_rewrite_rules();
 		}
 	}
