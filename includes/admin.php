@@ -9,17 +9,7 @@
 
 class BP_Docs_Admin {
 	/**
-	 * PHP 4 constructor
-	 *
-	 * @package BuddyPress Docs
-	 * @since 1.1.8
-	 */
-	function bp_docs_admin() {
-		$this->__construct();
-	}
-
-	/**
-	 * PHP 5 constructor
+	 * Constructor
 	 *
 	 * @package BuddyPress Docs
 	 * @since 1.1.8
