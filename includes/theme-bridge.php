@@ -96,7 +96,7 @@ class BP_Docs_Theme_Compat {
 
 		add_filter( 'bp_get_buddypress_template', array( $this, 'query_templates' ) );
 
-		if ( bp_docs_is_global_directory() ) {
+		if ( bp_docs_is_global_directory() || bp_docs_is_mygroups_directory() ) {
 
 			bp_update_is_directory( true, 'docs' );
 			do_action( 'bp_docs_screen_index' );
@@ -162,7 +162,7 @@ class BP_Docs_Theme_Compat {
 	public function directory_dummy_post() {
 		bp_theme_compat_reset_post( array(
 			'ID'             => 0,
-			'post_title'     => __( 'Docs Directory', 'buddypress' ),
+			'post_title'     => __( 'Docs Directory', 'bp-docs' ),
 			'post_author'    => 0,
 			'post_date'      => 0,
 			'post_content'   => '',
@@ -220,7 +220,7 @@ class BP_Docs_Theme_Compat {
 	public function create_dummy_post() {
 		bp_theme_compat_reset_post( array(
 			'ID'             => 0,
-			'post_title'     => __( 'Create a Doc', 'buddypress' ),
+			'post_title'     => __( 'Create a Doc', 'bp-docs' ),
 			'post_author'    => 0,
 			'post_date'      => 0,
 			'post_content'   => '',

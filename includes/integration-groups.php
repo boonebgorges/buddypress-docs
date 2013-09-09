@@ -53,6 +53,7 @@ class BP_Docs_Groups_Integration {
 
 		// Filter the activity actions for group docs-related activity
 		add_filter( 'bp_docs_activity_action',		array( $this, 'activity_action' ), 10, 5 );
+		add_filter( 'bp_docs_activity_args',            array( $this, 'activity_args' ), 10, 2 );
 		add_filter( 'bp_docs_comment_activity_action',	array( $this, 'comment_activity_action' ), 10, 5 );
 
 		// Filter the activity hide_sitewide parameter to respect group privacy levels
@@ -83,10 +84,6 @@ class BP_Docs_Groups_Integration {
 
 		// When object terms are set, delete the transient
 		add_action( 'set_object_terms', array( &$this, 'delete_transient' ), 10, 4 );
-
-		// Add settings to the BuddyPress settings admin panel
-		add_action( 'bp_core_admin_screen_fields', 	array( $this, 'admin_screen_fields' ) );
-		add_action( 'bp_register_admin_settings', array( $this, 'register_admin_settings' ) );
 	}
 
 	/**
@@ -179,10 +176,14 @@ class BP_Docs_Groups_Integration {
 	 */
 	function pre_query_args( $query_args, $bp_docs_query ) {
 		if ( ! empty( $bp_docs_query->query_args['group_id'] ) ) {
+			$terms = array();
+			foreach ( (array) $bp_docs_query->query_args['group_id'] as $gid ) {
+				$terms[] = bp_docs_get_term_slug_from_group_id( $gid );
+			}
 			$query_args['tax_query'][] = array(
 				'taxonomy' => bp_docs_get_associated_item_tax_name(),
 				'field'    => 'slug',
-				'terms'    => bp_docs_get_term_slug_from_group_id( $bp_docs_query->query_args['group_id'] ),
+				'terms'    => $terms,
 			);
 		}
 		return $query_args;
@@ -270,8 +271,9 @@ class BP_Docs_Groups_Integration {
 			$doc = bp_docs_get_current_doc();
 
 		// If we still haven't got a post by now, query based on doc id
-		if ( empty( $doc ) )
+		if ( empty( $doc ) && ! empty( $doc_id ) ) {
 			$doc = get_post( $doc_id );
+		}
 
 		if ( ! empty( $doc ) ) {
 			$doc_settings = get_post_meta( $doc->ID, 'bp_docs_settings', true );
@@ -293,8 +295,8 @@ class BP_Docs_Groups_Integration {
 		}
 
 		// Default to the current group, but get the associated doc if not
-		$group_id = 0;
-		if ( ! empty( $doc ) ) {
+		$group_id = bp_get_current_group_id();
+		if ( ! $group_id && ! empty( $doc ) ) {
 			$group_id = bp_docs_get_associated_group_id( $doc->ID, $doc );
 			$group = groups_get_group( array( 'group_id' => $group_id ) );
 		}
@@ -304,7 +306,7 @@ class BP_Docs_Groups_Integration {
 		}
 
 		switch ( $action ) {
-			case 'create' :
+			case 'associate_with_group' :
 				$group_settings = groups_get_groupmeta( $group_id, 'bp-docs' );
 
 				// Provide a default value for legacy backpat
@@ -356,13 +358,21 @@ class BP_Docs_Groups_Integration {
 						break;
 
 					case 'creator' :
-						if ( $doc->post_author == $user_id )
+						if ( $doc->post_author == $user_id ) {
 							$user_can = true;
+						}
 						break;
 
 					case 'group-members' :
-						if ( groups_is_user_member( $user_id, $group_id ) )
+						if ( groups_is_user_member( $user_id, $group_id ) ) {
 							$user_can = true;
+						}
+						break;
+
+					case 'admins-mods' :
+						if ( groups_is_user_admin( $user_id, $group_id ) || groups_is_user_mod( $user_id, $group_id ) ) {
+							$user_can = true;
+						}
 						break;
 
 					case 'no-one' :
@@ -406,12 +416,11 @@ class BP_Docs_Groups_Integration {
 			} else if ( isset( $_GET['associated_group_id'] ) ) {
 				$group_id = intval( $_GET['associated_group_id'] );
 			} else if ( isset( $_GET['group'] ) ) {
-                                $maybe_group = BP_Groups_Group::get_id_from_slug( $_GET['group'] );
-                                if ( $maybe_group ) {
-                                        $group_id = $maybe_group;
+				$maybe_group = BP_Groups_Group::get_id_from_slug( $_GET['group'] );
+				if ( $maybe_group ) {
+					$group_id = $maybe_group;
 				}
 			}
-
 		}
 
 		$can_associate = self::user_can_associate_doc_with_group( bp_loggedin_user_id(), $group_id );
@@ -424,10 +433,18 @@ class BP_Docs_Groups_Integration {
 				'label' => sprintf( __( 'Members of %s', 'bp-docs' ), $group->name )
 			);
 
-			$options[50] = array(
-				'name'  => 'admins-mods',
-				'label' => sprintf( __( 'Admins and mods of %s', 'bp-docs' ), $group->name )
-			);
+			// "Admins and mods" setting only available to admins and mods
+			// Otherwise users end up locking themselves out
+			$group_settings = groups_get_groupmeta( $group_id, 'bp-docs' );
+			$is_admin = groups_is_user_admin( bp_loggedin_user_id(), $group_id );
+			$is_mod = groups_is_user_mod( bp_loggedin_user_id(), $group_id );
+
+			if ( $is_admin || $is_mod ) {
+				$options[50] = array(
+					'name'  => 'admins-mods',
+					'label' => sprintf( __( 'Admins and mods of %s', 'bp-docs' ), $group->name )
+				);
+			}
 
 			// Group-associated docs should have the edit/post
 			// permissions limited to group-members by default. If
@@ -497,8 +514,11 @@ class BP_Docs_Groups_Integration {
 	 * @return str $action The filtered action text
 	 */
 	function activity_action( $action, $user_link, $doc_link, $is_new_doc, $query ) {
-		if ( $query->item_type == 'group' ) {
-			$group 		= groups_get_group( array( 'group_id' => $query->item_id ) );
+		$doc_id = isset( $query->doc_id ) ? (int) $query->doc_id : 0;
+		$group_id = bp_docs_get_associated_group_id( $doc_id );
+
+		if ( $group_id ) {
+			$group 		= groups_get_group( array( 'group_id' => $group_id ) );
 			$group_url	= bp_get_group_permalink( $group );
 			$group_link	= '<a href="' . $group_url . '">' . $group->name . '</a>';
 
@@ -512,6 +532,29 @@ class BP_Docs_Groups_Integration {
 		return $action;
 	}
 
+	/**
+	 * Modify activity arguments before saving so newly-created group docs are
+	 * added into the group activity stream.
+	 *
+	 * @since 1.4.6
+	 *
+	 * @param array $args Activity arguments
+	 * @param obj $query The BP Docs query object
+	 * @return array
+	 */
+	public function activity_args( $args, $query ) {
+		global $bp;
+
+		$doc_id = isset( $query->doc_id ) ? (int) $query->doc_id : 0;
+		$group_id = bp_docs_get_associated_group_id( $doc_id );
+
+		if ( ! empty( $group_id ) ) {
+			$args['component'] = $bp->groups->id;
+			$args['item_id'] = $group_id;
+		}
+
+		return $args;
+	}
 
 	/**
 	 * Filters the activity action of 'new doc comment' activity to include the group name
@@ -714,8 +757,9 @@ class BP_Docs_Groups_Integration {
 		}
 
 		// This will probably only work on BP 1.3+
-		if ( !empty( $bp->bp_options_nav[$group_slug] ) && !empty( $bp->bp_options_nav[$group_slug][BP_DOCS_SLUG] ) ) {
-			$current_tab_name = $bp->bp_options_nav[$group_slug][BP_DOCS_SLUG]['name'];
+		$docs_slug = bp_docs_get_docs_slug();
+		if ( !empty( $bp->bp_options_nav[$group_slug] ) && !empty( $bp->bp_options_nav[$group_slug][ $docs_slug ] ) ) {
+			$current_tab_name = $bp->bp_options_nav[$group_slug][ $docs_slug ]['name'];
 
 			$doc_count = groups_get_groupmeta( $bp->groups->current_group->id, 'bp-docs-count' );
 
@@ -725,7 +769,7 @@ class BP_Docs_Groups_Integration {
 				$doc_count = groups_get_groupmeta( $bp->groups->current_group->id, 'bp-docs-count' );
 			}
 
-			$bp->bp_options_nav[$group_slug][BP_DOCS_SLUG]['name'] = sprintf( __( '%s <span>%d</span>', 'bp-docs' ), $current_tab_name, $doc_count );
+			$bp->bp_options_nav[$group_slug][ $docs_slug ]['name'] = sprintf( __( '%s <span>%d</span>', 'bp-docs' ), $current_tab_name, $doc_count );
 		}
 	}
 
@@ -789,63 +833,7 @@ class BP_Docs_Groups_Integration {
 			delete_transient( 'associated_groups-' . $object_id );
 		}
 	}
-
-	/**
-	 * Adds admin fields to Dashboard > BuddyPress > Settings
-	 *
-	 * @package BuddyPress Docs
-	 * @since 1.1.6
-	 */
-	function admin_screen_fields() {
-
-		?>
-
-		<tr>
-			<td class="label">
-				<label for="bp-admin[bp-docs-tab-name]"><?php _e( 'BuddyPress Docs group tab name:', 'bp-docs' ) ?></label>
-			</td>
-
-			<td>
-				<?php $this->group_tab_name_setting_markup() ?>
-			</td>
-		</tr>
-
-		<?php
-	}
-
-	public function group_tab_name_setting_markup() {
-		$bp_docs_tab_name = bp_get_option( 'bp-docs-tab-name' );
-
-		if ( empty( $bp_docs_tab_name ) )
-			$bp_docs_tab_name = __( 'Docs', 'bp-docs' );
-
-		?>
-		<input name="bp-admin[bp-docs-tab-name]" id="bp-docs-tab-name" type="text" value="<?php echo esc_html( $bp_docs_tab_name ) ?>" />
-		<p class="description"><?php _e( "Change the word on the BuddyPress group tab from 'Docs' to whatever you'd like. Keep in mind that this will not change the text anywhere else on the page. For a more thorough text change, create a <a href='http://codex.buddypress.org/extending-buddypress/customizing-labels-messages-and-urls/'>language file</a> for BuddyPress Docs.", 'bp-docs' ) ?></p>
-
-		<p class="description"><?php _e( "To change the URL slug for Docs, put <code>define( 'BP_DOCS_SLUG', 'collaborations' );</code> in your wp-config.php file, replacing 'collaborations' with your custom slug.", 'bp-docs' ) ?></p>
-		<?php
-	}
-
-	public function register_admin_settings() {
-		// Add the main section
-		add_settings_section( 'bp_docs', __( 'BuddyPress Docs Settings', 'bp-docs' ), 'bp_admin_setting_callback_xprofile_section', 'buddypress' );
-
-		// Allow avatar uploads
-		add_settings_field( 'bp-docs-group-tab-name', __( 'Group Tab Name', 'bp-docs' ), array( $this, 'group_tab_name_setting_markup' ), 'buddypress', 'bp_docs' );
-		register_setting( 'buddypress', 'bp-docs-group-tab-name', array( $this, 'admin_setting_callback' ) );
-	}
-
-	/**
-	 * A hack for backward compatibility
-	 */
-	public function admin_setting_callback() {
-		if ( isset( $_POST['bp-admin']['bp-docs-tab-name'] ) ) {
-			bp_update_option( 'bp-docs-tab-name', $_POST['bp-admin']['bp-docs-tab-name'] );
-		}
-	}
 }
-
 
 /**
  * Implementation of BP_Group_Extension
@@ -874,7 +862,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	function bp_docs_group_extension() {
 		global $bp;
 
-		$bp_docs_tab_name = get_option( 'bp-docs-tab-name' );
+		$bp_docs_tab_name = bp_docs_get_group_tab_name();
 
 		if ( !empty( $bp->groups->current_group->id ) )
 			$this->maybe_group_id	= $bp->groups->current_group->id;
@@ -889,7 +877,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 
 		$this->name 			= !empty( $bp_docs_tab_name ) ? $bp_docs_tab_name : __( 'Docs', 'bp-docs' );
 
-		$this->slug 			= BP_DOCS_SLUG;
+		$this->slug 			= bp_docs_get_docs_slug();
 
 		$this->enable_create_step	= $this->enable_create_step();
 		$this->create_step_position 	= 18;
@@ -949,7 +937,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
-	function create_screen() {
+	function create_screen( $group_id = null ) {
 		if ( !bp_is_group_creation_step( $this->slug ) )
 			return false;
 
@@ -965,7 +953,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	 * @since 1.0-beta
 	 */
 
-	function create_screen_save() {
+	function create_screen_save( $group_id = null ) {
 		global $bp;
 
 		check_admin_referer( 'groups_create_save_' . $this->slug );
@@ -979,7 +967,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
-	function edit_screen() {
+	function edit_screen( $group_id = null ) {
 		if ( !bp_is_group_admin_screen( $this->slug ) )
 			return false;
 
@@ -1001,7 +989,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
-	function edit_screen_save() {
+	function edit_screen_save( $group_id = null ) {
 		global $bp;
 
 		if ( !isset( $_POST['save'] ) )
@@ -1084,7 +1072,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 			<table class="group-docs-options">
 				<tr>
 					<td class="label">
-						<label for="bp-docs[can-create-admins]"><?php _e( 'Minimum role to create new Docs:', 'bp-docs' ) ?></label>
+						<label for="bp-docs[can-create-admins]"><?php _e( 'Minimum role to associate Docs with this group:', 'bp-docs' ) ?></label>
 					</td>
 
 					<td>
@@ -1415,9 +1403,24 @@ function bp_docs_get_group_term( $group_id ) {
 }
 
 function bp_docs_get_group_id_from_term_slug( $term_slug ) {
-	return intval( array_pop( explode( 'bp_docs_associated_group_', $term_slug ) ) );
+	$ts = explode( 'bp_docs_associated_group_', $term_slug );
+	return intval( array_pop( $ts ) );
 }
 
 function bp_docs_get_term_slug_from_group_id( $group_id ) {
 	return 'bp_docs_associated_group_' . (int) $group_id;
+}
+
+/**
+ * Get the name to show in the group tab
+ *
+ * @since 1.5
+ * @return string
+ */
+function bp_docs_get_group_tab_name() {
+	$name = get_option( 'bp-docs-tab-name' );
+	if ( empty( $name ) ) {
+		$name = __( 'Docs', 'bp-docs' );
+	}
+	return apply_filters( 'bp_docs_get_group_tab_name', $name );
 }

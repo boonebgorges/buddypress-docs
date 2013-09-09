@@ -3,8 +3,8 @@ Contributors: boonebgorges, cuny-academic-commons
 Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.3, BuddyPress 1.5
-Tested up to: WordPress 3.5.1, BuddyPress 1.8
-Stable tag: 1.4.5
+Tested up to: WordPress 3.6, BuddyPress 1.8.1
+Stable tag: 1.5
  
 Adds collaborative Docs to BuddyPress.
 
@@ -32,6 +32,24 @@ This plugin is in active development. For feature requests and bug reports, visi
 1. Sit back and watch the jack roll in
 
 == Changelog ==
+
+= 1.5 =
+* New standalone Settings panel, under Dashboard > BuddyPress Docs
+* Main Docs slug can now be changed via the admin
+* Fix bug that prevented the activity action from being modified for the associated group
+* Fix bug that prevented activity from appearing in group activity streams
+* Fix bug that prevented attachment uploads on group Doc creation pages
+* Recast "minimum role to create Doc in group" in terms of group association
+* Fix some textdomain errors
+* Fix incorrect form action for "has-attachment" filter in some cases
+* Fix My Groups view
+* Add Directory Excerpt Length admin option
+* Fix "admins and mods of..." permissions setting and prevent non-admin-mods from locking themselves out of Docs
+* More accurate list of items on "Edited by..." tab
+* Improve the way attachment URLs are built
+* Allow Docs with empty content field
+* Add hooks to templates
+* Improved compatibility with PHP 5.4+
 
 = 1.4.5 =
 * Fixes bug in access filter for "logged-in users" setting

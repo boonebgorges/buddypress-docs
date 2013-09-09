@@ -12,16 +12,6 @@ class BP_Docs_Hierarchy {
 	var $children;
 
 	/**
-	 * PHP 4 constructor
-	 *
-	 * @package BuddyPress Docs
-	 * @since 1.0-beta
-	 */
-	function bp_docs_hierarchy() {
-		$this->__construct();
-	}
-
-	/**
 	 * PHP 5 constructor
 	 *
 	 * @package BuddyPress Docs
@@ -39,6 +29,19 @@ class BP_Docs_Hierarchy {
 
 		// Display a doc's children on its single doc page
 		add_action( 'bp_docs_single_doc_meta', array( $this, 'show_children' ) );
+
+		// When a Doc is deleted, mark its children as parentless
+		add_action( 'bp_docs_doc_deleted', array( $this, 'deleted_parent' ) );
+	}
+
+	/**
+	 * PHP 4 constructor
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0-beta
+	 */
+	function bp_docs_hierarchy() {
+		$this->__construct();
 	}
 
 	/**
@@ -74,7 +77,7 @@ class BP_Docs_Hierarchy {
 
 		$args = array(
 			'ID' => $query->doc_id,
-			'post_parent' => $post_parent
+			'post_parent' => $post_parent,
 		);
 
 		// Don't let a revision get saved here
@@ -95,13 +98,13 @@ class BP_Docs_Hierarchy {
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
-	 function show_parent() {
-	 	global $post, $wp_query;
+	function show_parent() {
+		global $post, $wp_query;
 
-	 	$html = '';
-	 	$parent = false;
+		$html = '';
+		$parent = false;
 
-	 	if ( ! empty( $post->post_parent ) ) {
+		if ( ! empty( $post->post_parent ) ) {
 			$parent = get_post( $post->post_parent );
 			if ( !empty( $parent->ID ) ) {
 				$parent_url = bp_docs_get_doc_link( $parent->ID );
@@ -109,69 +112,91 @@ class BP_Docs_Hierarchy {
 
 				$html = "<p>" . __( 'Parent: ', 'bp-docs' ) . "<a href=\"$parent_url\" title=\"$parent_title\">$parent_title</a></p>";
 			}
-	 	}
+		}
 
-	 	echo apply_filters( 'bp_docs_hierarchy_show_parent', $html, $parent );
-	 }
+		echo apply_filters( 'bp_docs_hierarchy_show_parent', $html, $parent );
+	}
 
-	 /**
+	/**
 	  * Display links to the doc's children
 	  *
 	  * @package BuddyPress Docs
 	  * @since 1.0
 	  */
-	 function show_children() {
-	 	global $bp, $wp_query, $post;
+	function show_children() {
+		global $bp, $wp_query, $post;
 
-	 	// Get the child posts
-	 	$child_posts_args = array(
-	 		'post_type'	=> $bp->bp_docs->post_type_name,
-	 		'post_parent'	=> get_the_ID()
-	 	);
+		// Get the child posts
+		$child_posts_args = array(
+			'post_type'	=> $bp->bp_docs->post_type_name,
+			'post_parent'	=> get_the_ID()
+		);
 
-	 	$child_posts = new WP_Query( $child_posts_args );
+		$child_posts = new WP_Query( $child_posts_args );
 
-	 	// Workaround for WP funniness
-	 	$wp_query_stash = $wp_query;
-	 	$post_stash	= $post;
+		// Workaround for WP funniness
+		$wp_query_stash = $wp_query;
+		$post_stash	= $post;
 
-	 	// Assemble the link data out of the query
-	 	$child_data = array();
-	 	if ( $child_posts->have_posts() ) {
-	 		while ( $child_posts->have_posts() ) {
-	 			$child_posts->the_post();
+		// Assemble the link data out of the query
+		$child_data = array();
+		if ( $child_posts->have_posts() ) {
+			while ( $child_posts->have_posts() ) {
+				$child_posts->the_post();
 
-	 			$child_id = get_the_ID();
-	 			$child_data[$child_id] = array(
-	 				'post_name' => get_the_title(),
-	 				'post_link' => bp_docs_get_doc_link( $child_id )
-	 			);
-	 		}
-	 	}
+				$child_id = get_the_ID();
+				$child_data[$child_id] = array(
+					'post_name' => get_the_title(),
+					'post_link' => bp_docs_get_doc_link( $child_id )
+				);
+			}
+		}
 
-	 	// Workaround for WP funniness
-	 	$wp_query = $wp_query_stash;
-	 	$post     = $post_stash;
+		// Workaround for WP funniness
+		$wp_query = $wp_query_stash;
+		$post     = $post_stash;
 
-	 	$child_data = apply_filters( 'bp_docs_hierarchy_child_data', $child_data );
+		$child_data = apply_filters( 'bp_docs_hierarchy_child_data', $child_data );
 
-	 	// Create the HTML
-	 	$html = '';
-	 	if ( !empty( $child_data ) ) {
-	 		$html .= '<p>' . __( 'Children: ', 'bp-docs' );
+		// Create the HTML
+		$html = '';
+		if ( !empty( $child_data ) ) {
+			$html .= '<p>' . __( 'Children: ', 'bp-docs' );
 
-	 		$children_html = array();
-	 		foreach( $child_data as $child ) {
-	 			$children_html[] = '<a href="' . $child['post_link'] . '">' . $child['post_name'] . '</a>';
-	 		}
+			$children_html = array();
+			foreach( $child_data as $child ) {
+				$children_html[] = '<a href="' . $child['post_link'] . '">' . $child['post_name'] . '</a>';
+			}
 
-	 		$html .= implode( ', ', $children_html );
+			$html .= implode( ', ', $children_html );
 
-	 		$html .= '</p>';
-	 	}
+			$html .= '</p>';
+		}
 
-	 	echo apply_filters( 'bp_docs_hierarchy_show_children', $html, $child_data );
-	 }
+		echo apply_filters( 'bp_docs_hierarchy_show_children', $html, $child_data );
+	}
+
+	/**
+	 * When a Doc is deleted, mark its children as having no parent
+	 *
+	 * @since 1.5
+	 * @param array $args The $delete_args array from bp_docs_trash_dac()
+	 */
+	public function deleted_parent( $args ) {
+		if ( ! isset( $args['ID'] ) ) {
+			return;
+		}
+
+		$children = get_children( array(
+			'post_parent' => $args['ID'],
+			'post_type' => bp_docs_get_post_type_name(),
+		), ARRAY_A );
+
+		foreach ( $children as $cid => $child ) {
+			wp_update_post( array(
+				'ID' => $child['ID'],
+				'post_parent' => 0,
+			) );
+		}
+	}
 }
-
-?>

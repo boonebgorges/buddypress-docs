@@ -5,16 +5,6 @@ class BP_Docs {
 	var $associated_item_tax_name;
 
 	/**
-	 * PHP 4 constructor
-	 *
-	 * @package BuddyPress Docs
-	 * @since 1.0-beta
-	 */
-	function bp_docs() {
-		$this->__construct();
-	}
-
-	/**
 	 * PHP 5 constructor
 	 *
 	 * @package BuddyPress Docs
@@ -62,6 +52,16 @@ class BP_Docs {
 		add_action( 'template_redirect', array( $this, 'protect_doc_access' ) );
 
 		add_action( 'admin_init', array( $this, 'flush_rewrite_rules' ) );
+	}
+
+	/**
+	 * PHP 4 constructor
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0-beta
+	 */
+	function bp_docs() {
+		$this->__construct();
 	}
 
 	/**
@@ -185,10 +185,6 @@ class BP_Docs {
 		if ( !defined( 'BP_DOCS_INCLUDES_PATH_ABS' ) )
 			define( 'BP_DOCS_INCLUDES_PATH_ABS', str_replace( ABSPATH, '', BP_DOCS_INCLUDES_PATH ) );
 
-		// The main slug
-		if ( !defined( 'BP_DOCS_SLUG' ) )
-			define( 'BP_DOCS_SLUG', 'docs' );
-
 		// The slug used when viewing a doc category
 		if ( !defined( 'BP_DOCS_CATEGORY_SLUG' ) )
 			define( 'BP_DOCS_CATEGORY_SLUG', 'category' );
@@ -282,7 +278,7 @@ class BP_Docs {
 			'query_var'    => false,
 			'has_archive'  => true,
 			'rewrite'      => array(
-				'slug'       => bp_docs_get_slug(),
+				'slug'       => bp_docs_get_docs_slug(),
 				'with_front' => false
 			)
 		) );
@@ -341,7 +337,7 @@ class BP_Docs {
 		// Don't load the History component if post revisions are disabled
 		if ( defined( 'WP_POST_REVISIONS' ) && WP_POST_REVISIONS ) {
 			require_once( BP_DOCS_INCLUDES_PATH . 'addon-history.php' );
-			$this->history =& new BP_Docs_History;
+			$this->history = new BP_Docs_History;
 		}
 
 		// Load the wikitext addon
@@ -376,11 +372,11 @@ class BP_Docs {
 			 */
 
 			// Create
-			BP_DOCS_SLUG . '/' . BP_DOCS_CREATE_SLUG . '/?$' =>
+			bp_docs_get_docs_slug() . '/' . BP_DOCS_CREATE_SLUG . '/?$' =>
 				'index.php?post_type=' . $this->post_type_name . '&name=' . $wp_rewrite->preg_index( 1 ) . '&' . BP_DOCS_CREATE_SLUG . '=1',
 
 			// My Groups
-			BP_DOCS_SLUG . '/' . BP_DOCS_MY_GROUPS_SLUG . '/?$' =>
+			bp_docs_get_docs_slug() . '/' . BP_DOCS_MY_GROUPS_SLUG . '/?$' =>
 				'index.php?post_type=' . $this->post_type_name . '&name=' . $wp_rewrite->preg_index( 1 ) . '&' . BP_DOCS_MY_GROUPS_SLUG . '=1',
 
 			/**
@@ -388,15 +384,15 @@ class BP_Docs {
 			 */
 
 			// Edit
-			BP_DOCS_SLUG . '/([^/]+)/' . BP_DOCS_EDIT_SLUG . '/?$' =>
+			bp_docs_get_docs_slug() . '/([^/]+)/' . BP_DOCS_EDIT_SLUG . '/?$' =>
 				'index.php?post_type=' . $this->post_type_name . '&name=' . $wp_rewrite->preg_index( 1 ) . '&' . BP_DOCS_EDIT_SLUG . '=1',
 
 			// History
-			BP_DOCS_SLUG . '/([^/]+)/' . BP_DOCS_HISTORY_SLUG . '/?$' =>
+			bp_docs_get_docs_slug() . '/([^/]+)/' . BP_DOCS_HISTORY_SLUG . '/?$' =>
 				'index.php?post_type=' . $this->post_type_name . '&name=' . $wp_rewrite->preg_index( 1 ) . '&' . BP_DOCS_HISTORY_SLUG . '=1',
 
 			// Delete
-			BP_DOCS_SLUG . '/([^/]+)/' . BP_DOCS_DELETE_SLUG . '/?$' =>
+			bp_docs_get_docs_slug() . '/([^/]+)/' . BP_DOCS_DELETE_SLUG . '/?$' =>
 				'index.php?post_type=' . $this->post_type_name . '&name=' . $wp_rewrite->preg_index( 1 ) . '&' . BP_DOCS_HISTORY_SLUG . '=1'
 
 
@@ -522,19 +518,17 @@ class BP_Docs {
 		// Check to see whether our rules have been registered yet, by
 		// finding a Docs rule and then comparing it to the registered rules
 		foreach ( $wp_rewrite->extra_rules_top as $rewrite => $rule ) {
-			if ( 0 === strpos( $rewrite, bp_docs_get_slug() ) ) {
+			if ( 0 === strpos( $rewrite, bp_docs_get_docs_slug() ) ) {
+				$test_rewrite = $rewrite;
 				$test_rule = $rule;
+				break;
 			}
 		}
 		$registered_rules = get_option( 'rewrite_rules' );
 
-		if ( is_array( $registered_rules ) && ! in_array( $test_rule, $registered_rules ) ) {
+		if ( is_array( $registered_rules ) && ( ! isset( $registered_rules[ $test_rewrite ] ) || $test_rule !== $registered_rules[ $test_rewrite ] ) ) {
 			flush_rewrite_rules();
 		}
-	}
-
-	function activation() {
-		error_log('activating');
 	}
 
 	/**
@@ -549,5 +543,3 @@ class BP_Docs {
 		$bp->bp_docs = new BP_Docs_Component;
 	}
 }
-
-?>

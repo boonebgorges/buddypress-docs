@@ -13,7 +13,9 @@
 
 	<thead>
 		<tr valign="bottom">
-			<th scope="column" class="attachment-clip-cell"> </th>
+			<?php if ( bp_docs_enable_attachments() ) : ?>
+				<th scope="column" class="attachment-clip-cell"> </th>
+			<?php endif ?>
 
 			<th scope="column" class="title-cell<?php bp_docs_is_current_orderby_class( 'title' ) ?>">
 				<a href="<?php bp_docs_order_by_link( 'title' ) ?>"><?php _e( 'Title', 'bp-docs' ); ?></a>
@@ -38,14 +40,18 @@
         <tbody>
 	<?php while ( bp_docs_has_docs() ) : bp_docs_the_doc() ?>
 		<tr>
-			<td class="attachment-clip-cell">
-				<?php bp_docs_attachment_icon() ?>
-			</td>
+			<?php if ( bp_docs_enable_attachments() ) : ?>
+				<td class="attachment-clip-cell">
+					<?php bp_docs_attachment_icon() ?>
+				</td>
+			<?php endif ?>
 
 			<td class="title-cell">
 				<a href="<?php bp_docs_doc_link() ?>"><?php the_title() ?></a>
 
-				<?php the_excerpt() ?>
+				<?php if ( bp_docs_get_excerpt_length() ) : ?>
+					<?php the_excerpt() ?>
+				<?php endif ?>
 
 				<div class="row-actions">
 					<?php bp_docs_doc_action_links() ?>
@@ -87,7 +93,7 @@
 
 <?php else: ?>
 
-        <?php if ( bp_docs_current_user_can( 'create' ) ) : ?>
+        <?php if ( bp_docs_current_user_can_create_in_context() ) : ?>
                 <p class="no-docs"><?php printf( __( 'There are no docs for this view. Why not <a href="%s">create one</a>?', 'bp-docs' ), bp_docs_get_create_link() ) ?>
 	<?php else : ?>
 		<p class="no-docs"><?php _e( 'There are no docs for this view.', 'bp-docs' ) ?></p>

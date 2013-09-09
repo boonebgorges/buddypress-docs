@@ -38,7 +38,14 @@ function bp_docs_has_docs( $args = array() ) {
 		// Build some intelligent defaults
 
 		// Default to current group id, if available
-		$d_group_id = bp_is_group() ? bp_get_current_group_id() : array();
+		if ( bp_is_group() ) {
+			$d_group_id = bp_get_current_group_id();
+		} else if ( bp_docs_is_mygroups_directory() ) {
+			$my_groups = groups_get_user_groups( bp_loggedin_user_id() );
+			$d_group_id = ! empty( $my_groups['total'] ) ? $my_groups['groups'] : array( 0 );
+		} else {
+			$d_group_id = array();
+		}
 
 		// If this is a Started By tab, set the author ID
 		$d_author_id = bp_docs_is_started_by() ? bp_displayed_user_id() : array();
@@ -426,7 +433,7 @@ function bp_docs_mydocs_link() {
          * @since 1.2
          */
 	function bp_docs_get_mydocs_link() {
-		return apply_filters( 'bp_docs_get_mydocs_link', trailingslashit( bp_loggedin_user_domain() . bp_docs_get_slug() ) );
+		return apply_filters( 'bp_docs_get_mydocs_link', trailingslashit( bp_loggedin_user_domain() . bp_docs_get_docs_slug() ) );
 	}
 
 /**
@@ -724,6 +731,33 @@ function bp_docs_doc_associated_group_markup() {
 	// Populate the $groups_template global
 	global $groups_template;
 	bp_has_groups( $groups_args );
+
+	// Filter out the groups where associate_with permissions forbid
+	$removed = 0;
+	foreach ( $groups_template->groups as $gtg_key => $gtg ) {
+		$this_group_settings = groups_get_groupmeta( $gtg->id, 'bp-docs' );
+		if ( isset( $this_group_settings['can-create'] ) && in_array( $this_group_settings['can-create'], array( 'admin', 'mod' ) ) ) {
+			$is_admin = groups_is_user_admin( bp_loggedin_user_id(), $gtg->id );
+			if ( 'mod' == $this_group_settings['can-create'] ) {
+				$is_mod = groups_is_user_mod( bp_loggedin_user_id(), $gtg->id );
+				$remove = ! $is_mod && ! $is_admin;
+			} else {
+				$remove = ! $is_admin;
+			}
+
+			if ( $remove ) {
+				unset( $groups_template->groups[ $gtg_key ] );
+				$removed++;
+			}
+		}
+	}
+
+	// cleanup, if necessary from filter above
+	if ( $removed ) {
+		$groups_template->groups = array_values( $groups_template->groups );
+		$groups_template->group_count = $groups_template->group_count - $removed;
+		$groups_template->total_group_count = $groups_template->total_group_count - $removed;
+	}
 
 	?>
 	<tr>
@@ -1251,6 +1285,31 @@ function bp_docs_slug() {
 		return apply_filters( 'bp_docs_get_slug', $bp->bp_docs->slug );
 	}
 
+function bp_docs_get_docs_slug() {
+	global $bp;
+
+	if ( defined( 'BP_DOCS_SLUG' ) ) {
+		$slug = BP_DOCS_SLUG;
+		$is_in_wp_config = true;
+	} else {
+		$slug = bp_get_option( 'bp-docs-slug' );
+		if ( empty( $slug ) ) {
+			$slug = 'docs';
+		}
+
+		// for backward compatibility
+		define( 'BP_DOCS_SLUG', $slug );
+		$is_in_wp_config = false;
+	}
+
+	// For the settings page
+	if ( ! isset( $bp->bp_docs->slug_defined_in_wp_config['slug'] ) ) {
+		$bp->bp_docs->slug_defined_in_wp_config['slug'] = (int) $is_in_wp_config;
+	}
+
+	return apply_filters( 'bp_docs_get_docs_slug', $slug );
+}
+
 /**
  * Outputs the tabs at the top of the Docs view (All Docs, New Doc, etc)
  *
@@ -1703,6 +1762,22 @@ function bp_docs_is_global_directory() {
 	return apply_filters( 'bp_docs_is_global_directory', $is_global_directory );
 }
 
+/**
+ * Is this the My Groups directory?
+ *
+ * @since 1.5
+ * @return bool
+ */
+function bp_docs_is_mygroups_directory() {
+	$is_mygroups_directory = false;
+
+	if ( is_post_type_archive( bp_docs_get_post_type_name() ) && get_query_var( BP_DOCS_MY_GROUPS_SLUG ) && ! get_query_var( BP_DOCS_CREATE_SLUG ) ) {
+		$is_mygroups_directory = true;
+	}
+
+	return apply_filters( 'bp_docs_is_mygroups_directory', $is_mygroups_directory );
+}
+
 function bp_docs_get_sidebar() {
 	if ( $template = apply_filters( 'bp_docs_sidebar_template', '' ) ) {
 		load_template( $template );
@@ -1786,10 +1861,10 @@ function bp_docs_attachment_item_markup( $attachment_id, $format = 'full' ) {
 	$markup = '';
 
 	$attachment = get_post( $attachment_id );
-	$attachment_ext = preg_replace( '/^.+?\.([^.]+)$/', '$1', $attachment->guid );
+	$attachment_url = apply_filters( 'bp_docs_attachment_url_base', wp_get_attachment_url( $attachment->ID ), $attachment );
 
-	$attachment_url = $attachment->guid;
-	$attachment_filename = basename( $attachment->guid );
+	$attachment_ext = preg_replace( '/^.+?\.([^.]+)$/', '$1', $attachment_url );
+	$attachment_filename = basename( $attachment_url );
 
 	if ( 'full' === $format ) {
 		$attachment_delete_html = '';

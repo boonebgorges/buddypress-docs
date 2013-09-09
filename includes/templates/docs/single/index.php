@@ -19,11 +19,15 @@
 		<?php bp_docs_inline_toggle_js() ?>
 	<?php endif ?>
 
+	<?php do_action( 'bp_docs_before_doc_content' ) ?>
+
 	<div class="doc-content">
 		<?php bp_docs_the_content() ?>
 	</div>
 
-	<?php if ( bp_docs_doc_has_attachments() ) : ?>
+	<?php do_action( 'bp_docs_after_doc_content' ) ?>
+
+	<?php if ( bp_docs_enable_attachments() && bp_docs_doc_has_attachments() ) : ?>
 		<div class="doc-attachments">
 			<h3><?php _e( 'Attachments', 'bp-docs' ) ?></h3>
 			<?php include ( bp_docs_locate_template( 'single/attachments.php' ) ) ?>

@@ -325,6 +325,25 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
 }
 
 /**
+ * Can the current user create a Doc in this context?
+ *
+ * Is sensitive to group contexts (and the "associated with" permissions
+ * levels)
+ *
+ * @since 1.5
+ * @return bool
+ */
+function bp_docs_current_user_can_create_in_context() {
+	if ( function_exists( 'bp_is_group' ) && bp_is_group() ) {
+		$can_create = bp_docs_current_user_can( 'associate_with_group' );
+	} else {
+		$can_create = bp_docs_current_user_can( 'create' );
+	}
+
+	return apply_filters( 'bp_docs_current_user_can_create_in_context', $can_create );
+}
+
+/**
  * Update the Doc count for a given item
  *
  * @since 1.2
@@ -393,7 +412,7 @@ function bp_docs_is_docs_component() {
 		$retval = true;
 	} else if ( isset( $p->post_type ) && bp_docs_get_post_type_name() == $p->post_type ) {
 		$retval = true;
-	} else if ( bp_is_current_component( bp_docs_get_slug() ) ) {
+	} else if ( bp_is_current_component( bp_docs_get_docs_slug() ) ) {
 		// This covers cases where we're looking at the Docs component of a user
 		$retval = true;
 	}
@@ -589,14 +608,10 @@ function bp_docs_get_access_term_user( $user_id = false ) {
  * Get the access term corresponding to group-members for a given group
  *
  * @since 1.2
- * @param int|bool $user_id Defaults to logged in user
+ * @param int $group_id
  * @return string The term slug
  */
 function bp_docs_get_access_term_group_member( $user_id = false ) {
-	if ( false === $user_id ) {
-		$user_id = bp_loggedin_user_id();
-	}
-
 	return apply_filters( 'bp_docs_get_access_term_group_member', 'bp_docs_access_group_member_' . intval( $user_id ) );
 }
 
@@ -604,14 +619,10 @@ function bp_docs_get_access_term_group_member( $user_id = false ) {
  * Get the access term corresponding to admins-mods for a given group
  *
  * @since 1.2
- * @param int|bool $user_id Defaults to logged in user
+ * @param int $group_id
  * @return string The term slug
  */
 function bp_docs_get_access_term_group_adminmod( $user_id = false ) {
-	if ( false === $user_id ) {
-		$user_id = bp_loggedin_user_id();
-	}
-
 	return apply_filters( 'bp_docs_get_access_term_group_adminmod', 'bp_docs_access_group_adminmod_' . intval( $user_id ) );
 }
 

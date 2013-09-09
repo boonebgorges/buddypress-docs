@@ -1,15 +1,6 @@
 <?php
 
 class BP_Docs_Wikitext {
-	/**
-	 * PHP 4 constructor
-	 *
-	 * @package BuddyPress Docs
-	 * @since 1.2
-	 */
-	function bp_docs_wikitext() {
-		$this->__construct();
-	}
 
 	/**
 	 * PHP 5 constructor
@@ -19,6 +10,16 @@ class BP_Docs_Wikitext {
 	 */
 	function __construct() {
 		add_filter( 'the_content', array( $this, 'bracket_links' ) );
+	}
+
+	/**
+	 * PHP 4 constructor
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.2
+	 */
+	function bp_docs_wikitext() {
+		$this->__construct();
 	}
 
 	/**

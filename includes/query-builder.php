@@ -258,14 +258,22 @@ class BP_Docs_Query {
 			// @todo - Not sure how this will scale
 			$posts = get_posts( array(
 				'author'                 => $editor_id,
-				'post_status'            => 'inherit',
-				'post_type'              => 'revision',
+				'post_status'            => array( 'inherit', 'publish' ),
+				'post_type'              => array( 'revision', bp_docs_get_post_type_name() ),
 				'posts_per_page'         => -1,
 				'update_post_meta_cache' => false,
 				'update_post_term_cache' => false,
 			) );
 
-			$post_ids = array_merge( $post_ids, array_unique( wp_list_pluck( $posts, 'post_parent' ) ) );
+			$this_author_post_ids = array();
+			foreach ( $posts as $post ) {
+				if ( 'revision' === $post->post_type ) {
+					$this_author_post_ids[] = $post->post_parent;
+				} else {
+					$this_author_post_ids[] = $post->ID;
+				}
+			}
+			$post_ids = array_merge( $post_ids, $this_author_post_ids );
 		}
 
 		// @todo Might be faster to let the dupes through and let MySQL optimize
@@ -427,12 +435,11 @@ class BP_Docs_Query {
 			}
 		}
 
-		if ( empty( $_POST['doc']['title'] ) || empty( $doc_content ) ) {
-			// Both the title and the content fields are required
-			$result['message'] = __( 'Both the title and the content fields are required.', 'bp-docs' );
-			$result['redirect'] = $this->current_view;
+		if ( empty( $_POST['doc']['title'] ) ) {
+			// The title field is required
+			$result['message'] = __( 'The title field is required.', 'bp-docs' );
+			$result['redirect'] = ! empty( $this->doc_slug ) ? 'edit' : 'create';
 		} else {
-			// If both the title and content fields are filled in, we can proceed
 			$defaults = array(
 				'post_type'    => $this->post_type_name,
 				'post_title'   => $_POST['doc']['title'],
@@ -554,7 +561,7 @@ class BP_Docs_Query {
 
 		$message_type = $result['redirect'] == 'single' ? 'success' : 'error';
 
-		$redirect_url = trailingslashit( bp_get_root_domain() . '/' . BP_DOCS_SLUG );
+		$redirect_url = trailingslashit( bp_get_root_domain() . '/' . bp_docs_get_docs_slug() );
 
 		if ( $result['redirect'] == 'single' ) {
 			$redirect_url .= $this->doc_slug;

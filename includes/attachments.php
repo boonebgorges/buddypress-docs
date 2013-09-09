@@ -8,7 +8,7 @@ class BP_Docs_Attachments {
 	protected $htaccess_path;
 
 	function __construct() {
-		if ( ! apply_filters( 'bp_docs_enable_attachments', true ) ) {
+		if ( ! bp_docs_enable_attachments() ) {
 			return;
 		}
 
@@ -522,7 +522,7 @@ class BP_Docs_Attachments {
 
 	public static function filter_markup() {
 		$has_attachment = isset( $_REQUEST['has-attachment'] ) && in_array( $_REQUEST['has-attachment'], array( 'yes', 'no' ) ) ? $_REQUEST['has-attachment'] : '';
-		$form_action = wp_guess_url();
+		$form_action = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 		foreach ( $_GET as $k => $v ) {
 			$form_action = remove_query_arg( $k, $form_action );
 		}
@@ -570,8 +570,16 @@ class BP_Docs_Attachments {
 		$is_ajax = isset( $_SERVER['REQUEST_METHOD'] ) && 'POST' === $_SERVER['REQUEST_METHOD'] && 'async-upload.php' === substr( $_SERVER['REQUEST_URI'], strrpos( $_SERVER['REQUEST_URI'], '/' ) + 1 );
 
 		if ( $is_ajax ) {
+			// Clean up referer
+			$referer = $_SERVER['HTTP_REFERER'];
+			$qp = strpos( $referer, '?' );
+			if ( false !== $qp ) {
+				$referer = substr( $referer, 0, $qp );
+			}
+			$referer = trailingslashit( $referer );
+
 			// Existing Doc
-			$item_id = self::get_doc_id_from_url( $_SERVER['HTTP_REFERER'] );
+			$item_id = self::get_doc_id_from_url( $referer );
 			if ( $item_id ) {
 				$item = get_post( $item_id );
 				$is_doc = bp_docs_get_post_type_name() === $item->post_type;
@@ -579,7 +587,7 @@ class BP_Docs_Attachments {
 
 			// Create Doc
 			if ( ! $is_doc ) {
-				$is_doc = $_SERVER['HTTP_REFERER'] === bp_docs_get_create_link();
+				$is_doc = $referer === bp_docs_get_create_link();
 			}
 		} else {
 			$is_doc = bp_docs_is_existing_doc() || bp_docs_is_doc_create();
@@ -617,3 +625,13 @@ class BP_Docs_Attachments {
 	}
 }
 
+/**
+ * Are attachments enabled?
+ *
+ * @since 1.5
+ * @return bool
+ */
+function bp_docs_enable_attachments() {
+	$enabled = get_option( 'bp-docs-enable-attachments', 'yes' );
+	return apply_filters( 'bp_docs_enable_attachments', 'yes' === $enabled );
+}
