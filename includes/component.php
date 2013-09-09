@@ -25,6 +25,7 @@ class BP_Docs_Component extends BP_Component {
 	var $includes_url;
 
 	var $current_view;
+	var $slug_defined_in_wp_config = array();
 
 	/**
 	 * Constructor
