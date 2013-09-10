@@ -145,7 +145,7 @@ class BP_Docs_Admin {
 		global $bp;
 
 		$slug = bp_docs_get_docs_slug();
-		$is_in_wp_config = 1 === $bp->bp_docs->docs_slug_defined_in_wp_config['slug'];
+		$is_in_wp_config = 1 === $bp->bp_docs->slug_defined_in_wp_config['slug'];
 
 		?>
 		<input name="bp-docs-slug" id="bp-docs-slug" type="text" value="<?php echo esc_html( $slug ) ?>" <?php if ( $is_in_wp_config ) : ?>disabled="disabled" <?php endif ?>/>
