@@ -136,6 +136,11 @@ class BP_Docs_Admin {
 		register_setting( 'bp-docs-settings', 'bp-docs-enable-attachments' );
 	}
 
+	public function general_section() {}
+	public function users_section() {}
+	public function groups_section() {}
+	public function attachments_section() {}
+
 	public function slug_setting_markup() {
 		global $bp;
 

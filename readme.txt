@@ -33,6 +33,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.5.1 =
+* Fix debug warnings on Settings page
+
 = 1.5 =
 * New standalone Settings panel, under Dashboard > BuddyPress Docs
 * Main Docs slug can now be changed via the admin
