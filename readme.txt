@@ -35,6 +35,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 = 1.5.1 =
 * Fix debug warnings on Settings page
+* Fix bug with Settings page when BP_DOCS_SLUG is set in wp-config.php
 
 = 1.5 =
 * New standalone Settings panel, under Dashboard > BuddyPress Docs
