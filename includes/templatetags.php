@@ -861,7 +861,7 @@ function bp_docs_doc_settings_markup( $doc_id = 0, $group_id = 0 ) {
 		$doc_id = is_single() ? get_the_ID() : 0;
 	}
 
-	$doc_settings = (array) get_post_meta( $doc_id, 'bp_docs_settings', true );
+	$doc_settings = bp_docs_get_doc_settings( $doc_id );
 
 	$settings_fields = array(
 		'read' => array(
@@ -895,7 +895,7 @@ function bp_docs_doc_settings_markup( $doc_id = 0, $group_id = 0 ) {
 }
 
 function bp_docs_access_options_helper( $settings_field, $doc_id = 0, $group_id = 0 ) {
-	$doc_settings = get_post_meta( $doc_id, 'bp_docs_settings', true );
+	$doc_settings = bp_docs_get_doc_settings( $doc_id );
 
 	$setting = isset( $doc_settings[ $settings_field['name'] ] ) ? $doc_settings[ $settings_field['name'] ] : '';
 	?>

@@ -606,7 +606,7 @@ class BP_Docs_Component extends BP_Component {
 		// Until better individual activity item privacy controls are available in BP,
 		// comments will only be shown in the activity stream if "Who can read comments on
 		// this doc?" is set to "Anyone", "Logged-in Users" or "Group members"
-		$doc_settings = get_post_meta( $doc_id, 'bp_docs_settings', true );
+		$doc_settings = bp_docs_get_doc_settings( $doc_id );
 
 		if ( ! empty( $doc_settings['read_comments'] ) && ! in_array( $doc_settings['read_comments'], array( 'anyone', 'loggedin', 'group-members' ) ) ) {
 			return false;

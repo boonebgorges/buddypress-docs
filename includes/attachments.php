@@ -215,7 +215,7 @@ class BP_Docs_Attachments {
 	public function get_is_private() {
 //		if ( is_null( $this->is_private ) ) {
 			$doc_id = $this->get_doc_id();
-			$doc_settings = (array) get_post_meta( $doc_id, 'bp_docs_settings', true );
+			$doc_settings = bp_docs_get_doc_settings( $doc_id );
 			$this->is_private = isset( $doc_settings['read'] ) && 'anyone' !== $doc_settings['read'];
 //		}
 

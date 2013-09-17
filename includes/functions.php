@@ -281,7 +281,7 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
 	$user_can = false;
 
 	if ( ! empty( $doc ) ) {
-		$doc_settings = get_post_meta( $doc_id, 'bp_docs_settings', true );
+		$doc_settings = bp_docs_get_doc_settings( $doc_id );
 		$the_setting  = isset( $doc_settings[ $action ] ) ? $doc_settings[ $action ] : '';
 
 		if ( empty( $the_setting ) ) {
