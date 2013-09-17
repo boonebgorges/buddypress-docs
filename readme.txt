@@ -34,6 +34,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 == Changelog ==
 
 = 1.5.1 =
+* Fix bug that prevented settings from being populated in some cases, resulting in improper permissions
 * Fix debug warnings on Settings page
 * Fix bug with Settings page when BP_DOCS_SLUG is set in wp-config.php
 
