@@ -447,7 +447,8 @@ function bp_docs_get_doc_settings( $doc_id = 0 ) {
 		'edit'          => 'loggedin',
 		'read_comments' => 'anyone',
 		'post_comments' => 'anyone',
-		'view_history'  => 'anyone'
+		'view_history'  => 'anyone',
+		'manage'        => 'creator',
 	);
 
 	$doc_settings = wp_parse_args( $saved_settings, $default_settings );
