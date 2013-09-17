@@ -3,8 +3,8 @@ Contributors: boonebgorges, cuny-academic-commons
 Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.3, BuddyPress 1.5
-Tested up to: WordPress 3.6, BuddyPress 1.8.1
-Stable tag: 1.5
+Tested up to: WordPress 3.6.1, BuddyPress 1.8.1
+Stable tag: 1.5.1
  
 Adds collaborative Docs to BuddyPress.
 
@@ -32,6 +32,11 @@ This plugin is in active development. For feature requests and bug reports, visi
 1. Sit back and watch the jack roll in
 
 == Changelog ==
+
+= 1.5.1 =
+* Fix bug that prevented settings from being populated in some cases, resulting in improper permissions
+* Fix debug warnings on Settings page
+* Fix bug with Settings page when BP_DOCS_SLUG is set in wp-config.php
 
 = 1.5 =
 * New standalone Settings panel, under Dashboard > BuddyPress Docs

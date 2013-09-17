@@ -281,7 +281,7 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
 	$user_can = false;
 
 	if ( ! empty( $doc ) ) {
-		$doc_settings = get_post_meta( $doc_id, 'bp_docs_settings', true );
+		$doc_settings = bp_docs_get_doc_settings( $doc_id );
 		$the_setting  = isset( $doc_settings[ $action ] ) ? $doc_settings[ $action ] : '';
 
 		if ( empty( $the_setting ) ) {
@@ -447,7 +447,8 @@ function bp_docs_get_doc_settings( $doc_id = 0 ) {
 		'edit'          => 'loggedin',
 		'read_comments' => 'anyone',
 		'post_comments' => 'anyone',
-		'view_history'  => 'anyone'
+		'view_history'  => 'anyone',
+		'manage'        => 'creator',
 	);
 
 	$doc_settings = wp_parse_args( $saved_settings, $default_settings );

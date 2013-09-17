@@ -46,7 +46,7 @@ function bp_docs_map_meta_caps( $caps, $cap, $user_id, $args ) {
 	}
 
 	$post_type    = get_post_type_object( $doc->post_type );
-	$doc_settings = get_post_meta( $doc->ID, 'bp_docs_settings', true );
+	$doc_settings = bp_docs_get_doc_settings( $doc_id );
 
 	// Reset all caps. We bake from scratch
 	$caps = array();
