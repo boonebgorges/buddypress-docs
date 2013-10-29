@@ -1246,8 +1246,7 @@ function bp_docs_is_existing_doc() {
 		return false;
 	}
 
-	$post_type_obj = get_queried_object();
-	return is_single() && isset( $post_type_obj->post_type ) && bp_docs_get_post_type_name() == $post_type_obj->post_type;
+	return is_singular( bp_docs_get_post_type_name() );
 }
 
 /**
@@ -1604,7 +1603,7 @@ function bp_docs_is_single_doc() {
 
 	// There's an odd bug in WP_Query that causes errors when attempting to access
 	// get_queried_object() too early. The check for $wp_query->post is a workaround
-	if ( is_single() && ! empty( $wp_query->post ) ) {
+	if ( is_singular() && ! empty( $wp_query->post ) ) {
 		$post = get_queried_object();
 
 		if ( isset( $post->post_type ) && bp_docs_get_post_type_name() == $post->post_type ) {
