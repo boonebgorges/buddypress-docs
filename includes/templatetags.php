@@ -347,7 +347,7 @@ function bp_docs_doc_link( $doc_id = false ) {
 	 */
 	function bp_docs_get_doc_link( $doc_id = false ) {
 		if ( false === $doc_id ) {
-			if ( is_single() && $q = get_queried_object() ) {
+			if ( is_singular() && $q = get_queried_object() ) {
 				$doc_id = isset( $q->ID ) ? $q->ID : 0;
 			} else if ( get_the_ID() ) {
 				$doc_id = get_the_ID();
@@ -715,7 +715,7 @@ function bp_docs_doc_associated_group_markup() {
 	}
 
 	// If the selected group is still 0, see if there's something in the db
-	if ( ! $selected_group && is_single() ) {
+	if ( ! $selected_group && is_singular() ) {
 		$selected_group = bp_docs_get_associated_group_id( get_the_ID() );
 	}
 
@@ -797,7 +797,7 @@ function bp_docs_associated_group_summary( $group_id = 0 ) {
 			$group_slug = $_GET['group'];
 			$group_id   = BP_Groups_Group::get_id_from_slug( $group_slug );
 		} else {
-			$doc_id = is_single() ? get_the_ID() : 0;
+			$doc_id = is_singular() ? get_the_ID() : 0;
 			$group_id = bp_docs_get_associated_group_id( $doc_id );
 		}
 	}
@@ -858,7 +858,7 @@ function bp_docs_doc_settings_markup( $doc_id = 0, $group_id = 0 ) {
 	global $bp;
 
 	if ( ! $doc_id ) {
-		$doc_id = is_single() ? get_the_ID() : 0;
+		$doc_id = is_singular() ? get_the_ID() : 0;
 	}
 
 	$doc_settings = bp_docs_get_doc_settings( $doc_id );
