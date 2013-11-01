@@ -275,7 +275,7 @@ class BP_Docs {
 			'show_ui'      => $this->show_cpt_ui(),
 			'hierarchical' => true,
 			'supports'     => array( 'title', 'editor', 'revisions', 'excerpt', 'comments', 'author' ),
-			'query_var'    => false,
+			'query_var'    => true,
 			'has_archive'  => true,
 			'rewrite'      => array(
 				'slug'       => bp_docs_get_docs_slug(),
