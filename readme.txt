@@ -33,6 +33,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.5.5 =
+* Fix bug with permalinks in groups, introduced in change to is_singular()
+
 = 1.5.4 =
 * Fix bug with WP 3.7 that caused single Docs to 404 when Permalinks were set to Page Name.
 
