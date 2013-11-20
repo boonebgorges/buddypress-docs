@@ -1980,7 +1980,7 @@ function bp_docs_doc_row_classes() {
 	}
 }
 /**
- * Adds classes to a row in the document list table
+ * Adds text after the title to indicate doc is in the trash
  *
  * @since 1.5
  */
