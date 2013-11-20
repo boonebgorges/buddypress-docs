@@ -1959,4 +1959,33 @@ function bp_docs_doc_attachment_drawer() {
 
 	echo $html;
 }
+/**
+ * Adds classes to a row in the document list table
+ *
+ * @since 1.5
+ */
+function bp_docs_doc_row_classes() { 
+	$classes = array();
 
+	if ( get_post_status( get_the_ID() ) == 'trash' ) {
+		 $classes[] = 'bp-doc-trashed-doc'; 
+		}
+
+	// Pass the classes out as an array for easy unsetting or adding new elements
+	$classes = apply_filters( 'bp_docs_doc_row_classes', $classes );
+	
+	if ( !empty( $classes ) ) {
+		$classes = implode( ' ', $classes);
+		echo ' class="' . $classes . '"';
+	}
+}
+/**
+ * Adds classes to a row in the document list table
+ *
+ * @since 1.5
+ */
+function bp_docs_doc_trash_notice() { 	
+	if ( get_post_status( get_the_ID() ) == 'trash' ) {
+		echo ' <span class="bp-docs-trashed-doc-notice">' . __( 'Trash', 'bp-docs' ) . '</span>'; 
+		}
+}

@@ -39,7 +39,7 @@
 
         <tbody>
 	<?php while ( bp_docs_has_docs() ) : bp_docs_the_doc() ?>
-		<tr>
+ 		<tr<?php bp_docs_doc_row_classes(); ?>>
 			<?php if ( bp_docs_enable_attachments() ) : ?>
 				<td class="attachment-clip-cell">
 					<?php bp_docs_attachment_icon() ?>
@@ -47,7 +47,7 @@
 			<?php endif ?>
 
 			<td class="title-cell">
-				<a href="<?php bp_docs_doc_link() ?>"><?php the_title() ?></a>
+				<a href="<?php bp_docs_doc_link() ?>"><?php the_title() ?></a> <?php bp_docs_doc_trash_notice(); ?>
 
 				<?php if ( bp_docs_get_excerpt_length() ) : ?>
 					<?php the_excerpt() ?>

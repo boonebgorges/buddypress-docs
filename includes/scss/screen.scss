@@ -93,6 +93,9 @@ body.bp-docs div.page ul {
 }
 
 .doctable {
+	border-collapse: separate;
+	border-spacing: 0;
+	
 	p {
 		padding: 0;
 		margin: 0;
@@ -104,6 +107,14 @@ body.bp-docs div.page ul {
 
 	tr:nth-child(even) {
 		background-color: $grey;
+	}
+
+	.bp-doc-trashed-doc .attachment-clip-cell {
+		border-left: 4px solid red;
+	}
+
+	.bp-docs-trashed-doc-notice {
+		color: red;
 	}
 }
 
