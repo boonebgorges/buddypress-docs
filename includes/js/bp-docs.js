@@ -93,7 +93,9 @@ jQuery(document).ready(function($){
 		var filter_title = $(this);
 		var filter_title_id = filter_title.attr('id');
 		var filter_id = filter_title_id.split('-').pop();
-
+		var filter_to_show_id = 'docs-filter-section-' + filter_id;
+		var showing_filter_id = $('.docs-filter-section-open').attr('id');
+		
 		$('.docs-filter-title').removeClass( 'current' );
 		filter_title.addClass( 'current' );
 
@@ -105,7 +107,9 @@ jQuery(document).ready(function($){
 		}
 
 		$.when( all_section_slideup() ).done(function(){
-			$('#docs-filter-section-' + filter_id).fadeIn();
+			if ( filter_to_show_id != showing_filter_id ) {
+				$('#' + filter_to_show_id).fadeIn().addClass( 'docs-filter-section-open' );
+			}
 		});
 		return false;
 	});
