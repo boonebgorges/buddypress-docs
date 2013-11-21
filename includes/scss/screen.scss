@@ -486,6 +486,19 @@ a.docs-filter-title.current {
 	font-size: .8em;
 	padding: 6px 10px;
 	margin-top: 8px;
+	transition: max-height 2s ease;	
+	overflow: hidden;
+	position: relative;
+}
+
+#docs-filter-section-tags a.tags-action-button,
+#docs-filter-section-tags a.tags-action-button:visited {
+	line-height: 3em;
+	text-decoration: none;
+	background: #fff;
+	background-opacity: .5;
+	border-radius: 3px;
+	padding: 5px 10px;
 }
 
 body.js .docs-filter-section {
@@ -512,10 +525,19 @@ p#filter-by-tag {
 .entry-content ul#tags-list {
 	list-style-type: none;
 	margin-bottom: 0;
-}
+	padding: 0;
 
-.entry-content #tags-list li {
-	margin-left: 0;
+	li {
+		margin-left: 0;
+
+		&.hidden-tag {
+			display: none;
+		}
+
+		&.tags-ellipses {
+			font-style: italic;
+		}
+	}
 }
 
 .groups-cell ul li img.avatar {

@@ -33,6 +33,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.5.6 =
+* Allow current filter to be toggled by reclicking filter name
+
 = 1.5.5 =
 * Fix bug with permalinks in groups, introduced in change to is_singular()
 
