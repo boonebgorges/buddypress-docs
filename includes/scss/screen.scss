@@ -8,6 +8,15 @@ $dark_grey: #ccc;
 $grey_text: #757575;
 $toggle_radius: 2px;
 
+@mixin multi-columns($columns, $column_gap) {
+  -moz-column-count: $columns;
+  -moz-column-gap: $column_gap;
+  -webkit-column-count: $columns;
+  -webkit-column-gap: $column_gap;
+  column-count: $columns;
+  column-gap: $column_gap;
+}
+
 .hide-if-no-js {
 	display: none;
 }
@@ -543,6 +552,7 @@ p#filter-by-tag {
 	list-style-type: none;
 	margin-bottom: 0;
 	padding: 0;
+	@include multi-columns(2, 10%);
 
 	li {
 		margin-left: 0;
@@ -819,4 +829,17 @@ table.diff {
 
 table#post-revisions {
 	margin-top: 20px;
+}
+
+//Media query for larger screens
+@media screen and (min-width:50em) { 
+	.entry-content ul#tags-list {
+		@include multi-columns(4, 5%);
+	}
+}
+//Media query for larger screens
+@media screen and (min-width:71em) { 
+	.entry-content ul#tags-list {
+		@include multi-columns(5, 5%);
+	}
 }
