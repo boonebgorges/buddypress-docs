@@ -519,12 +519,14 @@ a.docs-filter-title.current {
 
 #docs-filter-section-tags a.tags-action-button,
 #docs-filter-section-tags a.tags-action-button:visited {
+	display: block; // Let the button span the entire box
 	line-height: 3em;
 	text-decoration: none;
+	text-align: center;
 	background: #fff;
 	background-opacity: .5;
 	border-radius: 3px;
-	padding: 5px 10px;
+	margin-bottom: 1em;
 }
 
 body.js .docs-filter-section {
@@ -548,7 +550,7 @@ p#filter-by-tag {
 	margin-top: 8px;
 }
 
-.entry-content ul#tags-list {
+ul#tags-list {
 	list-style-type: none;
 	margin-bottom: 0;
 	padding: 0;
