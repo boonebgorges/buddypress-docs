@@ -1845,14 +1845,17 @@ function bp_docs_get_doc_attachments( $doc_id = null ) {
 		return array();
 	}
 
-	$atts = get_posts( array(
+	$atts_args = apply_filters( 'bp_docs_get_doc_attachments_args', array(
 		'post_type' => 'attachment',
 		'post_parent' => $doc_id,
 		'update_post_meta_cache' => false,
 		'update_post_term_cache' => false,
 		'posts_per_page' => -1,
-	) );
-	return $atts;
+	), $doc_id );
+
+	$atts = get_posts( $atts_args );
+
+	return apply_filters( 'bp_docs_get_doc_attachments', $atts, $doc_id );
 }
 
 // @todo make <li> optional?
