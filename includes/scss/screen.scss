@@ -39,6 +39,10 @@ body.bp-docs div.page ul {
 .doc-tabs {
 	overflow: hidden;
 
+	ul {
+		padding-left: 0;
+	}
+
 	li {
 		float: left;
 		margin: 0 5px;
