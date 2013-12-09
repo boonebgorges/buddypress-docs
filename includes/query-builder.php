@@ -234,8 +234,7 @@ class BP_Docs_Query {
 
 			// Set the taxonomy query. Filtered so that plugins can alter the query
 			// Filtering by groups also happens in this way
-			$wp_query_args['tax_query'] = apply_filters(
-                        'bp_docs_tax_query', $wp_query_args['tax_query'], $this );
+			$wp_query_args['tax_query'] = apply_filters( 'bp_docs_tax_query', $wp_query_args['tax_query'], $this );
 
 			if ( !empty( $this->query_args['parent_id'] ) ) {
 				$wp_query_args['post_parent'] = $this->query_args['parent_id'];
@@ -245,8 +244,7 @@ class BP_Docs_Query {
 		// Filter these arguments just before they're sent to WP_Query
 		// Devs: This allows you to send any custom parameter you'd like, and modify the
 		// query appropriately
-		$wp_query_args = apply_filters( 'bp_docs_pre_query_args',
-                $wp_query_args, $this );
+		$wp_query_args = apply_filters( 'bp_docs_pre_query_args', $wp_query_args, $this );
 
 		$this->query = new WP_Query( $wp_query_args );
 
