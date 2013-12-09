@@ -276,6 +276,12 @@ class BP_Docs_Query {
 			$post_ids = array_merge( $post_ids, $this_author_post_ids );
 		}
 
+		// If the list is empty (the users haven't edited any Docs yet)
+		// force 0 so that no items are shown
+		if ( empty( $post_ids ) ) {
+			$post_ids = array( 0 );
+		}
+
 		// @todo Might be faster to let the dupes through and let MySQL optimize
 		return array_unique( $post_ids );
 	}
