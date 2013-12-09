@@ -54,7 +54,8 @@ class BP_Docs_Query {
 			'orderby'	 => 'modified',  // 'modified', 'title', 'author', 'created'
 			'paged'		 => 1,
 			'posts_per_page' => 10,
-			'search_terms'   => ''
+			'search_terms'   => '',
+			'status'         => 'publish',
 		);
 		$r = wp_parse_args( $args, $defaults );
 
@@ -215,6 +216,12 @@ class BP_Docs_Query {
 			// If an author_id param has been passed, pass it directly to WP_Query
 			if ( ! empty( $this->query_args['author_id'] ) ) {
 				$wp_query_args['author'] = implode( ',', wp_parse_id_list( $this->query_args['author_id'] ) );
+			}
+
+			// If this is the user's "started by me" library, we'll include trashed posts
+			// Any edit to a trashed post restores it to status 'publish'
+			if ( ! empty( $this->query_args['author_id'] ) && $this->query_args['author_id'] == get_current_user_id()  ) {
+				$wp_query_args['post_status'] = array( 'publish', 'trash' );
 			}
 
 			// If an edited_by_id param has been passed, get a set
