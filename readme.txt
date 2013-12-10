@@ -36,6 +36,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 = 1.5.6 =
 * Allow current filter to be toggled by reclicking filter name
 * Fix bug in "Edited by Me" logic when user has not edited any Docs
+* Show deleted Docs on Started By Me tab, so they can be easily restored
 
 = 1.5.5 =
 * Fix bug with permalinks in groups, introduced in change to is_singular()
