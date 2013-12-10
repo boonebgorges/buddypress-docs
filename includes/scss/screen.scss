@@ -116,10 +116,12 @@ body.bp-docs div.page ul {
 	.bp-doc-trashed-doc .attachment-clip-cell {
 		border-left: 4px solid red;
 	}
+}
 
-	.bp-docs-trashed-doc-notice {
-		color: red;
-	}
+.bp-docs-trashed-doc-notice {
+	color: red;
+	font-size: .9em;
+	font-style: italic;
 }
 
 /* Theme compat overrides */
@@ -611,6 +613,14 @@ div.doc-content {
 #bp-docs-single-doc-header {
 	overflow: hidden;
 }
+
+body.trashed-doc {
+	#buddypress {
+		border-left: 4px solid red;
+		padding-left: 10px;
+	}
+}
+
 div.doc-permissions {
 	float: right;
 	width: 35%;

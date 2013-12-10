@@ -511,6 +511,24 @@ class BP_Docs_Component extends BP_Component {
 
 			bp_core_redirect( home_url( bp_docs_get_docs_slug() ) );
 		}
+
+		if ( bp_docs_is_doc_read() && ! empty( $_GET['untrash'] ) && ! empty( $_GET['doc_id'] ) ) {
+			check_admin_referer( 'bp_docs_untrash' );
+
+			$untrash_doc_id = absint( $_GET['doc_id'] );
+
+			if ( bp_docs_current_user_can( 'manage', $untrash_doc_id ) ) {
+				if ( bp_docs_untrash_doc( $untrash_doc_id ) ) {
+					bp_core_add_message( __( 'Doc successfully removed from Trash!', 'bp-docs' ) );
+				} else {
+					bp_core_add_message( __( 'Could not remove Doc from Trash.', 'bp-docs' ) );
+				}
+			} else {
+				bp_core_add_message( __( 'You do not have permission to remove that Doc from the Trash.', 'bp-docs' ), 'error' );
+			}
+
+			bp_core_redirect( bp_docs_get_doc_link( $untrash_doc_id ) );
+		}
 	}
 
 	/**
@@ -1001,6 +1019,10 @@ class BP_Docs_Component extends BP_Component {
 	function body_class( $classes ) {
 		if ( bp_docs_is_docs_component() ) {
 			$classes[] = 'bp-docs';
+		}
+
+		if ( bp_docs_is_doc_trashed() ) {
+			$classes[] = 'trashed-doc';
 		}
 
 		return $classes;
