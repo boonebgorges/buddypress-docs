@@ -37,6 +37,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Allow current filter to be toggled by reclicking filter name
 * Fix bug in "Edited by Me" logic when user has not edited any Docs
 * Show deleted Docs on Started By Me tab, so they can be easily restored
+* Improved interface for Tags directory filter when many tags are present
 * Prevent logged-out user from accessing Create page
 * Improved compatibility with BuddyPress 1.9
 
