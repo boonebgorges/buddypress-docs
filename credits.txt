@@ -16,7 +16,7 @@ Huge thanks go out to the individuals who donate their translations, making plug
 - Spanish: Selu Vega
 - Italian: Luca Camellini
 - German: Birgit, HansRuedi Keller
-- French: stbouvier
+- French: stbouvier, Xavier Jimenez  
 - Swedish: Thomas Schneider
 - Brazilian Portuguese: John Morgenthaler
 - European Portuguese: André Barriguinha

@@ -83,17 +83,52 @@ jQuery(document).ready(function($){
 		});
 	});
 
+	/** Directory filters ************************************************/
+
+	var hidden_tag_counter = 0,
+		tag_button_action,
+		$dfsection,
+		$dfsection_tags = $( '#docs-filter-section-tags' ),
+		$dfsection_tags_list = $dfsection_tags.find( 'ul#tags-list' ),
+		$dfsection_tags_items = $dfsection_tags_list.children( 'li' );
+
+	// Set up filter sections
+	// - hide if necessary
 	$('.docs-filter-section').each(function(){
-		if ( ! $(this).hasClass( 'docs-filter-section-open' ) ) {
-			$(this).hide();
+		$dfsection = $(this);
+		// Open sections:
+		if ( ! $dfsection.hasClass( 'docs-filter-section-open' ) ) {
+			$dfsection.hide();
 		}
 	});
+
+	// Collapse the Tags filter if it contains greater than 10 items
+	if ( $dfsection_tags_items.length > 10 ) {
+		tags_section_collapse( $dfsection_tags );
+	}
+
+	$dfsection_tags.on( 'click', 'a.tags-action-button', function( e ) {
+		$dfsection_tags.slideUp( 300, function() {
+			tag_button_action = $( e.target ).hasClass( 'tags-unhide' ) ? 'expand' : 'collapse';	
+
+			if ( 'expand' == tag_button_action ) {
+				tags_section_expand( $dfsection_tags );
+			} else if ( 'collapse' == tag_button_action ) {
+				tags_section_collapse( $dfsection_tags );
+			}
+
+			$dfsection_tags.slideDown();
+		} );
+		return false;
+	} );
 
 	$('.docs-filter-title').on('click',function(e){
 		var filter_title = $(this);
 		var filter_title_id = filter_title.attr('id');
 		var filter_id = filter_title_id.split('-').pop();
-
+		var filter_to_show_id = 'docs-filter-section-' + filter_id;
+		var showing_filter_id = $('.docs-filter-section-open').attr('id');
+		
 		$('.docs-filter-title').removeClass( 'current' );
 		filter_title.addClass( 'current' );
 
@@ -105,10 +140,45 @@ jQuery(document).ready(function($){
 		}
 
 		$.when( all_section_slideup() ).done(function(){
-			$('#docs-filter-section-' + filter_id).fadeIn();
+			if ( filter_to_show_id != showing_filter_id ) {
+				$('#' + filter_to_show_id).fadeIn().addClass( 'docs-filter-section-open' );
+			}
 		});
 		return false;
 	});
+
+	/**
+	 * Collapse the Tags filter section
+	 */
+	function tags_section_collapse( $section ) {
+		$section.find( 'a.tags-hide' ).remove();
+
+		$dfsection_tags_items.each( function( k, v ) {
+			if ( k > 6 ) {
+				$( v ).addClass( 'hidden-tag' );
+				hidden_tag_counter++;
+			}
+		} );
+
+		// Add an ellipses item
+		var st = '&hellip; and %d more';
+		st = st.replace( /%d/, hidden_tag_counter );  
+
+		$dfsection_tags_list.append( '<li class="tags-ellipses">' + st + '</li>' );
+
+		$dfsection_tags.prepend( '<a class="tags-unhide tags-action-button" href="#">show all tags</a>' );
+	}
+
+	/**
+	 * Expand the Tags filter section
+	 */
+	function tags_section_expand( $section ) {
+		$section.find( 'a.tags-unhide' ).remove();
+		$section.find( '.tags-ellipses' ).remove();
+		$dfsection_tags_items.removeClass( 'hidden-tag' );
+		$dfsection_tags.prepend( '<a class="tags-hide tags-action-button" href="#">show fewer tags</a>' );
+		hidden_tag_counter = 0;
+	}
 
 	function focus_in_content_area(e){
 		var code = e.keyCode || e.which;

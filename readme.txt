@@ -3,8 +3,8 @@ Contributors: boonebgorges, cuny-academic-commons
 Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.3, BuddyPress 1.5
-Tested up to: WordPress 3.7.1, BuddyPress 1.8.1
-Stable tag: 1.5.5
+Tested up to: WordPress 3.8, BuddyPress 1.9
+Stable tag: 1.5.6
  
 Adds collaborative Docs to BuddyPress.
 
@@ -32,6 +32,14 @@ This plugin is in active development. For feature requests and bug reports, visi
 1. Sit back and watch the jack roll in
 
 == Changelog ==
+
+= 1.5.6 =
+* Allow current filter to be toggled by reclicking filter name
+* Fix bug in "Edited by Me" logic when user has not edited any Docs
+* Show deleted Docs on Started By Me tab, so they can be easily restored
+* Improved interface for Tags directory filter when many tags are present
+* Prevent logged-out user from accessing Create page
+* Improved compatibility with BuddyPress 1.9
 
 = 1.5.5 =
 * Fix bug with permalinks in groups, introduced in change to is_singular()

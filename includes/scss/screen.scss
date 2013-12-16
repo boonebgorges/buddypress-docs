@@ -8,6 +8,15 @@ $dark_grey: #ccc;
 $grey_text: #757575;
 $toggle_radius: 2px;
 
+@mixin multi-columns($columns, $column_gap) {
+  -moz-column-count: $columns;
+  -moz-column-gap: $column_gap;
+  -webkit-column-count: $columns;
+  -webkit-column-gap: $column_gap;
+  column-count: $columns;
+  column-gap: $column_gap;
+}
+
 .hide-if-no-js {
 	display: none;
 }
@@ -38,6 +47,10 @@ body.bp-docs div.page ul {
 
 .doc-tabs {
 	overflow: hidden;
+
+	ul {
+		padding-left: 0;
+	}
 
 	li {
 		float: left;
@@ -93,6 +106,9 @@ body.bp-docs div.page ul {
 }
 
 .doctable {
+	border-collapse: separate;
+	border-spacing: 0;
+	
 	p {
 		padding: 0;
 		margin: 0;
@@ -105,6 +121,16 @@ body.bp-docs div.page ul {
 	tr:nth-child(even) {
 		background-color: $grey;
 	}
+
+	.bp-doc-trashed-doc .attachment-clip-cell {
+		border-left: 4px solid red;
+	}
+}
+
+.bp-docs-trashed-doc-notice {
+	color: red;
+	font-size: .9em;
+	font-style: italic;
 }
 
 /* Theme compat overrides */
@@ -486,6 +512,21 @@ a.docs-filter-title.current {
 	font-size: .8em;
 	padding: 6px 10px;
 	margin-top: 8px;
+	transition: max-height 2s ease;	
+	overflow: hidden;
+	position: relative;
+}
+
+#docs-filter-section-tags a.tags-action-button,
+#docs-filter-section-tags a.tags-action-button:visited {
+	display: block; // Let the button span the entire box
+	line-height: 3em;
+	text-decoration: none;
+	text-align: center;
+	background: #fff;
+	background-opacity: .5;
+	border-radius: 3px;
+	margin-bottom: 1em;
 }
 
 body.js .docs-filter-section {
@@ -509,13 +550,23 @@ p#filter-by-tag {
 	margin-top: 8px;
 }
 
-.entry-content ul#tags-list {
+ul#tags-list {
 	list-style-type: none;
 	margin-bottom: 0;
-}
+	padding: 0;
+	@include multi-columns(2, 10%);
 
-.entry-content #tags-list li {
-	margin-left: 0;
+	li {
+		margin-left: 0;
+
+		&.hidden-tag {
+			display: none;
+		}
+
+		&.tags-ellipses {
+			font-style: italic;
+		}
+	}
 }
 
 .groups-cell ul li img.avatar {
@@ -574,6 +625,14 @@ div.doc-content {
 #bp-docs-single-doc-header {
 	overflow: hidden;
 }
+
+body.trashed-doc {
+	#buddypress {
+		border-left: 4px solid red;
+		padding-left: 10px;
+	}
+}
+
 div.doc-permissions {
 	float: right;
 	width: 35%;
@@ -772,4 +831,17 @@ table.diff {
 
 table#post-revisions {
 	margin-top: 20px;
+}
+
+//Media query for larger screens
+@media screen and (min-width:50em) { 
+	.entry-content ul#tags-list {
+		@include multi-columns(4, 5%);
+	}
+}
+//Media query for larger screens
+@media screen and (min-width:71em) { 
+	.entry-content ul#tags-list {
+		@include multi-columns(5, 5%);
+	}
 }
