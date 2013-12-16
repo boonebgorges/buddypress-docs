@@ -257,8 +257,9 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
 	// Only certain actions are checked against doc_ids
 	$need_doc_ids_actions = apply_filters( 'bp_docs_need_doc_ids_actions', array( 'edit', 'manage', 'view_history', 'read', 'read_comments', 'post_comments' ) );
 
-	// Grant all permissions on documents being created
-	if ( false === $doc_id && bp_docs_is_doc_create() ) {
+	// Grant all permissions on documents being created, as long as the
+	// user is logged in
+	if ( is_user_logged_in() && ( false === $doc_id ) && bp_docs_is_doc_create() ) {
 		return true;
 	}
 
