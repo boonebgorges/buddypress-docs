@@ -941,6 +941,10 @@ function bp_docs_doc_action_links() {
 		$links[] = '<a href="' . bp_docs_get_doc_link() . BP_DOCS_HISTORY_SLUG . '">' . __( 'History', 'bp-docs' ) . '</a>';
 	}
 
+	if ( bp_docs_current_user_can( 'manage', get_the_ID() ) && bp_docs_is_doc_trashed( get_the_ID() ) ) {
+		$links[] = '<a href="' . bp_docs_get_remove_from_trash_link( get_the_ID() ) . '" class="delete confirm">' . __( 'Untrash', 'bp-docs' ) . '</a>';
+	}
+
 	echo implode( ' &#124; ', $links );
 }
 
@@ -1110,6 +1114,66 @@ function bp_docs_delete_doc_link() {
 		$delete_link = wp_nonce_url( add_query_arg( BP_DOCS_DELETE_SLUG, '1', $doc_permalink ), 'bp_docs_delete' );
 
 		return apply_filters( 'bp_docs_get_delete_doc_link', $delete_link, $doc_permalink );
+	}
+
+
+/**
+ * Echo the URL to remove a Doc from the Trash.
+ *
+ * @since 1.5.5
+ */
+function bp_docs_remove_from_trash_link( $doc_id = false ) {
+	echo bp_docs_get_remove_from_trash_link( $doc_id );
+}
+	/**
+	 * Get the URL for removing a Doc from the Trash.
+	 *
+	 * @since 1.5.5
+	 *
+	 * @param $doc_id ID of the Doc.
+	 * @return string URL for Doc untrashing.
+	 */
+	function bp_docs_get_remove_from_trash_link( $doc_id ) {
+		$doc_permalink = bp_docs_get_doc_link( $doc_id );
+
+		$untrash_link = wp_nonce_url( add_query_arg( array(
+			BP_DOCS_UNTRASH_SLUG => '1',
+			'doc_id' => intval( $doc_id ),
+		), $doc_permalink ), 'bp_docs_untrash' );
+
+		return apply_filters( 'bp_docs_get_remove_from_trash_link', $untrash_link, $doc_permalink );
+	}
+
+/**
+ * Echo the Delete/Untrash link for use on single Doc pages.
+ *
+ * @since 1.5.5
+ *
+ * @param int $doc_id Optional. Default: current Doc.
+ */
+function bp_docs_delete_doc_button( $doc_id = false ) {
+	echo bp_docs_get_delete_doc_button( $doc_id );
+}
+	/**
+	 * Get HTML for the Delete/Untrash link used on single Doc pages.
+	 *
+	 * @since 1.5.5
+	 *
+	 * @param int $doc_id Optional. Default: ID of current Doc.
+	 * @return string HTML of Delete/Remove from Trash link.
+	 */
+	function bp_docs_get_delete_doc_button( $doc_id = false ) {
+		if ( ! $doc_id ) {
+			$doc_id = bp_docs_is_existing_doc() ? get_queried_object_id() : get_the_ID();
+		}
+
+		if ( bp_docs_is_doc_trashed( $doc_id ) ) {
+			$button = '<a class="delete-doc-button untrash-doc-button confirm" href="' . bp_docs_get_remove_from_trash_link( $doc_id ) . '">' . __( 'Remove from Trash', 'bp-docs' ) . '</a>';
+		} else {
+			$button = '<a class="delete-doc-button confirm" href="' . bp_docs_get_delete_doc_link() . '">' . __( 'Delete', 'bp-docs' ) . '</a>';
+		}
+
+		return $button;
 	}
 
 /**
@@ -1481,7 +1545,7 @@ function bp_docs_doc_permissions_snapshot( $args = array() ) {
 	);
 
 	foreach ( $settings as $l => $v ) {
-		if ( 'anyone' == $v || $public_settings[ $l ] == $v ) {
+		if ( 'anyone' == $v || ( isset( $public_settings[ $l ] ) && $public_settings[ $l ] == $v ) ) {
 
 			$anyone_count++;
 
@@ -1502,7 +1566,7 @@ function bp_docs_doc_permissions_snapshot( $args = array() ) {
 		}
 	}
 
-	$settings_count = count( $settings );
+	$settings_count = count( $public_settings );
 	if ( $settings_count == $private_count ) {
 		$summary       = 'private';
 		$summary_label = __( 'Private', 'bp-docs' );
@@ -1845,14 +1909,17 @@ function bp_docs_get_doc_attachments( $doc_id = null ) {
 		return array();
 	}
 
-	$atts = get_posts( array(
+	$atts_args = apply_filters( 'bp_docs_get_doc_attachments_args', array(
 		'post_type' => 'attachment',
 		'post_parent' => $doc_id,
 		'update_post_meta_cache' => false,
 		'update_post_term_cache' => false,
 		'posts_per_page' => -1,
-	) );
-	return $atts;
+	), $doc_id );
+
+	$atts = get_posts( $atts_args );
+
+	return apply_filters( 'bp_docs_get_doc_attachments', $atts, $doc_id );
 }
 
 // @todo make <li> optional?
@@ -1960,3 +2027,54 @@ function bp_docs_doc_attachment_drawer() {
 	echo $html;
 }
 
+/**
+ * Add classes to a row in the document list table.
+ *
+ * Currently supports: bp-doc-trashed-doc
+ *
+ * @since 1.5.5
+ */
+function bp_docs_doc_row_classes() {
+	$classes = array();
+
+	if ( get_post_status( get_the_ID() ) == 'trash' ) {
+		$classes[] = 'bp-doc-trashed-doc';
+	}
+
+	// Pass the classes out as an array for easy unsetting or adding new elements
+	$classes = apply_filters( 'bp_docs_doc_row_classes', $classes );
+
+	if ( ! empty( $classes ) ) {
+		$classes = implode( ' ', $classes );
+		echo ' class="' . esc_attr( $classes ) . '"';
+	}
+}
+
+/**
+ * Add "Trash" notice next to deleted Docs.
+ *
+ * @since 1.5.5
+ */
+function bp_docs_doc_trash_notice() {
+	if ( get_post_status( get_the_ID() ) == 'trash' ) {
+		echo ' <span title="' . __( 'This Doc is in the Trash', 'bp-docs' ) . '" class="bp-docs-trashed-doc-notice">' . __( 'Trash', 'bp-docs' ) . '</span>';
+	}
+}
+
+/**
+ * Is the given Doc trashed?
+ *
+ * @since 1.5.5
+ *
+ * @param int $doc_id Optional. ID of the doc. Default: current doc.
+ * @return bool True if doc is trashed, otherwise false.
+ */
+function bp_docs_is_doc_trashed( $doc_id = false ) {
+	if ( ! $doc_id ) {
+		$doc = get_queried_object();
+	} else {
+		$doc = get_post( $doc_id );
+	}
+
+	return isset( $doc->post_status ) && 'trash' == $doc->post_status;
+}

@@ -54,7 +54,8 @@ class BP_Docs_Query {
 			'orderby'	 => 'modified',  // 'modified', 'title', 'author', 'created'
 			'paged'		 => 1,
 			'posts_per_page' => 10,
-			'search_terms'   => ''
+			'search_terms'   => '',
+			'status'         => 'publish',
 		);
 		$r = wp_parse_args( $args, $defaults );
 
@@ -217,6 +218,12 @@ class BP_Docs_Query {
 				$wp_query_args['author'] = implode( ',', wp_parse_id_list( $this->query_args['author_id'] ) );
 			}
 
+			// If this is the user's "started by me" library, we'll include trashed posts
+			// Any edit to a trashed post restores it to status 'publish'
+			if ( ! empty( $this->query_args['author_id'] ) && $this->query_args['author_id'] == get_current_user_id()  ) {
+				$wp_query_args['post_status'] = array( 'publish', 'trash' );
+			}
+
 			// If an edited_by_id param has been passed, get a set
 			// of post ids that have revisions authored by that user
 			if ( ! empty( $this->query_args['edited_by_id'] ) ) {
@@ -227,8 +234,7 @@ class BP_Docs_Query {
 
 			// Set the taxonomy query. Filtered so that plugins can alter the query
 			// Filtering by groups also happens in this way
-			$wp_query_args['tax_query'] = apply_filters(
-                        'bp_docs_tax_query', $wp_query_args['tax_query'], $this );
+			$wp_query_args['tax_query'] = apply_filters( 'bp_docs_tax_query', $wp_query_args['tax_query'], $this );
 
 			if ( !empty( $this->query_args['parent_id'] ) ) {
 				$wp_query_args['post_parent'] = $this->query_args['parent_id'];
@@ -238,8 +244,7 @@ class BP_Docs_Query {
 		// Filter these arguments just before they're sent to WP_Query
 		// Devs: This allows you to send any custom parameter you'd like, and modify the
 		// query appropriately
-		$wp_query_args = apply_filters( 'bp_docs_pre_query_args',
-                $wp_query_args, $this );
+		$wp_query_args = apply_filters( 'bp_docs_pre_query_args', $wp_query_args, $this );
 
 		$this->query = new WP_Query( $wp_query_args );
 
@@ -274,6 +279,12 @@ class BP_Docs_Query {
 				}
 			}
 			$post_ids = array_merge( $post_ids, $this_author_post_ids );
+		}
+
+		// If the list is empty (the users haven't edited any Docs yet)
+		// force 0 so that no items are shown
+		if ( empty( $post_ids ) ) {
+			$post_ids = array( 0 );
 		}
 
 		// @todo Might be faster to let the dupes through and let MySQL optimize

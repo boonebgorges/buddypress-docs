@@ -48,6 +48,10 @@ body.bp-docs div.page ul {
 .doc-tabs {
 	overflow: hidden;
 
+	ul {
+		padding-left: 0;
+	}
+
 	li {
 		float: left;
 		margin: 0 5px;
@@ -102,6 +106,9 @@ body.bp-docs div.page ul {
 }
 
 .doctable {
+	border-collapse: separate;
+	border-spacing: 0;
+	
 	p {
 		padding: 0;
 		margin: 0;
@@ -114,6 +121,16 @@ body.bp-docs div.page ul {
 	tr:nth-child(even) {
 		background-color: $grey;
 	}
+
+	.bp-doc-trashed-doc .attachment-clip-cell {
+		border-left: 4px solid red;
+	}
+}
+
+.bp-docs-trashed-doc-notice {
+	color: red;
+	font-size: .9em;
+	font-style: italic;
 }
 
 /* Theme compat overrides */
@@ -533,7 +550,7 @@ p#filter-by-tag {
 	margin-top: 8px;
 }
 
-.entry-content ul#tags-list {
+ul#tags-list {
 	list-style-type: none;
 	margin-bottom: 0;
 	padding: 0;
@@ -608,6 +625,14 @@ div.doc-content {
 #bp-docs-single-doc-header {
 	overflow: hidden;
 }
+
+body.trashed-doc {
+	#buddypress {
+		border-left: 4px solid red;
+		padding-left: 10px;
+	}
+}
+
 div.doc-permissions {
 	float: right;
 	width: 35%;

@@ -42,7 +42,7 @@ function bp_docs_template_include( $template = '' ) {
 		return $template;
 	}
 
-	$do_theme_compat = class_exists( 'BP_Theme_Compat' ) && apply_filters( 'bp_docs_do_theme_compat', true, $template );
+	$do_theme_compat = bp_docs_do_theme_compat();
 
 	if ( $do_theme_compat ) {
 
@@ -64,6 +64,20 @@ function bp_docs_template_include( $template = '' ) {
 	return apply_filters( 'bp_docs_template_include', $template );
 }
 add_filter( 'template_include', 'bp_docs_template_include', 6 );
+
+/**
+ * Should we do theme compatibility?
+ *
+ * Do it whenever it's available in BuddyPress (whether enabled or not for the
+ * theme more generally)
+ *
+ * @since 1.5.6
+ *
+ * @return bool
+ */
+function bp_docs_do_theme_compat() {
+	return class_exists( 'BP_Theme_Compat' ) && apply_filters( 'bp_docs_do_theme_compat', true, $template );
+}
 
 /**
  * Theme Compat
@@ -95,6 +109,8 @@ class BP_Docs_Theme_Compat {
 		add_filter( 'bp_get_template_stack', array( $this, 'add_plugin_templates_to_stack' ) );
 
 		add_filter( 'bp_get_buddypress_template', array( $this, 'query_templates' ) );
+
+		add_filter( 'bp_use_theme_compat_with_current_theme', 'bp_docs_do_theme_compat' );
 
 		if ( bp_docs_is_global_directory() || bp_docs_is_mygroups_directory() ) {
 

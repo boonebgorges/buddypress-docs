@@ -209,6 +209,10 @@ class BP_Docs {
 		if ( !defined( 'BP_DOCS_DELETE_SLUG' ) )
 			define( 'BP_DOCS_DELETE_SLUG', 'delete' );
 
+		// The slug used when deleting a doc
+		if ( !defined( 'BP_DOCS_UNTRASH_SLUG' ) )
+			define( 'BP_DOCS_UNTRASH_SLUG', 'untrash' );
+
 		// The slug used for the Started section of My Docs
 		if ( !defined( 'BP_DOCS_STARTED_SLUG' ) )
 			define( 'BP_DOCS_STARTED_SLUG', 'started' );
@@ -356,6 +360,7 @@ class BP_Docs {
 		add_rewrite_tag( '%%' . BP_DOCS_EDIT_SLUG      . '%%', '([1]{1,})' );
 		add_rewrite_tag( '%%' . BP_DOCS_HISTORY_SLUG   . '%%', '([1]{1,})' );
 		add_rewrite_tag( '%%' . BP_DOCS_DELETE_SLUG    . '%%', '([1]{1,})' );
+		add_rewrite_tag( '%%' . BP_DOCS_UNTRASH_SLUG    . '%%', '([1]{1,})' );
 		add_rewrite_tag( '%%' . BP_DOCS_CREATE_SLUG    . '%%', '([1]{1,})' );
 		add_rewrite_tag( '%%' . BP_DOCS_MY_GROUPS_SLUG . '%%', '([1]{1,})' );
 	}
@@ -393,8 +398,11 @@ class BP_Docs {
 
 			// Delete
 			bp_docs_get_docs_slug() . '/([^/]+)/' . BP_DOCS_DELETE_SLUG . '/?$' =>
-				'index.php?post_type=' . $this->post_type_name . '&name=' . $wp_rewrite->preg_index( 1 ) . '&' . BP_DOCS_HISTORY_SLUG . '=1'
+				'index.php?post_type=' . $this->post_type_name . '&name=' . $wp_rewrite->preg_index( 1 ) . '&' . BP_DOCS_HISTORY_SLUG . '=1',
 
+			// Untrash
+			bp_docs_get_docs_slug() . '/([^/]+)/' . BP_DOCS_UNTRASH_SLUG . '/?$' =>
+				'index.php?post_type=' . $this->post_type_name . '&name=' . $wp_rewrite->preg_index( 1 ) . '&' . BP_DOCS_UNTRASH_SLUG . '=1',
 
 		);
 
@@ -450,6 +458,64 @@ class BP_Docs {
 		if ( $posts_query->get( BP_DOCS_MY_GROUPS_SLUG ) ) {
 			$posts_query->is_404 = false;
 		}
+
+		// For single Doc views, allow access to 'deleted' items
+		// that the current user is the admin of
+		if ( $posts_query->is_single && bp_docs_get_post_type_name() === $posts_query->get( 'post_type' ) ) {
+
+			$doc_slug = $posts_query->get( 'name' );
+
+			// Direct query, because barf
+			global $wpdb;
+			$author_id = $wpdb->get_var( $wpdb->prepare(
+				"SELECT post_author FROM {$wpdb->posts} WHERE post_type = %s AND post_name = %s",
+				bp_docs_get_post_type_name(),
+				$doc_slug
+			) );
+
+			// Post author or mod can visit it
+			if ( $author_id && ( $author_id == get_current_user_id() || current_user_can( 'bp_moderate' ) ) ) {
+				$posts_query->set( 'post_status', array( 'publish', 'trash' ) );
+
+				// Make the 'trash' post status public
+				add_filter( 'posts_request', array( $this, 'make_trash_public' ) );
+
+				// ... and undo that when we're done
+				add_filter( 'the_posts', array( $this, 'remove_make_trash_public' ) );
+			}
+		}
+	}
+
+	/**
+	 * Make the 'trash' post status public.
+	 *
+	 * This is an unavoidable hack for cases where we want a trashed doc
+	 * to be visitable by the post author or by an admin.
+	 *
+	 * Access is public because it needs to be accessible by
+	 * call_user_func(), but should *not* be called directly.
+	 *
+	 * @since BuddyPress 1.5.5
+	 *
+	 * @param $request Passthrough.
+	 */
+	public function make_trash_public( $request ) {
+		global $wp_post_statuses;
+		$wp_post_statuses['trash']->public = true;
+		return $request;
+	}
+
+	/**
+	 * Reverse the public-trash hack applied in self::make_trash_public()
+	 *
+	 * @since BuddyPress 1.5.5
+	 *
+	 * @param $posts Passthrough.
+	 */
+	public function remove_make_trash_public( $posts ) {
+		global $wp_post_statuses;
+		$wp_post_statuses['trash']->public = false;
+		return $posts;
 	}
 
 	/**

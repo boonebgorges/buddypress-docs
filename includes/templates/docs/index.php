@@ -16,7 +16,9 @@
 	<div id="content">
 		<div class="padder">
 
-		<?php do_action( 'template_notices' ) ?>
+		<?php if ( ! did_action( 'template_notices' ) ) : ?>
+			<?php do_action( 'template_notices' ) ?>
+		<?php endif ?>
 
 		<?php do_action( 'bp_before_directory_docs' ); ?>
 

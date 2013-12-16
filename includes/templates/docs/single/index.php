@@ -1,4 +1,7 @@
 <div id="buddypress">
+	<?php if ( ! did_action( 'template_notices' ) ) : ?>
+		<?php do_action( 'template_notices' ) ?>
+	<?php endif ?>
 
 	<?php include( apply_filters( 'bp_docs_header_template', bp_docs_locate_template( 'docs-header.php' ) ) ) ?>
 

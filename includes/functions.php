@@ -257,10 +257,9 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
 	// Only certain actions are checked against doc_ids
 	$need_doc_ids_actions = apply_filters( 'bp_docs_need_doc_ids_actions', array( 'edit', 'manage', 'view_history', 'read', 'read_comments', 'post_comments' ) );
 
-	$doc_id = false;
-
-	// Grant all permissions on documents being created
-	if ( false === $doc_id && bp_docs_is_doc_create() ) {
+	// Grant all permissions on documents being created, as long as the
+	// user is logged in
+	if ( is_user_logged_in() && ( false === $doc_id ) && bp_docs_is_doc_create() ) {
 		return true;
 	}
 
@@ -276,6 +275,10 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
 				}
 			}
 		}
+	}
+
+	if ( ! isset( $doc ) ) {
+		$doc = get_post( $doc_id );
 	}
 
 	$user_can = false;
@@ -479,6 +482,29 @@ function bp_docs_trash_doc( $doc_id = 0 ) {
 
 	if ( $deleted ) {
 		do_action( 'bp_docs_doc_deleted', $delete_args );
+		return true;
+	}
+
+	return false;
+}
+
+/**
+ * Remove a Doc from the Trash.
+ *
+ * @since 1.5.5
+ * @param int $doc_id ID of the Doc to be untrashed.
+ * @return bool True on success, otherwise false.
+ */
+function bp_docs_untrash_doc( $doc_id = 0 ) {
+	do_action( 'bp_docs_before_doc_untrash', $doc_id );
+
+	$untrashed = wp_update_post( array(
+		'ID' => $doc_id,
+		'post_status' => 'publish',
+	) );
+
+	if ( $untrashed ) {
+		do_action( 'bp_docs_doc_untrashed', $doc_id );
 		return true;
 	}
 

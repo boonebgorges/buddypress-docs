@@ -48,6 +48,8 @@
 
 		<?php endforeach ?>
 
+		<?php do_action( 'bp_docs_revisions_comparisons' ) ?>
+
 		<?php if ( 'diff' == bp_docs_history_action() && bp_docs_history_revisions_are_identical() ) : ?>
 			<tr><td colspan="2"><div class="updated"><p><?php _e( 'These revisions are identical.', 'bp-docs' ); ?></p></div></td></tr>
 		<?php endif ?>

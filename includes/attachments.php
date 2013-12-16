@@ -234,10 +234,8 @@ class BP_Docs_Attachments {
 
 	/**
 	 * Attempt to auto-detect a doc ID
-	 *
-	 * Marked protected because it sucks and is subject to change
 	 */
-	protected function get_doc_id() {
+	public function get_doc_id() {
 
 		if ( ! empty( $this->override_doc_id ) ) {
 
