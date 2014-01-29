@@ -1025,7 +1025,11 @@ class BP_Docs_Component extends BP_Component {
 			$classes[] = 'trashed-doc';
 		}
 
-		return $classes;
+		if ( wp_is_mobile() ) {
+			$classes[] = 'mobile';
+		}
+
+		return array_unique( $classes );
 	}
 
 	/**
