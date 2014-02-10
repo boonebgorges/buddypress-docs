@@ -36,6 +36,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 = 1.5.7 =
 * Improve appearance of row actions on mobile devices
 * Improve appearance of tags filter on IE < 9
+* Update ru_RU
 
 = 1.5.6 =
 * Allow current filter to be toggled by reclicking filter name
