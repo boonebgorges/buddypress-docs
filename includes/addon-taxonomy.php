@@ -430,37 +430,37 @@ class BP_Docs_Taxonomy {
 	function filter_markup() {
 		$existing_terms = $this->get_item_terms();
 
-		// No need to show the filter if there are no terms to show
-		if ( empty( $existing_terms ) )
-			return;
-
 		$tag_filter = ! empty( $_GET['bpd_tag'] );
 
 		?>
 
 		<div id="docs-filter-section-tags" class="docs-filter-section<?php if ( $tag_filter ) : ?> docs-filter-section-open<?php endif ?>">
 			<ul id="tags-list">
-			<?php foreach( $existing_terms as $term => $posts ) : ?>
-				<?php $term_count = is_int( $posts ) ? $posts : count( $posts ) ?>
-				<li>
-				<a href="<?php echo bp_docs_get_tag_link( array( 'tag' => $term, 'type' => 'url' ) ) ?>" title="<?php echo esc_html( $term ) ?>"><?php echo esc_html( $term ) ?> <?php printf( __( '(%d)', 'bp-docs' ), $term_count ) ?></a>
+			<?php if ( !empty( $existing_terms ) ) : ?>
+				<?php foreach( $existing_terms as $term => $posts ) : ?>
+					<?php $term_count = is_int( $posts ) ? $posts : count( $posts ) ?>
+					<li>
+					<a href="<?php echo bp_docs_get_tag_link( array( 'tag' => $term, 'type' => 'url' ) ) ?>" title="<?php echo esc_html( $term ) ?>"><?php echo esc_html( $term ) ?> <?php printf( __( '(%d)', 'bp-docs' ), $term_count ) ?></a>
 
-				<?php /* Going with tag cloud type fix for now */ ?>
-				<?php /*
+					<?php /* Going with tag cloud type fix for now */ ?>
+					<?php /*
 
-				<?php
+					<?php
 
-				$checked = empty( $this->current_filters ) || ( !empty( $this->current_filters['tags'] ) && in_array( $term, $this->current_filters['tags'] ) ) ? true : false;
+					$checked = empty( $this->current_filters ) || ( !empty( $this->current_filters['tags'] ) && in_array( $term, $this->current_filters['tags'] ) ) ? true : false;
 
-				?>
-				<label for="filter_terms[<?php echo esc_attr( $term ) ?>]">
-					<input type="checkbox" value="1" name="filter_terms[<?php echo esc_attr( $term ) ?>]" <?php checked( $checked ) ?>/>
-					<?php echo esc_html( $term ) ?> <?php printf( __( '(%d)', 'bp-docs' ), count( $posts ) ) ?>
-				</label>
-				*/ ?>
-				</li>
+					?>
+					<label for="filter_terms[<?php echo esc_attr( $term ) ?>]">
+						<input type="checkbox" value="1" name="filter_terms[<?php echo esc_attr( $term ) ?>]" <?php checked( $checked ) ?>/>
+						<?php echo esc_html( $term ) ?> <?php printf( __( '(%d)', 'bp-docs' ), count( $posts ) ) ?>
+					</label>
+					*/ ?>
+					</li>
 
-			<?php endforeach ?>
+				<?php endforeach ?>
+			<?php else: ?>
+				<li><?php _e( 'No tags to show.', 'bp-docs' )  ?></li>
+			<?php endif; ?>
 			</ul>
 		</div>
 
