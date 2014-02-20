@@ -33,6 +33,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.5.7 =
+* Improve appearance of tags filter on IE < 9
+
 = 1.5.6 =
 * Allow current filter to be toggled by reclicking filter name
 * Fix bug in "Edited by Me" logic when user has not edited any Docs
