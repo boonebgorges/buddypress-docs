@@ -173,8 +173,10 @@ class BP_Docs_Users_Integration {
 	 * @param array $terms The terms to be saved to usermeta
 	 */
 	function save_user_terms( $terms ) {
-		if ( bp_is_user() ) {
-			update_user_meta( bp_displayed_user_id(), 'bp_docs_terms', $terms );
+
+		// bp_is_user isn't true at doc edit. (So neither is bp_displayed_user)
+		if ( bp_docs_is_docs_component() ) {
+			update_user_meta( bp_loggedin_user_id(), 'bp_docs_terms', $terms );
 		}
 	}
 
