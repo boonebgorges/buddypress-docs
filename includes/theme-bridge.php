@@ -75,7 +75,7 @@ add_filter( 'template_include', 'bp_docs_template_include', 6 );
  *
  * @return bool
  */
-function bp_docs_do_theme_compat() {
+function bp_docs_do_theme_compat( $template = false ) {
 	return class_exists( 'BP_Theme_Compat' ) && apply_filters( 'bp_docs_do_theme_compat', true, $template );
 }
 

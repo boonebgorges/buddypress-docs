@@ -167,6 +167,10 @@ body.bp-docs div.page ul {
 	padding: 2px 0 0;
 }
 
+body.mobile .row-actions {
+	visibility: visible;
+}
+
 .row-actions a {
 	color: #999;
 	font-size: 11px;

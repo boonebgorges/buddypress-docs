@@ -10,36 +10,11 @@ window.wp = window.wp || {};
 
 		event.preventDefault();
 
-		// If the media frame already exists, reopen it.
-		if ( file_frame ) {
-			file_frame.open();
-			return;
-		}
-
-		BP_Docs_MediaFrame = wp.media.view.MediaFrame.Select.extend({
-			browseRouter: function( view ) {
-				view.set({
-					upload: {
-						text:     wp.media.view.l10n.uploadFilesTitle,
-						priority: 20
-					}
-				});
-			}
-		});
-
-		file_frame = new BP_Docs_MediaFrame({
-			title: bp_docs.upload_title,
-			button: {
-				text: bp_docs.upload_button,
-			},
-			multiple: false
-		});
-
-		file_frame.open();
-
 		// Change to upload mode
-		Library = file_frame.states.get('library');
 		Library.frame.content.mode('upload');
+
+		// Open the dialog
+		file_frame.open();
 
 		return;
 	});
@@ -60,6 +35,18 @@ window.wp = window.wp || {};
 		} );
 	};
 
+	// Extension of the WP media view for our use
+	BP_Docs_MediaFrame = wp.media.view.MediaFrame.Select.extend({
+		browseRouter: function( view ) {
+			view.set({
+				upload: {
+					text:     wp.media.view.l10n.uploadFilesTitle,
+					priority: 20
+				}
+			});
+		}
+	});
+
 	doc_id = wp.media.model.settings.post.id;
 
 	if ( 0 == doc_id ) {
@@ -72,4 +59,16 @@ window.wp = window.wp || {};
 		};
 		wp.media.ajax( 'bp_docs_create_dummy_doc', options );
 	}
+
+	$(document).ready(function(){
+		file_frame = new BP_Docs_MediaFrame({
+			title: bp_docs.upload_title,
+			button: {
+				text: bp_docs.upload_button,
+			},
+			multiple: false
+		});
+
+		Library = file_frame.states.get('library');
+	});
 })(jQuery);
