@@ -756,5 +756,20 @@ function bp_docs_get_doc_ids_accessible_to_current_user() {
 	}
 	$exclude_sql = '(' . implode( ',', $exclude ) . ')';
 	$items_sql = $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post_type = %s AND ID NOT IN $exclude_sql", bp_docs_get_post_type_name() );
+
 	return $wpdb->get_col( $items_sql );
+}
+
+function bp_docs_get_doc_ids_accessible_to_user() {
+	$item_ids = array();
+	$tags_args = array( 'posts_per_page' => -1 );
+	if ( bp_docs_has_docs( $tags_args ) ) :
+		while ( bp_docs_has_docs() ) : bp_docs_the_doc();
+			$item_ids[] = get_the_ID();
+		endwhile;
+	endif;
+
+	// Need to reset so that the args aren't passed along to the main docs loop.
+
+	return $item_ids;
 }
