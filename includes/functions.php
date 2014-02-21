@@ -762,12 +762,13 @@ function bp_docs_get_doc_ids_accessible_to_current_user() {
 
 function bp_docs_get_doc_ids_accessible_to_user() {
 	$item_ids = array();
-	$tags_args = array( 'posts_per_page' => -1 );
+	$tags_args = array( 'posts_per_page' => -1, 'fields' => 'ids' );
 	if ( bp_docs_has_docs( $tags_args ) ) :
 		while ( bp_docs_has_docs() ) : bp_docs_the_doc();
 			$item_ids[] = get_the_ID();
 		endwhile;
 	endif;
+
 
 	// Need to reset so that the args aren't passed along to the main docs loop.
 
