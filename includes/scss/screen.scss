@@ -167,6 +167,10 @@ body.bp-docs div.page ul {
 	padding: 2px 0 0;
 }
 
+body.mobile .row-actions {
+	visibility: visible;
+}
+
 .row-actions a {
 	color: #999;
 	font-size: 11px;
@@ -519,14 +523,13 @@ a.docs-filter-title.current {
 
 #docs-filter-section-tags a.tags-action-button,
 #docs-filter-section-tags a.tags-action-button:visited {
-	display: block; // Let the button span the entire box
+	display: inline;
 	line-height: 3em;
 	text-decoration: none;
-	text-align: center;
 	background: #fff;
 	background-opacity: .5;
+	padding: 5px 10px;
 	border-radius: 3px;
-	margin-bottom: 1em;
 }
 
 body.js .docs-filter-section {
@@ -833,13 +836,23 @@ table#post-revisions {
 	margin-top: 20px;
 }
 
-//Media query for larger screens
+//Media query for most screens, unseen by IE 7 or 8
+@media screen and (min-width:4em) { 
+	#docs-filter-section-tags a.tags-action-button,
+	#docs-filter-section-tags a.tags-action-button:visited {
+		display: block; // Let the button span the entire box
+		margin-bottom: 1em;
+		padding: 0;
+		text-align: center;
+	}
+}
+//Media query for larger screens, like tablet
 @media screen and (min-width:50em) { 
 	.entry-content ul#tags-list {
 		@include multi-columns(4, 5%);
 	}
 }
-//Media query for larger screens
+//Media query for larger screens, like desktop
 @media screen and (min-width:71em) { 
 	.entry-content ul#tags-list {
 		@include multi-columns(5, 5%);
