@@ -1057,7 +1057,7 @@ class BP_Docs_Component extends BP_Component {
 			$terms_array[ $t->slug ] = $t->count;
 		}
 
-		unset( $items, $terms );
+		unset( $item_ids, $terms );
 
 		return $terms_array;
 	}
