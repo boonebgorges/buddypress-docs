@@ -36,6 +36,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 = 1.5.7 =
 * Improve appearance of row actions on mobile devices
 * Improve appearance of tags filter on IE < 9
+* Fix bug introduced in BP 1.9.2 related to the display of comments
 * Update ru_RU
 
 = 1.5.6 =
