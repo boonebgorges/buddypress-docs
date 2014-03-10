@@ -781,10 +781,10 @@ class BP_Docs_Attachments {
 			}
 
 			// Make a dummy file
-			file_put_contents( $test_dir . DIRECTORY_SEPARATOR . 'test.txt', $test_text );
+			file_put_contents( $test_dir . DIRECTORY_SEPARATOR . 'test.html', $test_text );
 		}
 
-		$test_url = $uploads['baseurl'] . '/bp-attachments/0/test.txt';
+		$test_url = $uploads['baseurl'] . '/bp-attachments/0/test.html';
 		$r = wp_remote_get( $test_url );
 
 		// If the response body includes our test text, we have a problem
