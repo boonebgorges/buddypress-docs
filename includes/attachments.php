@@ -752,7 +752,7 @@ class BP_Docs_Attachments {
 		$uploads = wp_upload_dir();
 
 		$test_dir = $uploads['basedir'] . DIRECTORY_SEPARATOR . 'bp-attachments' . DIRECTORY_SEPARATOR . '0';
-		$test_file_dir = $test_dir . DIRECTORY_SEPARATOR . 'test.txt';
+		$test_file_dir = $test_dir . DIRECTORY_SEPARATOR . 'test.html';
 		$test_text = 'This is a test of the Protected Attachment feature of BuddyPress Docs. Please do not remove.';
 
 		if ( ! file_exists( $test_file_dir ) ) {
