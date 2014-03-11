@@ -577,6 +577,8 @@ class BP_Docs_Query {
 		// the WP admin handles automatically)
 		do_action( 'bp_docs_doc_saved', $this );
 
+		do_action( 'bp_docs_after_save', $this->doc_id );
+
 		$message_type = $result['redirect'] == 'single' ? 'success' : 'error';
 
 		$redirect_url = trailingslashit( bp_get_root_domain() . '/' . bp_docs_get_docs_slug() );
