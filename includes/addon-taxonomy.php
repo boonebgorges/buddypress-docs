@@ -151,9 +151,6 @@ class BP_Docs_Taxonomy {
 			}
 
 			wp_set_post_terms( $query->doc_id, $terms, $tax_name );
-
-			// Store these terms in the item term cache, to be used for tag clouds etc
-			$this->cache_terms_for_item( $terms, $query->doc_id );
 		}
 
 		do_action( 'bp_docs_taxonomy_saved', $query );
@@ -200,8 +197,6 @@ class BP_Docs_Taxonomy {
 				}
 			}
 		}
-
-		$this->save_item_terms( $item_terms );
 	}
 
 	/**
@@ -226,57 +221,6 @@ class BP_Docs_Taxonomy {
 
 			echo apply_filters( 'bp_docs_taxonomy_show_terms', $html, $tagtext );
 		}
-	}
-
-	/**
-	 * Store taxonomy terms and their use count for a given item
-	 *
-	 * @package BuddyPress Docs
-	 * @since 1.0-beta
-	 *
-	 * @param array $terms The terms submitted in the most recent save
-	 * @param int $doc_id The unique id of the doc
-	 */
-	function cache_terms_for_item( $terms = array(), $doc_id ) {
-		$existing_terms = $this->get_item_terms();
-
-		// First, make sure that each submitted term is recorded
-		foreach ( $terms as $term ) {
-			if ( empty( $existing_terms[$term] ) || ! is_array( $existing_terms[$term] ) )
-				$existing_terms[$term] = array();
-
-			if ( ! in_array( $doc_id, $existing_terms[$term] ) )
-				$existing_terms[$term][] = $doc_id;
-		}
-
-		// Then, loop through to see if any existing terms have been deleted
-		foreach ( $existing_terms as $existing_term => $docs ) {
-			// If the existing term is not in the list of submitted terms...
-			if ( ! in_array( $existing_term, $terms ) ) {
-				// ... check to see whether the current doc is listed under that
-				// term. If so, that indicates that the term has been removed from
-				// the doc
-				$key = array_search( $doc_id, $docs );
-				if ( $key !== false ) {
-					unset( $docs[$key] );
-				}
-			}
-
-			// Reset the array keys for the term's docs
-			$docs = array_values( $docs );
-
-			if ( empty( $docs ) ) {
-				// If there are no more docs associated with the term, we can remove
-				// it from the array
-				unset( $existing_terms[ $existing_term ] );
-			} else {
-				// Othewise, store the docs back in the existing terms array
-				$existing_terms[ $existing_term ] = $docs;
-			}
-		}
-
-		// Save the terms back to the item
-		$this->save_item_terms( $existing_terms );
 	}
 
 	/**
@@ -441,20 +385,6 @@ class BP_Docs_Taxonomy {
 					<?php $term_count = is_int( $posts ) ? $posts : count( $posts ) ?>
 					<li>
 					<a href="<?php echo bp_docs_get_tag_link( array( 'tag' => $term, 'type' => 'url' ) ) ?>" title="<?php echo esc_html( $term ) ?>"><?php echo esc_html( $term ) ?> <?php printf( __( '(%d)', 'bp-docs' ), $term_count ) ?></a>
-
-					<?php /* Going with tag cloud type fix for now */ ?>
-					<?php /*
-
-					<?php
-
-					$checked = empty( $this->current_filters ) || ( !empty( $this->current_filters['tags'] ) && in_array( $term, $this->current_filters['tags'] ) ) ? true : false;
-
-					?>
-					<label for="filter_terms[<?php echo esc_attr( $term ) ?>]">
-						<input type="checkbox" value="1" name="filter_terms[<?php echo esc_attr( $term ) ?>]" <?php checked( $checked ) ?>/>
-						<?php echo esc_html( $term ) ?> <?php printf( __( '(%d)', 'bp-docs' ), count( $posts ) ) ?>
-					</label>
-					*/ ?>
 					</li>
 
 				<?php endforeach ?>
