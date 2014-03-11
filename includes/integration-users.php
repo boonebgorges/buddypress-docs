@@ -152,15 +152,29 @@ class BP_Docs_Users_Integration {
 	 * @return array $terms
 	 */
 	function get_user_terms( $terms = array() ) {
+		$bp = buddypress();
 
-		if ( bp_is_user() ) {
-			$terms = get_user_meta( bp_displayed_user_id(), 'bp_docs_terms', true );
+		//This is now identical to the user::get_group_terms...
 
-			if ( empty( $terms ) )
-				$terms = array();
+		if ( ! bp_is_user() ) {
+			return $terms;
 		}
 
-		return apply_filters( 'bp_docs_taxonomy_get_user_terms', $terms );
+		// Get list of docs the user would see in his profile
+		$item_ids = bp_docs_get_doc_ids_accessible_to_user();
+
+		// Pass to wp_get_object_terms()
+		$doc_terms = wp_get_object_terms( $item_ids, array( $bp->bp_docs->docs_tag_tax_name ) );
+
+		// Reformat
+		$terms_array = array();
+		foreach ( $doc_terms as $t ) {
+			$terms_array[ $t->slug ] = $t->count;
+		}
+
+		unset( $item_ids, $doc_terms );
+
+		return apply_filters( 'bp_docs_taxonomy_get_user_terms', $terms_array );
 	}
 
 	/**

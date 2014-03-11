@@ -201,7 +201,9 @@ class BP_Docs_Groups_Integration {
 	 * @return array $terms
 	 */
 	function get_group_terms( $terms = array() ) {
-		global $bp;
+		$bp = buddypress();
+
+		//This is now identical to the user::get_user_terms
 
 		// Either it's a group directory...
 		if ( ! $group_id = bp_get_current_group_id() ) {
@@ -212,14 +214,28 @@ class BP_Docs_Groups_Integration {
 			}
 		}
 
-		if ( $group_id ) {
-			$terms = groups_get_groupmeta( $group_id, 'bp_docs_terms' );
-
-			if ( empty( $terms ) )
-				$terms = array();
+		// If we don't have a group_id, bail out.
+		if ( ! $group_id ) {
+			return $terms;
 		}
 
-		return apply_filters( 'bp_docs_taxonomy_get_group_terms', $terms );
+		// $terms_array = groups_get_groupmeta( $group_id, 'bp_docs_terms' );
+
+		// Get the IDs of all docs associated with the group that this user can view
+		$item_ids = bp_docs_get_doc_ids_accessible_to_user();
+
+		// Pass to wp_get_object_terms()
+		$doc_terms = wp_get_object_terms( $item_ids, array( $bp->bp_docs->docs_tag_tax_name ) );
+
+		// Reformat
+		$terms_array = array();
+		foreach ( $doc_terms as $t ) {
+			$terms_array[ $t->slug ] = $t->count;
+		}
+
+		unset( $item_ids, $doc_terms );
+
+		return apply_filters( 'bp_docs_taxonomy_get_group_terms', $terms_array );
 	}
 
 	/**
