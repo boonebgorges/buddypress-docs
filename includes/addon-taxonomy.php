@@ -110,7 +110,7 @@ class BP_Docs_Taxonomy {
 	function register_with_post_type() {
 		$this->taxonomies = array( /* 'category', */ $this->docs_tag_tax_name );
 
-		foreach( $this->taxonomies as $tax ) {
+		foreach ( $this->taxonomies as $tax ) {
 			register_taxonomy_for_object_type( $tax, bp_docs_get_post_type_name() );
 		}
 	}
@@ -125,7 +125,7 @@ class BP_Docs_Taxonomy {
 	 * @return int $post_id Returns the doc's post_id on success
 	 */
 	function save_post( $query ) {
-		foreach( $this->taxonomies as $tax_name ) {
+		foreach ( $this->taxonomies as $tax_name ) {
 
 			if ( $tax_name == 'category' )
 				$tax_name = 'post_category';
@@ -154,7 +154,6 @@ class BP_Docs_Taxonomy {
 
 			// Store these terms in the item term cache, to be used for tag clouds etc
 			$this->cache_terms_for_item( $terms, $query->doc_id );
-
 		}
 
 		do_action( 'bp_docs_taxonomy_saved', $query );
@@ -180,11 +179,11 @@ class BP_Docs_Taxonomy {
 		$doc_id = $post->ID;
 
 		// Terms for the item (group, user, etc)
-		$item_terms 	= $this->get_item_terms();
+		$item_terms = $this->get_item_terms();
 		// Terms for the doc
-		$doc_terms	= wp_get_post_terms( $doc_id, $this->docs_tag_tax_name );
+		$doc_terms = wp_get_post_terms( $doc_id, $this->docs_tag_tax_name );
 
-		foreach( $doc_terms as $doc_term ) {
+		foreach ( $doc_terms as $doc_term ) {
 			$term_name = $doc_term->name;
 
 			// If the term is currently used (should always be true - this is a
@@ -212,21 +211,21 @@ class BP_Docs_Taxonomy {
 	 * @since 1.0-beta
 	 */
 	function show_terms() {
-	 	foreach( $this->taxonomies as $tax_name ) {
+		foreach ( $this->taxonomies as $tax_name ) {
 			$html    = '';
-	 		$tagtext = array();
-	 		$tags 	 = wp_get_post_terms( get_the_ID(), $tax_name );
+			$tagtext = array();
+			$tags 	 = wp_get_post_terms( get_the_ID(), $tax_name );
 
-	 		foreach( $tags as $tag ) {
-	 			$tagtext[] = bp_docs_get_tag_link( array( 'tag' => $tag->name ) );
-	 		}
+			foreach ( $tags as $tag ) {
+				$tagtext[] = bp_docs_get_tag_link( array( 'tag' => $tag->name ) );
+			}
 
 			if ( ! empty( $tagtext ) ) {
 				$html = '<p>' . sprintf( __( 'Tags: %s', 'bp-docs' ), implode( ', ', $tagtext ) ) . '</p>';
 			}
 
-	 		echo apply_filters( 'bp_docs_taxonomy_show_terms', $html, $tagtext );
-	 	}
+			echo apply_filters( 'bp_docs_taxonomy_show_terms', $html, $tagtext );
+		}
 	}
 
 	/**
@@ -269,10 +268,10 @@ class BP_Docs_Taxonomy {
 			if ( empty( $docs ) ) {
 				// If there are no more docs associated with the term, we can remove
 				// it from the array
-				unset( $existing_terms[$existing_term] );
+				unset( $existing_terms[ $existing_term ] );
 			} else {
 				// Othewise, store the docs back in the existing terms array
-				$existing_terms[$existing_term] = $docs;
+				$existing_terms[ $existing_term ] = $docs;
 			}
 		}
 
@@ -322,23 +321,24 @@ class BP_Docs_Taxonomy {
 	function modify_tax_query( $tax_query ) {
 
 		// Check for the existence tag filters in the request URL
-		if ( !empty( $_REQUEST['bpd_tag'] ) ) {
+		if ( ! empty( $_REQUEST['bpd_tag'] ) ) {
 			// The bpd_tag argument may be comma-separated
 			$tags = explode( ',', urldecode( $_REQUEST['bpd_tag'] ) );
 
 			// Clean up the tag input
-			foreach( $tags as $key => $value ) {
+			foreach ( $tags as $key => $value ) {
 				$tags[$key] = esc_attr( $value );
 			}
 
 			$tax_query[] = array(
 				'taxonomy'	=> $this->docs_tag_tax_name,
 				'terms'		=> $tags,
-				'field'		=> 'slug'
+				'field'		=> 'slug',
 			);
 
-			if ( !empty( $_REQUEST['bool'] ) && $_REQUEST['bool'] == 'and' )
+			if ( !empty( $_REQUEST['bool'] ) && $_REQUEST['bool'] == 'and' ) {
 				$tax_query['operator'] = 'AND';
+			}
 		}
 
 		return apply_filters( 'bp_docs_modify_tax_query_for_tax', $tax_query );
@@ -367,11 +367,11 @@ class BP_Docs_Taxonomy {
 	 */
 	function tags_td() {
 
-		$tags     = get_the_terms( get_the_ID(), $this->docs_tag_tax_name );
-		$tagtext  = array();
+		$tags    = get_the_terms( get_the_ID(), $this->docs_tag_tax_name );
+		$tagtext = array();
 
-		foreach( (array)$tags as $tag ) {
-			if ( !empty( $tag->name ) ) {
+		foreach ( (array) $tags as $tag ) {
+			if ( ! empty( $tag->name ) ) {
 				$tagtext[] = bp_docs_get_tag_link( array( 'tag' => $tag->name ) );
 			}
 		}
@@ -399,10 +399,10 @@ class BP_Docs_Taxonomy {
 	function info_header_message( $message, $filters ) {
 		$this->current_filters = $filters;
 
-		if ( !empty( $filters['tags'] ) ) {
+		if ( ! empty( $filters['tags'] ) ) {
 			$tagtext = array();
 
-			foreach( $filters['tags'] as $tag ) {
+			foreach ( $filters['tags'] as $tag ) {
 				$tagtext[] = bp_docs_get_tag_link( array( 'tag' => $tag ) );
 			}
 
@@ -436,8 +436,8 @@ class BP_Docs_Taxonomy {
 
 		<div id="docs-filter-section-tags" class="docs-filter-section<?php if ( $tag_filter ) : ?> docs-filter-section-open<?php endif ?>">
 			<ul id="tags-list">
-			<?php if ( !empty( $existing_terms ) ) : ?>
-				<?php foreach( $existing_terms as $term => $posts ) : ?>
+			<?php if ( ! empty( $existing_terms ) ) : ?>
+				<?php foreach ( $existing_terms as $term => $posts ) : ?>
 					<?php $term_count = is_int( $posts ) ? $posts : count( $posts ) ?>
 					<li>
 					<a href="<?php echo bp_docs_get_tag_link( array( 'tag' => $term, 'type' => 'url' ) ) ?>" title="<?php echo esc_html( $term ) ?>"><?php echo esc_html( $term ) ?> <?php printf( __( '(%d)', 'bp-docs' ), $term_count ) ?></a>
@@ -474,10 +474,10 @@ class BP_Docs_Taxonomy {
 	 * @since 1.0-beta
 	 */
 	function handle_filters( $redirect_url ) {
-		if ( !empty( $_POST['filter_terms'] ) ) {
+		if ( ! empty( $_POST['filter_terms'] ) ) {
 			$tags = array();
 
-			foreach( $_POST['filter_terms'] as $term => $value ) {
+			foreach ( $_POST['filter_terms'] as $term => $value ) {
 				$tags[] = urlencode( $term );
 			}
 
@@ -512,7 +512,7 @@ function bp_docs_get_tag_link( $args = array() ) {
 
 	$defaults = array(
 		'tag' 	=> false,
-		'type' 	=> 'html'
+		'type' 	=> 'html',
 	);
 
 	$r = wp_parse_args( $args, $defaults );
@@ -543,15 +543,19 @@ function bp_docs_post_tags_meta_box() {
 
 	require_once(ABSPATH . '/wp-admin/includes/taxonomy.php');
 
-	$defaults = array('taxonomy' => $bp->bp_docs->docs_tag_tax_name);
-	if ( !isset($box['args']) || !is_array($box['args']) )
+	$defaults = array(
+		'taxonomy' => $bp->bp_docs->docs_tag_tax_name,
+	);
+
+	if ( ! isset( $box['args'] ) || !is_array( $box['args'] ) )
 		$args = array();
 	else
 		$args = $box['args'];
-	extract( wp_parse_args($args, $defaults), EXTR_SKIP );
 
-	$tax_name = esc_attr($taxonomy);
-	$taxonomy = get_taxonomy($taxonomy);
+	extract( wp_parse_args( $args, $defaults ), EXTR_SKIP );
+
+	$tax_name = esc_attr( $taxonomy );
+	$taxonomy = get_taxonomy( $taxonomy );
 
 	$terms = bp_docs_is_existing_doc() ? get_terms_to_edit( get_the_ID(), $bp->bp_docs->docs_tag_tax_name ) : '';
 ?>
