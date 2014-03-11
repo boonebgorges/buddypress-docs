@@ -67,8 +67,9 @@ class BP_Docs_Groups_Integration {
 		add_filter( 'bp_docs_loop_additional_td',       array( $this, 'groups_td' ), 5 );
 
 		// Update group last active metadata when a doc is created, updated, or saved
-		add_filter( 'bp_docs_doc_saved',		array( $this, 'update_group_last_active' )  );
-		add_filter( 'bp_docs_doc_deleted',		array( $this, 'update_group_last_active' ) );
+		add_filter( 'bp_docs_after_save',               array( $this, 'update_group_last_active' )  );
+		add_filter( 'bp_docs_before_doc_delete',        array( $this, 'update_group_last_active' ) );
+		add_filter( 'wp_insert_comment',                array( $this, 'update_group_last_active_comment' ), 10, 2 );
 
 		// Sneak into the nav before it's rendered to insert the group Doc count. Hooking
 		// to bp_actions because of the craptastic nature of the BP_Group_Extension loader
@@ -758,9 +759,25 @@ class BP_Docs_Groups_Integration {
 	 * @package BuddyPress Docs
 	 * @since 1.1.8
 	 */
-	function update_group_last_active() {
-		if ( bp_is_group() ) {
-			groups_update_groupmeta( bp_get_current_group_id(), 'last_activity', bp_core_current_time() );
+	function update_group_last_active( $doc_id ) {
+		$group = intval( bp_docs_get_associated_group_id( $doc_id ) );
+
+		if ( $group ) {
+			groups_update_groupmeta( $group, 'last_activity', bp_core_current_time() );
+		}
+	}
+
+	/**
+	 * Update group last activy date when a comment is posted to a group Doc.
+	 *
+	 * @since 1.6.0
+	 *
+	 * @param int $comment_id
+	 * @param object $comment
+	 */
+	public function update_group_last_active_comment( $comment_id, $comment ) {
+		if ( 1 == $comment->comment_approved ) {
+			$this->update_group_last_active( $comment->comment_post_ID );
 		}
 	}
 
