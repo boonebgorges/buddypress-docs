@@ -370,7 +370,7 @@ class BP_Docs_Attachments {
 	 * @return array $uploads
 	 */
 	function mod_upload_dir( $uploads ) {
-		$subdir = DIRECTORY_SEPARATOR . 'bp-attachments' . DIRECTORY_SEPARATOR . $this->doc_id;
+		$subdir = '/bp-attachments/' . $this->doc_id;
 
 		$uploads['subdir'] = $subdir;
 		$uploads['path'] = $uploads['basedir'] . $subdir;
