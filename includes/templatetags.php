@@ -1951,6 +1951,10 @@ function bp_docs_attachment_url( $attachment_id ) {
 			$att_url = wp_get_attachment_url( $attachment_id );
 		}
 
+		// Backward compatibility: fix IIS URLs that were broken by a
+		// previous implementation
+		$att_url = preg_replace( '|bp\-attachments([0-9])|', 'bp-attachments/$1', $att_url );
+
 		return apply_filters( 'bp_docs_attachment_url_base', $att_url, $attachment );
 	}
 
