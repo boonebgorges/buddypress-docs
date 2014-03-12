@@ -471,7 +471,7 @@ class BP_Docs_Component extends BP_Component {
 				$doc = bp_docs_get_current_doc();
 
 				// Todo: get this into a proper method as well, blech
-				delete_post_meta( $doc->ID, '_edit_lock' );
+				delete_post_meta( $doc->ID, '_bp_docs_last_pinged' );
 
 				bp_core_add_message( __( 'Lock successfully removed', 'bp-docs' ) );
 				bp_core_redirect( bp_docs_get_doc_link( $doc->ID ) );
@@ -484,7 +484,7 @@ class BP_Docs_Component extends BP_Component {
 			$doc = bp_docs_get_current_doc();
 
 			// Todo: get this into a proper method as well, blech
-			delete_post_meta( $doc->ID, '_edit_lock' );
+			delete_post_meta( $doc->ID, '_bp_docs_last_pinged' );
 
 			bp_core_redirect( bp_docs_get_doc_link( $doc->ID ) );
 		}
