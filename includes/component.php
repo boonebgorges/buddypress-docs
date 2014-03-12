@@ -120,9 +120,6 @@ class BP_Docs_Component extends BP_Component {
 		// Respect $activities_template->disable_blogforum_replies
 		add_filter( 'bp_activity_can_comment',	array( $this, 'activity_can_comment'	) );
 
-		// AJAX handler for removing the edit lock when a user clicks away from Edit mode
-		add_action( 'wp_ajax_remove_edit_lock', array( $this, 'remove_edit_lock'        ) );
-
 		// Add body class
 		add_filter( 'bp_get_the_body_class', array( $this, 'body_class' ) );
 
@@ -474,7 +471,7 @@ class BP_Docs_Component extends BP_Component {
 				$doc = bp_docs_get_current_doc();
 
 				// Todo: get this into a proper method as well, blech
-				delete_post_meta( $doc->ID, '_edit_lock' );
+				delete_post_meta( $doc->ID, '_bp_docs_last_pinged' );
 
 				bp_core_add_message( __( 'Lock successfully removed', 'bp-docs' ) );
 				bp_core_redirect( bp_docs_get_doc_link( $doc->ID ) );
@@ -487,7 +484,7 @@ class BP_Docs_Component extends BP_Component {
 			$doc = bp_docs_get_current_doc();
 
 			// Todo: get this into a proper method as well, blech
-			delete_post_meta( $doc->ID, '_edit_lock' );
+			delete_post_meta( $doc->ID, '_bp_docs_last_pinged' );
 
 			bp_core_redirect( bp_docs_get_doc_link( $doc->ID ) );
 		}
@@ -985,23 +982,6 @@ class BP_Docs_Component extends BP_Component {
 	}
 
 	/**
-	 * AJAX handler for remove_edit_lock option
-	 *
-	 * This function is called when a user is editing a Doc and clicks a link to leave the page
-	 *
-	 * @package BuddyPress Docs
-	 * @since 1.1
-	 */
-	function remove_edit_lock() {
-		$doc_id = isset( $_POST['doc_id'] ) ? $_POST['doc_id'] : false;
-
-		if ( !$doc_id )
-			return false;
-
-		delete_post_meta( $doc_id, '_edit_lock' );
-	}
-
-	/**
 	 * Sets the includes URL for use when loading scripts and styles
 	 *
 	 * @package BuddyPress Docs
@@ -1029,6 +1009,10 @@ class BP_Docs_Component extends BP_Component {
 			$classes[] = 'mobile';
 		}
 
+		if ( bp_docs_is_doc_edit() ) {
+			$classes[] = 'bp-docs-edit';
+		}
+
 		return array_unique( $classes );
 	}
 
@@ -1040,8 +1024,8 @@ class BP_Docs_Component extends BP_Component {
 	public function get_item_terms( $terms ) {
 		global $wpdb, $bp;
 
-		// Only on global directories
-		if ( ! bp_docs_is_global_directory() ) {
+		// Only on global directory and mygroups view
+		if ( ! bp_docs_is_global_directory() && ! bp_docs_is_mygroups_directory() ) {
 			return $terms;
 		}
 
@@ -1115,7 +1099,7 @@ class BP_Docs_Component extends BP_Component {
 			// Edit mode requires bp-docs-js to be dependent on TinyMCE, so we must
 			// reregister bp-docs-js with the correct dependencies
 			wp_deregister_script( 'bp-docs-js' );
-			wp_register_script( 'bp-docs-js', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/bp-docs.js' ), array( 'jquery', 'editor' ) );
+			wp_register_script( 'bp-docs-js', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/bp-docs.js' ), array( 'jquery', 'editor', 'heartbeat' ) );
 
 			wp_register_script( 'word-counter', site_url() . '/wp-admin/js/word-count.js', array( 'jquery' ) );
 
@@ -1124,14 +1108,20 @@ class BP_Docs_Component extends BP_Component {
 
 		// Only load our JS on the right sorts of pages. Generous to account for
 		// different item types
-		if ( in_array( bp_docs_get_docs_slug(), $this->slugstocheck ) || bp_docs_is_single_doc() || bp_docs_is_global_directory() || bp_docs_is_doc_create() ) {
+		if ( in_array( bp_docs_get_docs_slug(), $this->slugstocheck ) || bp_docs_is_single_doc() || bp_docs_is_global_directory() || bp_docs_is_mygroups_directory() || bp_docs_is_doc_create() ) {
 			wp_enqueue_script( 'bp-docs-js' );
 			wp_enqueue_script( 'comment-reply' );
-			wp_localize_script( 'bp-docs-js', 'bp_docs', array(
+
+			$strings = array(
 				'upload_title' => __( 'Upload File', 'bp-docs' ),
 				'upload_button' => __( 'OK', 'bp-docs' ),
 				'still_working'	=> __( 'Still working?', 'bp-docs' ),
-			) );
+			);
+
+			if ( bp_docs_is_doc_edit() ) {
+				$strings['pulse'] = bp_docs_heartbeat_pulse();
+			}
+			wp_localize_script( 'bp-docs-js', 'bp_docs', $strings );
 		}
 	}
 

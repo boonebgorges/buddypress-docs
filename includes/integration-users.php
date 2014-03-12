@@ -167,8 +167,10 @@ class BP_Docs_Users_Integration {
 
 		if ( bp_docs_is_edited_by() ) {
 			$query_args['post__in'] = BP_Docs_Query::get_edited_by_post_ids_for_user( bp_displayed_user_id() );
+			$query_args['post_status'] = array( 'publish' );
 		} else if ( bp_docs_is_started_by() ) {
-			$query_args['post_author'] = bp_displayed_user_id();
+			$query_args['author'] = bp_displayed_user_id();
+			$query_args['post_status'] = array( 'publish', 'trash' );
 		} else {
 			// Just in case
 			$query_args['post__in'] = array( 0 );

@@ -108,6 +108,8 @@ class BP_Docs {
 
 		require( BP_DOCS_INCLUDES_PATH . 'theme-bridge.php' );
 
+		require( BP_DOCS_INCLUDES_PATH . 'edit-lock.php' );
+
 		// formatting.php contains filters and functions used to modify appearance only
 		require( BP_DOCS_INCLUDES_PATH . 'formatting.php' );
 
@@ -173,8 +175,9 @@ class BP_Docs {
 		}
 
 		// You should never really need to override this bad boy
-		if ( !defined( 'BP_DOCS_INSTALL_PATH' ) )
-			define( 'BP_DOCS_INSTALL_PATH', WP_PLUGIN_DIR . DIRECTORY_SEPARATOR . BP_DOCS_PLUGIN_SLUG . DIRECTORY_SEPARATOR );
+		if ( !defined( 'BP_DOCS_INSTALL_PATH' ) ) {
+			define( 'BP_DOCS_INSTALL_PATH', plugin_dir_path( __FILE__ ) );
+		}
 
 		// Ditto
 		if ( !defined( 'BP_DOCS_INCLUDES_PATH' ) )
