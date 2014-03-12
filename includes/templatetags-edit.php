@@ -288,6 +288,15 @@ function bp_docs_add_external_tinymce_buttons_row1( $buttons ) {
 	$ks = array_pop( $buttons );
 	$buttons = array_merge( $buttons, array( 'print' ), array( $ks ) );
 
+	// Fullscreen is kinda busted here, so remove it
+	$fs = array_search( 'fullscreen', $buttons );
+	if ( false !== $fs ) {
+		unset( $buttons[ $fs ] );
+	}
+
+	// Reset indexes
+	$buttons = array_values( $buttons );
+
 	return $buttons;
 }
 add_filter( 'mce_buttons', 'bp_docs_add_external_tinymce_buttons_row1' );
