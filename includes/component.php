@@ -1014,8 +1014,8 @@ class BP_Docs_Component extends BP_Component {
 	public function get_item_terms( $terms ) {
 		global $wpdb, $bp;
 
-		// Only on global directories
-		if ( ! bp_docs_is_global_directory() ) {
+		// Only on global directory and mygroups view
+		if ( ! bp_docs_is_global_directory() && ! bp_docs_is_mygroups_directory() ) {
 			return $terms;
 		}
 
@@ -1098,7 +1098,7 @@ class BP_Docs_Component extends BP_Component {
 
 		// Only load our JS on the right sorts of pages. Generous to account for
 		// different item types
-		if ( in_array( bp_docs_get_docs_slug(), $this->slugstocheck ) || bp_docs_is_single_doc() || bp_docs_is_global_directory() || bp_docs_is_doc_create() ) {
+		if ( in_array( bp_docs_get_docs_slug(), $this->slugstocheck ) || bp_docs_is_single_doc() || bp_docs_is_global_directory() || bp_docs_is_mygroups_directory() || bp_docs_is_doc_create() ) {
 			wp_enqueue_script( 'bp-docs-js' );
 			wp_enqueue_script( 'comment-reply' );
 			wp_localize_script( 'bp-docs-js', 'bp_docs', array(
