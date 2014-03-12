@@ -27,10 +27,10 @@ jQuery(document).ready(function($){
 	/* When a toggle is clicked, show the toggle-content */
 	$('.toggle-link').click(function(){
 		// Traverse for some items
-		var toggleable = $(this).parents('.toggleable');
-		var tc = $(toggleable).find('.toggle-content');
-		var ts = $(toggleable).find('.toggle-switch');
-		var pom = $(this).find('.plus-or-minus');
+		var $toggleable = $(this).parents('.toggleable');
+		var tc = $toggleable.find('.toggle-content');
+		var ts = $toggleable.find('.toggle-switch');
+		var $pom = $(this).find('.plus-or-minus');
 
 		// Toggle the active-content class
 		if($(tc).hasClass('active-content')){
@@ -47,19 +47,19 @@ jQuery(document).ready(function($){
 		}
 
 		// Slide the tags up or down
-		$(tc).slideToggle(400, function(){
-			var rclass, aclass;	
-			if ( $(pom).hasClass('show-pane') ) {
-				rclass = 'show-pane';
-				aclass = 'hide-pane';
-			} else {
-				rclass = 'hide-pane';
-				aclass = 'show-pane';
-			}
+		var rclass, aclass;	
+		if ( $pom.hasClass('show-pane') ) {
+			rclass = 'show-pane';
+			aclass = 'hide-pane';
+			$toggleable.removeClass( 'toggle-open' ).addClass( 'toggle-closed' );	
+		} else {
+			rclass = 'hide-pane';
+			aclass = 'show-pane';
+			$toggleable.removeClass( 'toggle-closed' ).addClass( 'toggle-open' );	
+		}
 
-			$(pom).removeClass(rclass);
-			$(pom).addClass(aclass);
-		});
+		$pom.removeClass(rclass);
+		$pom.addClass(aclass);
 
 		return false;
 	});

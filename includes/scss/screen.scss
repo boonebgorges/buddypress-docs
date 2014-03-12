@@ -402,6 +402,11 @@ body.js .bp-docs-attachment-drawer {
 }
 
 /* TOGGLES */
+
+.toggleable.toggle-closed .toggle-content {
+	display: none;
+}
+
 .hide-pane, .show-pane, .paperclip-vertical, .paperclip-jaunty{
 	background: url('../images/bp-docs-ui-sprites.png') no-repeat;
 	display: block;
