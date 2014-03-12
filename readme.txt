@@ -36,6 +36,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 = 1.6.0 =
 * Overhaul of the way group/user tag clouds work
 * Improved support for attachments on nginx and IIS
+* Improved doc edit locking mechanisms
 
 = 1.5.7 =
 * Improve appearance of row actions on mobile devices
