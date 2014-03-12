@@ -175,8 +175,9 @@ class BP_Docs {
 		}
 
 		// You should never really need to override this bad boy
-		if ( !defined( 'BP_DOCS_INSTALL_PATH' ) )
-			define( 'BP_DOCS_INSTALL_PATH', WP_PLUGIN_DIR . DIRECTORY_SEPARATOR . BP_DOCS_PLUGIN_SLUG . DIRECTORY_SEPARATOR );
+		if ( !defined( 'BP_DOCS_INSTALL_PATH' ) ) {
+			define( 'BP_DOCS_INSTALL_PATH', plugin_dir_path( __FILE__ ) );
+		}
 
 		// Ditto
 		if ( !defined( 'BP_DOCS_INCLUDES_PATH' ) )
