@@ -120,9 +120,6 @@ class BP_Docs_Component extends BP_Component {
 		// Respect $activities_template->disable_blogforum_replies
 		add_filter( 'bp_activity_can_comment',	array( $this, 'activity_can_comment'	) );
 
-		// AJAX handler for removing the edit lock when a user clicks away from Edit mode
-		add_action( 'wp_ajax_remove_edit_lock', array( $this, 'remove_edit_lock'        ) );
-
 		// Add body class
 		add_filter( 'bp_get_the_body_class', array( $this, 'body_class' ) );
 
@@ -982,23 +979,6 @@ class BP_Docs_Component extends BP_Component {
 		$redirect_url = apply_filters( 'bp_docs_handle_filters', bp_docs_get_item_docs_link() );
 
 		bp_core_redirect( $redirect_url );
-	}
-
-	/**
-	 * AJAX handler for remove_edit_lock option
-	 *
-	 * This function is called when a user is editing a Doc and clicks a link to leave the page
-	 *
-	 * @package BuddyPress Docs
-	 * @since 1.1
-	 */
-	function remove_edit_lock() {
-		$doc_id = isset( $_POST['doc_id'] ) ? $_POST['doc_id'] : false;
-
-		if ( !$doc_id )
-			return false;
-
-		delete_post_meta( $doc_id, '_edit_lock' );
 	}
 
 	/**

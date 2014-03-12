@@ -108,6 +108,8 @@ class BP_Docs {
 
 		require( BP_DOCS_INCLUDES_PATH . 'theme-bridge.php' );
 
+		require( BP_DOCS_INCLUDES_PATH . 'edit-lock.php' );
+
 		// formatting.php contains filters and functions used to modify appearance only
 		require( BP_DOCS_INCLUDES_PATH . 'formatting.php' );
 
