@@ -195,6 +195,10 @@ body.mobile .row-actions {
 	width: 100px;
 }
 
+.group-cell {
+	
+}
+
 .current-orderby a {
 	padding-left: 20px;
 }
@@ -577,21 +581,27 @@ ul#tags-list {
 	}
 }
 
-.groups-cell ul li img.avatar {
-	float: none;
-}
+.groups-cell {
+	padding-left: 10px;
 
-.groups-cell ul li a {
-	vertical-align: middle;
-	font-size: .85em;
-}
+	ul {
+		list-style-type: none;
+		padding-left: 0;
 
-.groups-cell ul {
-	list-style-type: none;
-	padding-left: 0;
-}
-.groups-cell ul li {
-	margin-bottom: .5em;
+		li {
+			margin-bottom: .5em;
+			margin-left: 0;
+
+			a {
+				vertical-align: middle;
+				font-size: .85em;
+			}
+
+			img.avatar {
+				float: none;
+			}
+		}
+	}
 }
 
 select#has-attachment {
@@ -853,5 +863,29 @@ table#post-revisions {
 @media screen and (min-width:71em) { 
 	.entry-content ul#tags-list {
 		@include multi-columns(5, 5%);
+	}
+}
+
+@media screen and (max-width:820px) {
+	.created-date-cell {
+		display: none;
+	}
+}
+
+@media screen and (max-width:620px) {
+	.tags-cell {
+		display: none;
+	}
+}
+
+@media screen and (max-width:520px) {
+	.groups-cell {
+		display: none;
+	}
+}
+
+@media screen and (max-width:420px) {
+	.attachment-clip-cell, .edited-date-cell {
+		display: none;
 	}
 }

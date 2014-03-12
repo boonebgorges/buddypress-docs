@@ -37,6 +37,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Overhaul of the way group/user tag clouds work
 * Improved support for attachments on nginx and IIS
 * Improved doc edit locking mechanisms
+* Improved responsiveness on directories
 
 = 1.5.7 =
 * Improve appearance of row actions on mobile devices
