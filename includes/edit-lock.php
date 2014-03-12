@@ -47,9 +47,54 @@ function bp_docs_heartbeat_callback( $response, $data ) {
 
 	$doc_id = intval( $data['doc_id'] );
 
-	update_post_meta( $doc_id, '_bp_docs_last_pinged', time() );
+	if ( ! $doc_id ) {
+		return $response;
+	}
+
+	$uid = bp_loggedin_user_id();
+
+	$lock = bp_docs_check_post_lock( $doc_id );
+
+	// No lock, or belongs to the current user
+	if ( empty( $lock ) || $lock == bp_loggedin_user_id() ) {
+		$time = time();
+		$lstring = "$time:$uid";
+		update_post_meta( $doc_id, '_bp_docs_last_pinged', $lstring );
+
+	// Someone else is editing, so bounce
+	} else {
+		$bounce = bp_docs_get_doc_link( $doc_id );
+		$by = new WP_User( $lock );
+		if ( ! empty( $by->user_nicename ) ) {
+			$bounce = add_query_arg( 'by', $by->user_nicename, $bounce );
+		}
+		$response['bp_docs_bounce'] = $bounce;
+	}
+
+	return $response;
 }
 add_filter( 'heartbeat_received', 'bp_docs_heartbeat_callback', 10, 2 );
+
+/**
+ * Prevent a user from visiting the Edit page if it's locked.
+ *
+ * @since 1.6.0
+ */
+function bp_docs_edit_lock_redirect() {
+	if ( ! bp_docs_is_doc_edit() ) {
+		return;
+	}
+
+	$doc_id = get_queried_object_id();
+
+	$lock = bp_docs_check_post_lock( $doc_id );
+
+	if ( ! empty( $lock ) && $lock != bp_loggedin_user_id() ) {
+		$bounce = bp_docs_get_doc_link( $doc_id );
+		wp_redirect( $bounce );
+	}
+}
+add_action( 'bp_actions', 'bp_docs_edit_lock_redirect' );
 
 /**
  * Check to see if the post is currently being edited by another user.
@@ -66,21 +111,19 @@ function bp_docs_check_post_lock( $post_id ) {
 	if ( !$post = get_post( $post_id ) )
 		return false;
 
-	if ( !$lock = get_post_meta( $post->ID, '_edit_lock', true ) )
+	if ( !$lock = get_post_meta( $post->ID, '_bp_docs_last_pinged', true ) )
 		return false;
 
 	$lock = explode( ':', $lock );
 	$time = $lock[0];
 	$user = isset( $lock[1] ) ? $lock[1] : get_post_meta( $post->ID, '_edit_last', true );
 
-	$last_checked = get_post_meta( $post->ID, '_bp_docs_last_pinged', true );
-
 	$heartbeat_interval = bp_docs_heartbeat_pulse();
 
 	// Bail out of the lock if four pings have been missed (one minute, by default)
 	$time_window = apply_filters( 'bp_docs_post_lock_interval', $heartbeat_interval * 4 );
 
-	if ( $last_checked && $last_checked > time() - $time_window && $user != get_current_user_id() ) {
+	if ( $time && $time > time() - $time_window && $user != get_current_user_id() ) {
 		return $user;
 	}
 
@@ -231,7 +274,7 @@ function bp_docs_remove_edit_lock() {
 	if ( !$doc_id )
 		return false;
 
-	delete_post_meta( $doc_id, '_edit_lock' );
+	delete_post_meta( $doc_id, '_bp_docs_last_pinged' );
 }
 add_action( 'wp_ajax_remove_edit_lock', 'bp_docs_remove_edit_lock' );
 
@@ -263,12 +306,17 @@ function bp_docs_add_edit_lock_cb() {
 		return;
 	}
 
+	// Is this post already locked?
+	$lock = bp_docs_check_post_lock( $doc_id );
+	if ( ! empty( $lock ) && $lock != bp_loggedin_user_id() ) {
+		die();
+	}
+
 	$now = time();
 	$user_id = bp_loggedin_user_id();
 	$lock = "$now:$user_id";
 
-	update_post_meta( $doc->ID, '_edit_lock', $lock );
-	update_post_meta( $doc_id, '_bp_docs_last_pinged', $now  );
+	update_post_meta( $doc_id, '_bp_docs_last_pinged', $lock );
 
 	die( json_encode( '1' ) );
 }

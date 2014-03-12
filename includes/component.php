@@ -1111,12 +1111,17 @@ class BP_Docs_Component extends BP_Component {
 		if ( in_array( bp_docs_get_docs_slug(), $this->slugstocheck ) || bp_docs_is_single_doc() || bp_docs_is_global_directory() || bp_docs_is_doc_create() ) {
 			wp_enqueue_script( 'bp-docs-js' );
 			wp_enqueue_script( 'comment-reply' );
-			wp_localize_script( 'bp-docs-js', 'bp_docs', array(
+
+			$strings = array(
 				'upload_title' => __( 'Upload File', 'bp-docs' ),
 				'upload_button' => __( 'OK', 'bp-docs' ),
 				'still_working'	=> __( 'Still working?', 'bp-docs' ),
-				'pulse' => bp_docs_heartbeat_pulse(),
-			) );
+			);
+
+			if ( bp_docs_is_doc_edit() ) {
+				$strings['pulse'] = bp_docs_heartbeat_pulse();
+			}
+			wp_localize_script( 'bp-docs-js', 'bp_docs', $strings );
 		}
 	}
 

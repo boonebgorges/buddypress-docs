@@ -182,6 +182,14 @@ jQuery(document).ready(function($){
 		data['doc_id'] = $('#existing-doc-id').val();
 	});
 
+	// Increment newest_activities and activity_last_id if data has been returned
+	$( document ).on( 'heartbeat-tick', function( e, data ) {
+		if ( ! data['bp_docs_bounce'] ) {
+			return;
+		}
+
+		window.location = data['bp_docs_bounce'];
+	});
 	/**
 	 * Collapse the Tags filter section
 	 */
