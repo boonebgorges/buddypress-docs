@@ -789,7 +789,7 @@ class BP_Docs_Attachments {
 
 		// If the response body includes our test text, we have a problem
 		$is_protected = true;
-		if ( $r['body'] === $test_text ) {
+		if ( ! is_wp_error( $r ) && $r['body'] === $test_text ) {
 			$is_protected = false;
 		}
 
