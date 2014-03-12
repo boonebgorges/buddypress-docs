@@ -183,25 +183,6 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 	/**
 	 * @group last_activity
 	 */
-	function test_update_group_last_activity_on_doc_edit() {
-		$g = $this->factory->group->create();
-		$d = $this->factory->doc->create( array(
-			'group' => $g,
-		) );
-
-		$last_activity = date( 'Y-m-d H:i:s', time() - 100000 );
-		groups_update_groupmeta( $g, 'last_activity', $last_activity );
-
-		// call manually because the hook is outside of the proper
-		// group document creation workflow
-//		do_action( 'bp_docs_after_save', $d );
-
-		$this->assertNotEquals( $last_activity, groups_get_groupmeta( $g, 'last_activity' ) );
-	}
-
-	/**
-	 * @group last_activity
-	 */
 	function test_update_group_last_activity_on_doc_comment() {
 		$g = $this->factory->group->create();
 		$d = $this->factory->doc->create( array(
