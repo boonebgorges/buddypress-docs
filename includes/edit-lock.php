@@ -7,6 +7,35 @@
  */
 
 /**
+ * BP Docs heartbeat interval.
+ *
+ * @since 1.6.0
+ *
+ * @return int
+ */
+function bp_docs_heartbeat_pulse() {
+	// Check whether a global heartbeat already exists
+	$heartbeat_settings = apply_filters( 'heartbeat_settings', array() );
+	if ( ! empty( $heartbeat_settings['interval'] ) ) {
+		if ( 'fast' === $heartbeat_settings['interval'] ) {
+			$pulse = 5;
+		} else {
+			$pulse = intval( $heartbeat_settings['interval'] );
+		}
+	}
+
+	// Fallback
+	if ( empty( $pulse ) ) {
+		$pulse = 15;
+	}
+
+	// Filter here to specify a Docs-specific pulse frequency
+	$pulse = intval( apply_filters( 'bp_docs_activity_pulse', $pulse ) );
+
+	return $pulse;
+}
+
+/**
  * Handle heartbeat
  *
  * @since 1.6.0
@@ -17,6 +46,8 @@ function bp_docs_heartbeat_callback( $response, $data ) {
 	}
 
 	$doc_id = intval( $data['doc_id'] );
+
+	update_post_meta( $doc_id, '_bp_docs_last_pinged', time() );
 }
 add_filter( 'heartbeat_received', 'bp_docs_heartbeat_callback', 10, 2 );
 
@@ -42,10 +73,17 @@ function bp_docs_check_post_lock( $post_id ) {
 	$time = $lock[0];
 	$user = isset( $lock[1] ) ? $lock[1] : get_post_meta( $post->ID, '_edit_last', true );
 
-	$time_window = apply_filters( 'wp_check_post_lock_window', AUTOSAVE_INTERVAL * 2 );
+	$last_checked = get_post_meta( $post->ID, '_bp_docs_last_pinged', true );
 
-	if ( $time && $time > time() - $time_window && $user != get_current_user_id() )
+	$heartbeat_interval = bp_docs_heartbeat_pulse();
+
+	// Bail out of the lock if four pings have been missed (one minute, by default)
+	$time_window = apply_filters( 'bp_docs_post_lock_interval', $heartbeat_interval * 4 );
+
+	if ( $last_checked && $last_checked > time() - $time_window && $user != get_current_user_id() ) {
 		return $user;
+	}
+
 	return false;
 }
 
@@ -74,10 +112,6 @@ function bp_docs_is_doc_edit_locked( $doc_id = false ) {
 			$doc_id = !empty( $post->ID ) ? $post->ID : false;
 
 		if ( $doc_id ) {
-			// Because we're not using WP autosave at the moment, ensure that
-			// the lock interval always returns as in process
-			add_filter( 'wp_check_post_lock_window', create_function( false, 'return time();' ) );
-
 			$is_edit_locked = bp_docs_check_post_lock( $doc_id );
 		}
 
@@ -171,7 +205,7 @@ function bp_docs_cancel_edit_link() {
 	function bp_docs_get_cancel_edit_link() {
 		global $bp, $post;
 
-		$doc_id = !empty( $bp->bp_docs->current_post->ID ) ? $bp->bp_docs->current_post->ID : false;
+		$doc_id = get_queried_object_id();
 
 		if ( !$doc_id )
 			return false;
@@ -201,4 +235,42 @@ function bp_docs_remove_edit_lock() {
 }
 add_action( 'wp_ajax_remove_edit_lock', 'bp_docs_remove_edit_lock' );
 
+/**
+ * AJAX handler for setting edit lock.
+ *
+ * Called when a user enters an Edit page.
+ *
+ * @since 1.6.0
+ */
+function bp_docs_add_edit_lock_cb() {
+	$doc_id = isset( $_POST['doc_id'] ) ? (int) $_POST['doc_id'] : false;
+
+	if ( ! $doc_id ) {
+		return;
+	}
+
+	$doc = get_post( $doc_id );
+
+	if ( ! $doc || is_wp_error( $doc ) ) {
+		return;
+	}
+
+	if ( bp_docs_get_post_type_name() !== $doc->post_type ) {
+		return;
+	}
+
+	if ( ! is_user_logged_in() ) {
+		return;
+	}
+
+	$now = time();
+	$user_id = bp_loggedin_user_id();
+	$lock = "$now:$user_id";
+
+	update_post_meta( $doc->ID, '_edit_lock', $lock );
+	update_post_meta( $doc_id, '_bp_docs_last_pinged', $now  );
+
+	die( json_encode( '1' ) );
+}
+add_action( 'wp_ajax_add_edit_lock', 'bp_docs_add_edit_lock_cb' );
 

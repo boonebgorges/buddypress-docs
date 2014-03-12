@@ -1009,6 +1009,10 @@ class BP_Docs_Component extends BP_Component {
 			$classes[] = 'mobile';
 		}
 
+		if ( bp_docs_is_doc_edit() ) {
+			$classes[] = 'bp-docs-edit';
+		}
+
 		return array_unique( $classes );
 	}
 
@@ -1095,7 +1099,7 @@ class BP_Docs_Component extends BP_Component {
 			// Edit mode requires bp-docs-js to be dependent on TinyMCE, so we must
 			// reregister bp-docs-js with the correct dependencies
 			wp_deregister_script( 'bp-docs-js' );
-			wp_register_script( 'bp-docs-js', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/bp-docs.js' ), array( 'jquery', 'editor' ) );
+			wp_register_script( 'bp-docs-js', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/bp-docs.js' ), array( 'jquery', 'editor', 'heartbeat' ) );
 
 			wp_register_script( 'word-counter', site_url() . '/wp-admin/js/word-count.js', array( 'jquery' ) );
 
@@ -1111,6 +1115,7 @@ class BP_Docs_Component extends BP_Component {
 				'upload_title' => __( 'Upload File', 'bp-docs' ),
 				'upload_button' => __( 'OK', 'bp-docs' ),
 				'still_working'	=> __( 'Still working?', 'bp-docs' ),
+				'pulse' => bp_docs_heartbeat_pulse(),
 			) );
 		}
 	}

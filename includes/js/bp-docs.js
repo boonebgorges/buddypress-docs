@@ -1,6 +1,25 @@
 jQuery(document).ready(function($){
+	var doc_id = $( '#existing-doc-id' ).val();
+
 	/* Unhide JS content */
 	$('.hide-if-no-js').show();
+
+	// If this is an edit page, set the lock
+	if ( $( 'body' ).hasClass( 'bp-docs-edit' ) ) {
+		var lock_data = {
+			action: 'add_edit_lock', 
+			doc_id: doc_id
+		};
+
+		$.ajax({
+			url: ajaxurl,
+			type: 'POST',
+			data: lock_data,
+			success: function(response){
+				return true;
+			}
+		});
+	}
 
 	$('.bp-docs-attachment-clip').on('click', function(e) {
 		var att_doc_id = $(e.target).closest('.bp-docs-attachment-clip').attr('id').split('-').pop();
@@ -145,6 +164,22 @@ jQuery(document).ready(function($){
 			}
 		});
 		return false;
+	});
+
+	// Set the interval and the namespace event
+	if ( typeof wp != 'undefined' && typeof wp.heartbeat != 'undefined' && typeof bp_docs.pulse != 'undefined' ) {
+
+		wp.heartbeat.interval( Number( bp_docs.pulse ) );
+
+		jq.fn.extend({
+			'heartbeat-send': function() {
+			return this.bind( 'heartbeat-send.buddypress-docs' );
+	        },
+	    });
+	}
+
+	$( document ).on( 'heartbeat-send.buddypress-docs', function( e, data ) {
+		data['doc_id'] = $('#existing-doc-id').val();
 	});
 
 	/**
