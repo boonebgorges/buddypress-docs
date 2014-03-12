@@ -204,7 +204,7 @@ function bp_docs_info_header() {
 			$message = implode( "\n", $message );
 
 			// We are viewing a subset of docs, so we'll add a link to clear filters
-			$message .= ' - ' . sprintf( __( '<strong><a href="%s" title="View All Docs">View All Docs</a></strong>', 'bp-docs' ), remove_query_arg( 'bpd_tag' ) );
+			$message .= ' - ' . sprintf( __( '<strong><a href="%s" title="View All Docs">View All Docs</a></strong>', 'bp-docs' ), remove_query_arg( array( 'bpd_tag', 's', 'search_submit' ) ) );
 		}
 
 		?>
@@ -1922,20 +1922,58 @@ function bp_docs_get_doc_attachments( $doc_id = null ) {
 	return apply_filters( 'bp_docs_get_doc_attachments', $atts, $doc_id );
 }
 
+/**
+ * Get the URL for an attachment download.
+ *
+ * Is sensitive to whether Docs can be directly downloaded.
+ *
+ * @param int $attachment_id
+ */
+function bp_docs_attachment_url( $attachment_id ) {
+	echo bp_docs_get_attachment_url( $attachment_id );
+}
+	/**
+	 * Get the URL for an attachment download.
+	 *
+	 * Is sensitive to whether Docs can be directly downloaded.
+	 *
+	 * @param int $attachment_id
+	 */
+	function bp_docs_get_attachment_url( $attachment_id ) {
+		$attachment = get_post( $attachment_id );
+
+		if ( bp_docs_attachment_protection() ) {
+			$attachment = get_post( $attachment_id );
+			$att_base   = basename( get_attached_file( $attachment_id ) );
+			$doc_url    = bp_docs_get_doc_link( $attachment->post_parent );
+			$att_url    = add_query_arg( 'bp-attachment', $att_base, $doc_url );
+		} else {
+			$att_url = wp_get_attachment_url( $attachment_id );
+		}
+
+		// Backward compatibility: fix IIS URLs that were broken by a
+		// previous implementation
+		$att_url = preg_replace( '|bp\-attachments([0-9])|', 'bp-attachments/$1', $att_url );
+
+		return apply_filters( 'bp_docs_attachment_url_base', $att_url, $attachment );
+	}
+
+
 // @todo make <li> optional?
 function bp_docs_attachment_item_markup( $attachment_id, $format = 'full' ) {
 	$markup = '';
 
-	$attachment = get_post( $attachment_id );
-	$attachment_url = apply_filters( 'bp_docs_attachment_url_base', wp_get_attachment_url( $attachment->ID ), $attachment );
+	$att_url    = bp_docs_get_attachment_url( $attachment_id );
 
-	$attachment_ext = preg_replace( '/^.+?\.([^.]+)$/', '$1', $attachment_url );
-	$attachment_filename = basename( $attachment_url );
+	$attachment = get_post( $attachment_id );
+	$att_base   = basename( get_attached_file( $attachment_id ) );
+	$doc_url    = bp_docs_get_doc_link( $attachment->post_parent );
+
+	$attachment_ext = preg_replace( '/^.+?\.([^.]+)$/', '$1', $att_url );
 
 	if ( 'full' === $format ) {
 		$attachment_delete_html = '';
 		if ( bp_docs_current_user_can( 'edit' ) && ( bp_docs_is_doc_edit() || bp_docs_is_doc_create() ) ) {
-			$doc_url = bp_docs_get_doc_link( $attachment->post_parent );
 			$attachment_delete_url = wp_nonce_url( $doc_url, 'bp_docs_delete_attachment_' . $attachment_id );
 			$attachment_delete_url = add_query_arg( array(
 				'delete_attachment' => $attachment_id,
@@ -1951,18 +1989,18 @@ function bp_docs_attachment_item_markup( $attachment_id, $format = 'full' ) {
 			'<li id="doc-attachment-%d"><span class="doc-attachment-mime-icon doc-attachment-mime-%s"></span><a href="%s" title="%s">%s</a>%s</li>',
 			$attachment_id,
 			$attachment_ext,
-			$attachment_url,
-			esc_attr( $attachment_filename ),
-			esc_html( $attachment_filename ),
+			$att_url,
+			esc_attr( $att_base ),
+			esc_html( $att_base ),
 			$attachment_delete_html
 		);
 	} else {
 		$markup = sprintf(
 			'<li id="doc-attachment-%d"><a href="%s" title="%s">%s</a></li>',
 			$attachment_id,
-			$attachment_url,
-			esc_attr( $attachment_filename ),
-			esc_html( $attachment_filename )
+			$att_url,
+			esc_attr( $att_base ),
+			esc_html( $att_base )
 		);
 	}
 
