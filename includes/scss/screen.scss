@@ -68,7 +68,7 @@ body.bp-docs div.page ul {
 			padding: 4px 10px;
 			border-radius: 5px 5px 0 0;
 		}
-		
+
 		&.current a {
 			background: $grey;
 			color: #555;
@@ -108,12 +108,12 @@ body.bp-docs div.page ul {
 .doctable {
 	border-collapse: separate;
 	border-spacing: 0;
-	
+
 	p {
 		padding: 0;
 		margin: 0;
 	}
-	
+
 	tr:hover .row-actions {
 		visibility: visible;
 	}
@@ -196,7 +196,7 @@ body.mobile .row-actions {
 }
 
 .group-cell {
-	
+
 }
 
 .current-orderby a {
@@ -463,9 +463,9 @@ body.js .bp-docs-attachment-drawer {
 		-webkit-border-bottom-right-radius: 10px;
 		border-radius: 3px 3px 0px 0px;
 	}
-	
+
 	a {
-		color: $grey_text; 
+		color: $grey_text;
 		text-decoration: none;
 		display: block;
 		width: 100%;
@@ -492,7 +492,7 @@ body.js .bp-docs-attachment-drawer {
 }
 
 td.desc-column {
-	width: 300px;
+	width: 50%;
 	padding: 0px 18px 12px;
 }
 
@@ -525,7 +525,7 @@ a.docs-filter-title.current {
 	font-size: .8em;
 	padding: 6px 10px;
 	margin-top: 8px;
-	transition: max-height 2s ease;	
+	transition: max-height 2s ease;
 	overflow: hidden;
 	position: relative;
 }
@@ -844,7 +844,7 @@ table#post-revisions {
 }
 
 //Media query for most screens, unseen by IE 7 or 8
-@media screen and (min-width:4em) { 
+@media screen and (min-width:4em) {
 	#docs-filter-section-tags a.tags-action-button,
 	#docs-filter-section-tags a.tags-action-button:visited {
 		display: block; // Let the button span the entire box
@@ -854,13 +854,13 @@ table#post-revisions {
 	}
 }
 //Media query for larger screens, like tablet
-@media screen and (min-width:50em) { 
+@media screen and (min-width:50em) {
 	.entry-content ul#tags-list {
 		@include multi-columns(4, 5%);
 	}
 }
 //Media query for larger screens, like desktop
-@media screen and (min-width:71em) { 
+@media screen and (min-width:71em) {
 	.entry-content ul#tags-list {
 		@include multi-columns(5, 5%);
 	}
