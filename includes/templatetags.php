@@ -1862,8 +1862,9 @@ function bp_docs_attachment_item_markup( $attachment_id, $format = 'full' ) {
 		);
 	} else {
 		$markup = sprintf(
-			'<li id="doc-attachment-%d"><a href="%s" title="%s">%s</a></li>',
+			'<li id="doc-attachment-%d"><span class="doc-attachment-mime-icon doc-attachment-mime-%s"></span><a href="%s" title="%s">%s</a></li>',
 			$attachment_id,
+			$attachment_ext,
 			$att_url,
 			esc_attr( $att_base ),
 			esc_html( $att_base )
@@ -1901,9 +1902,9 @@ function bp_docs_attachment_icon() {
 		return;
 	}
 
-	$pc = plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/images/paperclip.png' );
+	// $pc = plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/images/paperclip.png' );
 
-	$html = '<a class="bp-docs-attachment-clip" id="bp-docs-attachment-clip-' . get_the_ID() . '"><img src="' . $pc . '" height="25"></a>';
+	$html = '<a class="bp-docs-attachment-clip paperclip-jaunty" id="bp-docs-attachment-clip-' . get_the_ID() . '"></a>';
 
 	echo $html;
 }
