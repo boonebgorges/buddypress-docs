@@ -711,7 +711,7 @@ class BP_Docs_Attachments {
 		restore_current_blog();
 
 		if ( $is_nginx ) {
-			$help_url = 'https://github.com/boonebgorges/buddypress-docs/wiki/Attachment-Privacy#wiki-nginx';
+			$help_url = 'https://github.com/boonebgorges/buddypress-docs/wiki/Attachment-Privacy#nginx';
 
 			$help_p  = __( 'It looks like you are running <strong>nginx</strong>. We recommend the following setting in your site configuration file:', 'bp-docs' );
 			$help_p .= '<pre><code>location ' . $att_url . ' {
@@ -721,7 +721,7 @@ class BP_Docs_Attachments {
 		}
 
 		if ( $is_iis7 ) {
-			$help_url = 'https://github.com/boonebgorges/buddypress-docs/wiki/Attachment-Privacy#wiki-nginx';
+			$help_url = 'https://github.com/boonebgorges/buddypress-docs/wiki/Attachment-Privacy#iis7';
 
 			$help_p  = __( 'It looks like you are running <strong>IIS 7</strong>. We recommend the following setting in your Web.config file:', 'bp-docs' );
 			$help_p .= '<pre><code>&lt;rule name="buddypress-docs-attachments">
