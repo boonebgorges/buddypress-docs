@@ -179,7 +179,7 @@ class BP_Docs_Attachments {
 	 * @return $file
 	 */
 	public function maybe_create_rewrites( $file ) {
-		global $is_apache, $is_nginx;
+		global $is_apache;
 
 		if ( ! $this->get_doc_id() ) {
 			return $file;
@@ -692,6 +692,7 @@ class BP_Docs_Attachments {
 		}
 
 		add_action( 'admin_notices', array( $this, 'admin_notice' ) );
+		add_action( 'network_admin_notices', array( $this, 'admin_notice' ) );
 	}
 
 	public function admin_notice() {
@@ -708,6 +709,19 @@ class BP_Docs_Attachments {
     rewrite ^.*uploads/bp-attachments/([0-9]+)/(.*) /?p=$1&bp-attachment=$2 permanent;
 }
 </code></pre>';
+		}
+
+		if ( $is_iis7 ) {
+			$help_url = 'https://github.com/boonebgorges/buddypress-docs/wiki/Attachment-Privacy#wiki-nginx';
+
+			$help_p  = __( 'It looks like you are running <strong>IIS 7</strong>. We recommend the following setting in your Web.config file:', 'bp-docs' );
+			$help_p .= '<pre><code>&lt;rule name="buddypress-docs-attachments">
+    &lt;match url="^wp-content/uploads/bp-attachments/([0-9]+)/(.*)$"/>
+        &lt;conditions>
+	    &lt;add input="{REQUEST_FILENAME}" matchType="IsFile" negate="false"/>
+	&lt;/conditions>
+    &lt;action type="Redirect" url=?p={R:1}&amp;bp-attachment={R:2}"/>
+&lt;/rule> </code></pre>';
 		}
 
 		?>
