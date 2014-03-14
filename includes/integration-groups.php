@@ -43,7 +43,6 @@ class BP_Docs_Groups_Integration {
 
 		// Taxonomy helpers
 		add_filter( 'bp_docs_taxonomy_get_item_terms', 	array( $this, 'get_group_terms' ) );
-		add_action( 'bp_docs_taxonomy_save_item_terms', array( $this, 'save_group_terms' ) );
 
 		// Filter the core user_can_edit function for group-specific functionality
 		add_filter( 'bp_docs_user_can',			array( $this, 'user_can' ), 10, 4 );
@@ -68,8 +67,9 @@ class BP_Docs_Groups_Integration {
 		add_filter( 'bp_docs_loop_additional_td',       array( $this, 'groups_td' ), 5 );
 
 		// Update group last active metadata when a doc is created, updated, or saved
-		add_filter( 'bp_docs_doc_saved',		array( $this, 'update_group_last_active' )  );
-		add_filter( 'bp_docs_doc_deleted',		array( $this, 'update_group_last_active' ) );
+		add_filter( 'bp_docs_after_save',               array( $this, 'update_group_last_active' )  );
+		add_filter( 'bp_docs_before_doc_delete',        array( $this, 'update_group_last_active' ) );
+		add_filter( 'wp_insert_comment',                array( $this, 'update_group_last_active_comment' ), 10, 2 );
 
 		// Sneak into the nav before it's rendered to insert the group Doc count. Hooking
 		// to bp_actions because of the craptastic nature of the BP_Group_Extension loader
@@ -176,17 +176,38 @@ class BP_Docs_Groups_Integration {
 	 */
 	function pre_query_args( $query_args, $bp_docs_query ) {
 		if ( ! empty( $bp_docs_query->query_args['group_id'] ) ) {
-			$terms = array();
-			foreach ( (array) $bp_docs_query->query_args['group_id'] as $gid ) {
-				$terms[] = bp_docs_get_term_slug_from_group_id( $gid );
-			}
-			$query_args['tax_query'][] = array(
-				'taxonomy' => bp_docs_get_associated_item_tax_name(),
-				'field'    => 'slug',
-				'terms'    => $terms,
-			);
+			$query_args['tax_query'][] = self::tax_query_arg_for_groups( $bp_docs_query->query_args['group_id'] );
 		}
 		return $query_args;
+	}
+
+	/**
+	 * Generate the tax_query param for limiting to groups.
+	 *
+	 * @since 1.6.0
+	 *
+	 * @param int|array $group_ids IDs of groups.
+	 * @return array
+	 */
+	public static function tax_query_arg_for_groups( $group_ids ) {
+		$group_ids = wp_parse_id_list( $group_ids );
+
+		$terms = array();
+		foreach ( $group_ids as $gid ) {
+			$terms[] = bp_docs_get_term_slug_from_group_id( $gid );
+		}
+
+		if ( empty( $terms ) ) {
+			$terms = array( 0 );
+		}
+
+		$arg = array(
+			'taxonomy' => bp_docs_get_associated_item_tax_name(),
+			'field'    => 'slug',
+			'terms'    => $terms,
+		);
+
+		return $arg;
 	}
 
 	/**
@@ -212,11 +233,39 @@ class BP_Docs_Groups_Integration {
 			}
 		}
 
-		if ( $group_id ) {
-			$terms = groups_get_groupmeta( $group_id, 'bp_docs_terms' );
+		if ( ! $group_id ) {
+			return $terms;
+		}
 
-			if ( empty( $terms ) )
-				$terms = array();
+		$query_args = array(
+			'post_type'         => bp_docs_get_post_type_name(),
+			'update_meta_cache' => false,
+			'update_term_cache' => true,
+			'showposts'         => '-1',
+			'posts_per_page'    => '-1',
+			'tax_query'         => array(
+				self::tax_query_arg_for_groups( $group_id ),
+			),
+		);
+
+		$group_doc_query = new WP_Query( $query_args );
+
+		$terms = array();
+		foreach ( $group_doc_query->posts as $p ) {
+			$p_terms = wp_get_post_terms( $p->ID, buddypress()->bp_docs->docs_tag_tax_name );
+			foreach ( $p_terms as $p_term ) {
+				if ( ! isset( $terms[ $p_term->name ] ) ) {
+					$terms[ $p_term->name ] = array();
+				}
+
+				if ( ! in_array( $p->ID, $terms[ $p_term->name ] ) ) {
+					$terms[ $p_term->name ][] = $p->ID;
+				}
+			}
+		}
+
+		if ( empty( $terms ) ) {
+			$terms = array();
 		}
 
 		return apply_filters( 'bp_docs_taxonomy_get_group_terms', $terms );
@@ -225,24 +274,14 @@ class BP_Docs_Groups_Integration {
 	/**
 	 * Saves the list of terms used by a group's docs
 	 *
+	 * No longer used.
+	 *
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param array $terms The terms to be saved to groupmeta
 	 */
-	function save_group_terms( $terms ) {
-		$doc = get_post();
-
-		if ( ! isset( $doc->post_type ) || $doc->post_type !== bp_docs_get_post_type_name() ) {
-			return $terms;
-		}
-
-		$group_id = bp_docs_get_associated_group_id( $doc->ID, $doc );
-
-		if ( $group_id ) {
-			groups_update_groupmeta( $group_id, 'bp_docs_terms', $terms );
-		}
-	}
+	function save_group_terms( $terms ) {}
 
 	/**
 	 * Determine whether a user can edit the group doc in question
@@ -720,9 +759,25 @@ class BP_Docs_Groups_Integration {
 	 * @package BuddyPress Docs
 	 * @since 1.1.8
 	 */
-	function update_group_last_active() {
-		if ( bp_is_group() ) {
-			groups_update_groupmeta( bp_get_current_group_id(), 'last_activity', bp_core_current_time() );
+	function update_group_last_active( $doc_id ) {
+		$group = intval( bp_docs_get_associated_group_id( $doc_id ) );
+
+		if ( $group ) {
+			groups_update_groupmeta( $group, 'last_activity', bp_core_current_time() );
+		}
+	}
+
+	/**
+	 * Update group last activy date when a comment is posted to a group Doc.
+	 *
+	 * @since 1.6.0
+	 *
+	 * @param int $comment_id
+	 * @param object $comment
+	 */
+	public function update_group_last_active_comment( $comment_id, $comment ) {
+		if ( 1 == $comment->comment_approved ) {
+			$this->update_group_last_active( $comment->comment_post_ID );
 		}
 	}
 

@@ -108,6 +108,8 @@ class BP_Docs {
 
 		require( BP_DOCS_INCLUDES_PATH . 'theme-bridge.php' );
 
+		require( BP_DOCS_INCLUDES_PATH . 'edit-lock.php' );
+
 		// formatting.php contains filters and functions used to modify appearance only
 		require( BP_DOCS_INCLUDES_PATH . 'formatting.php' );
 
@@ -173,8 +175,9 @@ class BP_Docs {
 		}
 
 		// You should never really need to override this bad boy
-		if ( !defined( 'BP_DOCS_INSTALL_PATH' ) )
-			define( 'BP_DOCS_INSTALL_PATH', WP_PLUGIN_DIR . DIRECTORY_SEPARATOR . BP_DOCS_PLUGIN_SLUG . DIRECTORY_SEPARATOR );
+		if ( !defined( 'BP_DOCS_INSTALL_PATH' ) ) {
+			define( 'BP_DOCS_INSTALL_PATH', plugin_dir_path( __FILE__ ) );
+		}
 
 		// Ditto
 		if ( !defined( 'BP_DOCS_INCLUDES_PATH' ) )
@@ -541,32 +544,12 @@ class BP_Docs {
 		}
 
 		if ( ! bp_docs_current_user_can( $action ) ) {
-			$redirect_to = wp_get_referer();
+			$redirect_to = wp_login_url( bp_docs_get_doc_link() );
 
-			if ( ! $redirect_to || trailingslashit( $redirect_to ) == trailingslashit( wp_guess_url() ) ) {
-				$redirect_to = bp_get_root_domain();
-			}
-
-			switch ( $action ) {
-				case 'read' :
-					$message = __( 'You are not allowed to read that Doc.', 'bp-docs' );
-					break;
-
-				case 'create' :
-					$message = __( 'You are not allowed to create Docs.', 'bp-docs' );
-					break;
-
-				case 'edit' :
-					$message = __( 'You are not allowed to edit that Doc.', 'bp-docs' );
-					break;
-
-				case 'view_history' :
-					$message = __( 'You are not allowed to view that Doc\'s history.', 'bp-docs' );
-					break;
-			}
-
-			bp_core_add_message( $message, 'error' );
-			bp_core_redirect( $redirect_to );
+			bp_core_no_access( array(
+				'mode' => 2,
+				'redirect' => $redirect_to,
+			) );
 		}
 	}
 

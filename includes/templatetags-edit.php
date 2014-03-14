@@ -263,7 +263,13 @@ add_filter( 'mce_external_plugins', 'bp_docs_add_external_tinymce_plugins' );
  * @return array $buttons Button list, with BP Docs buttons added
  */
 function bp_docs_add_external_tinymce_buttons_row1( $buttons ) {
-	$justify_right_key = array_search( 'justifyright', $buttons );
+	// TinyMCE 4.0+
+	$justify_right_key = array_search( 'alignright', $buttons );
+
+	// 3.0
+	if ( false === $justify_right_key ) {
+		$justify_right_key = array_search( 'justifyright', $buttons );
+	}
 
 	if ( $justify_right_key !== 0 ) {
 		// Shift the buttons one to the right and remove from original array
@@ -281,6 +287,15 @@ function bp_docs_add_external_tinymce_buttons_row1( $buttons ) {
 	// Add the Print button just before the kitchen sink
 	$ks = array_pop( $buttons );
 	$buttons = array_merge( $buttons, array( 'print' ), array( $ks ) );
+
+	// Fullscreen is kinda busted here, so remove it
+	$fs = array_search( 'fullscreen', $buttons );
+	if ( false !== $fs ) {
+		unset( $buttons[ $fs ] );
+	}
+
+	// Reset indexes
+	$buttons = array_values( $buttons );
 
 	return $buttons;
 }

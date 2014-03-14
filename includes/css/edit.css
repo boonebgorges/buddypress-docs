@@ -62,6 +62,10 @@ td.content-column select {
 	padding: inherit;
 }
 
+.uploader-editor {
+	display: none;
+}
+
 /* Theme compat: Text mode editor */
 #buddypress .standard-form textarea#doc_content {
 	width: 100%;
@@ -181,6 +185,9 @@ td.content-column select {
 #editorcontainer textarea {
     width: 99%; border: none;
     border-radius: 0; -webkit-border-radius: 0; -moz-border-radius: 0; margin-top: -1px; }
+.wp-editor-container {
+	border: 1px solid #eaeaea;
+}
 #edButtonHTML,
 #edButtonPreview {
     background-color: #F1F1F1; padding: 2px 10px;

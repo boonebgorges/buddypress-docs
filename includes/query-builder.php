@@ -255,8 +255,8 @@ class BP_Docs_Query {
 	/**
 	 *
 	 */
-	function get_edited_by_post_ids() {
-		$editor_ids = wp_parse_id_list( $this->query_args['edited_by_id'] );
+	public static function get_edited_by_post_ids_for_user( $editor_ids ) {
+		$editor_ids = wp_parse_id_list( $editor_ids );
 		$post_ids = array();
 
 		foreach ( $editor_ids as $editor_id ) {
@@ -289,6 +289,13 @@ class BP_Docs_Query {
 
 		// @todo Might be faster to let the dupes through and let MySQL optimize
 		return array_unique( $post_ids );
+	}
+
+	/**
+	 *
+	 */
+	function get_edited_by_post_ids() {
+		return self::get_edited_by_post_ids_for_user( $this->query_args['edited_by_id'] );
 	}
 
 	/**
@@ -569,6 +576,8 @@ class BP_Docs_Query {
 		// only when we save from the front end (for things like taxonomies, which
 		// the WP admin handles automatically)
 		do_action( 'bp_docs_doc_saved', $this );
+
+		do_action( 'bp_docs_after_save', $this->doc_id );
 
 		$message_type = $result['redirect'] == 'single' ? 'success' : 'error';
 
