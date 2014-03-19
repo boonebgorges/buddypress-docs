@@ -179,7 +179,7 @@ class BP_Docs_Attachments {
 	 * @return $file
 	 */
 	public function maybe_create_rewrites( $file ) {
-		global $is_apache, $is_nginx;
+		global $is_apache;
 
 		if ( ! $this->get_doc_id() ) {
 			return $file;
@@ -472,7 +472,7 @@ class BP_Docs_Attachments {
 			);
 		}
 
-		return $rules;
+		return apply_filters( 'bp_docs_attachments_generate_rewrite_rules', $rules, $this );
 	}
 
 	/**
@@ -692,6 +692,7 @@ class BP_Docs_Attachments {
 		}
 
 		add_action( 'admin_notices', array( $this, 'admin_notice' ) );
+		add_action( 'network_admin_notices', array( $this, 'admin_notice' ) );
 	}
 
 	public function admin_notice() {
@@ -700,14 +701,36 @@ class BP_Docs_Attachments {
 		$dismiss_url = add_query_arg( 'bpdocs-disable-attachment-notice', '1', $_SERVER['REQUEST_URI'] );
 		$dismiss_url = wp_nonce_url( $dismiss_url, 'bpdocs-disable-attachment-notice' );
 
+		if ( ! bp_is_root_blog() ) {
+			switch_to_blog( bp_get_root_blog_id() );
+		}
+
+		$upload_dir = $this->mod_upload_dir( wp_upload_dir() );
+		$att_url = str_replace( get_option( 'home' ), '', $upload_dir['url'] );
+
+		restore_current_blog();
+
 		if ( $is_nginx ) {
-			$help_url = 'https://github.com/boonebgorges/buddypress-docs/wiki/Attachment-Privacy#wiki-nginx';
+			$help_url = 'https://github.com/boonebgorges/buddypress-docs/wiki/Attachment-Privacy#nginx';
 
 			$help_p  = __( 'It looks like you are running <strong>nginx</strong>. We recommend the following setting in your site configuration file:', 'bp-docs' );
-			$help_p .= '<pre><code>location /wp-content/uploads/bp-attachments/ {
-    rewrite ^.*uploads/bp-attachments/([0-9]+)/(.*) /?p=$1&bp-attachment=$2 permanent;
+			$help_p .= '<pre><code>location ' . $att_url . ' {
+    rewrite ^.*' . str_replace( '/wp-content/', '', $att_url ) . '([0-9]+)/(.*) /?p=$1&bp-attachment=$2 permanent;
 }
 </code></pre>';
+		}
+
+		if ( $is_iis7 ) {
+			$help_url = 'https://github.com/boonebgorges/buddypress-docs/wiki/Attachment-Privacy#iis7';
+
+			$help_p  = __( 'It looks like you are running <strong>IIS 7</strong>. We recommend the following setting in your Web.config file:', 'bp-docs' );
+			$help_p .= '<pre><code>&lt;rule name="buddypress-docs-attachments">
+    &lt;match url="^' . $att_url . '([0-9]+)/(.*)$"/>
+        &lt;conditions>
+	    &lt;add input="{REQUEST_FILENAME}" matchType="IsFile" negate="false"/>
+	&lt;/conditions>
+    &lt;action type="Redirect" url="?p={R:1}&amp;bp-attachment={R:2}"/>
+&lt;/rule> </code></pre>';
 		}
 
 		?>

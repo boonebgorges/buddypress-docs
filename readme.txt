@@ -3,8 +3,8 @@ Contributors: boonebgorges, cuny-academic-commons
 Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.3, BuddyPress 1.5
-Tested up to: WordPress 3.8, BuddyPress 1.9.2
-Stable tag: 1.5.7
+Tested up to: WordPress 3.9, BuddyPress 2.0.0
+Stable tag: 1.6.0
  
 Adds collaborative Docs to BuddyPress.
 
@@ -33,11 +33,15 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.6.1 =
+* Add a filter for auto-generated Apache attachment rewrite rules
+
 = 1.6.0 =
 * Overhaul of the way group/user tag clouds work
 * Improved support for attachments on nginx and IIS
 * Improved doc edit locking mechanisms
-* Improved responsiveness on directories
+* Improved appearance on devices of various sizes
+* Support for WordPress 3.9 and TinyMCE 4.x
 
 = 1.5.7 =
 
