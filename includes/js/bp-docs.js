@@ -204,12 +204,12 @@ jQuery(document).ready(function($){
 		} );
 
 		// Add an ellipses item
-		var st = '&hellip; and %d more';
+		var st = '&hellip; <a href="#" class="tags-unhide tags-action-button">and %d more</a>';
 		st = st.replace( /%d/, hidden_tag_counter );  
 
 		$dfsection_tags_list.append( '<li class="tags-ellipses">' + st + '</li>' );
 
-		$dfsection_tags.prepend( '<a class="tags-unhide tags-action-button" href="#">show all tags</a>' );
+		$dfsection_tags.prepend( '<a class="tags-unhide tags-action-button tags-spanning-button" href="#">show all tags</a>' );
 	}
 
 	/**
@@ -219,7 +219,7 @@ jQuery(document).ready(function($){
 		$section.find( 'a.tags-unhide' ).remove();
 		$section.find( '.tags-ellipses' ).remove();
 		$dfsection_tags_items.removeClass( 'hidden-tag' );
-		$dfsection_tags.prepend( '<a class="tags-hide tags-action-button" href="#">show fewer tags</a>' );
+		$dfsection_tags.prepend( '<a class="tags-hide tags-action-button tags-spanning-button" href="#">show fewer tags</a>' );
 		hidden_tag_counter = 0;
 	}
 
