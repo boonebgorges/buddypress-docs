@@ -325,6 +325,7 @@ body.js .bp-docs-attachment-drawer {
 
 .bp-docs-attachment-drawer > ul > li {
 	margin-left: 0;
+	margin-bottom: 0.8em;
 }
 
 /* TOGGLES */
