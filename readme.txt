@@ -33,6 +33,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.6.1 =
+* Add a filter for auto-generated Apache attachment rewrite rules
+
 = 1.6.0 =
 * Overhaul of the way group/user tag clouds work
 * Improved support for attachments on nginx and IIS
@@ -41,6 +44,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Support for WordPress 3.9 and TinyMCE 4.x
 
 = 1.5.7 =
+
 * Improve appearance of row actions on mobile devices
 * Improve appearance of tags filter on IE < 9
 * Fix bug introduced in BP 1.9.2 related to the display of comments
