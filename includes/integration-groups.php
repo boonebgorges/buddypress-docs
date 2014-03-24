@@ -1442,13 +1442,26 @@ function bp_docs_get_associated_group_id( $doc_id, $doc = false, $single_array =
 }
 
 function bp_docs_set_associated_group_id( $doc_id, $group_id = 0 ) {
-	if ( 0 == intval( $group_id ) ) {
-		$term = array();
-	} else {
-		$term = bp_docs_get_group_term( $group_id );
-	}
+	// Three cases: 
+	if ( isset( $_POST['associated_group_id'] ) ) {
+		// 1. User is saving a doc with a group association
+		if ( !empty( $_POST['associated_group_id'] ) ) {
+ 			$group_association = intval( $_POST['associated_group_id'] );
+			$term = bp_docs_get_group_term( $group_association );
 
-	wp_set_post_terms( $doc_id, $term, bp_docs_get_associated_item_tax_name(), false );
+ 		// 2. User is saving a doc specifically with no group association or is removing a group association -- $_POST['associated_group_id'] is set, but value is empty
+		} else {
+			$term = array();
+		}
+
+		wp_set_post_terms( $doc_id, $term, bp_docs_get_associated_item_tax_name(), false );
+
+	// 3. User is saving a doc for which he can't manage the group association
+	// isset( $_POST['associated_group_id'] ) is false; the group association section isn't included on the edit form
+	} else {
+		// Do nothing.
+		// Leave the existing group association terms intact.
+	}
 }
 
 function bp_docs_get_group_term( $group_id ) {

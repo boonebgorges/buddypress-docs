@@ -472,7 +472,7 @@ class BP_Docs_Attachments {
 			);
 		}
 
-		return $rules;
+		return apply_filters( 'bp_docs_attachments_generate_rewrite_rules', $rules, $this );
 	}
 
 	/**
