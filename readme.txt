@@ -36,6 +36,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 = 1.6.1 =
 * Add a filter for auto-generated Apache attachment rewrite rules
 * Better error notice for Apache users with AllowOverride issues
+* Improved layout of attachment drawer
 
 = 1.6.0 =
 * Overhaul of the way group/user tag clouds work
