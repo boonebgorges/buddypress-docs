@@ -532,8 +532,8 @@ a.docs-filter-title.current {
 	position: relative;
 }
 
-#docs-filter-section-tags a.tags-action-button,
-#docs-filter-section-tags a.tags-action-button:visited {
+#docs-filter-section-tags a.tags-spanning-button,
+#docs-filter-section-tags a.tags-spanning-button:visited {
 	display: inline;
 	line-height: 3em;
 	text-decoration: none;
@@ -847,8 +847,8 @@ table#post-revisions {
 
 //Media query for most screens, unseen by IE 7 or 8
 @media screen and (min-width:4em) {
-	#docs-filter-section-tags a.tags-action-button,
-	#docs-filter-section-tags a.tags-action-button:visited {
+	#docs-filter-section-tags a.tags-spanning-button,
+	#docs-filter-section-tags a.tags-spanning-button:visited {
 		display: block; // Let the button span the entire box
 		margin-bottom: 1em;
 		padding: 0;
