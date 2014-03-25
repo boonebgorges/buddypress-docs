@@ -472,7 +472,7 @@ class BP_Docs_Attachments {
 			);
 		}
 
-		return $rules;
+		return apply_filters( 'bp_docs_attachments_generate_rewrite_rules', $rules, $this );
 	}
 
 	/**
@@ -731,6 +731,11 @@ class BP_Docs_Attachments {
 	&lt;/conditions>
     &lt;action type="Redirect" url="?p={R:1}&amp;bp-attachment={R:2}"/>
 &lt;/rule> </code></pre>';
+		}
+
+		if ( $is_apache ) {
+			$help_url = 'https://github.com/boonebgorges/buddypress-docs/wiki/Attachment-Privacy#apache';
+			$help_p = __( 'It looks like you are running <strong>Apache</strong>. The most likely cause of your problem is that the <code>AllowOverride</code> directive has been disabled, either globally (<code>httpd.conf</code>) or in a <code>VirtualHost</code> definition. Contact your host for assistance.', 'bp-docs' );
 		}
 
 		?>

@@ -402,6 +402,8 @@ body.js .bp-docs-attachment-drawer {
 
 	& > ul > li {
 		margin-left: 0;
+		clear: left;
+		padding-bottom: 0.8em;
 	}
 }
 
@@ -530,8 +532,8 @@ a.docs-filter-title.current {
 	position: relative;
 }
 
-#docs-filter-section-tags a.tags-action-button,
-#docs-filter-section-tags a.tags-action-button:visited {
+#docs-filter-section-tags a.tags-spanning-button,
+#docs-filter-section-tags a.tags-spanning-button:visited {
 	display: inline;
 	line-height: 3em;
 	text-decoration: none;
@@ -539,6 +541,10 @@ a.docs-filter-title.current {
 	background-opacity: .5;
 	padding: 5px 10px;
 	border-radius: 3px;
+}
+
+#docs-filter-section-tags .and-x-more {
+	white-space: nowrap;
 }
 
 body.js .docs-filter-section {
@@ -845,8 +851,8 @@ table#post-revisions {
 
 //Media query for most screens, unseen by IE 7 or 8
 @media screen and (min-width:4em) {
-	#docs-filter-section-tags a.tags-action-button,
-	#docs-filter-section-tags a.tags-action-button:visited {
+	#docs-filter-section-tags a.tags-spanning-button,
+	#docs-filter-section-tags a.tags-spanning-button:visited {
 		display: block; // Let the button span the entire box
 		margin-bottom: 1em;
 		padding: 0;

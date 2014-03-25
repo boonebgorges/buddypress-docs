@@ -7,7 +7,7 @@ jQuery(document).ready(function($){
 	// If this is an edit page, set the lock
 	if ( $( 'body' ).hasClass( 'bp-docs-edit' ) ) {
 		var lock_data = {
-			action: 'add_edit_lock', 
+			action: 'add_edit_lock',
 			doc_id: doc_id
 		};
 
@@ -33,13 +33,13 @@ jQuery(document).ready(function($){
 
 	// Fix the wonky tabindex on Text mode
 	$('input#doc-permalink').on('keydown',function(e){
-		focus_in_content_area(e);	
+		focus_in_content_area(e);
 	});
 
 	// When a Doc is created new, there is no Permalink input
 	$('input#doc-title').on('keydown',function(e){
-		if ( ! document.getElementById( 'doc-permalink' ) ) {  
-			focus_in_content_area(e);	
+		if ( ! document.getElementById( 'doc-permalink' ) ) {
+			focus_in_content_area(e);
 		}
 	});
 
@@ -66,15 +66,15 @@ jQuery(document).ready(function($){
 		}
 
 		// Slide the tags up or down
-		var rclass, aclass;	
+		var rclass, aclass;
 		if ( $pom.hasClass('show-pane') ) {
 			rclass = 'show-pane';
 			aclass = 'hide-pane';
-			$toggleable.removeClass( 'toggle-open' ).addClass( 'toggle-closed' );	
+			$toggleable.removeClass( 'toggle-open' ).addClass( 'toggle-closed' );
 		} else {
 			rclass = 'hide-pane';
 			aclass = 'show-pane';
-			$toggleable.removeClass( 'toggle-closed' ).addClass( 'toggle-open' );	
+			$toggleable.removeClass( 'toggle-closed' ).addClass( 'toggle-open' );
 		}
 
 		$pom.removeClass(rclass);
@@ -83,8 +83,13 @@ jQuery(document).ready(function($){
 		return false;
 	});
 
-	$('#bp-docs-group-enable').click(function(){
-		$('#group-doc-options').slideToggle(400);
+	var $group_enable_toggle = $( '#bp-docs-group-enable' );
+	$group_enable_toggle.click(function(){
+		if ( $group_enable_toggle.is( ':checked' ) ) {
+			$('#group-doc-options').show();
+		} else {
+			$('#group-doc-options').hide();
+		}
 	});
 
 	/* Permissions snapshot toggle */
@@ -128,7 +133,7 @@ jQuery(document).ready(function($){
 
 	$dfsection_tags.on( 'click', 'a.tags-action-button', function( e ) {
 		$dfsection_tags.slideUp( 300, function() {
-			tag_button_action = $( e.target ).hasClass( 'tags-unhide' ) ? 'expand' : 'collapse';	
+			tag_button_action = $( e.target ).hasClass( 'tags-unhide' ) ? 'expand' : 'collapse';
 
 			if ( 'expand' == tag_button_action ) {
 				tags_section_expand( $dfsection_tags );
@@ -147,7 +152,7 @@ jQuery(document).ready(function($){
 		var filter_id = filter_title_id.split('-').pop();
 		var filter_to_show_id = 'docs-filter-section-' + filter_id;
 		var showing_filter_id = $('.docs-filter-section-open').attr('id');
-		
+
 		$('.docs-filter-title').removeClass( 'current' );
 		filter_title.addClass( 'current' );
 
@@ -204,12 +209,12 @@ jQuery(document).ready(function($){
 		} );
 
 		// Add an ellipses item
-		var st = '&hellip; and %d more';
-		st = st.replace( /%d/, hidden_tag_counter );  
+		var st = '<span class="and-x-more">&hellip; <a href="#" class="tags-unhide tags-action-button">' + bp_docs.and_x_more + '</a></span>';
+		st = st.replace( /%d/, hidden_tag_counter );
 
 		$dfsection_tags_list.append( '<li class="tags-ellipses">' + st + '</li>' );
 
-		$dfsection_tags.prepend( '<a class="tags-unhide tags-action-button" href="#">show all tags</a>' );
+		$dfsection_tags.prepend( '<a class="tags-unhide tags-action-button tags-spanning-button" href="#">show all tags</a>' );
 	}
 
 	/**
@@ -219,7 +224,7 @@ jQuery(document).ready(function($){
 		$section.find( 'a.tags-unhide' ).remove();
 		$section.find( '.tags-ellipses' ).remove();
 		$dfsection_tags_items.removeClass( 'hidden-tag' );
-		$dfsection_tags.prepend( '<a class="tags-hide tags-action-button" href="#">show fewer tags</a>' );
+		$dfsection_tags.prepend( '<a class="tags-hide tags-action-button tags-spanning-button" href="#">show fewer tags</a>' );
 		hidden_tag_counter = 0;
 	}
 
@@ -229,7 +234,7 @@ jQuery(document).ready(function($){
 			$doc_content = $('textarea#doc_content');
 			if ( $doc_content.is(':visible') ) {
 				var doccontent = $doc_content.val();
-				$doc_content.val('');	
+				$doc_content.val('');
 				$doc_content.focus();
 				$doc_content.val(doccontent);
 				return false;

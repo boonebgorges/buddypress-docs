@@ -1442,10 +1442,10 @@ function bp_docs_get_associated_group_id( $doc_id, $doc = false, $single_array =
 }
 
 function bp_docs_set_associated_group_id( $doc_id, $group_id = 0 ) {
-	if ( 0 == intval( $group_id ) ) {
-		$term = array();
-	} else {
+	if ( ! empty( $group_id ) ) {
 		$term = bp_docs_get_group_term( $group_id );
+	} else {
+		$term = array();
 	}
 
 	wp_set_post_terms( $doc_id, $term, bp_docs_get_associated_item_tax_name(), false );

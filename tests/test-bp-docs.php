@@ -117,7 +117,7 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 		$this->go_to( $permalink );
 
 		// Just to be sure
-		unset( $_POST['associated_group_id'] );
+		$_POST['associated_group_id'] = '';
 
 		// We need this dummy $_POST data to make the save go through. Ugh
 		$doc = $this->factory->doc->get_object_by_id( $doc_id );

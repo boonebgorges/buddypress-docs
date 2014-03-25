@@ -440,9 +440,10 @@ class BP_Docs_Query {
 		// Check group associations
 		// @todo Move into group integration piece
 		if ( bp_is_active( 'groups' ) ) {
-			$associated_group_id = isset( $_POST['associated_group_id'] ) ? intval( $_POST['associated_group_id'] ) : 0;
+			// This group id is only used to check whether the user can associate the doc with the group.
+			$associated_group_id = isset( $_POST['associated_group_id'] ) ? intval( $_POST['associated_group_id'] ) : null;
 
-			if ( $associated_group_id && ! BP_Docs_Groups_Integration::user_can_associate_doc_with_group( bp_loggedin_user_id(), $associated_group_id ) ) {
+			if ( ! empty( $associated_group_id ) && ! BP_Docs_Groups_Integration::user_can_associate_doc_with_group( bp_loggedin_user_id(), $associated_group_id ) ) {
 				$retval = array(
 					'message_type' => 'error',
 					'message' => __( 'You are not allowed to associate a Doc with that group.', 'bp-docs' ),
@@ -518,6 +519,7 @@ class BP_Docs_Query {
 				} else {
 					// Remove the edit lock
 					delete_post_meta( $this->doc_id, '_edit_lock' );
+					delete_post_meta( $this->doc_id, '_bp_docs_last_pinged' );
 
 					// When the post has been autosaved, we need to leave a
 					// special success message
@@ -538,7 +540,7 @@ class BP_Docs_Query {
 		if ( ! empty( $post_id ) ) {
 
 			// Add to a group, if necessary
-			if ( isset( $associated_group_id ) ) {
+			if ( ! is_null( $associated_group_id ) ) {
 				bp_docs_set_associated_group_id( $post_id, $associated_group_id );
 			}
 
@@ -549,22 +551,7 @@ class BP_Docs_Query {
 			update_post_meta( $this->doc_id, 'bp_docs_last_editor', bp_loggedin_user_id() );
 
 			// Save settings
-			$settings = ! empty( $_POST['settings'] ) ? $_POST['settings'] : array();
-			$verified_settings = bp_docs_verify_settings( $settings, $post_id, bp_loggedin_user_id() );
-
-			$new_settings = array();
-			foreach ( $verified_settings as $verified_setting_name => $verified_setting ) {
-				$new_settings[ $verified_setting_name ] = $verified_setting['verified_value'];
-				if ( $verified_setting['verified_value'] != $verified_setting['original_value'] ) {
-					$result['message'] = __( 'Your Doc was successfully saved, but some of your access settings have been changed to match the Doc\'s permissions.', 'bp-docs' );
-				}
-			}
-			update_post_meta( $this->doc_id, 'bp_docs_settings', $new_settings );
-
-			// The 'read' setting must also be saved to a taxonomy, for
-			// easier directory queries
-			$read_setting = isset( $new_settings['read'] ) ? $new_settings['read'] : 'anyone';
-			bp_docs_update_doc_access( $this->doc_id, $read_setting );
+			bp_docs_save_doc_access_settings( $this->doc_id );
 
 			// Increment the revision count
 			$revision_count = get_post_meta( $this->doc_id, 'bp_docs_revision_count', true );
