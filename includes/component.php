@@ -1116,6 +1116,7 @@ class BP_Docs_Component extends BP_Component {
 				'upload_title' => __( 'Upload File', 'bp-docs' ),
 				'upload_button' => __( 'OK', 'bp-docs' ),
 				'still_working'	=> __( 'Still working?', 'bp-docs' ),
+				'and_x_more' => __( 'and %d more', 'bp-docs' ),
 			);
 
 			if ( bp_docs_is_doc_edit() ) {
