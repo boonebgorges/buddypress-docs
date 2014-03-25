@@ -38,6 +38,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Better error notice for Apache users with AllowOverride issues
 * Improved layout of attachment drawer
 * Improved appearance and localizability for "and x more" tags link
+* More reliable toggling of settings during group creation
 
 = 1.6.0 =
 * Overhaul of the way group/user tag clouds work
