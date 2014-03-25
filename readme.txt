@@ -34,6 +34,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 == Changelog ==
 
 = 1.6.1 =
+* Fix a bug where group associations could be lost when Docs were edited by non-admins
 * Add a filter for auto-generated Apache attachment rewrite rules
 * Better error notice for Apache users with AllowOverride issues
 * Improved layout of attachment drawer
