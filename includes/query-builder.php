@@ -519,6 +519,7 @@ class BP_Docs_Query {
 				} else {
 					// Remove the edit lock
 					delete_post_meta( $this->doc_id, '_edit_lock' );
+					delete_post_meta( $this->doc_id, '_bp_docs_last_pinged' );
 
 					// When the post has been autosaved, we need to leave a
 					// special success message
