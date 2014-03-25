@@ -204,7 +204,7 @@ jQuery(document).ready(function($){
 		} );
 
 		// Add an ellipses item
-		var st = '&hellip; <a href="#" class="tags-unhide tags-action-button">' + bp_docs.and_x_more + '</a>';
+		var st = '<span class="and-x-more">&hellip; <a href="#" class="tags-unhide tags-action-button">' + bp_docs.and_x_more + '</a></span>';
 		st = st.replace( /%d/, hidden_tag_counter );
 
 		$dfsection_tags_list.append( '<li class="tags-ellipses">' + st + '</li>' );
