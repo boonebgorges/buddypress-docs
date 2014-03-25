@@ -40,6 +40,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Improved layout of attachment drawer
 * Improved appearance and localizability for "and x more" tags link
 * More reliable toggling of settings during group creation
+* Fix bug that prevented edit lock from being cleared on doc save
 
 = 1.6.0 =
 * Overhaul of the way group/user tag clouds work
