@@ -83,8 +83,13 @@ jQuery(document).ready(function($){
 		return false;
 	});
 
-	$('#bp-docs-group-enable').click(function(){
-		$('#group-doc-options').slideToggle(400);
+	var $group_enable_toggle = $( '#bp-docs-group-enable' );
+	$group_enable_toggle.click(function(){
+		if ( $group_enable_toggle.is( ':checked' ) ) {
+			$('#group-doc-options').show();
+		} else {
+			$('#group-doc-options').hide();
+		}
 	});
 
 	/* Permissions snapshot toggle */
