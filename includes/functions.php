@@ -551,6 +551,42 @@ function bp_docs_get_access_options( $settings_field, $doc_id = 0, $group_id = 0
 
 	return $options;
 }
+/**
+ * Saves the settings associated with a given Doc
+ *
+ * @since 1.6.1
+ * @param int $doc_id The numeric ID of the doc
+ * @return null
+ */
+function bp_docs_save_doc_access_settings( $doc_id ) {
+	// Two cases:
+	// 1. User is saving a doc for which he can update the access settings
+	if ( isset( $_POST['settings'] ) ) {
+		$settings = ! empty( $_POST['settings'] ) ? $_POST['settings'] : array();
+		$verified_settings = bp_docs_verify_settings( $settings, $doc_id, bp_loggedin_user_id() );
+
+		$new_settings = array();
+		foreach ( $verified_settings as $verified_setting_name => $verified_setting ) {
+			$new_settings[ $verified_setting_name ] = $verified_setting['verified_value'];
+			if ( $verified_setting['verified_value'] != $verified_setting['original_value'] ) {
+				$result['message'] = __( 'Your Doc was successfully saved, but some of your access settings have been changed to match the Doc\'s permissions.', 'bp-docs' );
+			}
+		}
+		update_post_meta( $doc_id, 'bp_docs_settings', $new_settings );
+
+		// The 'read' setting must also be saved to a taxonomy, for
+		// easier directory queries
+		$read_setting = isset( $new_settings['read'] ) ? $new_settings['read'] : 'anyone';
+		bp_docs_update_doc_access( $doc_id, $read_setting );
+
+	// 2. User is saving a doc for which he can't manage the access settings
+	// isset( $_POST['settings'] ) is false; the access settings section
+	// isn't included on the edit form
+	} else {
+		// Do nothing.
+		// Leave the access settings intact.
+	}
+}
 
 /**
  * Verifies the settings associated with a given Doc
