@@ -7,7 +7,7 @@ jQuery(document).ready(function($){
 	// If this is an edit page, set the lock
 	if ( $( 'body' ).hasClass( 'bp-docs-edit' ) ) {
 		var lock_data = {
-			action: 'add_edit_lock', 
+			action: 'add_edit_lock',
 			doc_id: doc_id
 		};
 
@@ -33,13 +33,13 @@ jQuery(document).ready(function($){
 
 	// Fix the wonky tabindex on Text mode
 	$('input#doc-permalink').on('keydown',function(e){
-		focus_in_content_area(e);	
+		focus_in_content_area(e);
 	});
 
 	// When a Doc is created new, there is no Permalink input
 	$('input#doc-title').on('keydown',function(e){
-		if ( ! document.getElementById( 'doc-permalink' ) ) {  
-			focus_in_content_area(e);	
+		if ( ! document.getElementById( 'doc-permalink' ) ) {
+			focus_in_content_area(e);
 		}
 	});
 
@@ -66,15 +66,15 @@ jQuery(document).ready(function($){
 		}
 
 		// Slide the tags up or down
-		var rclass, aclass;	
+		var rclass, aclass;
 		if ( $pom.hasClass('show-pane') ) {
 			rclass = 'show-pane';
 			aclass = 'hide-pane';
-			$toggleable.removeClass( 'toggle-open' ).addClass( 'toggle-closed' );	
+			$toggleable.removeClass( 'toggle-open' ).addClass( 'toggle-closed' );
 		} else {
 			rclass = 'hide-pane';
 			aclass = 'show-pane';
-			$toggleable.removeClass( 'toggle-closed' ).addClass( 'toggle-open' );	
+			$toggleable.removeClass( 'toggle-closed' ).addClass( 'toggle-open' );
 		}
 
 		$pom.removeClass(rclass);
@@ -128,7 +128,7 @@ jQuery(document).ready(function($){
 
 	$dfsection_tags.on( 'click', 'a.tags-action-button', function( e ) {
 		$dfsection_tags.slideUp( 300, function() {
-			tag_button_action = $( e.target ).hasClass( 'tags-unhide' ) ? 'expand' : 'collapse';	
+			tag_button_action = $( e.target ).hasClass( 'tags-unhide' ) ? 'expand' : 'collapse';
 
 			if ( 'expand' == tag_button_action ) {
 				tags_section_expand( $dfsection_tags );
@@ -147,7 +147,7 @@ jQuery(document).ready(function($){
 		var filter_id = filter_title_id.split('-').pop();
 		var filter_to_show_id = 'docs-filter-section-' + filter_id;
 		var showing_filter_id = $('.docs-filter-section-open').attr('id');
-		
+
 		$('.docs-filter-title').removeClass( 'current' );
 		filter_title.addClass( 'current' );
 
@@ -229,7 +229,7 @@ jQuery(document).ready(function($){
 			$doc_content = $('textarea#doc_content');
 			if ( $doc_content.is(':visible') ) {
 				var doccontent = $doc_content.val();
-				$doc_content.val('');	
+				$doc_content.val('');
 				$doc_content.focus();
 				$doc_content.val(doccontent);
 				return false;
