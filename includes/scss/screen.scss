@@ -402,6 +402,8 @@ body.js .bp-docs-attachment-drawer {
 
 	& > ul > li {
 		margin-left: 0;
+		clear: left;
+		padding-bottom: 0.8em;
 	}
 }
 
