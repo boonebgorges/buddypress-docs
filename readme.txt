@@ -37,6 +37,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Add a filter for auto-generated Apache attachment rewrite rules
 * Better error notice for Apache users with AllowOverride issues
 * Improved layout of attachment drawer
+* Improved appearance and localizability for "and x more" tags link
 
 = 1.6.0 =
 * Overhaul of the way group/user tag clouds work
