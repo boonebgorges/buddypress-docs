@@ -33,6 +33,10 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.6.2 =
+* Fix incorrect function usage when generating htaccess files
+* Correct some permissions logic that caused Create button to be shown to some logged-out users
+
 = 1.6.1 =
 * Fix a bug where group associations could be lost when Docs were edited by non-admins
 * Add a filter for auto-generated Apache attachment rewrite rules
