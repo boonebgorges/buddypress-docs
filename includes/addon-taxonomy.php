@@ -45,9 +45,6 @@ class BP_Docs_Taxonomy {
 		// Hook into post saves to save any taxonomy terms.
 		add_action( 'bp_docs_doc_saved', 	array( $this, 'save_post' ) );
 
-		// When a doc is deleted, take its terms out of the local taxonomy
-		add_action( 'transition_post_status', array( $this, 'delete_post' ), 10, 3 );
-
 		// Display a doc's terms on its single doc page
 		add_action( 'bp_docs_single_doc_meta', 	array( $this, 'show_terms' ) );
 
@@ -159,44 +156,15 @@ class BP_Docs_Taxonomy {
 	/**
 	 * Handles taxonomy cleanup when a post is deleted
 	 *
+	 * No longer needed, because item taxonomies are generated dynamically
+	 *
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param int $doc_id
 	 */
 	function delete_post( $new_status, $old_status, $post ) {
-		if ( bp_docs_get_post_type_name() != $post->post_type ) {
-			return;
-		}
-
-		if ( 'trash' != $new_status ) {
-			return;
-		}
-
-		$doc_id = $post->ID;
-
-		// Terms for the item (group, user, etc)
-		$item_terms = $this->get_item_terms();
-		// Terms for the doc
-		$doc_terms = wp_get_post_terms( $doc_id, $this->docs_tag_tax_name );
-
-		foreach ( $doc_terms as $doc_term ) {
-			$term_name = $doc_term->name;
-
-			// If the term is currently used (should always be true - this is a
-			// sanity check)
-			if ( !empty( $item_terms[$term_name] ) ) {
-				// Get the array key of the entry corresponding to the doc
-				// being deleted
-				$key	= array_search( $doc_id, $item_terms[$term_name] );
-
-				// If found, unset that item, and renumber the array
-				if ( $key !== false ) {
-					unset( $item_terms[$term_name][$key] );
-					$item_terms[$term_name] = array_values( $item_terms[$term_name] );
-				}
-			}
-		}
+		return;
 	}
 
 	/**
