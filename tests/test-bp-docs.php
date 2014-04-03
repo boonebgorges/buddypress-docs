@@ -203,7 +203,6 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 
 		$this->assertNotEquals( $last_activity, groups_get_groupmeta( $g, 'last_activity' ) );
 	}
-
 }
 
 
