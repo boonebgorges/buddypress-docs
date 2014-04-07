@@ -36,6 +36,8 @@ This plugin is in active development. For feature requests and bug reports, visi
 = 1.6.2 =
 * Fix incorrect function usage when generating htaccess files
 * Correct some permissions logic that caused Create button to be shown to some logged-out users
+* More reliable redirection when attempting to access a protected Doc
+* Better compatibility with other plugins using the WP Heartbeat API
 
 = 1.6.1 =
 * Fix a bug where group associations could be lost when Docs were edited by non-admins
