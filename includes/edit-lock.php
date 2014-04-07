@@ -42,7 +42,7 @@ function bp_docs_heartbeat_pulse() {
  */
 function bp_docs_heartbeat_callback( $response, $data ) {
 	if ( empty( $data['doc_id'] ) ) {
-		return;
+		return $response;
 	}
 
 	$doc_id = intval( $data['doc_id'] );
