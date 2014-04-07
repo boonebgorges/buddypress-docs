@@ -275,7 +275,13 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
 
 	$user_can = false;
 
-	if ( ! empty( $doc ) ) {
+	if ( 'create' === $action ) {
+
+		// In the case of Doc creation, this value gets passed through
+		// to other components
+		$user_can = 0 != $user_id;
+
+	} else if ( ! empty( $doc ) ) {
 		$doc_settings = bp_docs_get_doc_settings( $doc_id );
 		$the_setting  = isset( $doc_settings[ $action ] ) ? $doc_settings[ $action ] : '';
 
@@ -297,11 +303,6 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
 				break;
 			// Do nothing with other settings - they are passed through
 		}
-	} else if ( 'create' == $action ) {
-
-		// In the case of Doc creation, this value gets passed through
-		// to other components
-		$user_can = 0 != $user_id;
 	}
 
 	if ( $user_id ) {
