@@ -544,7 +544,7 @@ class BP_Docs {
 		}
 
 		if ( ! bp_docs_current_user_can( $action ) ) {
-			$redirect_to = wp_login_url( bp_docs_get_doc_link() );
+			$redirect_to = bp_docs_get_doc_link();
 
 			bp_core_no_access( array(
 				'mode' => 2,
