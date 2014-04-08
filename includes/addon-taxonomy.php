@@ -350,9 +350,24 @@ class BP_Docs_Taxonomy {
 			<ul id="tags-list">
 			<?php if ( ! empty( $existing_terms ) ) : ?>
 				<?php foreach ( $existing_terms as $term => $posts ) : ?>
-					<?php $term_count = is_int( $posts ) ? $posts : count( $posts ) ?>
+					<?php
+					if ( isset( $posts['count'] ) ) {
+						$term_count = $posts['count'];
+					} else if ( is_int( $posts ) ) {
+						$term_count = $posts;
+					} else {
+						$term_count = count( $posts );
+					}
+
+					if ( isset( $posts['name'] ) ) {
+						$term_name = $posts['name'];
+					} else {
+						$term_name = $term;
+					}
+
+					?>
 					<li>
-					<a href="<?php echo bp_docs_get_tag_link( array( 'tag' => $term, 'type' => 'url' ) ) ?>" title="<?php echo esc_html( $term ) ?>"><?php echo esc_html( $term ) ?> <?php printf( __( '(%d)', 'bp-docs' ), $term_count ) ?></a>
+					<a href="<?php echo bp_docs_get_tag_link( array( 'tag' => $term, 'type' => 'url' ) ) ?>" title="<?php echo esc_html( $term_name ) ?>"><?php echo esc_html( $term_name ) ?> <?php printf( __( '(%d)', 'bp-docs' ), $term_count ) ?></a>
 					</li>
 
 				<?php endforeach ?>

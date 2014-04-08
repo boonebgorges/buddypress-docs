@@ -1038,7 +1038,10 @@ class BP_Docs_Component extends BP_Component {
 		// Reformat
 		$terms_array = array();
 		foreach ( $terms as $t ) {
-			$terms_array[ $t->slug ] = $t->count;
+			$terms_array[ $t->slug ] = array(
+				'count' => $t->count,
+				'name' => $t->name,
+			);
 		}
 
 		unset( $item_ids, $terms );
