@@ -39,6 +39,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * More reliable redirection when attempting to access a protected Doc
 * Better compatibility with other plugins using the WP Heartbeat API
 * Use tag name rather than slug when displaying tags in directory filters
+* Improved compatibility with BuddyPress 2.0 metadata functions
 
 = 1.6.1 =
 * Fix a bug where group associations could be lost when Docs were edited by non-admins

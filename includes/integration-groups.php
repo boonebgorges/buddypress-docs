@@ -353,7 +353,7 @@ class BP_Docs_Groups_Integration {
 
 		switch ( $action ) {
 			case 'associate_with_group' :
-				$group_settings = groups_get_groupmeta( $group_id, 'bp-docs' );
+				$group_settings = bp_docs_get_group_settings( $group_id );
 
 				// Provide a default value for legacy backpat
 				if ( empty( $group_settings['can-create'] ) ) {
@@ -481,7 +481,7 @@ class BP_Docs_Groups_Integration {
 
 			// "Admins and mods" setting only available to admins and mods
 			// Otherwise users end up locking themselves out
-			$group_settings = groups_get_groupmeta( $group_id, 'bp-docs' );
+			$group_settings = bp_docs_get_group_settings( $group_id );
 			$is_admin = groups_is_user_admin( bp_loggedin_user_id(), $group_id );
 			$is_mod = groups_is_user_mod( bp_loggedin_user_id(), $group_id );
 
@@ -534,7 +534,7 @@ class BP_Docs_Groups_Integration {
 
 		// Check against group settings. Default to 'member'
 		// @todo Abstract default settings out better
-		$group_settings = groups_get_groupmeta( $group_id, 'bp-docs' );
+		$group_settings = bp_docs_get_group_settings( $group_id );
 		$can_create = isset( $group_settings['can-create'] ) ? $group_settings['can-create'] : 'member';
 
 		if ( 'admin' == $can_create ) {
@@ -934,7 +934,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 			$this->maybe_group_id	= false;
 
 		// Load the bp-docs setting for the group, for easy access
-		$this->settings			= groups_get_groupmeta( $this->maybe_group_id, 'bp-docs' );
+		$this->settings = bp_docs_get_group_settings( $this->maybe_group_id );
 		$this->group_enable		= !empty( $this->settings['group-enable'] ) ? true : false;
 
 		$this->name 			= !empty( $bp_docs_tab_name ) ? $bp_docs_tab_name : __( 'Docs', 'bp-docs' );
@@ -1084,7 +1084,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 
 		$settings = !empty( $_POST['bp-docs'] ) ? $_POST['bp-docs'] : array();
 
-		$old_settings = groups_get_groupmeta( $group_id, 'bp-docs' );
+		$old_settings = bp_docs_get_group_settings( $group_id );
 
 		if ( $old_settings == $settings ) {
 			// No need to resave settings if they're the same
@@ -1111,7 +1111,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 				'can-create' 	=> 'member'
 			) );
 		} else {
-			$settings = groups_get_groupmeta( $this->maybe_group_id, 'bp-docs' );
+			$settings = bp_docs_get_group_settings( $this->maybe_group_id );
 		}
 
 		$group_enable = empty( $settings['group-enable'] ) ? false : true;
@@ -1391,7 +1391,7 @@ function bp_docs_is_docs_enabled_for_group( $group_id = false ) {
 		$group_id = isset( $bp->groups->current_group->id ) ? $bp->groups->current_group->id : false;
 
 	if ( $group_id ) {
-		$group_settings = groups_get_groupmeta( $group_id, 'bp-docs' );
+		$group_settings = bp_docs_get_group_settings( $group_id );
 
 		if ( isset( $group_settings['group-enable'] ) )
 			$docs_is_enabled = true;
@@ -1485,4 +1485,27 @@ function bp_docs_get_group_tab_name() {
 		$name = __( 'Docs', 'bp-docs' );
 	}
 	return apply_filters( 'bp_docs_get_group_tab_name', $name );
+}
+
+/**
+ * Get group's Docs settings.
+ *
+ * We use this wrapper function because of changes in BP 2.0.0 that exposed
+ * some crappy 'bp-docs' to 'bpdocs' conversion.
+ *
+ * @since 1.6.2
+ * @return array
+ */
+function bp_docs_get_group_settings( $group_id ) {
+	$settings = groups_get_groupmeta( $group_id, 'bp-docs' );
+
+	if ( '' === $settings ) {
+		$settings = groups_get_groupmeta( $group_id, 'bpdocs' );
+	}
+
+	if ( '' === $settings ) {
+		$settings = array();
+	}
+
+	return $settings;
 }
