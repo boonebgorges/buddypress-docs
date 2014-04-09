@@ -564,9 +564,16 @@ class BP_Docs_Groups_Integration {
 		$group_id = bp_docs_get_associated_group_id( $doc_id );
 
 		if ( $group_id ) {
-			$group 		= groups_get_group( array( 'group_id' => $group_id ) );
-			$group_url	= bp_get_group_permalink( $group );
-			$group_link	= '<a href="' . $group_url . '">' . $group->name . '</a>';
+			$group = groups_get_group( array( 'group_id' => $group_id ) );
+
+			// Don't associate with the group if the group is
+			// hidden
+			if ( 'hidden' === $group->status ) {
+				return $action;
+			}
+
+			$group_url  = bp_get_group_permalink( $group );
+			$group_link = '<a href="' . $group_url . '">' . $group->name . '</a>';
 
 			if ( $is_new_doc ) {
 				$action = sprintf( __( '%1$s created the doc %2$s in the group %3$s', 'bp-docs' ), $user_link, $doc_link, $group_link );
@@ -617,9 +624,15 @@ class BP_Docs_Groups_Integration {
 	 */
 	function comment_activity_action( $action, $user_link, $comment_link, $component, $item ) {
 		if ( 'groups' == $component ) {
-			$group		= groups_get_group( array( 'group_id' => $item ) );
-			$group_url	= bp_get_group_permalink( $group );
-			$group_link	= '<a href="' . $group_url . '">' . $group->name . '</a>';
+			$group = groups_get_group( array( 'group_id' => $item ) );
+
+			// Don't associate with the group if it's hidden
+			if ( 'hidden' === $group->status ) {
+				return $action;
+			}
+
+			$group_url  = bp_get_group_permalink( $group );
+			$group_link = '<a href="' . $group_url . '">' . $group->name . '</a>';
 
 			$action 	= sprintf( __( '%1$s commented on the doc %2$s in the group %3$s', 'bp-docs' ), $user_link, $comment_link, $group_link );
 		}
