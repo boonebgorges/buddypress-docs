@@ -4,7 +4,7 @@ Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.3, BuddyPress 1.5
 Tested up to: WordPress 3.9, BuddyPress 2.0.0
-Stable tag: 1.6.1
+Stable tag: 1.7.0
 
 Adds collaborative Docs to BuddyPress.
 
@@ -32,6 +32,16 @@ This plugin is in active development. For feature requests and bug reports, visi
 1. Sit back and watch the jack roll in
 
 == Changelog ==
+
+= 1.7.0 =
+* Fix incorrect function usage when generating htaccess files
+* Correct some permissions logic that caused Create button to be shown to some logged-out users
+* More reliable redirection when attempting to access a protected Doc
+* Better compatibility with other plugins using the WP Heartbeat API
+* Use tag name rather than slug when displaying tags in directory filters
+* Improved compatibility with BuddyPress 2.0 metadata functions
+* Refactored activity action generation to work with BP 2.0's new dynamic system
+* When group is hidden, group association is no longer advertised in the activity action
 
 = 1.6.1 =
 * Fix a bug where group associations could be lost when Docs were edited by non-admins

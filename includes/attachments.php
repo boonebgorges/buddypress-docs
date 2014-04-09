@@ -231,7 +231,7 @@ class BP_Docs_Attachments {
 		$rules = $this->generate_rewrite_rules();
 
 		if ( ! empty( $rules ) ) {
-			if ( ! file_exists( 'insert_with_markers' ) ) {
+			if ( ! function_exists( 'insert_with_markers' ) ) {
 				require_once( ABSPATH . 'wp-admin/includes/misc.php' );
 			}
 			insert_with_markers( $htaccess_path, 'BuddyPress Docs', $rules );

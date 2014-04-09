@@ -251,39 +251,37 @@ function bp_docs_current_user_can( $action = 'edit', $doc_id = false ) {
 function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false ) {
 	global $bp, $post;
 
-	if ( !$user_id )
+	if ( false === $user_id ) {
 		$user_id = bp_loggedin_user_id();
-
-	// Only certain actions are checked against doc_ids
-	$need_doc_ids_actions = apply_filters( 'bp_docs_need_doc_ids_actions', array( 'edit', 'manage', 'view_history', 'read', 'read_comments', 'post_comments' ) );
+	}
 
 	// Grant all permissions on documents being created, as long as the
 	// user is logged in
-	if ( is_user_logged_in() && ( false === $doc_id ) && bp_docs_is_doc_create() ) {
+	if ( $user_id && ( false === $doc_id ) && bp_docs_is_doc_create() ) {
 		return true;
 	}
 
-	if ( in_array( $action, $need_doc_ids_actions ) ) {
-		if ( !$doc_id ) {
-			if ( !empty( $post->ID ) ) {
-				$doc_id = $post->ID;
-				$doc = $post;
-			} else {
-				$doc = bp_docs_get_current_doc();
-				if ( isset( $doc->ID ) ) {
-					$doc_id = $doc->ID;
-				}
+	if ( ! $doc_id ) {
+		if ( ! empty( $post->ID ) && bp_docs_get_post_type_name() === $post->post_type ) {
+			$doc_id = $post->ID;
+			$doc = $post;
+		} else {
+			$doc = bp_docs_get_current_doc();
+			if ( isset( $doc->ID ) ) {
+				$doc_id = $doc->ID;
 			}
 		}
 	}
 
-	if ( ! isset( $doc ) ) {
-		$doc = get_post( $doc_id );
-	}
-
 	$user_can = false;
 
-	if ( ! empty( $doc ) ) {
+	if ( 'create' === $action ) {
+
+		// In the case of Doc creation, this value gets passed through
+		// to other components
+		$user_can = 0 != $user_id;
+
+	} else if ( ! empty( $doc ) ) {
 		$doc_settings = bp_docs_get_doc_settings( $doc_id );
 		$the_setting  = isset( $doc_settings[ $action ] ) ? $doc_settings[ $action ] : '';
 
@@ -297,7 +295,7 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
 				break;
 
 			case 'loggedin' :
-				$user_can = is_user_logged_in();
+				$user_can = 0 != $user_id;
 				break;
 
 			case 'creator' :
@@ -305,15 +303,10 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
 				break;
 			// Do nothing with other settings - they are passed through
 		}
-	} else if ( 'create' == $action ) {
-
-		// In the case of Doc creation, this value gets passed through
-		// to other components
-		$user_can = is_user_logged_in();
 	}
 
 	if ( $user_id ) {
-		if ( is_super_admin() ) {
+		if ( is_super_admin( $user_id ) ) {
 			// Super admin always gets to edit. What a big shot
 			$user_can = true;
 		} else {
