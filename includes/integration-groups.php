@@ -893,8 +893,9 @@ class BP_Docs_Groups_Integration {
 	}
 
 	function get_create_link( $link ) {
-		if ( bp_is_group() ) {
-			$link = add_query_arg( 'group', bp_get_current_group_slug(), $link );
+		$slug = bp_get_current_group_slug();
+		if ( $slug ) {
+			$link = add_query_arg( 'group', $slug, $link );
 		}
 
 		return $link;
