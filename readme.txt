@@ -36,6 +36,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 = 1.7.1 =
 * Don't run document protection check on AJAX calls
 * Fix PHP notice when compiling group terms
+* Force theme compatibility mode on User tabs for themes that don't use it for other Docs template
 
 = 1.7.0 =
 * Fix incorrect function usage when generating htaccess files
