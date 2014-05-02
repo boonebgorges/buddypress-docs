@@ -33,6 +33,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.7.1 =
+* Don't run document protection check on AJAX calls
+
 = 1.7.0 =
 * Fix incorrect function usage when generating htaccess files
 * Correct some permissions logic that caused Create button to be shown to some logged-out users
