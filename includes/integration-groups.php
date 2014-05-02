@@ -261,8 +261,8 @@ class BP_Docs_Groups_Integration {
 					);
 				}
 
-				if ( ! in_array( $p->ID, $terms[ $p_term->name ]['posts'] ) ) {
-					$terms[ $p_term->name ]['posts'][] = $p->ID;
+				if ( ! in_array( $p->ID, $terms[ $p_term->slug ]['posts'] ) ) {
+					$terms[ $p_term->slug ]['posts'][] = $p->ID;
 				}
 			}
 		}
