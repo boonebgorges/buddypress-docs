@@ -670,6 +670,10 @@ class BP_Docs_Attachments {
 	}
 
 	public function admin_notice_init() {
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+			return;
+		}
+
 		if ( ! current_user_can( 'delete_users' ) ) {
 			return;
 		}
