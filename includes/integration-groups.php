@@ -540,7 +540,7 @@ class BP_Docs_Groups_Integration {
 		if ( 'admin' == $can_create ) {
 			return groups_is_user_admin( $user_id, $group_id );
 		} else if ( 'mod' == $can_create ) {
-			return groups_is_user_mod( $user_id, $group_id );
+			return groups_is_user_admin( $user_id, $group_id ) || groups_is_user_mod( $user_id, $group_id );
 		}
 
 		return true;
