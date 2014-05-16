@@ -1,7 +1,7 @@
 <?php
 
 if ( ! defined( 'BP_TESTS_DIR' ) ) {
-	define( 'BP_TESTS_DIR', dirname( __FILE__ ) . '/../../buddypress/tests' );
+	define( 'BP_TESTS_DIR', dirname( __FILE__ ) . '/../../buddypress/tests/phpunit' );
 }
 
 if ( file_exists( BP_TESTS_DIR . '/bootstrap.php' ) ) :
