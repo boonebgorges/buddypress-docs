@@ -6,7 +6,7 @@ if ( ! defined( 'BP_TESTS_DIR' ) ) {
 
 if ( file_exists( BP_TESTS_DIR . '/bootstrap.php' ) ) :
 
-	require_once getenv( 'WP_TESTS_DIR' ) . '/includes/functions.php';
+	require_once getenv( 'WP_DEVELOP_DIR' ) . '/tests/phpunit/includes/functions.php';
 
 	function _bootstrap_bpdocs() {
 		// Make sure BP is installed and loaded first
@@ -29,7 +29,7 @@ if ( file_exists( BP_TESTS_DIR . '/bootstrap.php' ) ) :
 	}
 	tests_add_filter( 'init', '_flush', 1000 );
 
-	require getenv( 'WP_TESTS_DIR' ) . '/includes/bootstrap.php';
+	require getenv( 'WP_DEVELOP_DIR' ) . '/tests/phpunit/includes/bootstrap.php';
 
 	// Load the BP test files
 	require BP_TESTS_DIR . '/includes/testcase.php';
