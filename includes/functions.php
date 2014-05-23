@@ -758,3 +758,9 @@ function bp_docs_get_doc_ids_accessible_to_current_user() {
 	$items_sql = $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post_type = %s AND ID NOT IN $exclude_sql", bp_docs_get_post_type_name() );
 	return $wpdb->get_col( $items_sql );
 }
+
+/* What's the current Buddypress Docs theme? */ 
+function bp_docs_get_theme() { 
+	$theme = get_option( 'bp-docs-theme', 'default' );
+	return apply_filters( 'bp_docs_theme', $theme );
+} 
