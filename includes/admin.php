@@ -219,9 +219,6 @@ class BP_Docs_Admin {
 	public function theme_setting_markup() { 
 		$theme = bp_docs_get_theme(); 
 
-		write_log("Helloooooo! Theme is: "); 
-		write_log($theme); 
-
 		?> 
 		<select name="bp-docs-theme" id="bp-docs-theme">
 			<option value="default" <?php selected( $theme, 'default' ) ?>><?php _e( 'Default', 'bp-docs' ) ?></option>
