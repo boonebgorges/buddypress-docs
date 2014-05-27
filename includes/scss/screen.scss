@@ -25,9 +25,24 @@ $toggle_radius: 2px;
 	p { 
 		margin: 5px 0;
 	} 
-	.bp-docs-title { 
+	p.bp-docs-title { 
 		font-size: 160%; 
 		line-height: 1.2em; 
+		:before { 
+			font-weight: normal;
+			font-family: "iconsweetsRegular";
+			color: #000;
+			padding-right: 2px;
+			font-size: 130%;
+			position: relative;
+			top: 2px;
+			text-transform: none;
+			content: "C"; 
+			:hover { 
+				text-decoration: none; 
+			} 
+		} 
+
 	}
 	.bp-docs-excerpt { 
 		background-color: #eee; 
