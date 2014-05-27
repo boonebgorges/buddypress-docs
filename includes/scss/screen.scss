@@ -20,14 +20,18 @@ $toggle_radius: 2px;
 /* Minimal Theme */
 /* single doc entry */
 .bp-docs-doc-minimal {
-        margin: 15px 0;
+        margin: 25px 0;
         line-height: 1.4em;
 	p { 
 		margin: 5px 0;
 	} 
 	.bp-docs-title { 
-		font-size: 140%; 
+		font-size: 160%; 
+		line-height: 1.2em; 
 	}
+	.bp-docs-excerpt { 
+		background-color: #eee; 
+	} 
 } 
 
 .hide-if-no-js {
