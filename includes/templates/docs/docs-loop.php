@@ -10,20 +10,28 @@
 
 <?php if ( bp_docs_has_docs() && 'minimal' == bp_docs_get_theme() ): ?> 
 
-<h1>Helloooooo! Looks like you're running the minimal theme!</h1> 
-
 	<?php while ( bp_docs_has_docs() ) : bp_docs_the_doc() ?>
-		<a href="<?php bp_docs_doc_link() ?>"><?php the_title() ?></a> <?php bp_docs_doc_trash_notice(); ?>
+		<div class="bp-docs-doc-minimal"> 
+			<a href="<?php bp_docs_doc_link() ?>"><?php the_title() ?></a> <?php bp_docs_doc_trash_notice(); ?>
 
-		<?php if ( bp_docs_get_excerpt_length() ) : ?>
-			<?php the_excerpt() ?>
-		<?php endif ?>
+			<?php if ( bp_docs_get_excerpt_length() ) : ?>
+				<?php the_excerpt() ?>
+			<?php endif ?>
 
-		<div class="bp-docs-attachment-drawer" id="bp-docs-attachment-drawer-<?php echo get_the_ID() ?>">
-			<?php bp_docs_doc_attachment_drawer() ?>
-		</div>
+			<p class="bp-docs-meta">
+				<?php // bp_docs_attachment_icon(); // This is somewhat distracting. Disabling. 
+				      $created_date = get_the_date(); 
+				      $modified_date = get_the_modified_date(); 
+				      _e('Created '); echo $created_date; _e(' by '); ?>
+				      <a href="<?php echo bp_core_get_user_domain( get_the_author_meta( 'ID' ) ) ?>" title="<?php echo bp_core_get_user_displayname( get_the_author_meta( 'ID' ) ) ?>"><?php echo bp_core_get_user_displayname( get_the_author_meta( 'ID' ) ) ?></a>
+				<?php if ( $modified_date != $created_date ) { 
+				      _e(' and last modified '); echo $modified_date; } ?>
+			</p> 
 
-		<!-- Here: concat up an author and date line --> 
+			<p class="bp-docs-tags"> 
+			<?php do_action( 'bp_docs_single_doc_meta' ) ?>
+			</p> 
+		</div> <!-- end .bp-docs-doc --> 
 
 	<?php endwhile ?>
 
