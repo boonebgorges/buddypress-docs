@@ -12,11 +12,15 @@
 
 	<?php while ( bp_docs_has_docs() ) : bp_docs_the_doc() ?>
 		<div class="bp-docs-doc-minimal"> 
-			<a href="<?php bp_docs_doc_link() ?>"><?php the_title() ?></a> <?php bp_docs_doc_trash_notice(); ?>
+			<p class="bp-docs-title">
+				<a href="<?php bp_docs_doc_link() ?>"><?php the_title() ?></a> <?php bp_docs_doc_trash_notice(); ?>
+			</p> 
 
-			<?php if ( bp_docs_get_excerpt_length() ) : ?>
-				<?php the_excerpt() ?>
-			<?php endif ?>
+			<p class="bp-docs-excerpt"> 
+				<?php if ( bp_docs_get_excerpt_length() ) : ?>
+					<?php the_excerpt() ?>
+				<?php endif ?>
+			</p> 
 
 			<p class="bp-docs-meta">
 				<?php // bp_docs_attachment_icon(); // This is somewhat distracting. Disabling. 
