@@ -23,3 +23,6 @@ output_style = :compressed
 # preferred_syntax = :sass
 # and then run:
 # sass-convert -R --from scss --to sass includes/sass scss && rm -rf sass && mv scss sass
+
+# Enable sourcemaps!
+sass_options = {:sourcemap => true}
