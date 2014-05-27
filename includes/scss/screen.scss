@@ -17,6 +17,19 @@ $toggle_radius: 2px;
   column-gap: $column_gap;
 }
 
+/* Minimal Theme */
+/* single doc entry */
+.bp-docs-doc-minimal {
+        margin: 15px 0;
+        line-height: 1.4em;
+	p { 
+		margin: 5px 0;
+	} 
+	.bp-docs-title { 
+		font-size: 140%; 
+	}
+} 
+
 .hide-if-no-js {
 	display: none;
 }
@@ -895,3 +908,4 @@ table#post-revisions {
 		display: none;
 	}
 }
+
