@@ -38,9 +38,8 @@ $toggle_radius: 2px;
 			left: -3px; 
 			text-transform: none;
 			content: "C"; 
-			:hover { 
-				text-decoration: none; 
-			} 
+			display: inline-block; /* gets text-decoration to stick */ 
+			text-decoration: none; 
 		} 
 
 	}
