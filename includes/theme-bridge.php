@@ -76,7 +76,17 @@ add_filter( 'template_include', 'bp_docs_template_include', 6 );
  * @return bool
  */
 function bp_docs_do_theme_compat( $template = false ) {
-	return class_exists( 'BP_Theme_Compat' ) && apply_filters( 'bp_docs_do_theme_compat', true, $template );
+	if ( ! class_exists( 'BP_Theme_Compat' ) ) {
+		return false;
+	}
+
+	// Pre-theme-compat templates are not available for user tabs, so we
+	// force theme compat in these cases
+	if ( bp_is_user() ) {
+		return true;
+	}
+
+	return apply_filters( 'bp_docs_do_theme_compat', true, $template );
 }
 
 /**

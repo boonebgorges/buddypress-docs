@@ -33,6 +33,12 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.7.1 =
+* Don't run document protection check on AJAX calls
+* Fix PHP notice when compiling group terms
+* Force theme compatibility mode on User tabs for themes that don't use it for other Docs template
+* Fix bug that caused Admins not to meet the "Moderator" minimum role
+
 = 1.7.0 =
 * Fix incorrect function usage when generating htaccess files
 * Correct some permissions logic that caused Create button to be shown to some logged-out users

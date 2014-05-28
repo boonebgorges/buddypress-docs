@@ -261,8 +261,8 @@ class BP_Docs_Groups_Integration {
 					);
 				}
 
-				if ( ! in_array( $p->ID, $terms[ $p_term->name ]['posts'] ) ) {
-					$terms[ $p_term->name ]['posts'][] = $p->ID;
+				if ( ! in_array( $p->ID, $terms[ $p_term->slug ]['posts'] ) ) {
+					$terms[ $p_term->slug ]['posts'][] = $p->ID;
 				}
 			}
 		}
@@ -540,7 +540,7 @@ class BP_Docs_Groups_Integration {
 		if ( 'admin' == $can_create ) {
 			return groups_is_user_admin( $user_id, $group_id );
 		} else if ( 'mod' == $can_create ) {
-			return groups_is_user_mod( $user_id, $group_id );
+			return groups_is_user_admin( $user_id, $group_id ) || groups_is_user_mod( $user_id, $group_id );
 		}
 
 		return true;
@@ -893,8 +893,9 @@ class BP_Docs_Groups_Integration {
 	}
 
 	function get_create_link( $link ) {
-		if ( bp_is_group() ) {
-			$link = add_query_arg( 'group', bp_get_current_group_slug(), $link );
+		$slug = bp_get_current_group_slug();
+		if ( $slug ) {
+			$link = add_query_arg( 'group', $slug, $link );
 		}
 
 		return $link;
