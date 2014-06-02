@@ -5,6 +5,14 @@ class BP_Docs {
 	var $associated_item_tax_name;
 
 	/**
+	 * Folders add-on.
+	 *
+	 * @var BP_Docs_Folders
+	 * @since 1.8
+	 */
+	var $folders;
+
+	/**
 	 * PHP 5 constructor
 	 *
 	 * @package BuddyPress Docs
@@ -350,6 +358,10 @@ class BP_Docs {
 		// Load the wikitext addon
 		require_once( BP_DOCS_INCLUDES_PATH . 'addon-wikitext.php' );
 		$this->wikitext = new BP_Docs_Wikitext;
+
+		// Load the Folders addon
+		require( BP_DOCS_INCLUDES_PATH . 'addon-folders.php' );
+		$this->folders = new BP_Docs_Folders();
 
 		do_action( 'bp_docs_load_doc_extras' );
 	}
