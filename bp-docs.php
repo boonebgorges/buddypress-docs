@@ -360,7 +360,7 @@ class BP_Docs {
 		$this->wikitext = new BP_Docs_Wikitext;
 
 		// Load the Folders addon
-		require( BP_DOCS_INCLUDES_PATH . 'addon-folders.php' );
+		require_once( BP_DOCS_INCLUDES_PATH . 'addon-folders.php' );
 		$this->folders = new BP_Docs_Folders();
 
 		do_action( 'bp_docs_load_doc_extras' );
