@@ -99,6 +99,8 @@
 				</div>
 			<?php endif ?>
 
+			<?php do_action( 'bp_docs_before_tags_meta_box' ) ?>
+
 			<div id="doc-tax" class="doc-meta-box">
 				<div class="toggleable">
 					<p id="tags-toggle-edit" class="toggle-switch"><?php _e( 'Tags', 'bp-docs' ) ?></p>
@@ -119,6 +121,10 @@
 					</div>
 				</div>
 			</div>
+
+			<?php do_action( 'bp_docs_after_tags_meta_box' ) ?>
+
+			<?php do_action( 'bp_docs_before_parent_meta_box' ) ?>
 
 			<div id="doc-parent" class="doc-meta-box">
 				<div class="toggleable">
@@ -141,6 +147,8 @@
 					</div>
 				</div>
 			</div>
+
+			<?php do_action( 'bp_docs_after_parent_meta_box' ) ?>
 		</div>
 
 		<div style="clear: both"> </div>
