@@ -238,6 +238,16 @@ class BP_Docs_Folders_Tests extends BP_Docs_TestCase {
 	/**
 	 * @group bp_docs_create_folder
 	 */
+	public function test_bp_docs_create_folder_nonexistent_parent() {
+		$this->assertFalse( bp_docs_create_folder( array(
+			'name' => 'Foo',
+			'parent' => 1234,
+		) ) );
+	}
+
+	/**
+	 * @group bp_docs_create_folder
+	 */
 	public function test_bp_docs_create_folder_success_global() {
 		$folder_id = bp_docs_create_folder( array(
 			'name' => 'Test',
@@ -250,6 +260,29 @@ class BP_Docs_Folders_Tests extends BP_Docs_TestCase {
 
 		$this->assertSame( 'Test', $folder->post_title );
 		$this->assertSame( 'bp_docs_folder', $folder->post_type );
+	}
+
+	/**
+	 * @group bp_docs_create_folder
+	 */
+	public function test_bp_docs_create_folder_success_parent() {
+		$f1 = bp_docs_create_folder( array(
+			'name' => 'Test',
+		) );
+
+		$f2 = bp_docs_create_folder( array(
+			'name' => 'Child',
+			'parent' => $f1,
+		) );
+
+		$this->assertNotEmpty( $f2 );
+
+		// double check
+		$folder = get_post( $f2 );
+
+		$this->assertSame( 'Child', $folder->post_title );
+		$this->assertSame( 'bp_docs_folder', $folder->post_type );
+		$this->assertSame( $f1, $folder->post_parent );
 	}
 
 	/**

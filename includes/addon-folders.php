@@ -256,6 +256,9 @@ function bp_docs_add_doc_to_folder( $doc_id, $folder_id ) {
 function bp_docs_create_folder( $args ) {
 	$r = wp_parse_args( $args, array(
 		'name' => '',
+		'parent' => null,
+		'group_id' => null,
+		'user_id' => null,
 	) );
 
 	if ( empty( $r['name'] ) ) {
@@ -279,10 +282,21 @@ function bp_docs_create_folder( $args ) {
 		}
 	}
 
+	// Validate post parent
+	if ( ! empty( $r['parent'] ) ) {
+		$r['parent'] = intval( $r['parent'] );
+
+		$maybe_parent = get_post( $r['parent'] );
+		if ( ! is_a( $maybe_parent, 'WP_Post' ) ) {
+			return false;
+		}
+	}
+
 	$post_args = array(
 		'post_type'   => 'bp_docs_folder',
 		'post_title'  => $r['name'],
 		'post_status' => 'publish',
+		'post_parent' => $r['parent'],
 	);
 
 	$folder_id = wp_insert_post( $post_args );
@@ -302,3 +316,63 @@ function bp_docs_create_folder( $args ) {
 		return intval( $folder_id );
 	}
 }
+
+/**
+ * Get a list of folders.
+ *
+ * @since 1.8
+ */
+function bp_docs_get_folders( $args = array() ) {
+	$r = wp_parse_args( $args, array(
+		'group_id' => null,
+		'user_id' => null,
+		'display' => 'tree',
+	) );
+
+	$post_args = array(
+		'post_type' => 'bp_docs_folder',
+		'orderby' => 'title',
+		'order' => 'ASC',
+		'posts_per_page' => '-1',
+	);
+
+	$folders = get_posts( $post_args );
+
+	return $folders;
+}
+
+/** Template functions *******************************************************/
+
+/**
+ * Add the meta box to the edit page.
+ *
+ * @since 1.8
+ */
+function bp_docs_folders_meta_box() {
+	?>
+
+	<div id="doc-folders" class="doc-meta-box">
+		<div class="toggleable">
+			<p id="folders-toggle-edit" class="toggle-switch"><?php _e( 'Folders', 'bp-docs' ) ?></p>
+
+			<div class="toggle-content">
+				<table class="toggle-table" id="toggle-table-tags">
+					<tr>
+						<td class="desc-column">
+							<label for="bp_docs_tag"><?php _e( 'Tags are words or phrases that help to describe and organize your Docs.', 'bp-docs' ) ?></label>
+							<span class="description"><?php _e( 'Separate tags with commas (for example: <em>orchestra, snare drum, piccolo, Brahms</em>)', 'bp-docs' ) ?></span>
+						</td>
+
+						<td>
+							<select class="chosen-select">
+							</select>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	<?php
+}
+add_action( 'bp_docs_before_tags_meta_box', 'bp_docs_folders_meta_box' );
