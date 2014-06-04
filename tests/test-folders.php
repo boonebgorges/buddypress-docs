@@ -342,4 +342,122 @@ class BP_Docs_Folders_Tests extends BP_Docs_TestCase {
 		$terms = wp_get_object_terms( $folder_id, 'bp_docs_folder_in_user' );
 		$this->assertSame( array( 'bp_docs_folder_in_user_' . $u ), wp_list_pluck( $terms, 'slug' ) );
 	}
+
+	/**
+	 * @group bp_docs_get_folders
+	 */
+	public function test_bp_docs_get_folders_flat() {
+		$f1 = bp_docs_create_folder( array(
+			'name' => 'Foo',
+		) );
+
+		$f2 = bp_docs_create_folder( array(
+			'name' => 'Bar',
+		) );
+
+		$folders = bp_docs_get_folders();
+		$this->assertSame( array( $f2 => $f2, $f1 => $f1 ), wp_list_pluck( $folders, 'ID' ) );
+	}
+
+	/**
+	 * @group bp_docs_get_folders
+	 */
+	public function test_bp_docs_get_folders_tree() {
+		$f1 = bp_docs_create_folder( array(
+			'name' => 'EE',
+		) );
+
+		$f2 = bp_docs_create_folder( array(
+			'name' => 'DD',
+			'parent' => $f1,
+		) );
+
+		$f3 = bp_docs_create_folder( array(
+			'name' => 'CC',
+		) );
+
+		$f4 = bp_docs_create_folder( array(
+			'name' => 'BB',
+			'parent' => $f2,
+		) );
+
+		$f5 = bp_docs_create_folder( array(
+			'name' => 'AA',
+			'parent' => $f2,
+		) );
+
+		$folders = bp_docs_get_folders();
+
+		$f1_obj = get_post( $f1 );
+		$f2_obj = get_post( $f2 );
+		$f3_obj = get_post( $f3 );
+		$f4_obj = get_post( $f4 );
+		$f5_obj = get_post( $f5 );
+
+		$f5_obj->children = array();
+		$f4_obj->children = array();
+		$f3_obj->children = array();
+		$f2_obj->children = array(
+			$f5 => $f5_obj,
+			$f4 => $f4_obj,
+		);
+		$f1_obj->children = array(
+			$f2 => $f2_obj,
+		);
+
+		$expected = array(
+			$f3 => $f3_obj,
+			$f1 => $f1_obj,
+		);
+
+		$this->assertEquals( $expected, $folders );
+	}
+
+	/**
+	 * @group bp_docs_get_folders
+	 */
+	public function test_bp_docs_get_folders_group() {
+		$g = $this->factory->group->create();
+		$f1 = bp_docs_create_folder( array(
+			'name' => 'Test',
+			'group_id' => $g,
+		) );
+		$f2 = bp_docs_create_folder( array(
+			'name' => 'Test',
+		) );
+
+		$folders = bp_docs_get_folders( array(
+			'group_id' => $g,
+		) );
+
+		$expected = array(
+			$f1 => $f1,
+		);
+
+		$this->assertSame( $expected, wp_list_pluck( $folders, 'ID' ) );
+	}
+
+	/**
+	 * @group bp_docs_get_folders
+	 */
+	public function test_bp_docs_get_folders_user() {
+		$u = $this->factory->user->create();
+		$f1 = bp_docs_create_folder( array(
+			'name' => 'Test',
+			'user_id' => $u,
+		) );
+		$f2 = bp_docs_create_folder( array(
+			'name' => 'Test',
+		) );
+
+		$folders = bp_docs_get_folders( array(
+			'user_id' => $u,
+		) );
+
+		$expected = array(
+			$f1 => $f1,
+		);
+
+		$this->assertSame( $expected, wp_list_pluck( $folders, 'ID' ) );
+	}
 }

@@ -321,6 +321,16 @@ function bp_docs_create_folder( $args ) {
  * Get a list of folders.
  *
  * @since 1.8
+ *
+ * @param array $args {
+ *     List of arguments.
+ *     @type int $group_id Optional. ID of the group.
+ *     @type int $user_id Optional. ID of the user.
+ *     @type string $display Optional. Format of return value. 'tree' to
+ *           display as hierarchical tree, 'flat' to return flat list. Default:
+ *           'tree'.
+ * }
+ * @return array
  */
 function bp_docs_get_folders( $args = array() ) {
 	$r = wp_parse_args( $args, array(
@@ -334,9 +344,71 @@ function bp_docs_get_folders( $args = array() ) {
 		'orderby' => 'title',
 		'order' => 'ASC',
 		'posts_per_page' => '-1',
+		'tax_query' => array(),
 	);
 
+	// @todo support for multiple items
+	if ( ! empty( $r['group_id'] ) ) {
+		$post_args['tax_query'][] = array(
+			'taxonomy' => 'bp_docs_folder_in_group',
+			'terms' => array( bp_docs_get_folder_in_group_term_slug( $r['group_id'] ) ),
+			'field' => 'slug',
+		);
+	}
+
+	// @todo support for multiple items
+	if ( ! empty( $r['user_id'] ) ) {
+		$post_args['tax_query'][] = array(
+			'taxonomy' => 'bp_docs_folder_in_user',
+			'terms' => array( bp_docs_get_folder_in_user_term_slug( $r['user_id'] ) ),
+			'field' => 'slug',
+		);
+	}
+
 	$folders = get_posts( $post_args );
+
+	// Poor-man's walker
+	if ( 'tree' === $r['display'] ) {
+		$ref = $tree = array();
+
+		// Populate top-level items first
+		foreach ( $folders as $folder_index => $folder ) {
+			if ( empty( $folder->post_parent ) ) {
+				$folder->children = array();
+
+				// Place in the top level of the tree
+				$tree[ $folder->ID ] = $folder;
+
+				// Set the reference index
+				$ref[ $folder->ID ] =& $tree[ $folder->ID ];
+
+				// Remove from original folder index
+				unset( $folders[ $folder_index ] );
+			}
+		}
+
+		while ( ! empty( $folders ) ) {
+			foreach ( $folders as $folder_index => $folder ) {
+				// Nested
+				if ( ! empty( $folder->post_parent ) && isset( $ref[ $folder->post_parent ] ) ) {
+					$folder->children = array();
+
+					// Place in the tree
+					$children = $ref[ $folder->post_parent ]->children;
+					$children[ $folder->ID ] = $folder;
+					$ref[ $folder->post_parent ]->children = $children;
+
+					// Set the reference index
+					$ref[ $folder->ID ] =& $ref[ $folder->post_parent ]->children[ $folder->ID ];
+
+					// Remove from original folders array
+					unset( $folders[ $folder_index ] );
+				}
+			}
+		}
+
+		$folders = $tree;
+	}
 
 	return $folders;
 }
