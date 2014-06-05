@@ -217,9 +217,11 @@ function bp_docs_get_folder_in_item_term( $item_id, $item_type ) {
  *
  * @param int $doc_id
  * @param int $folder_id
+ * @param bool $append Whether to append to existing folders, or replace.
+ *        Default: false (replace).
  * @return bool True on success, false on failure.
  */
-function bp_docs_add_doc_to_folder( $doc_id, $folder_id ) {
+function bp_docs_add_doc_to_folder( $doc_id, $folder_id, $append = false ) {
 	$doc = get_post( $doc_id );
 
 	if ( is_wp_error( $doc ) || empty( $doc ) || bp_docs_get_post_type_name() !== $doc->post_type ) {
@@ -249,8 +251,12 @@ function bp_docs_add_doc_to_folder( $doc_id, $folder_id ) {
 	}
 
 	// Merge new folder into old ones
-	$term_ids = ! empty( $existing_folders ) ? wp_parse_id_list( wp_list_pluck( $existing_folders, 'term_id' ) ) : array();
-	$term_ids[] = $term_id;
+	if ( $append ) {
+		$term_ids = ! empty( $existing_folders ) ? wp_parse_id_list( wp_list_pluck( $existing_folders, 'term_id' ) ) : array();
+		$term_ids[] = $term_id;
+	} else {
+		$term_ids = array( $term_id );
+	}
 
 	return (bool) wp_set_object_terms( $doc_id, $term_ids, 'bp_docs_doc_in_folder' );
 }
@@ -463,6 +469,28 @@ function bp_docs_get_folders( $args = array() ) {
 	return $folders;
 }
 
+/** "Action" functions *******************************************************/
+
+/**
+ * Save folder selections on Doc save.
+ *
+ * @since 1.8
+ *
+ * @param int $doc_id
+ * @return bool True on success, false on failure.
+ */
+function bp_docs_save_folder_selection( $doc_id ) {
+	$retval = false;
+
+	if ( isset( $_POST['bp-docs-folder'] ) ) {
+		$folder_id = intval( $_POST['bp-docs-folder'] );
+		$retval = bp_docs_add_doc_to_folder( $doc_id, $folder_id );
+	}
+
+	return $retval;
+}
+add_action( 'bp_docs_after_save', 'bp_docs_save_folder_selection' );
+
 /** Template functions *******************************************************/
 
 /**
@@ -474,14 +502,32 @@ function bp_docs_get_folders( $args = array() ) {
  *     Array of optional arguments.
  *     @type int $group_id Include folders of a given group.
  *     @type int $user_id Include folders of a given user.
+ *     @type int $selected ID of the selected folder.
  * }
  * @return string
  */
 function bp_docs_folder_selector( $args = array() ) {
 	$r = wp_parse_args( $args, array(
-		'group_id' => 2,
+		'group_id' => null,
 		'user_id' => null,
+		'selected' => null,
 	) );
+
+	// If no manual 'selected' value is passed, try to infer it from the
+	// current context
+	if ( empty( $r['selected'] ) ) {
+		$maybe_doc = get_queried_object();
+		if ( isset( $maybe_doc->post_type ) && bp_docs_get_post_type_name() === $maybe_doc->post_type ) {
+			$maybe_folders = wp_get_object_terms( $maybe_doc->ID, array(
+				'bp_docs_doc_in_folder',
+			) );
+
+			// Take the first one
+			if ( ! empty( $maybe_folders ) ) {
+				$r['selected'] = substr( $maybe_folders[0]->slug, 22 );
+			}
+		}
+	}
 
 	// @todo Do we *always* want the global folders?
 	$types = array(
@@ -509,23 +555,43 @@ function bp_docs_folder_selector( $args = array() ) {
 		}
 	}
 
+	if ( ! empty( $r['user_id'] ) ) {
+		$user = new WP_User( $r['user_id'] );
+
+		if ( ! empty( $user->ID ) ) {
+			$label = $r['user_id'] === bp_loggedin_user_id() ? __( 'My Folders', 'bp-docs' ) : bp_core_get_user_displayname( $r['user_id'] );
+			$types['user'] = array(
+				'label' => $label,
+				'folders' => bp_docs_get_folders( array(
+					'display' => 'flat',
+					'user_id' => $r['user_id'],
+				) ),
+			);
+		}
+	}
+
 	$walker = new BP_Docs_Folder_Walker();
 
 	// Global only
 	if ( 1 === count( $types ) ) {
-		$options = $walker->walk( $types['global']['folders'], 10 );
+		$options = $walker->walk( $types['global']['folders'], 10, array( 'selected' => $r['selected'] ) );
 
 	// If there is more than one folder type (global + user or group),
 	// organize into <optgroup>
 	} else {
 		$options = '';
 		foreach ( $types as $type ) {
+			if ( empty( $type['folders'] ) ) {
+				continue;
+			}
+
 			$options .= sprintf( '<optgroup label="%s">', esc_attr( $type['label'] ) );
-			$options .= $walker->walk( $type['folders'], 10 );
+			$options .= $walker->walk( $type['folders'], 10, array( 'selected' => $r['selected'] ) );
 			$options .= '</optgroup>';
 		}
 	}
 
+	$options = '<option value="">' . __( ' - Select a folder - ', 'bp-docs' ) . '</option>' . $options;
 	$retval = '<select name="bp-docs-folder" id="bp-docs-folder" class="chosen-select">' . $options . '</select>';
 	echo $retval;
 }
@@ -564,30 +630,29 @@ function bp_docs_folders_meta_box() {
 add_action( 'bp_docs_before_tags_meta_box', 'bp_docs_folders_meta_box' );
 
 /**
- * Create HTML list of pages.
+ * Create dropdown <option> values for BP Docs Folders.
  *
- * @since 2.1.0
+ * @since 1.8
  * @uses Walker
  */
 class BP_Docs_Folder_Walker extends Walker {
 	/**
 	 * @see Walker::$tree_type
-	 * @since 2.1.0
+	 * @since 1.8
 	 * @var string
 	 */
 	var $tree_type = 'bp_docs_folder';
 
 	/**
 	 * @see Walker::$db_fields
-	 * @since 2.1.0
-	 * @todo Decouple this.
+	 * @since 1.8
 	 * @var array
 	 */
-	var $db_fields = array ('parent' => 'post_parent', 'id' => 'ID');
+	var $db_fields = array( 'parent' => 'post_parent', 'id' => 'ID' );
 
 	/**
 	 * @see Walker::start_el()
-	 * @since 2.1.0
+	 * @since 1.8
 	 *
 	 * @param string $output Passed by reference. Used to append additional content.
 	 * @param object $page Page data object.
@@ -603,20 +668,11 @@ class BP_Docs_Folder_Walker extends Walker {
 			$output .= ' selected="selected"';
 		$output .= '>';
 
-		$title = $page->post_title;
+		$title = $page->post_title . '&nbsp;';
 		if ( '' === $title ) {
 			$title = sprintf( __( '#%d (no title)' ), $page->ID );
 		}
 
-		/**
-		 * Filter the page title when creating an HTML drop-down list of pages.
-		 *
-		 * @since 3.1.0
-		 *
-		 * @param string $title Page title.
-		 * @param object $page  Page data object.
-		 */
-		$title = apply_filters( 'list_pages', $title, $page );
 		$output .= $pad . esc_html( $title );
 		$output .= "</option>\n";
 	}
