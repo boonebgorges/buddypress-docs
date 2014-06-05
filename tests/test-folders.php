@@ -460,4 +460,62 @@ class BP_Docs_Folders_Tests extends BP_Docs_TestCase {
 
 		$this->assertSame( $expected, wp_list_pluck( $folders, 'ID' ) );
 	}
+
+	/**
+	 * @group bp_docs_get_folders
+	 */
+	public function test_bp_docs_get_folders_excluding_group_and_users() {
+		$g = $this->factory->group->create();
+		$u = $this->factory->user->create();
+		$f1 = bp_docs_create_folder( array(
+			'name' => 'Test',
+			'group_id' => $g,
+		) );
+		$f2 = bp_docs_create_folder( array(
+			'name' => 'Test',
+		) );
+		$f3 = bp_docs_create_folder( array(
+			'name' => 'Test',
+			'user_id' => $u,
+		) );
+
+		$folders = bp_docs_get_folders();
+
+		$expected = array(
+			$f2 => $f2,
+		);
+
+		$this->assertSame( $expected, wp_list_pluck( $folders, 'ID' ) );
+	}
+
+	/**
+	 * @group bp_docs_get_folders
+	 */
+	public function test_bp_docs_get_folders_force_all_folders() {
+		$g = $this->factory->group->create();
+		$u = $this->factory->user->create();
+		$f1 = bp_docs_create_folder( array(
+			'name' => 'Test1',
+			'group_id' => $g,
+		) );
+		$f2 = bp_docs_create_folder( array(
+			'name' => 'Test2',
+		) );
+		$f3 = bp_docs_create_folder( array(
+			'name' => 'Test3',
+			'user_id' => $u,
+		) );
+
+		$folders = bp_docs_get_folders( array(
+			'force_all_folders' => true,
+		) );
+
+		$expected = array(
+			$f1 => $f1,
+			$f2 => $f2,
+			$f3 => $f3,
+		);
+
+		$this->assertSame( $expected, wp_list_pluck( $folders, 'ID' ) );
+	}
 }

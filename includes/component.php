@@ -867,6 +867,8 @@ class BP_Docs_Component extends BP_Component {
 			wp_register_script( 'word-counter', site_url() . '/wp-admin/js/word-count.js', array( 'jquery' ) );
 
 			wp_enqueue_script( 'bp-docs-edit-validation', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/edit-validation.js' ), array( 'jquery' ) );
+
+			do_action( 'bp_docs_enqueue_scripts_edit' );
 		}
 
 		// Only load our JS on the right sorts of pages. Generous to account for
@@ -886,6 +888,8 @@ class BP_Docs_Component extends BP_Component {
 				$strings['pulse'] = bp_docs_heartbeat_pulse();
 			}
 			wp_localize_script( 'bp-docs-js', 'bp_docs', $strings );
+
+			do_action( 'bp_docs_enqueue_scripts' );
 		}
 	}
 

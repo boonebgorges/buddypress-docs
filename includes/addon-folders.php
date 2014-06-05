@@ -15,6 +15,9 @@ class BP_Docs_Folders {
 	public function __construct() {
 		$this->register_post_type();
 		$this->register_taxonomies();
+
+		add_action( 'bp_docs_enqueue_scripts', array( $this, 'enqueue_assets' ) );
+		add_action( 'bp_docs_enqueue_scripts_edit', array( $this, 'enqueue_assets' ) );
 	}
 
 	/**
@@ -36,6 +39,7 @@ class BP_Docs_Folders {
 		register_post_type( 'bp_docs_folder', array(
 			'labels' => $labels,
 			'public' => true,
+			'hierarchical' => true,
 		) );
 	}
 
@@ -57,14 +61,27 @@ class BP_Docs_Folders {
 		) );
 
 		register_taxonomy( 'bp_docs_folder_in_user', 'bp_docs_folder', array(
-			'public' => false,
+			'public' => true,
 		) );
 
 		if ( bp_is_active( 'groups' ) ) {
 			register_taxonomy( 'bp_docs_folder_in_group', 'bp_docs_folder', array(
-				'public' => false,
+				'public' => true,
 			) );
 		}
+	}
+
+	/**
+	 * Enqueue CSS and JS assets.
+	 *
+	 * @since 1.8
+	 */
+	public function enqueue_assets() {
+		wp_register_script( 'bp-docs-chosen', plugins_url() . '/buddypress-docs/lib/js/chosen/chosen.jquery.min.js', array( 'jquery' ) );
+		wp_enqueue_script( 'bp-docs-folders', plugins_url() . '/buddypress-docs/includes/js/folders.js', array( 'jquery', 'bp-docs-chosen' ) );
+
+		wp_register_style( 'bp-docs-chosen', plugins_url() . '/buddypress-docs/lib/css/chosen/chosen.min.css' );
+		wp_enqueue_style( 'bp-docs-folders', plugins_url() . '/buddypress-docs/includes/css/folders.css', array( 'bp-docs-chosen' ) );
 	}
 }
 
@@ -329,6 +346,9 @@ function bp_docs_create_folder( $args ) {
  *     @type string $display Optional. Format of return value. 'tree' to
  *           display as hierarchical tree, 'flat' to return flat list. Default:
  *           'tree'.
+ *     @type bool $force_all_folders Optional. Set to 'true' to include all
+ *           folders, 'false' to exclude folders associated with users or
+ *           groups (ie, include only "global" folders). Default: false.
  * }
  * @return array
  */
@@ -337,6 +357,7 @@ function bp_docs_get_folders( $args = array() ) {
 		'group_id' => null,
 		'user_id' => null,
 		'display' => 'tree',
+		'force_all_folders' => false,
 	) );
 
 	$post_args = array(
@@ -354,14 +375,43 @@ function bp_docs_get_folders( $args = array() ) {
 			'terms' => array( bp_docs_get_folder_in_group_term_slug( $r['group_id'] ) ),
 			'field' => 'slug',
 		);
-	}
-
-	// @todo support for multiple items
-	if ( ! empty( $r['user_id'] ) ) {
+	} else if ( ! empty( $r['user_id'] ) ) {
 		$post_args['tax_query'][] = array(
 			'taxonomy' => 'bp_docs_folder_in_user',
 			'terms' => array( bp_docs_get_folder_in_user_term_slug( $r['user_id'] ) ),
 			'field' => 'slug',
+		);
+
+	// Must exclude all user and group folders
+	// @todo Find better way to do this
+	} else if ( empty( $r['force_all_folders'] ) ) {
+		$object_folders = get_terms(
+			array(
+				'bp_docs_folder_in_group',
+				'bp_docs_folder_in_user',
+			),
+			array(
+				'hide_empty' => false,
+				'fields' => 'ids',
+			)
+		);
+
+		if ( empty( $object_folders ) ) {
+			$object_folders = array( 0 );
+		}
+
+		$post_args['tax_query'][] = array(
+			'taxonomy' => 'bp_docs_folder_in_group',
+			'terms' => wp_parse_id_list( $object_folders ),
+			'field' => 'term_id',
+			'operator' => 'NOT IN',
+		);
+
+		$post_args['tax_query'][] = array(
+			'taxonomy' => 'bp_docs_folder_in_user',
+			'terms' => wp_parse_id_list( $object_folders ),
+			'field' => 'term_id',
+			'operator' => 'NOT IN',
 		);
 	}
 
@@ -416,6 +466,71 @@ function bp_docs_get_folders( $args = array() ) {
 /** Template functions *******************************************************/
 
 /**
+ * Fetch <select> box for folder selection.
+ *
+ * @since 1.8
+ *
+ * @param array $args {
+ *     Array of optional arguments.
+ *     @type int $group_id Include folders of a given group.
+ *     @type int $user_id Include folders of a given user.
+ * }
+ * @return string
+ */
+function bp_docs_folder_selector( $args = array() ) {
+	$r = wp_parse_args( $args, array(
+		'group_id' => 2,
+		'user_id' => null,
+	) );
+
+	// @todo Do we *always* want the global folders?
+	$types = array(
+		'global' => array(
+			'label' => __( 'Global', 'bp-docs' ),
+			'folders' => bp_docs_get_folders( array(
+				'display' => 'flat',
+			) ),
+		),
+	);
+
+	if ( ! empty( $r['group_id'] ) ) {
+		$group = groups_get_group( array(
+			'group_id' => $r['group_id'],
+		) );
+
+		if ( ! empty( $group->name ) ) {
+			$types['group'] = array(
+				'label' => $group->name,
+				'folders' => bp_docs_get_folders( array(
+					'display' => 'flat',
+					'group_id' => $r['group_id'],
+				) ),
+			);
+		}
+	}
+
+	$walker = new BP_Docs_Folder_Walker();
+
+	// Global only
+	if ( 1 === count( $types ) ) {
+		$options = $walker->walk( $types['global']['folders'], 10 );
+
+	// If there is more than one folder type (global + user or group),
+	// organize into <optgroup>
+	} else {
+		$options = '';
+		foreach ( $types as $type ) {
+			$options .= sprintf( '<optgroup label="%s">', esc_attr( $type['label'] ) );
+			$options .= $walker->walk( $type['folders'], 10 );
+			$options .= '</optgroup>';
+		}
+	}
+
+	$retval = '<select name="bp-docs-folder" id="bp-docs-folder" class="chosen-select">' . $options . '</select>';
+	echo $retval;
+}
+
+/**
  * Add the meta box to the edit page.
  *
  * @since 1.8
@@ -436,8 +551,7 @@ function bp_docs_folders_meta_box() {
 						</td>
 
 						<td>
-							<select class="chosen-select">
-							</select>
+							<?php bp_docs_folder_selector() ?>
 						</td>
 					</tr>
 				</table>
@@ -448,3 +562,62 @@ function bp_docs_folders_meta_box() {
 	<?php
 }
 add_action( 'bp_docs_before_tags_meta_box', 'bp_docs_folders_meta_box' );
+
+/**
+ * Create HTML list of pages.
+ *
+ * @since 2.1.0
+ * @uses Walker
+ */
+class BP_Docs_Folder_Walker extends Walker {
+	/**
+	 * @see Walker::$tree_type
+	 * @since 2.1.0
+	 * @var string
+	 */
+	var $tree_type = 'bp_docs_folder';
+
+	/**
+	 * @see Walker::$db_fields
+	 * @since 2.1.0
+	 * @todo Decouple this.
+	 * @var array
+	 */
+	var $db_fields = array ('parent' => 'post_parent', 'id' => 'ID');
+
+	/**
+	 * @see Walker::start_el()
+	 * @since 2.1.0
+	 *
+	 * @param string $output Passed by reference. Used to append additional content.
+	 * @param object $page Page data object.
+	 * @param int $depth Depth of page. Used for padding.
+	 * @param int $current_page Page ID.
+	 * @param array $args
+	 */
+	function start_el( &$output, $page, $depth = 0, $args = array(), $current_page = 0 ) {
+		$pad = str_repeat('&nbsp;', $depth * 3);
+
+		$output .= "\t<option class=\"level-$depth\" value=\"$page->ID\"";
+		if ( $page->ID == $args['selected'] )
+			$output .= ' selected="selected"';
+		$output .= '>';
+
+		$title = $page->post_title;
+		if ( '' === $title ) {
+			$title = sprintf( __( '#%d (no title)' ), $page->ID );
+		}
+
+		/**
+		 * Filter the page title when creating an HTML drop-down list of pages.
+		 *
+		 * @since 3.1.0
+		 *
+		 * @param string $title Page title.
+		 * @param object $page  Page data object.
+		 */
+		$title = apply_filters( 'list_pages', $title, $page );
+		$output .= $pad . esc_html( $title );
+		$output .= "</option>\n";
+	}
+}
