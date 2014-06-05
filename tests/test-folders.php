@@ -217,6 +217,50 @@ class BP_Docs_Folders_Tests extends BP_Docs_TestCase {
 	/**
 	 * @group bp_docs_add_doc_to_folder
 	 */
+	public function test_bp_docs_add_doc_to_folder_no_append() {
+		$doc_id = $this->factory->doc->create();
+
+		$f1 = $this->factory->post->create( array(
+			'post_type' => 'bp_docs_folder',
+		) );
+		$f2 = $this->factory->post->create( array(
+			'post_type' => 'bp_docs_folder',
+		) );
+
+		bp_docs_add_doc_to_folder( $doc_id, $f1 );
+		$this->assertTrue( bp_docs_add_doc_to_folder( $doc_id, $f2 ) );
+
+		// double check
+		$terms = wp_get_object_terms( $doc_id, 'bp_docs_doc_in_folder' );
+
+		$this->assertSame( array( 'bp_docs_doc_in_folder_' . $f2 ), wp_list_pluck( $terms, 'slug' ) );
+	}
+
+	/**
+	 * @group bp_docs_add_doc_to_folder
+	 */
+	public function test_bp_docs_add_doc_to_folder_append() {
+		$doc_id = $this->factory->doc->create();
+
+		$f1 = $this->factory->post->create( array(
+			'post_type' => 'bp_docs_folder',
+		) );
+		$f2 = $this->factory->post->create( array(
+			'post_type' => 'bp_docs_folder',
+		) );
+
+		bp_docs_add_doc_to_folder( $doc_id, $f1 );
+		$this->assertTrue( bp_docs_add_doc_to_folder( $doc_id, $f2, true ) );
+
+		// double check
+		$terms = wp_get_object_terms( $doc_id, 'bp_docs_doc_in_folder' );
+
+		$this->assertSame( array( 'bp_docs_doc_in_folder_' . $f1, 'bp_docs_doc_in_folder_' . $f2 ), wp_list_pluck( $terms, 'slug' ) );
+	}
+
+	/**
+	 * @group bp_docs_add_doc_to_folder
+	 */
 	public function test_bp_docs_add_doc_to_folder_failure_when_already_in_folder() {
 		$doc_id = $this->factory->doc->create();
 
