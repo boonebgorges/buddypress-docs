@@ -1002,7 +1002,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 		$settings = apply_filters( 'bp_docs_default_group_settings', array(
 			'group-enable'	=> 1,
 			'can-create' 	=> 'member'
-		) );
+		), $group_id );
 
 		groups_update_groupmeta( $group_id, 'bp-docs', $settings );
 	}
