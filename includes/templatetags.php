@@ -908,13 +908,7 @@ function bp_docs_access_options_helper( $settings_field, $doc_id = 0, $group_id 
 			<select name="settings[<?php echo esc_attr( $settings_field['name'] ) ?>]">
 				<?php $access_options = bp_docs_get_access_options( $settings_field['name'], $doc_id, $group_id ) ?>
 				<?php foreach ( $access_options as $key => $option ) : ?>
-					<?php
-					$selected = selected( $setting, $option['name'], false );
-					if ( empty( $setting ) && ! empty( $option['default'] ) ) {
-						$selected = selected( 1, 1, false );
-					}
-					?>
-					<option value="<?php echo esc_attr( $option['name'] ) ?>" <?php echo $selected ?>><?php echo esc_attr( $option['label'] ) ?></option>
+					<option value="<?php echo esc_attr( $option['name'] ) ?>" <?php selected( $setting, $option['name'] ); ?>><?php echo esc_attr( $option['label'] ) ?></option>
 				<?php endforeach ?>
 			</select>
 		</td>

@@ -517,7 +517,6 @@ function bp_docs_get_access_options( $settings_field, $doc_id = 0, $group_id = 0
 		20 => array(
 			'name'  => 'loggedin',
 			'label' => __( 'Logged-in Users', 'bp-docs' ),
-			'default' => 1 // default to 'loggedin' for most options. See below for override
 		),
 		90 => array(
 			'name'  => 'creator',
@@ -530,13 +529,11 @@ function bp_docs_get_access_options( $settings_field, $doc_id = 0, $group_id = 0
 		$options[10] = array(
 			'name'  => 'anyone',
 			'label' => __( 'Anyone', 'bp-docs' ),
-			'default' => 1
 		);
-
-		$options[20]['default'] = 0; // Default to 'anyone' instead
 	}
 
 	// Other integration pieces can mod the options with this filter
+	// If you would like to filter the default access settings, see bp_docs_get_doc_settings()
 	$options = apply_filters( 'bp_docs_get_access_options', $options, $settings_field, $doc_id, $group_id );
 
 	// Options are sorted by the numeric key
