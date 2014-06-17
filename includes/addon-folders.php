@@ -482,9 +482,52 @@ function bp_docs_get_folders( $args = array() ) {
 function bp_docs_save_folder_selection( $doc_id ) {
 	$retval = false;
 
-	if ( isset( $_POST['bp-docs-folder'] ) ) {
-		$folder_id = intval( $_POST['bp-docs-folder'] );
-		$retval = bp_docs_add_doc_to_folder( $doc_id, $folder_id );
+	if ( empty( $_POST['existing-or-new-folder'] ) ) {
+		return;
+	}
+
+	switch ( $_POST['existing-or-new-folder'] ) {
+		case 'existing' :
+			if ( isset( $_POST['bp-docs-folder'] ) ) {
+				$folder_id = intval( $_POST['bp-docs-folder'] );
+				$retval = bp_docs_add_doc_to_folder( $doc_id, $folder_id );
+			}
+
+			break;
+
+		case 'new' :
+			$folder_name = trim( stripslashes( $_POST['new-folder'] ) );
+
+			if ( empty( $folder_name ) ) {
+				bp_core_add_message( __( 'You must provide a folder name.', 'bp-docs' ), 'error' );
+			} else {
+				$folder_args = array(
+					'name' => $folder_name,
+				);
+
+				// Parent
+				$folder_args['parent'] = ! empty( $_POST['new-folder-parent'] ) ? intval( $_POST['new-folder-parent'] ) : null;
+
+				// Type
+				$folder_type = stripslashes( $_POST['new-folder-type'] );
+
+				if ( 'global' === $folder_type ) {
+					// Nothing to do
+				} else if ( 'me' === $folder_type ) {
+					$folder_args['user_id'] = bp_loggedin_user_id();
+				} else if ( is_numeric( $folder_type ) ) {
+					// This is a group
+					$folder_args['group_id'] = intval( $folder_type );
+				}
+
+				// Create the folder
+				$folder_id = bp_docs_create_folder( $folder_args );
+
+				// Add the doc to the folder
+				$retval = bp_docs_add_doc_to_folder( $doc_id, $folder_id );
+			}
+
+			break;
 	}
 
 	return $retval;
@@ -508,6 +551,8 @@ add_action( 'bp_docs_after_save', 'bp_docs_save_folder_selection' );
  */
 function bp_docs_folder_selector( $args = array() ) {
 	$r = wp_parse_args( $args, array(
+		'name' => 'bp-docs-folder',
+		'id' => 'bp-docs-folder',
 		'group_id' => null,
 		'user_id' => null,
 		'selected' => null,
@@ -515,7 +560,7 @@ function bp_docs_folder_selector( $args = array() ) {
 
 	// If no manual 'selected' value is passed, try to infer it from the
 	// current context
-	if ( empty( $r['selected'] ) ) {
+	if ( is_null( $r['selected'] ) ) {
 		$maybe_doc = get_queried_object();
 		if ( isset( $maybe_doc->post_type ) && bp_docs_get_post_type_name() === $maybe_doc->post_type ) {
 			$maybe_folders = wp_get_object_terms( $maybe_doc->ID, array(
@@ -592,7 +637,7 @@ function bp_docs_folder_selector( $args = array() ) {
 	}
 
 	$options = '<option value="">' . __( ' - Select a folder - ', 'bp-docs' ) . '</option>' . $options;
-	$retval = '<select name="bp-docs-folder" id="bp-docs-folder" class="chosen-select">' . $options . '</select>';
+	$retval = sprintf( '<select name="%s" id="%s" class="chosen-select">', esc_attr( $r['name'] ), esc_attr( $r['id'] ) ) . $options . '</select>';
 	echo $retval;
 }
 
@@ -612,12 +657,49 @@ function bp_docs_folders_meta_box() {
 				<table class="toggle-table" id="toggle-table-tags">
 					<tr>
 						<td class="desc-column">
-							<label for="bp_docs_tag"><?php _e( 'Tags are words or phrases that help to describe and organize your Docs.', 'bp-docs' ) ?></label>
-							<span class="description"><?php _e( 'Separate tags with commas (for example: <em>orchestra, snare drum, piccolo, Brahms</em>)', 'bp-docs' ) ?></span>
+							<label for="bp_docs_tag"><?php _e( 'Select a folder for this Doc.', 'bp-docs' ) ?></label>
 						</td>
 
 						<td>
-							<?php bp_docs_folder_selector() ?>
+							<div class="existing-or-new-selector">
+								<input type="radio" name="existing-or-new-folder" id="use-existing-folder" value="existing" checked="checked" />
+								<label for="use-existing-folder" class="radio-label"><?php _e( 'Use an existing folder', 'bp-docs' ) ?></label><br />
+								<div class="selector-content">
+									<?php bp_docs_folder_selector( array(
+										'name' => 'bp-docs-folder',
+										'id' => 'bp-docs-folder',
+									) ) ?>
+								</div>
+							</div>
+
+							<div class="existing-or-new-selector" id="new-folder-block">
+								<input type="radio" name="existing-or-new-folder" id="create-new-folder" value="new" />
+								<label for="create-new-folder" class="radio-label"><?php _e( 'Create a new folder', 'bp-docs' ) ?></label>
+								<div class="selector-content">
+
+									<label for="new-folder"><?php _e( 'Name:', 'bp-docs' ) ?></label> <input name="new-folder" id="new-folder" />
+
+									<label for="new-folder-type"><?php _e( 'Folder type:' ) ?></label>
+									<select name="new-folder-type" id="new-folder-type">
+										<option value="global" selected="selected"><?php _e( 'Global', 'bp-docs' ) ?></option>
+										<option value="me"><?php _e( 'Limited to me', 'bp-docs' ) ?></option>
+										<optgroup label="<?php esc_attr_e( 'Group-specific', 'bp-docs' ) ?>">
+										<?php bp_docs_associated_group_dropdown( array(
+											'options_only' => true,
+										) ) ?>
+
+										</optgroup>
+
+									</select>
+
+									<label for="new-folder-parent"><?php _e( 'Parent (optional):', 'bp-docs' ) ?></label>
+									<?php bp_docs_folder_selector( array(
+										'name' => 'new-folder-parent',
+										'id' => 'new-folder-parent',
+										'selected' => false,
+									) ) ?>
+								</div><!-- .selector-content -->
+							</div>
 						</td>
 					</tr>
 				</table>

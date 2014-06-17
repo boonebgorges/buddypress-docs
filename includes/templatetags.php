@@ -696,28 +696,17 @@ function bp_docs_inline_toggle_js() {
 }
 
 /**
- * Outputs the markup for the Associated Group settings section
+ * Get a dropdown of associable groups for the current user.
  *
- * @since 1.2
+ * @since 1.8
  */
-function bp_docs_doc_associated_group_markup() {
-	// First, try to set the preselected group by looking at the URL params
-	$selected_group_slug = isset( $_GET['group'] ) ? $_GET['group'] : '';
-
-	// Support for BP Group Hierarchy
-	if ( false !== $slash = strrpos( $selected_group_slug, '/' ) ) {
-		$selected_group_slug = substr( $selected_group_slug, $slash + 1 );
-	}
-
-	$selected_group = BP_Groups_Group::get_id_from_slug( $selected_group_slug );
-	if ( $selected_group && ! BP_Docs_Groups_Integration::user_can_associate_doc_with_group( bp_loggedin_user_id(), $selected_group ) ) {
-		$selected_group = 0;
-	}
-
-	// If the selected group is still 0, see if there's something in the db
-	if ( ! $selected_group && is_singular() ) {
-		$selected_group = bp_docs_get_associated_group_id( get_the_ID() );
-	}
+function bp_docs_associated_group_dropdown( $args = array() ) {
+	$r = wp_parse_args( $args, array(
+		'name' => 'associated_group_id',
+		'id' => 'associated_group_id',
+		'selected' => null,
+		'options_only' => false,
+	) );
 
 	$groups_args = array(
 		'per_page' => false,
@@ -760,6 +749,48 @@ function bp_docs_doc_associated_group_markup() {
 	}
 
 	?>
+
+	<?php if ( ! $r['options_only'] ) : ?>
+		<select name="<?php echo esc_attr( $r['name'] ) ?>" id="<?php echo esc_attr( $r['id'] ) ?>">
+	<?php endif ?>
+
+		<option value=""><?php _e( 'None', 'bp-docs' ) ?></option>
+		<?php foreach ( $groups_template->groups as $g ) : ?>
+			<option value="<?php echo esc_attr( $g->id ) ?>" <?php selected( $r['selected'], $g->id ) ?>><?php echo esc_html( $g->name ) ?></option>
+		<?php endforeach ?>
+
+	<?php if ( ! $r['options_only'] ) : ?>
+		</select>
+	<?php endif ?>
+
+	<?php
+}
+
+/**
+ * Outputs the markup for the Associated Group settings section
+ *
+ * @since 1.2
+ */
+function bp_docs_doc_associated_group_markup() {
+	// First, try to set the preselected group by looking at the URL params
+	$selected_group_slug = isset( $_GET['group'] ) ? $_GET['group'] : '';
+
+	// Support for BP Group Hierarchy
+	if ( false !== $slash = strrpos( $selected_group_slug, '/' ) ) {
+		$selected_group_slug = substr( $selected_group_slug, $slash + 1 );
+	}
+
+	$selected_group = BP_Groups_Group::get_id_from_slug( $selected_group_slug );
+	if ( $selected_group && ! BP_Docs_Groups_Integration::user_can_associate_doc_with_group( bp_loggedin_user_id(), $selected_group ) ) {
+		$selected_group = 0;
+	}
+
+	// If the selected group is still 0, see if there's something in the db
+	if ( ! $selected_group && is_singular() ) {
+		$selected_group = bp_docs_get_associated_group_id( get_the_ID() );
+	}
+
+	?>
 	<tr>
 		<td class="desc-column">
 			<label for="associated_group_id"><?php _e( 'Which group should this Doc be associated with?', 'bp-docs' ) ?></label>
@@ -767,12 +798,11 @@ function bp_docs_doc_associated_group_markup() {
 		</td>
 
 		<td class="content-column">
-			<select name="associated_group_id" id="associated_group_id">
-				<option value=""><?php _e( 'None', 'bp-docs' ) ?></option>
-				<?php foreach ( $groups_template->groups as $g ) : ?>
-					<option value="<?php echo esc_attr( $g->id ) ?>" <?php selected( $selected_group, $g->id ) ?>><?php echo esc_html( $g->name ) ?></option>
-				<?php endforeach ?>
-			</select>
+			<?php bp_docs_associated_group_dropdown( array(
+				'name' => 'associated_group_id',
+				'id' => 'associated_group_id',
+				'selected' => $selected_group,
+			) ) ?>
 
 			<div id="associated_group_summary">
 				<?php bp_docs_associated_group_summary() ?>

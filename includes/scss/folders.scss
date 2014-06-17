@@ -1,0 +1,30 @@
+.existing-or-new-selector {
+	.selector-content {
+		padding-left: 30px;
+		margin: .5em 0 2em;
+	}
+
+	&#new-folder-block {
+		.selector-content {
+			label {
+				float: left;
+				width: 150px;
+				clear: left;
+			}
+
+			input, select {
+				margin: 15px 0 5px;
+				width: 300px;
+			}
+		}
+	}
+}
+
+#buddypress .standard-form .existing-or-new-selector label {
+	font-weight: normal;
+
+	&.radio-label {
+		padding-left: 5px;
+		display: inline;
+	}
+}
