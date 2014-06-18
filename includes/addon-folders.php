@@ -666,6 +666,9 @@ function bp_docs_folder_selector( $args = array() ) {
  * @since 1.8
  */
 function bp_docs_folders_meta_box() {
+
+	$associated_group_id = bp_docs_get_associated_group_id( get_the_ID() );
+
 	?>
 
 	<div id="doc-folders" class="doc-meta-box">
@@ -687,6 +690,7 @@ function bp_docs_folders_meta_box() {
 									<?php bp_docs_folder_selector( array(
 										'name' => 'bp-docs-folder',
 										'id' => 'bp-docs-folder',
+										'group_id' => $associated_group_id,
 									) ) ?>
 								</div>
 							</div>
