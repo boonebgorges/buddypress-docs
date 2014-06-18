@@ -553,6 +553,64 @@ function bp_docs_save_folder_selection( $doc_id ) {
 }
 add_action( 'bp_docs_after_save', 'bp_docs_save_folder_selection' );
 
+/** AJAX Handlers ************************************************************/
+
+/**
+ * Update folders based on group selections.
+ *
+ * @since 1.8
+ */
+function bp_docs_update_folders_cb() {
+	if ( ! isset( $_POST['doc_id'] ) || ! isset( $_POST['group_id'] ) ) {
+		die( '-1' );
+	}
+
+	$doc_id = intval( $_POST['doc_id'] );
+	$group_id = intval( $_POST['group_id'] );
+
+	bp_docs_folder_selector( array(
+		'group_id' => $group_id,
+		'doc_id' => $doc_id,
+	) );
+
+	die();
+
+}
+add_action( 'wp_ajax_bp_docs_update_folders', 'bp_docs_update_folders_cb' );
+
+/**
+ * Update parent folder selector based on folder type.
+ *
+ * @since 1.8
+ */
+function bp_docs_update_parent_folders_cb() {
+	if ( ! isset( $_POST['folder_type'] ) ) {
+		die( '-1' );
+	}
+
+	$folder_type = stripslashes( $_POST['folder_type'] );
+
+	$selector_args = array(
+		'id' => 'new-folder-parent',
+		'name' => 'new-folder-parent',
+	);
+
+	if ( 'global' === $folder_type ) {
+		// Nothing to do
+	} else if ( 'me' === $folder_type ) {
+		$selector_args['user_id'] = bp_loggedin_user_id();
+	} else if ( is_numeric( $folder_type ) ) {
+		// This is a group
+		$selector_args['group_id'] = intval( $folder_type );
+	}
+
+	bp_docs_folder_selector( $selector_args );
+
+	die();
+
+}
+add_action( 'wp_ajax_bp_docs_update_parent_folders', 'bp_docs_update_parent_folders_cb' );
+
 /** Template functions *******************************************************/
 
 /**
@@ -575,14 +633,23 @@ function bp_docs_folder_selector( $args = array() ) {
 		'group_id' => null,
 		'user_id' => null,
 		'selected' => null,
+		'doc_id' => null,
 	) );
 
 	// If no manual 'selected' value is passed, try to infer it from the
 	// current context
 	if ( is_null( $r['selected'] ) ) {
-		$maybe_doc = get_queried_object();
-		if ( isset( $maybe_doc->post_type ) && bp_docs_get_post_type_name() === $maybe_doc->post_type ) {
-			$maybe_folders = wp_get_object_terms( $maybe_doc->ID, array(
+		if ( ! is_null( $r['doc_id'] ) ) {
+			$doc_id = intval( $r['doc_id'] );
+		} else {
+			$maybe_doc = get_queried_object();
+			if ( isset( $maybe_doc->post_type ) && bp_docs_get_post_type_name() === $maybe_doc->post_type ) {
+				$doc_id = $maybe_doc->ID;
+			}
+		}
+
+		if ( ! empty( $doc_id ) ) {
+			$maybe_folders = wp_get_object_terms( $doc_id, array(
 				'bp_docs_doc_in_folder',
 			) );
 
