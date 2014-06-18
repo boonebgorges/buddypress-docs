@@ -18,6 +18,8 @@ class BP_Docs_Folders {
 
 		add_action( 'bp_docs_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		add_action( 'bp_docs_enqueue_scripts_edit', array( $this, 'enqueue_assets' ) );
+
+		add_filter( 'bp_docs_user_can', array( $this, 'user_can' ), 10, 4 );
 	}
 
 	/**
@@ -82,6 +84,23 @@ class BP_Docs_Folders {
 
 		wp_register_style( 'bp-docs-chosen', plugins_url() . '/buddypress-docs/lib/css/chosen/chosen.min.css' );
 		wp_enqueue_style( 'bp-docs-folders', plugins_url() . '/buddypress-docs/includes/css/folders.css', array( 'bp-docs-chosen' ) );
+	}
+
+	/**
+	 * @since 1.8
+	 */
+	public function user_can( $user_can, $action, $user_id, $doc_id ) {
+		$folders_caps = array(
+			'create_global_folder',
+			'create_personal_folder',
+		);
+
+		if ( ! in_array( $action, $folders_caps ) ) {
+			return $user_can;
+		}
+
+		return $user_can;
+
 	}
 }
 
@@ -681,8 +700,14 @@ function bp_docs_folders_meta_box() {
 
 									<label for="new-folder-type"><?php _e( 'Folder type:' ) ?></label>
 									<select name="new-folder-type" id="new-folder-type">
-										<option value="global" selected="selected"><?php _e( 'Global', 'bp-docs' ) ?></option>
-										<option value="me"><?php _e( 'Limited to me', 'bp-docs' ) ?></option>
+										<?php if ( bp_docs_current_user_can( 'create_global_folder' ) ) : ?>
+											<option value="global" selected="selected"><?php _e( 'Global', 'bp-docs' ) ?></option>
+										<?php endif ?>
+
+										<?php if ( bp_docs_current_user_can( 'create_personal_folder' ) ) : ?>
+											<option value="me"><?php _e( 'Limited to me', 'bp-docs' ) ?></option>
+										<?php endif ?>
+
 										<optgroup label="<?php esc_attr_e( 'Group-specific', 'bp-docs' ) ?>">
 										<?php bp_docs_associated_group_dropdown( array(
 											'options_only' => true,
