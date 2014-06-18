@@ -924,7 +924,7 @@ class BP_Docs_Folder_Walker extends Walker {
 	 */
 	public function start_el( &$output, $page, $depth = 0, $args = array(), $current_page = 0 ) {
 		$output .= sprintf(
-			'<li class="%s"><a href="%s">%s</a>',
+			'<li class="folder-closed %s"><i class="genericon genericon-category"></i><a href="%s">%s</a>',
 			esc_attr( $page->ID ),
 			get_permalink( $page ),
 			esc_html( $page->post_title )
@@ -951,7 +951,7 @@ class BP_Docs_Folder_Walker extends Walker {
 
 			foreach ( $folder_docs as $folder_doc ) {
 				$output .= sprintf(
-					'<li id="doc-in-folder-%d"><a href="%s">%s</a></li>',
+					'<li id="doc-in-folder-%d"><i class="genericon genericon-document"></i><a href="%s">%s</a></li>',
 					$folder_doc->ID,
 					get_permalink( $folder_doc ),
 					esc_html( $folder_doc->post_title )

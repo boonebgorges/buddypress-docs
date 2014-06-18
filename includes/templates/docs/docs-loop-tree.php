@@ -3,6 +3,6 @@
 
 <?php $f = $walker->walk( $folders, 10, array( 'foo' => 'bar' ) ); ?>
 
-<ul>
+<ul class="docs-folder-tree">
 	<?php echo $f ?>
 </ul>

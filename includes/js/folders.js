@@ -7,6 +7,11 @@
 		$( '#new-folder-type' ).on( 'change', function() {
 			update_parent_folder_selector( $( this ).val() );
 		} );
+
+		$( '.docs-folder-tree li' ).on( 'click', function() {
+			toggle_folder_class( this );
+			return false;
+		} );
 	} );
 
 	function update_folder_selector( group_id ) {
@@ -38,5 +43,13 @@
 			}
 
 		} );
+	}
+
+	function toggle_folder_class( target ) {
+		if ( $( target ).hasClass( 'folder-closed' ) ) {
+			$( target ).removeClass( 'folder-closed' ).addClass( 'folder-open' );
+		} else {
+			$( target ).removeClass( 'folder-open' ).addClass( 'folder-closed' );
+		}
 	}
 } )( jQuery )
