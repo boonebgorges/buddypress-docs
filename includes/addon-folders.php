@@ -378,9 +378,19 @@ function bp_docs_create_folder( $args ) {
  * @return array
  */
 function bp_docs_get_folders( $args = array() ) {
+	$group_id = null;
+	if ( bp_is_active( 'groups' ) && bp_is_group() ) {
+		$group_id = bp_get_current_group_id();
+	}
+
+	$user_id = null;
+	if ( bp_is_user() ) {
+		$user_id = bp_displayed_user_id();
+	}
+
 	$r = wp_parse_args( $args, array(
-		'group_id' => null,
-		'user_id' => null,
+		'group_id' => $group_id,
+		'user_id' => $user_id,
 		'display' => 'tree',
 		'force_all_folders' => false,
 	) );
@@ -614,6 +624,21 @@ add_action( 'wp_ajax_bp_docs_update_parent_folders', 'bp_docs_update_parent_fold
 /** Template functions *******************************************************/
 
 /**
+ * Is this 'tree' view?
+ *
+ * @since 1.8
+ *
+ * @return bool
+ */
+function bp_docs_is_folder_tree_view() {
+	if ( isset( $_GET['view'] ) && 'tree' === $_GET['view'] ) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+/**
  * Fetch <select> box for folder selection.
  *
  * @since 1.8
@@ -701,7 +726,7 @@ function bp_docs_folder_selector( $args = array() ) {
 		}
 	}
 
-	$walker = new BP_Docs_Folder_Walker();
+	$walker = new BP_Docs_Folder_Dropdown_Walker();
 
 	// Global only
 	if ( 1 === count( $types ) ) {
@@ -813,7 +838,7 @@ add_action( 'bp_docs_before_tags_meta_box', 'bp_docs_folders_meta_box' );
  * @since 1.8
  * @uses Walker
  */
-class BP_Docs_Folder_Walker extends Walker {
+class BP_Docs_Folder_Dropdown_Walker extends Walker {
 	/**
 	 * @see Walker::$tree_type
 	 * @since 1.8
@@ -853,5 +878,89 @@ class BP_Docs_Folder_Walker extends Walker {
 
 		$output .= $pad . esc_html( $title );
 		$output .= "</option>\n";
+	}
+}
+
+/**
+ * Get a folder tree.
+ *
+ * @since 1.8
+ * @uses Walker
+ */
+class BP_Docs_Folder_Walker extends Walker {
+	/**
+	 * @see Walker::$tree_type
+	 * @since 1.8
+	 * @var string
+	 */
+	var $tree_type = 'bp_docs_folder';
+
+	/**
+	 * @see Walker::$db_fields
+	 * @since 1.8
+	 * @var array
+	 */
+	var $db_fields = array( 'parent' => 'post_parent', 'id' => 'ID' );
+
+	public function start_lvl( &$output, $depth = 0, $args = array() ) {
+		$indent = str_repeat( "\t", $depth );
+		$output .= "\n$indent<ul class='children'>\n";
+	}
+
+	public function end_lvl( &$output, $depth = 0, $args = array() ) {
+		$indent = str_repeat("\t", $depth);
+		$output .= "$indent</ul>\n";
+	}
+
+	/**
+	 * @see Walker::start_el()
+	 * @since 1.8
+	 *
+	 * @param string $output Passed by reference. Used to append additional content.
+	 * @param object $page Page data object.
+	 * @param int $depth Depth of page. Used for padding.
+	 * @param int $current_page Page ID.
+	 * @param array $args
+	 */
+	public function start_el( &$output, $page, $depth = 0, $args = array(), $current_page = 0 ) {
+		$output .= sprintf(
+			'<li class="%s"><a href="%s">%s</a>',
+			esc_attr( $page->ID ),
+			get_permalink( $page ),
+			esc_html( $page->post_title )
+		);
+	}
+
+	public function end_el( &$output, $page, $depth = 0, $args = array(), $current_page = 0 ) {
+		// Get the docs belonging to this folder
+		$folder_term = bp_docs_get_folder_term( $page->ID );
+
+		$folder_docs = get_posts( array(
+			'post_type' => bp_docs_get_post_type_name(),
+			'tax_query' => array(
+				array(
+					'taxonomy' => 'bp_docs_doc_in_folder',
+					'field' => 'term_id',
+					'terms' => $folder_term,
+				),
+			),
+		) );
+
+		if ( ! empty( $folder_docs ) ) {
+			$output .= sprintf( '<ul class="docs-in-folder" id="docs-in-folder-%d">', $page->ID );
+
+			foreach ( $folder_docs as $folder_doc ) {
+				$output .= sprintf(
+					'<li id="doc-in-folder-%d"><a href="%s">%s</a></li>',
+					$folder_doc->ID,
+					get_permalink( $folder_doc ),
+					esc_html( $folder_doc->post_title )
+				);
+			}
+
+			$output .= '</ul>';
+		}
+
+		$output .= '</li>';
 	}
 }
