@@ -951,7 +951,7 @@ class BP_Docs_Folder_Walker extends Walker {
 
 			foreach ( $folder_docs as $folder_doc ) {
 				$output .= sprintf(
-					'<li id="doc-in-folder-%d"><i class="genericon genericon-document"></i><a href="%s">%s</a></li>',
+					'<li class="doc-in-folder" id="doc-in-folder-%d"><i class="genericon genericon-document"></i><a href="%s">%s</a></li>',
 					$folder_doc->ID,
 					get_permalink( $folder_doc ),
 					esc_html( $folder_doc->post_title )

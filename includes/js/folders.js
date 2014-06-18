@@ -8,9 +8,15 @@
 			update_parent_folder_selector( $( this ).val() );
 		} );
 
-		$( '.docs-folder-tree li' ).on( 'click', function() {
-			toggle_folder_class( this );
-			return false;
+		$( '.docs-folder-tree li' ).on( 'click', function( event ) {
+			if ( ! $( this ).hasClass( 'doc-in-folder' ) ) {
+				toggle_folder_class( this );
+				return false;
+			} else {
+				// Don't let the click bubble up
+				event.stopPropagation();
+				return true;
+			}
 		} );
 	} );
 
