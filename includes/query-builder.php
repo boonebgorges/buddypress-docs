@@ -482,11 +482,11 @@ class BP_Docs_Query {
 					$r['ID'] = $post_id;
 					wp_update_post( $r );
 				} else {
-					$post_id = wp_insert_post( $r, TRUE);
+					$post_id = wp_insert_post( $r);
 				}
 				
 				if ( ! $post_id) {
-					$result['message'] = __( 'There was an error when creating the doc.'.$_POST['doc_id'], 'bp-docs' );
+					$result['message'] = __( 'There was an error when creating the doc.', 'bp-docs' );
 					$result['redirect'] = 'create';
 				} else {
 					$this->doc_id = $post_id;
