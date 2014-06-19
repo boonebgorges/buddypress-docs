@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BuddyPress Docs 1.7.0\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/support/plugin/buddypress-docs\n"
-"POT-Creation-Date: 2014-04-09 01:26:14+00:00\n"
+"POT-Creation-Date: 2014-06-19 19:05:08+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -36,7 +36,7 @@ msgid "Edit Doc"
 msgstr ""
 
 #: bp-docs.php:268 includes/integration-groups.php:875
-#: includes/integration-groups.php:1341
+#: includes/integration-groups.php:1342
 #: includes/templates/docs/docs-header.php:40
 msgid "New Doc"
 msgstr ""
@@ -60,7 +60,7 @@ msgstr ""
 #. #-#-#-#-#  bp-docs.pot (BuddyPress Docs 1.7.0)  #-#-#-#-#
 #. Plugin Name of the plugin/theme
 #: bp-docs.php:279 includes/component.php:40
-#: includes/integration-groups.php:1136
+#: includes/integration-groups.php:1137
 msgid "BuddyPress Docs"
 msgstr ""
 
@@ -352,19 +352,19 @@ msgstr ""
 msgid "Filter"
 msgstr ""
 
-#: includes/attachments.php:716
+#: includes/attachments.php:720
 msgid ""
 "It looks like you are running <strong>nginx</strong>. We recommend the "
 "following setting in your site configuration file:"
 msgstr ""
 
-#: includes/attachments.php:726
+#: includes/attachments.php:730
 msgid ""
 "It looks like you are running <strong>IIS 7</strong>. We recommend the "
 "following setting in your Web.config file:"
 msgstr ""
 
-#: includes/attachments.php:738
+#: includes/attachments.php:742
 msgid ""
 "It looks like you are running <strong>Apache</strong>. The most likely cause "
 "of your problem is that the <code>AllowOverride</code> directive has been "
@@ -372,18 +372,18 @@ msgid ""
 "<code>VirtualHost</code> definition. Contact your host for assistance."
 msgstr ""
 
-#: includes/attachments.php:744
+#: includes/attachments.php:748
 msgid ""
 "<strong>Your BuddyPress Docs attachments directory is publicly accessible.</"
 "strong> Doc attachments will not be properly protected from direct viewing, "
 "even if the parent Docs are non-public."
 msgstr ""
 
-#: includes/attachments.php:751
+#: includes/attachments.php:755
 msgid "See <a href=\"%s\">this wiki page</a> for more information."
 msgstr ""
 
-#: includes/attachments.php:754
+#: includes/attachments.php:758
 msgid "Dismiss this message"
 msgstr ""
 
@@ -540,8 +540,8 @@ msgstr ""
 msgid "%s <span>%d</span>"
 msgstr ""
 
-#: includes/integration-groups.php:869 includes/integration-groups.php:953
-#: includes/integration-groups.php:1498 includes/integration-users.php:233
+#: includes/integration-groups.php:869 includes/integration-groups.php:954
+#: includes/integration-groups.php:1499 includes/integration-users.php:233
 msgid "Docs"
 msgstr ""
 
@@ -551,19 +551,19 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
-#: includes/integration-groups.php:1054
+#: includes/integration-groups.php:1055
 msgid "Save Changes"
 msgstr ""
 
-#: includes/integration-groups.php:1079
+#: includes/integration-groups.php:1080
 msgid "There was an error saving, please try again"
 msgstr ""
 
-#: includes/integration-groups.php:1081
+#: includes/integration-groups.php:1082
 msgid "Settings saved successfully"
 msgstr ""
 
-#: includes/integration-groups.php:1138
+#: includes/integration-groups.php:1139
 msgid ""
 "BuddyPress Docs is a powerful tool for collaboration with members of your "
 "group. A cross between document editor and wiki, BuddyPress Docs allows you "
@@ -571,31 +571,31 @@ msgid ""
 "can then sort and tag in a way that helps your group to get work done."
 msgstr ""
 
-#: includes/integration-groups.php:1141
+#: includes/integration-groups.php:1142
 msgid "Enable BuddyPress Docs for this group"
 msgstr ""
 
-#: includes/integration-groups.php:1145
+#: includes/integration-groups.php:1146
 msgid "Options"
 msgstr ""
 
-#: includes/integration-groups.php:1150
+#: includes/integration-groups.php:1151
 msgid "Minimum role to associate Docs with this group:"
 msgstr ""
 
-#: includes/integration-groups.php:1155
+#: includes/integration-groups.php:1156
 msgid "Group admin"
 msgstr ""
 
-#: includes/integration-groups.php:1156
+#: includes/integration-groups.php:1157
 msgid "Group moderator"
 msgstr ""
 
-#: includes/integration-groups.php:1157
+#: includes/integration-groups.php:1158
 msgid "Group member"
 msgstr ""
 
-#: includes/integration-groups.php:1338
+#: includes/integration-groups.php:1339
 msgid "View Docs"
 msgstr ""
 
@@ -667,7 +667,7 @@ msgstr ""
 msgid "There are no docs for this view."
 msgstr ""
 
-#: includes/templates/docs/index.php:25 includes/theme-bridge.php:184
+#: includes/templates/docs/index.php:25 includes/theme-bridge.php:194
 msgid "Docs Directory"
 msgstr ""
 
@@ -995,7 +995,7 @@ msgstr ""
 msgid "Trash"
 msgstr ""
 
-#: includes/theme-bridge.php:242
+#: includes/theme-bridge.php:252
 msgid "Create a Doc"
 msgstr ""
 
