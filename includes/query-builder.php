@@ -476,7 +476,7 @@ class BP_Docs_Query {
 
 				// If there's a 'doc_id' value in the POST, use
 				// the autodraft as a starting point
-				if ( isset( $_POST['doc_id'] ) ) {
+				if ( isset( $_POST['doc_id'] ) && 0 != $_POST['doc_id'] ) {
 					$post_id = (int) $_POST['doc_id'];
 					$r['ID'] = $post_id;
 					wp_update_post( $r );
