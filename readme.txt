@@ -1,12 +1,12 @@
 === BuddyPress Docs  ===
 Contributors: boonebgorges, cuny-academic-commons
-Donate link: http://teleogistic.net/donate
+Link: http://munich-tutoring.com
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.3, BuddyPress 1.5
 Tested up to: WordPress 3.9, BuddyPress 2.0.0
 Stable tag: 1.7.0
 
-Adds collaborative Docs to BuddyPress.
+Adds collaborative Docs for Students and Teachers to BuddyPress.
 
 == Description ==
 
@@ -23,7 +23,7 @@ Features include:
 * Full access to revision history
 * Dashboard access and management of Docs for the site admin
 
-This plugin is in active development. For feature requests and bug reports, visit http://github.com/boonebgorges/buddypress-docs. If you have translated the plugin and would like to provide your translation for distribution with BuddyPress Docs, please contact the plugin author.
+This plugin is in active development. For feature requests and bug reports, visit https://github.com/Munich-Tutoring/buddypress-teacher-student-docs. If you have translated the plugin and would like to provide your translation for distribution with BuddyPress Docs, please contact the plugin author.
 
 == Installation ==
 
