@@ -469,23 +469,24 @@ class BP_Docs_Query {
 
 			$r = wp_parse_args( $args, $defaults );
 
+			
 			if ( empty( $this->doc_slug ) ) {
 				$this->is_new_doc = true;
 
 				$r['post_author'] = bp_loggedin_user_id();
 
-				// If there's a 'doc_id' value in the POST, use
+				// If there's a 'doc_id' value in the POST and it is nonzero, use
 				// the autodraft as a starting point
-				if ( isset( $_POST['doc_id'] ) ) {
+				if ( isset( $_POST['doc_id'] )&&$_POST['doc_id']!=0 ) {
 					$post_id = (int) $_POST['doc_id'];
 					$r['ID'] = $post_id;
 					wp_update_post( $r );
 				} else {
-					$post_id = wp_insert_post( $r );
+					$post_id = wp_insert_post( $r, TRUE);
 				}
-
-				if ( ! $post_id ) {
-					$result['message'] = __( 'There was an error when creating the doc.', 'bp-docs' );
+				
+				if ( ! $post_id) {
+					$result['message'] = __( 'There was an error when creating the doc.'.$_POST['doc_id'], 'bp-docs' );
 					$result['redirect'] = 'create';
 				} else {
 					$this->doc_id = $post_id;
