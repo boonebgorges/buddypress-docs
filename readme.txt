@@ -38,6 +38,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Fix PHP notice when compiling group terms
 * Force theme compatibility mode on User tabs for themes that don't use it for other Docs template
 * Fix bug that caused Admins not to meet the "Moderator" minimum role
+* Fix potential bug related to overwriting autosave drafts
 
 = 1.7.0 =
 * Fix incorrect function usage when generating htaccess files
