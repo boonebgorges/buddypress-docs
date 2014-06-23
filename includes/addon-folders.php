@@ -1072,23 +1072,33 @@ class BP_Docs_Folder_Manage_Walker extends Walker {
 			'echo'     => false,
 		) );
 
-		$group_selector = bp_docs_associated_group_dropdown( array(
-			'options_only' => true,
-			'selected'     => $group_id,
-			'echo'         => false,
-		) );
+		$type_selector_markup = '';
+		if ( empty( $page->post_parent ) ) {
+			$group_selector = bp_docs_associated_group_dropdown( array(
+				'options_only' => true,
+				'selected'     => $group_id,
+				'echo'         => false,
+			) );
 
-		// @todo break into separate template function
-		$type_selector  = '<select name="folder-type-' . $page->ID . '" id="folder-type-' . $page->ID . '">';
-		$type_is_global = empty( $user_id ) && empty( $group_id );
-		$type_selector .=   '<option ' . selected( $type_is_global, true, false ) . ' value="global">' . __( 'Global', 'bp-docs' ) . '</option>';
-		$type_selector .=   '<option ' . selected( $page->ID, $user_id, false ) . ' value="me">' . __( 'Limited to me', 'bp-docs' ) . '</option>';
+			// @todo break into separate template function
+			$type_selector  = '<select name="folder-type-' . $page->ID . '" id="folder-type-' . $page->ID . '">';
+			$type_is_global = empty( $user_id ) && empty( $group_id );
+			$type_selector .=   '<option ' . selected( $type_is_global, true, false ) . ' value="global">' . __( 'Global', 'bp-docs' ) . '</option>';
+			$type_selector .=   '<option ' . selected( $page->ID, $user_id, false ) . ' value="me">' . __( 'Limited to me', 'bp-docs' ) . '</option>';
 
-		$type_selector .=   '<optgroup label="' . __( 'Group-specific', 'bp-docs' ) . '">';
-		$type_selector .=     $group_selector;
-		$type_selector .=   '</optgroup>';
-		$type_selector .= '</select>';
+			$type_selector .=   '<optgroup label="' . __( 'Group-specific', 'bp-docs' ) . '">';
+			$type_selector .=     $group_selector;
+			$type_selector .=   '</optgroup>';
+			$type_selector .= '</select>';
 
+			$type_selector_markup = sprintf(
+				'<label for="folder-type-%d">%s</label> %s
+				<div style="clear:both;"></div>',
+				intval( $page->ID ), // for="folder-type-%d"
+				__( 'Type', 'bp-docs' ), // type label text
+				$type_selector // type dropdown
+			);
+		}
 
 		$output .= sprintf(
 			'
@@ -1101,8 +1111,7 @@ class BP_Docs_Folder_Manage_Walker extends Walker {
 				<div style="clear:both;"></div>
 				<label for="folder-parent-%d">%s</label> %s
 				<div style="clear:both;"></div>
-				<label for="folder-type-%d">%s</label> %s
-				<div style="clear:both;"></div>
+				%s
 				<input type="hidden" class="folder-id" name="folder-id" value="%d" />
 				%s
 				<input type="submit" value="%s" class="primary-button" />
@@ -1119,9 +1128,7 @@ class BP_Docs_Folder_Manage_Walker extends Walker {
 			intval( $page->ID ), // for="folder-parent-%d"
 			__( 'Parent', 'bp-docs' ), // label text
 			$parent_selector, // parent dropdown
-			intval( $page->ID ), // for="folder-type-%d"
-			__( 'Type', 'bp-docs' ), // type label text
-			$type_selector, // type dropdown
+			$type_selector_markup,
 			intval( $page->ID ), // hidden input value
 			wp_nonce_field( 'bp-docs-edit-folder-' . $page->ID, 'bp-docs-edit-folder-nonce-' . $page->ID, false, false ), // nonce
 			__( 'Save Changes', 'bp-docs' )
@@ -1129,39 +1136,6 @@ class BP_Docs_Folder_Manage_Walker extends Walker {
 	}
 
 	public function end_el( &$output, $page, $depth = 0, $args = array(), $current_page = 0 ) {
-		$output .= '</li>';
-		return;
-		// Get the docs belonging to this folder
-		$folder_term = bp_docs_get_folder_term( $page->ID );
-
-		$folder_docs = get_posts( array(
-			'post_type' => bp_docs_get_post_type_name(),
-			'tax_query' => array(
-				array(
-					'taxonomy' => 'bp_docs_doc_in_folder',
-					'field' => 'term_id',
-					'terms' => $folder_term,
-				),
-			),
-		) );
-
-		if ( ! empty( $folder_docs ) ) {
-			$output .= sprintf( '<ul class="docs-in-folder" id="docs-in-folder-%d">', $page->ID );
-
-			foreach ( $folder_docs as $folder_doc ) {
-				$output .= sprintf(
-					'<li class="doc-in-folder" id="doc-in-folder-%d" data-doc-id="%d"><i class="genericon genericon-document"></i><a href="%s">%s</a>%s</li>',
-					$folder_doc->ID,
-					$folder_doc->ID,
-					get_permalink( $folder_doc ),
-					esc_html( $folder_doc->post_title ),
-					wp_nonce_field( 'bp-docs-folder-drop-' . $folder_doc->ID, 'bp-docs-folder-drop-nonce-' . $folder_doc->ID, false, false )
-				);
-			}
-
-			$output .= '</ul>';
-		}
-
 		$output .= '</li>';
 	}
 }
