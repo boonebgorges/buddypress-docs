@@ -80,7 +80,15 @@ class BP_Docs_Folders {
 	 */
 	public function enqueue_assets() {
 		wp_register_script( 'bp-docs-chosen', plugins_url() . '/buddypress-docs/lib/js/chosen/chosen.jquery.min.js', array( 'jquery' ) );
-		wp_enqueue_script( 'bp-docs-folders', plugins_url() . '/buddypress-docs/includes/js/folders.js', array( 'jquery', 'bp-docs-chosen' ) );
+
+		$js_requirements = array(
+			'jquery',
+			'bp-docs-chosen',
+			'jquery-ui-draggable',
+			'jquery-ui-droppable',
+		);
+
+		wp_enqueue_script( 'bp-docs-folders', plugins_url() . '/buddypress-docs/includes/js/folders.js', $js_requirements );
 
 		wp_register_style( 'bp-docs-chosen', plugins_url() . '/buddypress-docs/lib/css/chosen/chosen.min.css' );
 		wp_enqueue_style( 'bp-docs-folders', plugins_url() . '/buddypress-docs/includes/css/folders.css', array( 'bp-docs-chosen' ) );
@@ -621,6 +629,46 @@ function bp_docs_update_parent_folders_cb() {
 }
 add_action( 'wp_ajax_bp_docs_update_parent_folders', 'bp_docs_update_parent_folders_cb' );
 
+/**
+ * Process folder drops.
+ *
+ * @since 1.8
+ */
+function bp_docs_process_folder_drop_cb() {
+	if ( empty( $_POST['doc_id'] ) ) {
+		die( '-1' );
+	}
+
+	$doc_id = intval( $_POST['doc_id'] );
+
+	$nonce = isset( $_POST['nonce'] ) ? stripslashes( $_POST['nonce'] ) : '';
+
+	if ( ! wp_verify_nonce( $nonce, 'bp-docs-folder-drop-' . $doc_id ) ) {
+		die( '-1' );
+	}
+
+	// @todo This needs testing with group admins, etc
+	if ( ! bp_docs_user_can( 'manage', bp_loggedin_user_id(), $doc_id ) ) {
+		die( '-1' );
+	}
+
+	$folder_id = isset( $_POST['folder_id'] ) ? intval( $_POST['folder_id'] ) : 0;
+
+	// @todo Need to do permission tests for these folders
+	if ( empty( $folder_id ) ) {
+		die( '-1' );
+	}
+
+	$success = bp_docs_add_doc_to_folder( $doc_id, $folder_id );
+
+	if ( $success ) {
+		die( '1' );
+	} else {
+		die( '-1' );
+	}
+}
+add_action( 'wp_ajax_bp_docs_process_folder_drop', 'bp_docs_process_folder_drop_cb' );
+
 /** Template functions *******************************************************/
 
 /**
@@ -924,7 +972,7 @@ class BP_Docs_Folder_Walker extends Walker {
 	 */
 	public function start_el( &$output, $page, $depth = 0, $args = array(), $current_page = 0 ) {
 		$output .= sprintf(
-			'<li class="folder-closed %s"><i class="genericon genericon-category"></i><a href="%s">%s</a>',
+			'<li class="folder folder-closed" data-folder-id="%d"><i class="genericon genericon-category"></i><a href="%s">%s</a>',
 			esc_attr( $page->ID ),
 			get_permalink( $page ),
 			esc_html( $page->post_title )
@@ -951,10 +999,12 @@ class BP_Docs_Folder_Walker extends Walker {
 
 			foreach ( $folder_docs as $folder_doc ) {
 				$output .= sprintf(
-					'<li class="doc-in-folder" id="doc-in-folder-%d"><i class="genericon genericon-document"></i><a href="%s">%s</a></li>',
+					'<li class="doc-in-folder" id="doc-in-folder-%d" data-doc-id="%d"><i class="genericon genericon-document"></i><a href="%s">%s</a>%s</li>',
+					$folder_doc->ID,
 					$folder_doc->ID,
 					get_permalink( $folder_doc ),
-					esc_html( $folder_doc->post_title )
+					esc_html( $folder_doc->post_title ),
+					wp_nonce_field( 'bp-docs-folder-drop-' . $folder_doc->ID, 'bp-docs-folder-drop-nonce-' . $folder_doc->ID, false, false )
 				);
 			}
 
