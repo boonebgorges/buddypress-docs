@@ -305,6 +305,7 @@ function bp_docs_add_doc_to_folder( $doc_id, $folder_id, $append = false ) {
  */
 function bp_docs_create_folder( $args ) {
 	$r = wp_parse_args( $args, array(
+		'folder_id' => null,
 		'name' => '',
 		'parent' => null,
 		'group_id' => null,
@@ -348,6 +349,10 @@ function bp_docs_create_folder( $args ) {
 		'post_status' => 'publish',
 		'post_parent' => $r['parent'],
 	);
+
+	if ( ! empty( $r['folder_id'] ) ) {
+		$post_args['ID'] = intval( $r['folder_id'] );
+	}
 
 	$folder_id = wp_insert_post( $post_args );
 
@@ -669,6 +674,61 @@ function bp_docs_process_folder_drop_cb() {
 }
 add_action( 'wp_ajax_bp_docs_process_folder_drop', 'bp_docs_process_folder_drop_cb' );
 
+/**
+ * Process folder edits.
+ *
+ * (not an AJAX callback, but close enough)
+ */
+function bp_docs_process_folder_edit_cb() {
+	if ( ! bp_docs_is_docs_component() && ! bp_is_current_action( 'docs' ) ) {
+		return;
+	}
+
+	if ( ! bp_docs_is_folder_manage_view() ) {
+		return;
+	}
+
+	if ( empty( $_POST['folder-id'] ) ) {
+		return;
+	}
+
+	$folder_id = intval( $_POST['folder-id'] );
+
+	$nonce = isset( $_POST['bp-docs-edit-folder-nonce-' . $folder_id] ) ? stripslashes( $_POST['bp-docs-edit-folder-nonce-' . $folder_id] ) : '';
+
+	$redirect_url = bp_get_requested_url();
+
+	if ( ! wp_verify_nonce( $nonce, 'bp-docs-edit-folder-' . $folder_id ) ) {
+		bp_core_add_message( __( 'There was a problem editing that folder. Please try again.', 'bp-docs' ), 'error' );
+		bp_core_redirect( $redirect_url );
+		die();
+	}
+
+	$parent = isset( $_POST['folder-parent-' . $folder_id] ) ? intval( $_POST['folder-parent-' . $folder_id] ) : '';
+
+	$edit_args = array(
+		'folder_id' => $folder_id,
+		'name'      => stripslashes( $_POST['folder-name-' . $folder_id] ),
+	);
+
+	if ( ! empty( $parent ) ) {
+		$edit_args['parent'] = $parent;
+	}
+
+	// @todo permissions checks!!
+	$success = bp_docs_create_folder( $edit_args );
+
+	if ( ! empty( $success ) && ! is_wp_error( $success ) ) {
+		bp_core_add_message( __( 'Folder successfully updated.', 'bp-docs' ), 'success' );
+	} else {
+		bp_core_add_message( __( 'There was a problem editing that folder. Please try again.', 'bp-docs' ), 'error' );
+	}
+
+	bp_core_redirect( $redirect_url );
+	die();
+}
+add_action( 'bp_actions', 'bp_docs_process_folder_edit_cb' );
+
 /** Template functions *******************************************************/
 
 /**
@@ -680,6 +740,21 @@ add_action( 'wp_ajax_bp_docs_process_folder_drop', 'bp_docs_process_folder_drop_
  */
 function bp_docs_is_folder_tree_view() {
 	if ( isset( $_GET['view'] ) && 'tree' === $_GET['view'] ) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+/**
+ * Is this 'manage' view?
+ *
+ * @since 1.8
+ *
+ * @return bool
+ */
+function bp_docs_is_folder_manage_view() {
+	if ( isset( $_GET['view'] ) && 'manage' === $_GET['view'] ) {
 		return true;
 	} else {
 		return false;
@@ -707,6 +782,7 @@ function bp_docs_folder_selector( $args = array() ) {
 		'user_id' => null,
 		'selected' => null,
 		'doc_id' => null,
+		'echo' => true,
 	) );
 
 	// If no manual 'selected' value is passed, try to infer it from the
@@ -797,7 +873,12 @@ function bp_docs_folder_selector( $args = array() ) {
 
 	$options = '<option value="">' . __( ' - Select a folder - ', 'bp-docs' ) . '</option>' . $options;
 	$retval = sprintf( '<select name="%s" id="%s" class="chosen-select">', esc_attr( $r['name'] ), esc_attr( $r['id'] ) ) . $options . '</select>';
-	echo $retval;
+
+	if ( false === $r['echo'] ) {
+		return $retval;
+	} else {
+		echo $retval;
+	}
 }
 
 /**
@@ -930,12 +1011,12 @@ class BP_Docs_Folder_Dropdown_Walker extends Walker {
 }
 
 /**
- * Get a folder tree.
+ * Get a folder tree for the Manage screen.
  *
  * @since 1.8
  * @uses Walker
  */
-class BP_Docs_Folder_Walker extends Walker {
+class BP_Docs_Folder_Manage_Walker extends Walker {
 	/**
 	 * @see Walker::$tree_type
 	 * @since 1.8
@@ -971,15 +1052,85 @@ class BP_Docs_Folder_Walker extends Walker {
 	 * @param array $args
 	 */
 	public function start_el( &$output, $page, $depth = 0, $args = array(), $current_page = 0 ) {
+		$folder_group_terms = wp_get_object_terms( $page->ID, 'bp_docs_folder_in_group' );
+		$group_id = null;
+		if ( ! empty( $folder_group_terms ) ) {
+			$group_id = intval( substr( $folder_group_terms[0]->slug, 24 ) );
+		}
+
+		$folder_user_terms = wp_get_object_terms( $page->ID, 'bp_docs_folder_in_user' );
+		$user_id = null;
+		if ( ! empty( $folder_user_terms ) ) {
+			$user_id = intval( substr( $folder_user_terms[0]->slug, 23 ) );
+		}
+
+		$parent_selector = bp_docs_folder_selector( array(
+			'name'     => 'folder-parent-' . $page->ID,
+			'id'       => 'folder-parent-' . $page->ID,
+			'selected' => $page->post_parent,
+			'group_id' => $group_id,
+			'echo'     => false,
+		) );
+
+		$group_selector = bp_docs_associated_group_dropdown( array(
+			'options_only' => true,
+			'selected'     => $group_id,
+			'echo'         => false,
+		) );
+
+		// @todo break into separate template function
+		$type_selector  = '<select name="folder-type-' . $page->ID . '" id="folder-type-' . $page->ID . '">';
+		$type_is_global = empty( $user_id ) && empty( $group_id );
+		$type_selector .=   '<option ' . selected( $type_is_global, true, false ) . ' value="global">' . __( 'Global', 'bp-docs' ) . '</option>';
+		$type_selector .=   '<option ' . selected( $page->ID, $user_id, false ) . ' value="me">' . __( 'Limited to me', 'bp-docs' ) . '</option>';
+
+		$type_selector .=   '<optgroup label="' . __( 'Group-specific', 'bp-docs' ) . '">';
+		$type_selector .=     $group_selector;
+		$type_selector .=   '</optgroup>';
+		$type_selector .= '</select>';
+
+
 		$output .= sprintf(
-			'<li class="folder folder-closed" data-folder-id="%d"><i class="genericon genericon-category"></i><a href="%s">%s</a>',
-			esc_attr( $page->ID ),
-			get_permalink( $page ),
-			esc_html( $page->post_title )
+			'
+<li class="folder" data-folder-id="%d">
+	<div class="folder-info">
+		<h4>%s</h4>
+		<div class="folder-details folder-details-closed">
+			<form method="post" action="">
+				<label for="folder-name-%d">%s</label> <input id="folder-name-%d" name="folder-name-%d" value="%s" />
+				<div style="clear:both;"></div>
+				<label for="folder-parent-%d">%s</label> %s
+				<div style="clear:both;"></div>
+				<label for="folder-type-%d">%s</label> %s
+				<div style="clear:both;"></div>
+				<input type="hidden" class="folder-id" name="folder-id" value="%d" />
+				%s
+				<input type="submit" value="%s" class="primary-button" />
+			</form>
+		</div>
+	</div>',
+			intval( $page->ID ), // data-folder-id
+			esc_html( $page->post_title ), // h4
+			intval( $page->ID ), // for="folder-name-%d"
+			__( 'Name', 'bp-docs' ), // label text
+			intval( $page->ID ), // id="folder-name-%d"
+			intval( $page->ID ), // name="folder-name-%d"
+			esc_attr( $page->post_title ), // input value
+			intval( $page->ID ), // for="folder-parent-%d"
+			__( 'Parent', 'bp-docs' ), // label text
+			$parent_selector, // parent dropdown
+			intval( $page->ID ), // for="folder-type-%d"
+			__( 'Type', 'bp-docs' ), // type label text
+			$type_selector, // type dropdown
+			intval( $page->ID ), // hidden input value
+			wp_nonce_field( 'bp-docs-edit-folder-' . $page->ID, 'bp-docs-edit-folder-nonce-' . $page->ID, false, false ), // nonce
+			__( 'Save Changes', 'bp-docs' )
 		);
 	}
 
 	public function end_el( &$output, $page, $depth = 0, $args = array(), $current_page = 0 ) {
+		$output .= '</li>';
+		return;
 		// Get the docs belonging to this folder
 		$folder_term = bp_docs_get_folder_term( $page->ID );
 

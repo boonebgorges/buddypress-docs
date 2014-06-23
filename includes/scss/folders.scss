@@ -55,3 +55,31 @@
 		}
 	}
 }
+
+.docs-folder-manage {
+	& > li.folder {
+		margin-left: 0;
+	}
+
+	li {
+		list-style-type: none;
+
+		.folder-info {
+			margin: .5em 0;
+			padding: .5em 1em;
+			border: 1px solid #eaeaea;
+
+			h4 {
+				margin: 0 0 .5em;
+			}
+
+			label {
+				display: block;
+				float: left;
+				clear: left;
+				width: 100px;
+				margin-bottom: 1em;
+			}
+		}
+	}
+}

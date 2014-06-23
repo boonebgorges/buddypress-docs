@@ -706,6 +706,7 @@ function bp_docs_associated_group_dropdown( $args = array() ) {
 		'id' => 'associated_group_id',
 		'selected' => null,
 		'options_only' => false,
+		'echo' => true,
 	) );
 
 	$groups_args = array(
@@ -748,6 +749,10 @@ function bp_docs_associated_group_dropdown( $args = array() ) {
 		$groups_template->total_group_count = $groups_template->total_group_count - $removed;
 	}
 
+	if ( false === $r['echo'] ) {
+		ob_start();
+	}
+
 	?>
 
 	<?php if ( ! $r['options_only'] ) : ?>
@@ -764,6 +769,13 @@ function bp_docs_associated_group_dropdown( $args = array() ) {
 	<?php endif ?>
 
 	<?php
+
+	// @todo This is causing double output. Refactor not to require output buffer
+	if ( false === $r['echo'] ) {
+		$retval = ob_get_contents();
+		ob_end_clean();
+		return $retval;
+	}
 }
 
 /**
