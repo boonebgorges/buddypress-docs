@@ -841,14 +841,14 @@ function bp_docs_is_folder_manage_view() {
  */
 function bp_docs_folder_selector( $args = array() ) {
 	$r = wp_parse_args( $args, array(
-		'name' => 'bp-docs-folder',
-		'id' => 'bp-docs-folder',
-		'class' => '',
+		'name'     => 'bp-docs-folder',
+		'id'       => 'bp-docs-folder',
+		'class'    => '',
 		'group_id' => null,
-		'user_id' => null,
+		'user_id'  => null,
 		'selected' => null,
-		'doc_id' => null,
-		'echo' => true,
+		'doc_id'   => null,
+		'echo'     => true,
 	) );
 
 	// If no manual 'selected' value is passed, try to infer it from the
@@ -880,7 +880,9 @@ function bp_docs_folder_selector( $args = array() ) {
 		'global' => array(
 			'label' => __( 'Global', 'bp-docs' ),
 			'folders' => bp_docs_get_folders( array(
-				'display' => 'flat',
+				'display'  => 'flat',
+				'group_id' => 0,
+				'user_id'  => 0,
 			) ),
 		),
 	);
