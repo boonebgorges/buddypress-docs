@@ -682,9 +682,20 @@ function bp_docs_update_folder_type_cb() {
 	if ( 0 === $parent_id ) {
 		$folder_type = null;
 
+		// See if a group_id was passed explicitly
 		$group_id = 0;
-		if ( bp_is_active( 'groups' ) && bp_is_group() ) {
-			$group_id = bp_get_current_group_id();
+		if ( isset( $_POST['group_id'] ) ) {
+			$group_id = intval( $_POST['group_id'] );
+
+		// Or if this is a group, get the group_id from the current group
+		} else {
+			if ( bp_is_active( 'groups' ) && bp_is_group() ) {
+				$group_id = bp_get_current_group_id();
+			}
+		}
+
+		if ( ! empty( $group_id ) ) {
+			$folder_type = $group_id;
 		}
 
 		$user_id = bp_loggedin_user_id();
@@ -710,8 +721,6 @@ function bp_docs_update_folder_type_cb() {
 
 	bp_docs_folder_type_selector( array(
 		'selected' => $folder_type,
-		'group_id' => $group_id,
-		'user_id' => $user_id,
 	) );
 
 	die();

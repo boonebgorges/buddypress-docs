@@ -11,6 +11,7 @@
 		// Change associated group, change available folders
 		$( '#associated_group_id' ).on( 'change', function() {
 			update_folder_selector( $( this ).val() );
+			update_new_folder_selectors_for_group( $( this ).val() );
 		} );
 
 		// Change folder type, change available parents
@@ -64,6 +65,17 @@
 	}
 
 	/**
+	 * Update the list of folders and corresponding folder type when changing associated groups.
+	 */
+	function update_new_folder_selectors_for_group( group_id ) {
+		if ( '' == group_id ) {
+			group_id = 'global';
+		}
+
+		$( '#new-folder-type' ).val( group_id ).trigger( 'change' );
+	}
+
+	/**
 	 * Update the Parent selector when the Type selector is changed.
 	 */
 	function update_parent_folder_selector( $type_selector ) {
@@ -94,7 +106,8 @@
 			type: 'POST',
 			data: {
 				action: 'bp_docs_update_folder_type',
-				parent_id: $parent_selector.val()
+				parent_id: $parent_selector.val(),
+				group_id: $( '#associated_group_id' ).val()
 			},
 			success: function( response ) {
 				$parent_selector.siblings( '.folder-type' ).fadeOut( function() {
