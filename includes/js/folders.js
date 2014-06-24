@@ -18,6 +18,11 @@
 			update_parent_folder_selector( $( this ) );
 		} );
 
+		// Change folder parent, change/disable folder type
+		$( '.folder-parent' ).on( 'change', function() {
+			update_folder_type_selector( $( this ) );
+		} );
+
 		// Tree view folder accordion
 		$( '.docs-folder-tree li' ).on( 'click', function( event ) {
 			if ( ! $( this ).hasClass( 'doc-in-folder' ) ) {
@@ -72,6 +77,35 @@
 			success: function( response ) {
 				$type_selector.siblings( '.folder-parent' ).fadeOut( function() {
 					$( this ).replaceWith( response ).fadeIn();
+				} );
+			}
+
+		} );
+	}
+
+	/**
+	 * When the Parent selector is updated, update the Type field to match, and disable it.
+	 *
+	 * This is because the Type must match the type of the parent.
+	 */
+	function update_folder_type_selector( $parent_selector ) {
+		$.ajax( {
+			url: ajaxurl,
+			type: 'POST',
+			data: {
+				action: 'bp_docs_update_folder_type',
+				parent_id: $parent_selector.val()
+			},
+			success: function( response ) {
+				$parent_selector.siblings( '.folder-type' ).fadeOut( function() {
+					$( this ).replaceWith( response ).fadeIn();
+
+					// Disable if a selection was made
+					if ( 0 != $parent_selector.val().length ) {
+						$parent_selector.siblings( '.folder-type' ).prop( 'disabled', true );
+					} else {
+						$parent_selector.siblings( '.folder-type' ).prop( 'disabled', false );
+					}
 				} );
 			}
 

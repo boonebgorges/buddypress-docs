@@ -636,6 +636,62 @@ function bp_docs_update_parent_folders_cb() {
 add_action( 'wp_ajax_bp_docs_update_parent_folders', 'bp_docs_update_parent_folders_cb' );
 
 /**
+ * Update folder type selector based on value of parent selector.
+ */
+function bp_docs_update_folder_type_cb() {
+	if ( ! isset( $_POST['parent_id'] ) ) {
+		die( '-1' );
+	}
+
+	$parent_id = intval( $_POST['parent_id'] );
+
+	// A $parent_id of 0 means to fetch all fields available to user
+	if ( 0 === $parent_id ) {
+		$folder_type = null;
+
+		$group_id = 0;
+		if ( bp_is_active( 'groups' ) && bp_is_group() ) {
+			$group_id = bp_get_current_group_id();
+		}
+
+		$user_id = bp_loggedin_user_id();
+	} else {
+		$parent_post = get_post( $parent_id );
+
+		if ( ! is_a( $parent_post, 'WP_Post' ) || 'bp_docs_folder' !== $parent_post->post_type ) {
+			die( '-1' );
+		}
+
+		// Child folders must inherit the folder type of the parent
+		$folder_type = '';
+		$folder_group_terms = wp_get_object_terms( $parent_id, 'bp_docs_folder_in_group' );
+		$group_id = null;
+		if ( ! empty( $folder_group_terms ) ) {
+			$folder_type = $group_id = intval( substr( $folder_group_terms[0]->slug, 24 ) );
+		}
+
+		$folder_user_terms = wp_get_object_terms( $page->ID, 'bp_docs_folder_in_user' );
+		$user_id = null;
+		if ( ! empty( $folder_user_terms ) && bp_get_loggedin_user_id() == intval( substr( $folder_user_terms[0]->slug, 23 ) ) ) {
+			$user_id = intval( substr( $folder_user_terms[0]->slug, 23 ) );
+
+			if ( bp_loggedin_user_id() == $user_id ) {
+				$folder_type = 'me';
+			}
+		}
+	}
+
+	bp_docs_folder_type_selector( array(
+		'selected' => $folder_type,
+		'group_id' => $group_id,
+		'user_id' => $user_id,
+	) );
+
+	die();
+}
+add_action( 'wp_ajax_bp_docs_update_folder_type', 'bp_docs_update_folder_type_cb' );
+
+/**
  * Process folder drops.
  *
  * @since 1.8
@@ -950,6 +1006,45 @@ function bp_docs_folder_selector( $args = array() ) {
 }
 
 /**
+ * Get a Type selector dropdown.
+ *
+ * @since 1.8
+ */
+function bp_docs_folder_type_selector( $args = array() ) {
+	$r = wp_parse_args( $args, array(
+		'selected' => 'global',
+		'echo' => true,
+	) );
+
+	// todo: user/me
+
+	if ( is_int( $r['selected'] ) ) {
+		$group_selector = bp_docs_associated_group_dropdown( array(
+			'options_only' => true,
+			'selected'     => $r['selected'],
+			'echo'         => false,
+		) );
+	}
+
+	$type_selector  = '<select name="folder-type-' . $page->ID . '" id="folder-type-' . $page->ID . '" class="folder-type">';
+	$type_selector .=   '<option ' . selected( $r['selected'], 'global', false ) . ' value="global">' . __( 'Global', 'bp-docs' ) . '</option>';
+	$type_selector .=   '<option ' . selected( $r['selected'], 'me', false ) . ' value="me">' . __( 'Limited to me', 'bp-docs' ) . '</option>';
+
+	if ( isset( $group_selector ) ) {
+		$type_selector .=   '<optgroup label="' . __( 'Group-specific', 'bp-docs' ) . '">';
+		$type_selector .=     $group_selector;
+		$type_selector .=   '</optgroup>';
+		$type_selector .= '</select>';
+	}
+
+	if ( false === $r['echo'] ) {
+		return $type_selector;
+	} else {
+		echo $type_selector;
+	}
+}
+
+/**
  * Create the markup for creating a new folder.
  *
  * Used on Doc Edit/Create as well as the Folders management page.
@@ -1179,24 +1274,22 @@ class BP_Docs_Folder_Manage_Walker extends Walker {
 			'echo'     => false,
 		) );
 
+
 		$type_selector_markup = '';
 		if ( empty( $page->post_parent ) ) {
-			$group_selector = bp_docs_associated_group_dropdown( array(
-				'options_only' => true,
-				'selected'     => $group_id,
-				'echo'         => false,
+			$selected = null;
+			if ( empty( $user_id ) && empty( $group_id ) ) {
+				$selected = 'global';
+			} else if ( $page->ID == $user_id ) {
+				$selected = 'me';
+			} else if ( $page->ID == $group_id ) {
+				$selected = $group_id;
+			}
+
+			$type_selector = bp_docs_folder_type_selector( array(
+				'echo' => false,
+				'selected' => $selected,
 			) );
-
-			// @todo break into separate template function
-			$type_selector  = '<select name="folder-type-' . $page->ID . '" id="folder-type-' . $page->ID . '" class="folder-type">';
-			$type_is_global = empty( $user_id ) && empty( $group_id );
-			$type_selector .=   '<option ' . selected( $type_is_global, true, false ) . ' value="global">' . __( 'Global', 'bp-docs' ) . '</option>';
-			$type_selector .=   '<option ' . selected( $page->ID, $user_id, false ) . ' value="me">' . __( 'Limited to me', 'bp-docs' ) . '</option>';
-
-			$type_selector .=   '<optgroup label="' . __( 'Group-specific', 'bp-docs' ) . '">';
-			$type_selector .=     $group_selector;
-			$type_selector .=   '</optgroup>';
-			$type_selector .= '</select>';
 
 			$type_selector_markup = sprintf(
 				'<label for="folder-type-%d">%s</label> %s
