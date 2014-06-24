@@ -238,6 +238,39 @@ function bp_docs_get_folder_in_item_term( $item_id, $item_type ) {
 }
 
 /**
+ * Get the ID of the group that a folder belongs to.
+ *
+ * @param int $folder_id ID of folder.
+ * @return int|bool ID of group if found, otherwise false.
+ */
+function bp_docs_get_folder_group( $folder_id ) {
+	$group_id = false;
+
+	$folder_group_terms = wp_get_object_terms( $folder_id, 'bp_docs_folder_in_group' );
+	if ( ! empty( $folder_group_terms ) ) {
+		$group_id = intval( substr( $folder_group_terms[0]->slug, 24 ) );
+	}
+
+	return $group_id;
+}
+
+/**
+ * Get the ID of the user that a folder belongs to.
+ *
+ * @param int $folder_id ID of folder.
+ * @return int|bool ID of user if found, otherwise false.
+ */
+function bp_docs_get_folder_user( $folder_id ) {
+	$user_id = false;
+
+	$folder_user_terms = wp_get_object_terms( $folder_id, 'bp_docs_folder_in_user' );
+	if ( ! empty( $folder_user_terms ) ) {
+		$user_id = intval( substr( $folder_user_terms[0]->slug, 23 ) );
+	}
+
+	return $user_id;
+}
+/**
  * Add a Doc to a Folder.
  *
  * @since 1.8
@@ -664,20 +697,14 @@ function bp_docs_update_folder_type_cb() {
 
 		// Child folders must inherit the folder type of the parent
 		$folder_type = '';
-		$folder_group_terms = wp_get_object_terms( $parent_id, 'bp_docs_folder_in_group' );
-		$group_id = null;
-		if ( ! empty( $folder_group_terms ) ) {
-			$folder_type = $group_id = intval( substr( $folder_group_terms[0]->slug, 24 ) );
+		$group_id = bp_docs_get_folder_group( $parent_id );
+		if ( ! empty( $group_id ) ) {
+			$folder_type = $group_id;
 		}
 
-		$folder_user_terms = wp_get_object_terms( $page->ID, 'bp_docs_folder_in_user' );
-		$user_id = null;
-		if ( ! empty( $folder_user_terms ) && bp_get_loggedin_user_id() == intval( substr( $folder_user_terms[0]->slug, 23 ) ) ) {
-			$user_id = intval( substr( $folder_user_terms[0]->slug, 23 ) );
-
-			if ( bp_loggedin_user_id() == $user_id ) {
-				$folder_type = 'me';
-			}
+		$user_id = bp_docs_get_folder_user( $parent_id );;
+		if ( bp_loggedin_user_id() == $user_id ) {
+			$folder_type = 'me';
 		}
 	}
 
@@ -995,7 +1022,7 @@ function bp_docs_folder_selector( $args = array() ) {
 		}
 	}
 
-	$options = '<option value="">' . __( ' - Select a folder - ', 'bp-docs' ) . '</option>' . $options;
+	$options = '<option value="">' . __( ' - None - ', 'bp-docs' ) . '</option>' . $options;
 	$retval = sprintf( '<select name="%s" id="%s" class="chosen-select %s">', esc_attr( $r['name'] ), esc_attr( $r['id'] ), esc_attr( $r['class'] ) ) . $options . '</select>';
 
 	if ( false === $r['echo'] ) {
@@ -1253,17 +1280,8 @@ class BP_Docs_Folder_Manage_Walker extends Walker {
 	 * @param array $args
 	 */
 	public function start_el( &$output, $page, $depth = 0, $args = array(), $current_page = 0 ) {
-		$folder_group_terms = wp_get_object_terms( $page->ID, 'bp_docs_folder_in_group' );
-		$group_id = null;
-		if ( ! empty( $folder_group_terms ) ) {
-			$group_id = intval( substr( $folder_group_terms[0]->slug, 24 ) );
-		}
-
-		$folder_user_terms = wp_get_object_terms( $page->ID, 'bp_docs_folder_in_user' );
-		$user_id = null;
-		if ( ! empty( $folder_user_terms ) ) {
-			$user_id = intval( substr( $folder_user_terms[0]->slug, 23 ) );
-		}
+		$group_id = bp_docs_get_folder_group( $page->ID );
+		$user_id = bp_docs_get_folder_user( $page->ID );
 
 		$parent_selector = bp_docs_folder_selector( array(
 			'name'     => 'folder-parent-' . $page->ID,
@@ -1278,12 +1296,12 @@ class BP_Docs_Folder_Manage_Walker extends Walker {
 		$type_selector_markup = '';
 		if ( empty( $page->post_parent ) ) {
 			$selected = null;
-			if ( empty( $user_id ) && empty( $group_id ) ) {
-				$selected = 'global';
-			} else if ( $page->ID == $user_id ) {
-				$selected = 'me';
-			} else if ( $page->ID == $group_id ) {
+			if ( ! empty( $group_id ) ) {
 				$selected = $group_id;
+			} else if ( ! empty( $user_id ) ) {
+				$selected = 'me';
+			} else {
+				$selected = 'global';
 			}
 
 			$type_selector = bp_docs_folder_type_selector( array(
