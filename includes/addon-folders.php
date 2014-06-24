@@ -790,6 +790,7 @@ function bp_docs_process_folder_edit_cb() {
 
 	$parent = isset( $_POST['folder-parent-' . $folder_id] ) ? intval( $_POST['folder-parent-' . $folder_id] ) : '';
 
+
 	$edit_args = array(
 		'folder_id' => $folder_id,
 		'name'      => stripslashes( $_POST['folder-name-' . $folder_id] ),
@@ -797,6 +798,11 @@ function bp_docs_process_folder_edit_cb() {
 
 	if ( ! empty( $parent ) ) {
 		$edit_args['parent'] = $parent;
+
+		// Force the document to the type of the parent
+		$edit_args['group_id'] = bp_docs_get_folder_group( $parent );
+		$edit_args['user_id']  = bp_docs_get_folder_user( $parent );
+
 	}
 
 	// @todo permissions checks!!
@@ -845,21 +851,30 @@ function bp_docs_process_folder_create_cb() {
 		'name' => stripslashes( $_POST['new-folder'] ),
 	);
 
-	$parent = isset( $_POST['folder-parent-' . $folder_id] ) ? intval( $_POST['folder-parent-' . $folder_id] ) : null;
+	$parent = isset( $_POST['new-folder-parent'] ) ? intval( $_POST['new-folder-parent'] ) : null;
 
 	if ( ! empty( $parent ) ) {
 		$folder_args['parent'] = $parent;
 	}
-	// Type
-	$folder_type = stripslashes( $_POST['new-folder-type'] );
 
-	if ( 'global' === $folder_type ) {
-		// Nothing to do
-	} else if ( 'me' === $folder_type ) {
-		$folder_args['user_id'] = bp_loggedin_user_id();
-	} else if ( is_numeric( $folder_type ) ) {
-		// This is a group
-		$folder_args['group_id'] = intval( $folder_type );
+	// If there's a parent, the parent's folder type takes precedence
+	if ( ! empty( $parent ) ) {
+		$folder_args['group_id'] = bp_docs_get_folder_group( $parent );
+		$folder_args['user_id']  = bp_docs_get_folder_user( $parent );
+
+	// Otherwise, trust the values passed
+	} else {
+		// Type
+		$folder_type = stripslashes( $_POST['new-folder-type'] );
+
+		if ( 'global' === $folder_type ) {
+			// Nothing to do
+		} else if ( 'me' === $folder_type ) {
+			$folder_args['user_id'] = bp_loggedin_user_id();
+		} else if ( is_numeric( $folder_type ) ) {
+			// This is a group
+			$folder_args['group_id'] = intval( $folder_type );
+		}
 	}
 
 	// Create the folder
