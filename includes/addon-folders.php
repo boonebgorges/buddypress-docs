@@ -954,7 +954,23 @@ function bp_docs_folder_selector( $args = array() ) {
  *
  * @since 1.8
  */
-function bp_docs_create_new_folder_markup() {
+function bp_docs_create_new_folder_markup( $args = array() ) {
+	$default_group_id = null;
+	if ( bp_is_active( 'groups' ) && bp_is_group() ) {
+		$default_group_id = bp_get_current_group_id();
+	}
+
+	$r = wp_parse_args( array(
+		'group_id' => $default_group_id,
+	) );
+
+	// The Global field should be selected, unless overridden by another
+	// field
+	$global_selected = 'selected="selected"';
+	if ( ! is_null( $r['group_id'] ) ) {
+		$global_selected = '';
+	}
+
 	?>
 
 	<label for="new-folder"><?php _e( 'Name', 'bp-docs' ) ?></label> <input name="new-folder" id="new-folder" />
@@ -964,7 +980,7 @@ function bp_docs_create_new_folder_markup() {
 	<label for="new-folder-type"><?php _e( 'Folder type' ) ?></label>
 	<select name="new-folder-type" id="new-folder-type" class="folder-type">
 		<?php if ( bp_docs_current_user_can( 'create_global_folder' ) ) : ?>
-			<option value="global" selected="selected"><?php _e( 'Global', 'bp-docs' ) ?></option>
+			<option value="global" <?php echo $global_selected ?>><?php _e( 'Global', 'bp-docs' ) ?></option>
 		<?php endif ?>
 
 		<?php if ( bp_docs_current_user_can( 'create_personal_folder' ) ) : ?>
@@ -973,6 +989,7 @@ function bp_docs_create_new_folder_markup() {
 
 		<optgroup label="<?php esc_attr_e( 'Group-specific', 'bp-docs' ) ?>">
 		<?php bp_docs_associated_group_dropdown( array(
+			'selected'     => $r['group_id'],
 			'options_only' => true,
 		) ) ?>
 
@@ -987,6 +1004,7 @@ function bp_docs_create_new_folder_markup() {
 		'id'       => 'new-folder-parent',
 		'class'    => 'folder-parent',
 		'selected' => false,
+		'group_id' => $r['group_id'],
 	) ) ?>
 
 	<div style="clear:both"></div>
