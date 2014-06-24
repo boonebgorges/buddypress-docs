@@ -76,6 +76,9 @@ function bp_docs_has_docs( $args = array() ) {
 		// Parent id
 		$d_parent_id = !empty( $_REQUEST['parent_doc'] ) ? (int)$_REQUEST['parent_doc'] : '';
 
+		// Folder id
+		$d_folder_id = ! empty( $_GET['folder'] ) ? intval( $_GET['folder'] ) : null;
+
 		// Page number, posts per page
 		$d_paged = 1;
 		if ( ! empty( $_GET['paged'] ) ) {
@@ -94,6 +97,7 @@ function bp_docs_has_docs( $args = array() ) {
 			'doc_slug'       => $d_doc_slug,  // String (post_name/slug)
 			'group_id'       => $d_group_id,  // Array or comma-separated string
 			'parent_id'      => $d_parent_id, // int
+			'folder_id'      => $d_folder_id, // array or comma-separated string
 			'author_id'      => $d_author_id, // Array or comma-separated string
 			'edited_by_id'   => $d_edited_by_id, // Array or comma-separated string
 			'tags'           => $d_tags,      // Array or comma-separated string

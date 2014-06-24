@@ -567,6 +567,35 @@ function bp_docs_get_folders( $args = array() ) {
 	return $folders;
 }
 
+/**
+ * Filter the BP_Docs_Query tax_query to account for the folder_id param.
+ *
+ * @since 1.8
+ *
+ * @param array $tax_query Tax query to be passed to WP_Query.
+ * @param BP_Docs_Query $bp_docs_query
+ * @return array
+ */
+function bp_docs_folder_tax_query( $tax_query, $bp_docs_query ) {
+	if ( ! empty( $bp_docs_query->query_args['folder_id'] ) ) {
+		$folder_ids = wp_parse_id_list( $bp_docs_query->query_args['folder_id'] );
+
+		$folder_terms = array();
+		foreach ( $folder_ids as $folder_id ) {
+			$folder_terms[] = bp_docs_get_folder_term( $folder_id );
+		}
+
+		$tax_query[] = array(
+			'taxonomy' => 'bp_docs_doc_in_folder',
+			'field'    => 'term_id',
+			'terms'    => $folder_terms,
+		);
+	}
+
+	return $tax_query;
+}
+add_filter( 'bp_docs_tax_query', 'bp_docs_folder_tax_query', 10, 2 );
+
 /** "Action" functions *******************************************************/
 
 /**
