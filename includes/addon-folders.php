@@ -238,6 +238,29 @@ function bp_docs_get_folder_in_item_term( $item_id, $item_type ) {
 }
 
 /**
+ * Get the ID of folder that a Doc is in.
+ *
+ * @since 1.8
+ *
+ * @param int $doc_id ID of the Doc.
+ * @return int|bool ID of the folder if found, otherwise false.
+ */
+function bp_docs_get_doc_folder( $doc_id ) {
+	$folder_id = false;
+
+	$maybe_folders = wp_get_object_terms( $doc_id, array(
+		'bp_docs_doc_in_folder',
+	) );
+
+	// Take the first one
+	if ( ! empty( $maybe_folders ) ) {
+		$folder_id = intval( substr( $maybe_folders[0]->slug, 22 ) );
+	}
+
+	return $folder_id;
+}
+
+/**
  * Get the ID of the group that a folder belongs to.
  *
  * @param int $folder_id ID of folder.
@@ -1222,6 +1245,47 @@ function bp_docs_folders_meta_box() {
 add_action( 'bp_docs_before_tags_meta_box', 'bp_docs_folders_meta_box' );
 
 /**
+ * Show Folder info on a single Doc.
+ *
+ * @since 1.8
+ */
+function bp_docs_display_folder_meta() {
+	$doc_id    = get_the_ID();
+	$folder_id = bp_docs_get_doc_folder( $doc_id );
+
+	if ( ! $folder_id ) {
+		return;
+	}
+
+	$folder = get_post( $folder_id );
+
+	if ( ! is_a( $folder, 'WP_Post' ) || 'bp_docs_folder' !== $folder->post_type ) {
+		return;
+	}
+
+	echo sprintf(
+		'<p class="folder-meta" data-folder-id="%d"><i class="genericon genericon-category"></i><a href="%s">%s</a>',
+		esc_attr( $folder_id ),
+		esc_url( bp_docs_get_folder_url( $folder_id ) ),
+		esc_attr( $folder->post_title )
+	);
+}
+add_action( 'bp_docs_single_doc_meta', 'bp_docs_display_folder_meta' );
+
+/**
+ * Get the URL for a folder view.
+ *
+ * Filtered so that it can be sent to the group directory or whatever.
+ *
+ * @param int $folder_id ID of the folder.
+ * @return string URL of the directory.
+ */
+function bp_docs_get_folder_url( $folder_id ) {
+	$url = add_query_arg( 'folder', $folder_id, bp_docs_get_archive_link() );
+	return apply_filters( 'bp_docs_get_folder_url', $url, $folder_id );
+}
+
+/**
  * Create dropdown <option> values for BP Docs Folders.
  *
  * @since 1.8
@@ -1313,7 +1377,7 @@ class BP_Docs_Folder_Manage_Walker extends Walker {
 	 */
 	public function start_el( &$output, $page, $depth = 0, $args = array(), $current_page = 0 ) {
 		$group_id = bp_docs_get_folder_group( $page->ID );
-		$user_id = bp_docs_get_folder_user( $page->ID );
+		$user_id  = bp_docs_get_folder_user( $page->ID );
 
 		$parent_selector = bp_docs_folder_selector( array(
 			'name'     => 'folder-parent-' . $page->ID,

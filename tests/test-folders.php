@@ -588,4 +588,17 @@ class BP_Docs_Folders_Tests extends BP_Docs_TestCase {
 
 		$this->assertSame( $u, bp_docs_get_folder_user( $f ) );
 	}
+
+	/**
+	 * @group bp_docs_get_doc_folder
+	 */
+	public function test_bp_docs_get_doc_folder() {
+		$d = $this->factory->doc->create();
+		$f = bp_docs_create_folder( array(
+			'name' => 'foo',
+		) );
+		bp_docs_add_doc_to_folder( $d, $f );
+
+		$this->assertSame( $f, bp_docs_get_doc_folder( $d ) );
+	}
 }
