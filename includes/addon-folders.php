@@ -1102,10 +1102,10 @@ class BP_Docs_Folder_Manage_Walker extends Walker {
 
 		$output .= sprintf(
 			'
-<li class="folder" data-folder-id="%d">
+<li class="folder folder-edit-closed" data-folder-id="%d">
 	<div class="folder-info">
-		<h4>%s</h4>
-		<div class="folder-details folder-details-closed">
+		<h4>%s<span class="folder-toggle-edit"> <a href="#">%s</a></span><span class="folder-toggle-close"> <a href="#">%s</a></span></h4>
+		<div class="folder-details">
 			<form method="post" action="">
 				<label for="folder-name-%d">%s</label> <input id="folder-name-%d" name="folder-name-%d" value="%s" />
 				<div style="clear:both;"></div>
@@ -1120,6 +1120,8 @@ class BP_Docs_Folder_Manage_Walker extends Walker {
 	</div>',
 			intval( $page->ID ), // data-folder-id
 			esc_html( $page->post_title ), // h4
+			__( 'Edit', 'bp-docs' ), // folder-edit-toggle text
+			__( 'Close', 'bp-docs' ), // folder-edit-close text
 			intval( $page->ID ), // for="folder-name-%d"
 			__( 'Name', 'bp-docs' ), // label text
 			intval( $page->ID ), // id="folder-name-%d"

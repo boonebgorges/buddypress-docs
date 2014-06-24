@@ -4,7 +4,9 @@
 		hover_element = '',
 		hover_time = '',
 		$doc_clone,
+		$editing_folder,
 		$hover_element;
+
 	$( document ).ready( function() {
 		$( '#associated_group_id' ).on( 'change', function() {
 			update_folder_selector( $( this ).val() );
@@ -23,6 +25,11 @@
 				event.stopPropagation();
 				return true;
 			}
+		} );
+
+		$( '.docs-folder-manage li.folder h4 > span > a' ).on( 'click', function( event ) {
+			toggle_folder_edit_class( $( this ) );
+			return false;
 		} );
 
 		init_doc_drag();
@@ -64,6 +71,19 @@
 			$target.removeClass( 'folder-closed' ).addClass( 'folder-open' );
 		} else {
 			$target.removeClass( 'folder-open' ).addClass( 'folder-closed' );
+		}
+	}
+
+	/**
+	 * $target is the clicked link
+	 */
+	function toggle_folder_edit_class( $target ) {
+		$editing_folder = $target.closest( '.folder' );
+
+		if ( $editing_folder.hasClass( 'folder-edit-closed' ) ) {
+			$editing_folder.removeClass( 'folder-edit-closed' ).addClass( 'folder-edit-open' );
+		} else {
+			$editing_folder.removeClass( 'folder-edit-open' ).addClass( 'folder-edit-closed' );
 		}
 	}
 

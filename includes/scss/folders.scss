@@ -64,6 +64,26 @@
 	li {
 		list-style-type: none;
 
+		&.folder-edit-closed {
+			& > .folder-info {
+				.folder-toggle-close {
+					display: none;
+				}
+
+				.folder-details {
+					display: none;
+				}
+			}
+		}
+
+		&.folder-edit-open {
+			& > .folder-info {
+				.folder-toggle-edit {
+					display: none;
+				}
+			}
+		}
+
 		.folder-info {
 			margin: .5em 0;
 			padding: .5em 1em;
@@ -71,6 +91,11 @@
 
 			h4 {
 				margin: 0 0 .5em;
+
+				& > span > a {
+					font-size: .8em;
+					font-weight: normal;
+				}
 			}
 
 			label {
@@ -81,5 +106,11 @@
 				margin-bottom: 1em;
 			}
 		}
+	}
+}
+
+body.no-js {
+	.docs-folder-manage h4 > span {
+		display: none;
 	}
 }
