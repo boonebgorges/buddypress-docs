@@ -1315,6 +1315,60 @@ function bp_docs_get_folder_url( $folder_id ) {
 }
 
 /**
+ * Add folder-related filters to the list of current directory filters.
+ *
+ * @since 1.8
+ *
+ * @param array $filters
+ * @return array
+ */
+function bp_docs_folder_current_filters( $filters ) {
+	if ( ! empty( $_GET['folder'] ) ) {
+		$folder_ids = wp_parse_id_list( $_GET['folder'] );
+		$filters['folders'] = $folder_ids;
+	}
+
+	return $filters;
+}
+add_filter( 'bp_docs_get_current_filters', 'bp_docs_folder_current_filters' );
+
+/**
+ * Add folder filter info to the directory header message.
+ *
+ * @since 1.8
+ *
+ * @param array $message
+ * @param array $filters
+ * @return array
+ */
+function bp_docs_folder_info_header_message( $message, $filters ) {
+	if ( ! empty( $filters['folders'] ) ) {
+		$folders = get_posts( array(
+			'post_type' => 'bp_docs_folder',
+			'post__in'  => $filters['folders'],
+		) );
+
+		$folder_links = array();
+
+		foreach ( $folders as $f ) {
+			$folder_links[] = sprintf(
+				'<a href="%s">%s</a>',
+				esc_url( bp_docs_get_folder_url( $f->ID ) ),
+				esc_html( $f->post_title )
+			);
+		}
+
+		$message[] = sprintf(
+			_n( 'You are viewing docs in the following folder: %s', 'You are viewing docs in the following folders: %s', count( $folders ), 'bp-docs' ),
+			implode( ', ', $folder_links )
+		);
+	}
+
+	return $message;
+}
+add_filter( 'bp_docs_info_header_message', 'bp_docs_folder_info_header_message', 10, 2 );
+
+/**
  * Create dropdown <option> values for BP Docs Folders.
  *
  * @since 1.8
