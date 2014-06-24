@@ -718,8 +718,11 @@ function bp_docs_associated_group_dropdown( $args = array() ) {
 		$groups_args['user_id'] = bp_loggedin_user_id();
 	}
 
-	// Populate the $groups_template global
+	// Populate the $groups_template global, but stash the old one
+	// This ensures we don't mess anything up inside the group
 	global $groups_template;
+	$old_groups_template = $groups_template;
+
 	bp_has_groups( $groups_args );
 
 	// Filter out the groups where associate_with permissions forbid
@@ -749,10 +752,6 @@ function bp_docs_associated_group_dropdown( $args = array() ) {
 		$groups_template->total_group_count = $groups_template->total_group_count - $removed;
 	}
 
-	if ( false === $r['echo'] ) {
-		ob_start();
-	}
-
 	$html = '';
 
 	if ( ! $r['options_only'] ) {
@@ -773,6 +772,8 @@ function bp_docs_associated_group_dropdown( $args = array() ) {
 	if ( ! $r['options_only'] ) {
 		$html .= '</select>';
 	}
+
+	$groups_template = $old_groups_template;
 
 	if ( false === $r['echo'] ) {
 		return $html;
