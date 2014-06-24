@@ -110,6 +110,16 @@
 	}
 }
 
+.create-new-folder {
+	label {
+		display: block;
+		float: left;
+		clear: left;
+		width: 170px;
+		margin-bottom: 1em;
+	}
+}
+
 body.no-js {
 	.docs-folder-manage h4 > span {
 		display: none;

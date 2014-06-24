@@ -729,6 +729,70 @@ function bp_docs_process_folder_edit_cb() {
 }
 add_action( 'bp_actions', 'bp_docs_process_folder_edit_cb' );
 
+/**
+ * Process folder creation from manage-folders.
+ *
+ * (not an AJAX callback, but close enough)
+ */
+function bp_docs_process_folder_create_cb() {
+	if ( ! bp_docs_is_docs_component() && ! bp_is_current_action( 'docs' ) ) {
+		return;
+	}
+
+	if ( ! bp_docs_is_folder_manage_view() ) {
+		return;
+	}
+
+	if ( empty( $_POST['bp-docs-create-folder-submit'] ) ) {
+		return;
+	}
+
+	$nonce = isset( $_POST['bp-docs-create-folder-nonce'] ) ? stripslashes( $_POST['bp-docs-create-folder-nonce'] ) : '';
+
+	$redirect_url = bp_get_requested_url();
+
+	if ( ! wp_verify_nonce( $nonce, 'bp-docs-create-folder' ) ) {
+		bp_core_add_message( __( 'There was a problem editing that folder. Please try again.', 'bp-docs' ), 'error' );
+		bp_core_redirect( $redirect_url );
+		die();
+	}
+
+	$folder_args = array(
+		'name' => stripslashes( $_POST['new-folder'] ),
+	);
+
+	$parent = isset( $_POST['folder-parent-' . $folder_id] ) ? intval( $_POST['folder-parent-' . $folder_id] ) : null;
+
+	if ( ! empty( $parent ) ) {
+		$folder_args['parent'] = $parent;
+	}
+	// Type
+	$folder_type = stripslashes( $_POST['new-folder-type'] );
+
+	if ( 'global' === $folder_type ) {
+		// Nothing to do
+	} else if ( 'me' === $folder_type ) {
+		$folder_args['user_id'] = bp_loggedin_user_id();
+	} else if ( is_numeric( $folder_type ) ) {
+		// This is a group
+		$folder_args['group_id'] = intval( $folder_type );
+	}
+
+	// Create the folder
+	// @todo permissions checks
+	$success = bp_docs_create_folder( $folder_args );
+
+	if ( ! empty( $success ) && ! is_wp_error( $success ) ) {
+		bp_core_add_message( __( 'Folder successfully created.', 'bp-docs' ), 'success' );
+	} else {
+		bp_core_add_message( __( 'There was a problem creating the folder. Please try again.', 'bp-docs' ), 'error' );
+	}
+
+	bp_core_redirect( $redirect_url );
+	die();
+}
+add_action( 'bp_actions', 'bp_docs_process_folder_create_cb' );
+
 /** Template functions *******************************************************/
 
 /**
@@ -882,6 +946,51 @@ function bp_docs_folder_selector( $args = array() ) {
 }
 
 /**
+ * Create the markup for creating a new folder.
+ *
+ * Used on Doc Edit/Create as well as the Folders management page.
+ *
+ * @since 1.8
+ */
+function bp_docs_create_new_folder_markup() {
+	?>
+
+	<label for="new-folder"><?php _e( 'Name', 'bp-docs' ) ?></label> <input name="new-folder" id="new-folder" />
+
+	<div style="clear:both"></div>
+
+	<label for="new-folder-type"><?php _e( 'Folder type' ) ?></label>
+	<select name="new-folder-type" id="new-folder-type">
+		<?php if ( bp_docs_current_user_can( 'create_global_folder' ) ) : ?>
+			<option value="global" selected="selected"><?php _e( 'Global', 'bp-docs' ) ?></option>
+		<?php endif ?>
+
+		<?php if ( bp_docs_current_user_can( 'create_personal_folder' ) ) : ?>
+			<option value="me"><?php _e( 'Limited to me', 'bp-docs' ) ?></option>
+		<?php endif ?>
+
+		<optgroup label="<?php esc_attr_e( 'Group-specific', 'bp-docs' ) ?>">
+		<?php bp_docs_associated_group_dropdown( array(
+			'options_only' => true,
+		) ) ?>
+
+		</optgroup>
+
+	</select>
+
+	<div style="clear:both"></div>
+	<label for="new-folder-parent"><?php _e( 'Parent (optional)', 'bp-docs' ) ?></label>
+	<?php bp_docs_folder_selector( array(
+		'name' => 'new-folder-parent',
+		'id' => 'new-folder-parent',
+		'selected' => false,
+	) ) ?>
+
+	<div style="clear:both"></div>
+	<?php
+}
+
+/**
  * Add the meta box to the edit page.
  *
  * @since 1.8
@@ -921,33 +1030,7 @@ function bp_docs_folders_meta_box() {
 								<label for="create-new-folder" class="radio-label"><?php _e( 'Create a new folder', 'bp-docs' ) ?></label>
 								<div class="selector-content">
 
-									<label for="new-folder"><?php _e( 'Name:', 'bp-docs' ) ?></label> <input name="new-folder" id="new-folder" />
-
-									<label for="new-folder-type"><?php _e( 'Folder type:' ) ?></label>
-									<select name="new-folder-type" id="new-folder-type">
-										<?php if ( bp_docs_current_user_can( 'create_global_folder' ) ) : ?>
-											<option value="global" selected="selected"><?php _e( 'Global', 'bp-docs' ) ?></option>
-										<?php endif ?>
-
-										<?php if ( bp_docs_current_user_can( 'create_personal_folder' ) ) : ?>
-											<option value="me"><?php _e( 'Limited to me', 'bp-docs' ) ?></option>
-										<?php endif ?>
-
-										<optgroup label="<?php esc_attr_e( 'Group-specific', 'bp-docs' ) ?>">
-										<?php bp_docs_associated_group_dropdown( array(
-											'options_only' => true,
-										) ) ?>
-
-										</optgroup>
-
-									</select>
-
-									<label for="new-folder-parent"><?php _e( 'Parent (optional):', 'bp-docs' ) ?></label>
-									<?php bp_docs_folder_selector( array(
-										'name' => 'new-folder-parent',
-										'id' => 'new-folder-parent',
-										'selected' => false,
-									) ) ?>
+									<?php bp_docs_create_new_folder_markup() ?>
 								</div><!-- .selector-content -->
 							</div>
 						</td>
