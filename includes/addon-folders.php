@@ -1228,3 +1228,89 @@ class BP_Docs_Folder_Manage_Walker extends Walker {
 		$output .= '</li>';
 	}
 }
+
+/**
+ * Get a folder tree.
+ *
+ * @since 1.8
+ * @uses Walker
+ */
+class BP_Docs_Folder_Walker extends Walker {
+	/**
+	 * @see Walker::$tree_type
+	 * @since 1.8
+	 * @var string
+	 */
+	var $tree_type = 'bp_docs_folder';
+
+	/**
+	 * @see Walker::$db_fields
+	 * @since 1.8
+	 * @var array
+	 */
+	var $db_fields = array( 'parent' => 'post_parent', 'id' => 'ID' );
+
+	public function start_lvl( &$output, $depth = 0, $args = array() ) {
+		$indent = str_repeat( "\t", $depth );
+		$output .= "\n$indent<ul class='children'>\n";
+	}
+
+	public function end_lvl( &$output, $depth = 0, $args = array() ) {
+		$indent = str_repeat("\t", $depth);
+		$output .= "$indent</ul>\n";
+	}
+
+	/**
+	 * @see Walker::start_el()
+	 * @since 1.8
+	 *
+	 * @param string $output Passed by reference. Used to append additional content.
+	 * @param object $page Page data object.
+	 * @param int $depth Depth of page. Used for padding.
+	 * @param int $current_page Page ID.
+	 * @param array $args
+	 */
+	public function start_el( &$output, $page, $depth = 0, $args = array(), $current_page = 0 ) {
+		$output .= sprintf(
+			'<li class="folder folder-closed" data-folder-id="%d"><i class="genericon genericon-category"></i><a href="%s">%s</a>',
+			esc_attr( $page->ID ),
+			get_permalink( $page ),
+			esc_html( $page->post_title )
+		);
+	}
+
+	public function end_el( &$output, $page, $depth = 0, $args = array(), $current_page = 0 ) {
+		// Get the docs belonging to this folder
+		$folder_term = bp_docs_get_folder_term( $page->ID );
+
+		$folder_docs = get_posts( array(
+			'post_type' => bp_docs_get_post_type_name(),
+			'tax_query' => array(
+				array(
+					'taxonomy' => 'bp_docs_doc_in_folder',
+					'field' => 'term_id',
+					'terms' => $folder_term,
+				),
+			),
+		) );
+
+		if ( ! empty( $folder_docs ) ) {
+			$output .= sprintf( '<ul class="docs-in-folder" id="docs-in-folder-%d">', $page->ID );
+
+			foreach ( $folder_docs as $folder_doc ) {
+				$output .= sprintf(
+					'<li class="doc-in-folder" id="doc-in-folder-%d" data-doc-id="%d"><i class="genericon genericon-document"></i><a href="%s">%s</a>%s</li>',
+					$folder_doc->ID,
+					$folder_doc->ID,
+					get_permalink( $folder_doc ),
+					esc_html( $folder_doc->post_title ),
+					wp_nonce_field( 'bp-docs-folder-drop-' . $folder_doc->ID, 'bp-docs-folder-drop-nonce-' . $folder_doc->ID, false, false )
+				);
+			}
+
+			$output .= '</ul>';
+		}
+
+		$output .= '</li>';
+	}
+}
