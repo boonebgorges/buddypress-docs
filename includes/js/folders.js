@@ -12,8 +12,8 @@
 			update_folder_selector( $( this ).val() );
 		} );
 
-		$( '#new-folder-type' ).on( 'change', function() {
-			update_parent_folder_selector( $( this ).val() );
+		$( '.folder-type' ).on( 'change', function() {
+			update_parent_folder_selector( $( this ) );
 		} );
 
 		$( '.docs-folder-tree li' ).on( 'click', function( event ) {
@@ -51,16 +51,18 @@
 		} );
 	}
 
-	function update_parent_folder_selector( folder_type ) {
+	function update_parent_folder_selector( $type_selector ) {
 		$.ajax( {
 			url: ajaxurl,
 			type: 'POST',
 			data: {
 				action: 'bp_docs_update_parent_folders',
-				folder_type: folder_type
+				folder_type: $type_selector.val()
 			},
 			success: function( response ) {
-				$( '#new-folder-parent' ).replaceWith( response );
+				$type_selector.siblings( '.folder-parent' ).fadeOut( function() {
+					$( this ).replaceWith( response ).fadeIn();
+				} );
 			}
 
 		} );

@@ -614,8 +614,9 @@ function bp_docs_update_parent_folders_cb() {
 	$folder_type = stripslashes( $_POST['folder_type'] );
 
 	$selector_args = array(
-		'id' => 'new-folder-parent',
-		'name' => 'new-folder-parent',
+		'id'    => 'new-folder-parent',
+		'name'  => 'new-folder-parent',
+		'class' => 'folder-parent',
 	);
 
 	if ( 'global' === $folder_type ) {
@@ -842,6 +843,7 @@ function bp_docs_folder_selector( $args = array() ) {
 	$r = wp_parse_args( $args, array(
 		'name' => 'bp-docs-folder',
 		'id' => 'bp-docs-folder',
+		'class' => '',
 		'group_id' => null,
 		'user_id' => null,
 		'selected' => null,
@@ -936,7 +938,7 @@ function bp_docs_folder_selector( $args = array() ) {
 	}
 
 	$options = '<option value="">' . __( ' - Select a folder - ', 'bp-docs' ) . '</option>' . $options;
-	$retval = sprintf( '<select name="%s" id="%s" class="chosen-select">', esc_attr( $r['name'] ), esc_attr( $r['id'] ) ) . $options . '</select>';
+	$retval = sprintf( '<select name="%s" id="%s" class="chosen-select %s">', esc_attr( $r['name'] ), esc_attr( $r['id'] ), esc_attr( $r['class'] ) ) . $options . '</select>';
 
 	if ( false === $r['echo'] ) {
 		return $retval;
@@ -960,7 +962,7 @@ function bp_docs_create_new_folder_markup() {
 	<div style="clear:both"></div>
 
 	<label for="new-folder-type"><?php _e( 'Folder type' ) ?></label>
-	<select name="new-folder-type" id="new-folder-type">
+	<select name="new-folder-type" id="new-folder-type" class="folder-type">
 		<?php if ( bp_docs_current_user_can( 'create_global_folder' ) ) : ?>
 			<option value="global" selected="selected"><?php _e( 'Global', 'bp-docs' ) ?></option>
 		<?php endif ?>
@@ -981,8 +983,9 @@ function bp_docs_create_new_folder_markup() {
 	<div style="clear:both"></div>
 	<label for="new-folder-parent"><?php _e( 'Parent (optional)', 'bp-docs' ) ?></label>
 	<?php bp_docs_folder_selector( array(
-		'name' => 'new-folder-parent',
-		'id' => 'new-folder-parent',
+		'name'     => 'new-folder-parent',
+		'id'       => 'new-folder-parent',
+		'class'    => 'folder-parent',
 		'selected' => false,
 	) ) ?>
 
@@ -1150,6 +1153,7 @@ class BP_Docs_Folder_Manage_Walker extends Walker {
 		$parent_selector = bp_docs_folder_selector( array(
 			'name'     => 'folder-parent-' . $page->ID,
 			'id'       => 'folder-parent-' . $page->ID,
+			'class'    => 'folder-parent',
 			'selected' => $page->post_parent,
 			'group_id' => $group_id,
 			'echo'     => false,
@@ -1164,7 +1168,7 @@ class BP_Docs_Folder_Manage_Walker extends Walker {
 			) );
 
 			// @todo break into separate template function
-			$type_selector  = '<select name="folder-type-' . $page->ID . '" id="folder-type-' . $page->ID . '">';
+			$type_selector  = '<select name="folder-type-' . $page->ID . '" id="folder-type-' . $page->ID . '" class="folder-type">';
 			$type_is_global = empty( $user_id ) && empty( $group_id );
 			$type_selector .=   '<option ' . selected( $type_is_global, true, false ) . ' value="global">' . __( 'Global', 'bp-docs' ) . '</option>';
 			$type_selector .=   '<option ' . selected( $page->ID, $user_id, false ) . ' value="me">' . __( 'Limited to me', 'bp-docs' ) . '</option>';
