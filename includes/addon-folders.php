@@ -1604,9 +1604,9 @@ class BP_Docs_Folder_Walker extends Walker {
 			),
 		) );
 
-		if ( ! empty( $folder_docs ) ) {
-			$output .= sprintf( '<ul class="docs-in-folder" id="docs-in-folder-%d">', $page->ID );
+		$output .= sprintf( '<ul class="docs-in-folder" id="docs-in-folder-%d">', $page->ID );
 
+		if ( ! empty( $folder_docs ) ) {
 			foreach ( $folder_docs as $folder_doc ) {
 				$output .= sprintf(
 					'<li class="doc-in-folder" id="doc-in-folder-%d" data-doc-id="%d"><i class="genericon genericon-document"></i><a href="%s">%s</a>%s</li>',
@@ -1617,10 +1617,11 @@ class BP_Docs_Folder_Walker extends Walker {
 					wp_nonce_field( 'bp-docs-folder-drop-' . $folder_doc->ID, 'bp-docs-folder-drop-nonce-' . $folder_doc->ID, false, false )
 				);
 			}
-
-			$output .= '</ul>';
+		} else if ( ! $args['has_children'] ) {
+			$output .= '<li class="folder-empty">' . __( 'This folder is empty.', 'bp-docs' ) . '</li>';
 		}
 
+		$output .= '</ul>';
 		$output .= '</li>';
 	}
 }

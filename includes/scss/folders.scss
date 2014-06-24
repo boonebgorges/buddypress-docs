@@ -47,6 +47,11 @@
 			padding: 0px 9px;
 			border: 1px solid #666;
 		}
+
+		.folder-empty {
+			opacity: .5;
+			font-style: italic;
+		}
 	}
 
 	.doc-in-folder {
