@@ -8,14 +8,17 @@
 		$hover_element;
 
 	$( document ).ready( function() {
+		// Change associated group, change available folders
 		$( '#associated_group_id' ).on( 'change', function() {
 			update_folder_selector( $( this ).val() );
 		} );
 
+		// Change folder type, change available parents
 		$( '.folder-type' ).on( 'change', function() {
 			update_parent_folder_selector( $( this ) );
 		} );
 
+		// Tree view folder accordion
 		$( '.docs-folder-tree li' ).on( 'click', function( event ) {
 			if ( ! $( this ).hasClass( 'doc-in-folder' ) ) {
 				toggle_folder_class( $( this ) );
@@ -27,6 +30,7 @@
 			}
 		} );
 
+		// Manage folder accordions
 		$( '.docs-folder-manage li.folder h4 > span > a' ).on( 'click', function( event ) {
 			toggle_folder_edit_class( $( this ) );
 			return false;
@@ -35,6 +39,9 @@
 		init_doc_drag();
 	} );
 
+	/**
+	 * Update the list of available folders when changing associated groups
+	 */
 	function update_folder_selector( group_id ) {
 		$.ajax( {
 			url: ajaxurl,
@@ -51,6 +58,9 @@
 		} );
 	}
 
+	/**
+	 * Update the Parent selector when the Type selector is changed.
+	 */
 	function update_parent_folder_selector( $type_selector ) {
 		$.ajax( {
 			url: ajaxurl,
@@ -68,6 +78,9 @@
 		} );
 	}
 
+	/**
+	 * Toggle folder-open/folder-closed (tree view)
+	 */
 	function toggle_folder_class( $target ) {
 		if ( $target.hasClass( 'folder-closed' ) ) {
 			$target.removeClass( 'folder-closed' ).addClass( 'folder-open' );
@@ -77,6 +90,8 @@
 	}
 
 	/**
+	 * Toggle folder-edit-closed/folder-edit-open (manage-folders view)
+	 *
 	 * $target is the clicked link
 	 */
 	function toggle_folder_edit_class( $target ) {
@@ -89,6 +104,9 @@
 		}
 	}
 
+	/**
+	 * Set up draggable/droppable for tree view
+	 */
 	function init_doc_drag() {
 		$( '.doc-in-folder' ).draggable( {
 			revert: 'invalid'
