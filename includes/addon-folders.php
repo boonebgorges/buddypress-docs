@@ -939,14 +939,15 @@ function bp_docs_is_folder_manage_view() {
  */
 function bp_docs_folder_selector( $args = array() ) {
 	$r = wp_parse_args( $args, array(
-		'name'     => 'bp-docs-folder',
-		'id'       => 'bp-docs-folder',
-		'class'    => '',
-		'group_id' => null,
-		'user_id'  => null,
-		'selected' => null,
-		'doc_id'   => null,
-		'echo'     => true,
+		'name'         => 'bp-docs-folder',
+		'id'           => 'bp-docs-folder',
+		'class'        => '',
+		'group_id'     => null,
+		'user_id'      => null,
+		'selected'     => null,
+		'doc_id'       => null,
+		'force_global' => false,
+		'echo'         => true,
 	) );
 
 	// If no manual 'selected' value is passed, try to infer it from the
@@ -973,17 +974,20 @@ function bp_docs_folder_selector( $args = array() ) {
 		}
 	}
 
-	// @todo Do we *always* want the global folders?
-	$types = array(
-		'global' => array(
+	$types = array();
+
+	// Include Global folders either when force_global is true or there
+	// are no others to show
+	if ( $r['force_global'] || ( empty( $r['group_id'] ) && empty( $r['user_id'] ) ) ) {
+		$types['global'] = array(
 			'label' => __( 'Global', 'bp-docs' ),
 			'folders' => bp_docs_get_folders( array(
 				'display'  => 'flat',
 				'group_id' => 0,
 				'user_id'  => 0,
 			) ),
-		),
-	);
+		);
+	}
 
 	if ( ! empty( $r['group_id'] ) ) {
 		$group = groups_get_group( array(
@@ -1019,7 +1023,7 @@ function bp_docs_folder_selector( $args = array() ) {
 	$walker = new BP_Docs_Folder_Dropdown_Walker();
 
 	// Global only
-	if ( 1 === count( $types ) ) {
+	if ( 1 === count( $types ) && isset( $types['global'] ) ) {
 		$options = $walker->walk( $types['global']['folders'], 10, array( 'selected' => $r['selected'] ) );
 
 	// If there is more than one folder type (global + user or group),
@@ -1065,6 +1069,7 @@ function bp_docs_folder_type_selector( $args = array() ) {
 			'options_only' => true,
 			'selected'     => $r['selected'],
 			'echo'         => false,
+			'null_option'  => false,
 		) );
 	}
 
@@ -1099,7 +1104,7 @@ function bp_docs_create_new_folder_markup( $args = array() ) {
 		$default_group_id = bp_get_current_group_id();
 	}
 
-	$r = wp_parse_args( array(
+	$r = wp_parse_args( $args, array(
 		'group_id' => $default_group_id,
 	) );
 
@@ -1130,6 +1135,7 @@ function bp_docs_create_new_folder_markup( $args = array() ) {
 		<?php bp_docs_associated_group_dropdown( array(
 			'selected'     => $r['group_id'],
 			'options_only' => true,
+			'null_option'  => false,
 		) ) ?>
 
 		</optgroup>
@@ -1178,8 +1184,8 @@ function bp_docs_folders_meta_box() {
 								<label for="use-existing-folder" class="radio-label"><?php _e( 'Use an existing folder', 'bp-docs' ) ?></label><br />
 								<div class="selector-content">
 									<?php bp_docs_folder_selector( array(
-										'name' => 'bp-docs-folder',
-										'id' => 'bp-docs-folder',
+										'name'     => 'bp-docs-folder',
+										'id'       => 'bp-docs-folder',
 										'group_id' => $associated_group_id,
 									) ) ?>
 								</div>
@@ -1190,7 +1196,9 @@ function bp_docs_folders_meta_box() {
 								<label for="create-new-folder" class="radio-label"><?php _e( 'Create a new folder', 'bp-docs' ) ?></label>
 								<div class="selector-content">
 
-									<?php bp_docs_create_new_folder_markup() ?>
+									<?php bp_docs_create_new_folder_markup( array(
+										'group_id' => $associated_group_id,
+									) ) ?>
 								</div><!-- .selector-content -->
 							</div>
 						</td>

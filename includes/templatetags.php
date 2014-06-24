@@ -702,11 +702,12 @@ function bp_docs_inline_toggle_js() {
  */
 function bp_docs_associated_group_dropdown( $args = array() ) {
 	$r = wp_parse_args( $args, array(
-		'name' => 'associated_group_id',
-		'id' => 'associated_group_id',
-		'selected' => null,
+		'name'         => 'associated_group_id',
+		'id'           => 'associated_group_id',
+		'selected'     => null,
 		'options_only' => false,
-		'echo' => true,
+		'echo'         => true,
+		'null_option'  => true,
 	) );
 
 	$groups_args = array(
@@ -758,7 +759,9 @@ function bp_docs_associated_group_dropdown( $args = array() ) {
 		$html .= sprintf( '<select name="%s" id="%s">', esc_attr( $r['name'] ), esc_attr( $r['id'] ) );
 	}
 
-	$html .= '<option value="">' . __( 'None', 'bp-docs' ) . '</option>';
+	if ( $r['null_option'] ) {
+		$html .= '<option value="">' . __( 'None', 'bp-docs' ) . '</option>';
+	}
 
 	foreach ( $groups_template->groups as $g ) {
 		$html .= sprintf(
