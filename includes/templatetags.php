@@ -753,28 +753,31 @@ function bp_docs_associated_group_dropdown( $args = array() ) {
 		ob_start();
 	}
 
-	?>
+	$html = '';
 
-	<?php if ( ! $r['options_only'] ) : ?>
-		<select name="<?php echo esc_attr( $r['name'] ) ?>" id="<?php echo esc_attr( $r['id'] ) ?>">
-	<?php endif ?>
+	if ( ! $r['options_only'] ) {
+		$html .= sprintf( '<select name="%s" id="%s">', esc_attr( $r['name'] ), esc_attr( $r['id'] ) );
+	}
 
-		<option value=""><?php _e( 'None', 'bp-docs' ) ?></option>
-		<?php foreach ( $groups_template->groups as $g ) : ?>
-			<option value="<?php echo esc_attr( $g->id ) ?>" <?php selected( $r['selected'], $g->id ) ?>><?php echo esc_html( $g->name ) ?></option>
-		<?php endforeach ?>
+	$html .= '<option value="">' . __( 'None', 'bp-docs' ) . '</option>';
 
-	<?php if ( ! $r['options_only'] ) : ?>
-		</select>
-	<?php endif ?>
+	foreach ( $groups_template->groups as $g ) {
+		$html .= sprintf(
+			'<option value="%s" %s>%s</option>',
+			esc_attr( $g->id ),
+			selected( $r['selected'], $g->id, false ),
+			esc_html( $g->name )
+		);
+	}
 
-	<?php
+	if ( ! $r['options_only'] ) {
+		$html .= '</select>';
+	}
 
-	// @todo This is causing double output. Refactor not to require output buffer
 	if ( false === $r['echo'] ) {
-		$retval = ob_get_contents();
-		ob_end_clean();
-		return $retval;
+		return $html;
+	} else {
+		echo $html;
 	}
 }
 
