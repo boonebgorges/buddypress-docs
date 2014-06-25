@@ -37,7 +37,7 @@
 	li.folder {
 		position: relative;
 
-		&:hover > a, &.hover > a {
+		&:hover > .folder-name, &.hover > .folder-name {
 			padding: 0px 9px;
 			border: 1px solid #666;
 		}
