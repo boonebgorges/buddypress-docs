@@ -1603,21 +1603,19 @@ class BP_Docs_Folder_Walker extends Walker {
 			),
 		) );
 
-		$output .= sprintf( '<ul class="docs-in-folder" id="docs-in-folder-%d">', $page->ID );
+		$empty_class = empty( $folder_docs ) ? 'empty' : '';
+		$output .= sprintf( '<ul class="docs-in-folder %s" id="docs-in-folder-%d">', $empty_class, $page->ID );
 
-		if ( ! empty( $folder_docs ) ) {
-			foreach ( $folder_docs as $folder_doc ) {
-				$output .= sprintf(
-					'<li class="doc-in-folder" id="doc-in-folder-%d" data-doc-id="%d"><i class="genericon genericon-document"></i><a href="%s">%s</a>%s</li>',
-					$folder_doc->ID,
-					$folder_doc->ID,
-					get_permalink( $folder_doc ),
-					esc_html( $folder_doc->post_title ),
-					wp_nonce_field( 'bp-docs-folder-drop-' . $folder_doc->ID, 'bp-docs-folder-drop-nonce-' . $folder_doc->ID, false, false )
-				);
-			}
-		} else if ( ! $args['has_children'] ) {
-			$output .= '<li class="folder-empty">' . __( 'This folder is empty.', 'bp-docs' ) . '</li>';
+		$output .= '<li class="folder-empty">' . __( 'This folder contains no Docs.', 'bp-docs' ) . '</li>';
+		foreach ( $folder_docs as $folder_doc ) {
+			$output .= sprintf(
+				'<li class="doc-in-folder" id="doc-in-folder-%d" data-doc-id="%d"><i class="genericon genericon-document"></i><a href="%s">%s</a>%s</li>',
+				$folder_doc->ID,
+				$folder_doc->ID,
+				get_permalink( $folder_doc ),
+				esc_html( $folder_doc->post_title ),
+				wp_nonce_field( 'bp-docs-folder-drop-' . $folder_doc->ID, 'bp-docs-folder-drop-nonce-' . $folder_doc->ID, false, false )
+			);
 		}
 
 		$output .= '</ul>';

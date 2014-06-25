@@ -222,7 +222,12 @@
 		$doc_clone.removeAttr( 'style' );
 
 		// Add to the new folder list
-		$( event.target ).children( '.docs-in-folder' ).append( $doc_clone );
+		$( event.target ).children( '.docs-in-folder' ).append( $doc_clone ).removeClass( 'empty' );
+
+		// If this was the last item in the source list, add the empty class
+		if ( 0 == ui.draggable.siblings( '.doc-in-folder' ).length ) {
+			ui.draggable.closest( '.docs-in-folder' ).addClass( 'empty' );
+		}
 
 		// Remove the original
 		ui.draggable.remove();

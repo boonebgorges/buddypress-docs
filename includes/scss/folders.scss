@@ -49,9 +49,16 @@
 			width: 50%;
 		}
 
-		.folder-empty {
-			opacity: .5;
-			font-style: italic;
+		.docs-in-folder {
+			& > .folder-empty {
+				display: none;
+			}
+
+			&.empty > .folder-empty {
+				display: block;
+				opacity: .5;
+				font-style: italic;
+			}
 		}
 	}
 
