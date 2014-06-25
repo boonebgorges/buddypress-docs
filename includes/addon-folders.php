@@ -1582,9 +1582,8 @@ class BP_Docs_Folder_Walker extends Walker {
 	 */
 	public function start_el( &$output, $page, $depth = 0, $args = array(), $current_page = 0 ) {
 		$output .= sprintf(
-			'<li class="folder folder-closed" data-folder-id="%d"><i class="genericon genericon-category"></i><a href="%s">%s</a>',
+			'<li class="folder folder-closed" data-folder-id="%d"><i class="genericon genericon-category"></i><span class="folder-name">%s</span>',
 			esc_attr( $page->ID ),
-			get_permalink( $page ),
 			esc_html( $page->post_title )
 		);
 	}

@@ -37,15 +37,16 @@
 	li.folder {
 		position: relative;
 
-		& > a {
-			padding: 1px 10px;
-			display: inline-block;
-			width: 50%;
-		}
-
 		&:hover > a, &.hover > a {
 			padding: 0px 9px;
 			border: 1px solid #666;
+		}
+
+		.folder-name {
+			cursor: pointer;
+			padding: 1px 10px;
+			display: inline-block;
+			width: 50%;
 		}
 
 		.folder-empty {
