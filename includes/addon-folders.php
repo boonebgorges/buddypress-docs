@@ -1310,7 +1310,21 @@ add_action( 'bp_docs_single_doc_meta', 'bp_docs_display_folder_meta' );
  * @return string URL of the directory.
  */
 function bp_docs_get_folder_url( $folder_id ) {
-	$url = add_query_arg( 'folder', $folder_id, bp_docs_get_archive_link() );
+	$group_id = bp_docs_get_folder_group( $folder_id );
+	$user_id  = bp_docs_get_folder_user( $folder_id );
+
+	if ( $group_id && bp_is_active( 'groups' ) ) {
+		$group = groups_get_group( array(
+			'group_id' => $group_id,
+		) );
+		$base_url = bp_get_group_permalink( $group ) . bp_docs_get_slug() . '/';
+	} else if ( $user_id ) {
+		$base_url = bp_core_get_user_domain( $user_id ) . bp_docs_get_slug() . '/';
+	} else {
+		$base_url = bp_docs_get_archive_link();
+	}
+
+	$url = add_query_arg( 'folder', $folder_id, $base_url );
 	return apply_filters( 'bp_docs_get_folder_url', $url, $folder_id );
 }
 
