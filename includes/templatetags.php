@@ -1339,19 +1339,14 @@ function bp_docs_get_docs_slug() {
  * @todo Get the group stuff out
  */
 function bp_docs_tabs( $show_create_button = true ) {
-	$is_tree_view = bp_docs_is_folder_tree_view();
-
 	?>
 
 	<ul id="bp-docs-all-docs">
-		<?php if ( bp_docs_is_global_directory() ) : ?>
-			<li<?php if ( bp_docs_is_global_directory() ) : ?> class="current"<?php endif; ?>><a href="<?php bp_docs_archive_link() ?>"><?php _e( 'All Docs', 'bp-docs' ) ?></a></li>
-		<?php endif ?>
+		<li<?php if ( bp_docs_is_global_directory() ) : ?> class="current"<?php endif; ?>><a href="<?php bp_docs_archive_link() ?>"><?php _e( 'All Docs', 'bp-docs' ) ?></a></li>
 
 		<?php if ( is_user_logged_in() ) : ?>
 			<?php if ( function_exists( 'bp_is_group' ) && bp_is_group() ) : ?>
-				<li<?php if ( bp_is_current_action( 'docs' ) && ! $is_tree_view ) : ?> class="current"<?php endif ?>><a href="<?php bp_group_permalink( groups_get_current_group() ) ?><?php bp_docs_slug() ?>"><?php printf( __( "%s's Docs - List", 'bp-docs' ), bp_get_current_group_name() ) ?></a></li>
-				<li<?php if ( bp_is_current_action( 'docs' ) && $is_tree_view ) : ?> class="current"<?php endif ?>><a href="<?php bp_group_permalink( groups_get_current_group() ) ?><?php bp_docs_slug() ?>?view=tree"><?php printf( __( "%s's Docs - Tree", 'bp-docs' ), bp_get_current_group_name() ) ?></a></li>
+				<li<?php if ( bp_is_current_action( 'docs' ) ) : ?> class="current"<?php endif ?>><a href="<?php bp_group_permalink( groups_get_current_group() ) ?><?php bp_docs_slug() ?>"><?php printf( __( "%s's Docs", 'bp-docs' ), bp_get_current_group_name() ) ?></a></li>
 			<?php else : ?>
 				<li><a href="<?php bp_docs_mydocs_started_link() ?>"><?php _e( 'Started By Me', 'bp-docs' ) ?></a></li>
 				<li><a href="<?php bp_docs_mydocs_edited_link() ?>"><?php _e( 'Edited By Me', 'bp-docs' ) ?></a></li>
