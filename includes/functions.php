@@ -305,6 +305,17 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
 		}
 	}
 
+	// Temp - this should be more organized
+	if ( 'manage_folders' === $action ) {
+		if ( bp_is_active( 'groups' ) && bp_is_group() ) {
+			$user_can = groups_is_user_admin( $user_id, bp_get_current_group_id() );
+		} else if ( bp_is_user() ) {
+			$user_can = bp_is_my_profile();
+		} else {
+			$user_can = current_user_can( 'bp_moderate' );
+		}
+	}
+
 	if ( $user_id ) {
 		if ( is_super_admin( $user_id ) ) {
 			// Super admin always gets to edit. What a big shot

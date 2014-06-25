@@ -126,6 +126,15 @@
 	}
 }
 
+a#manage-folders-link {
+	float: right;
+	width: 200px;
+	text-align: right;
+	text-decoration: none;
+	font-weight: bold;
+	font-size: .9em;
+}
+
 body.no-js {
 	.docs-folder-manage h4 > span {
 		display: none;
