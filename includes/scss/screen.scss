@@ -560,7 +560,9 @@ body.js .docs-filter-section {
 p.currently-viewing {
 	margin-bottom: 5px;
 	font-size: .8em;
-	margin-top: 8px;
+	margin-top: 1em;
+	padding-top: 1em;
+	border-top: 1px solid #ccc;
 }
 
 p#filter-by-tag {

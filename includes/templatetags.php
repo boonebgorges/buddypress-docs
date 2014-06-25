@@ -228,38 +228,7 @@ function bp_docs_info_header() {
 			);
 		}
 
-		// Set the message based on the current filters
-		if ( empty( $filters ) ) {
-			$message = __( 'You are viewing <strong>all</strong> docs.', 'bp-docs' );
-		} else {
-			$message = array();
-
-			$message = apply_filters( 'bp_docs_info_header_message', $message, $filters );
-
-			$message = implode( "\n", $message );
-
-			// We are viewing a subset of docs, so we'll add a link to clear filters
-			$message .= ' - ' . sprintf( __( '<strong><a href="%s" title="View All Docs">View All Docs</a></strong>', 'bp-docs' ), remove_query_arg( array( 'bpd_tag', 's', 'search_submit', 'folder' ) ) );
-		}
-
 		?>
-
-		<p class="currently-viewing"><?php echo $message ?></p>
-
-		<?php if ( $filter_titles = bp_docs_filter_titles() ) : ?>
-			<div class="docs-filters">
-				<p id="docs-filter-meta">
-					<?php printf( __( 'Filter by: %s', 'bp-docs' ), $filter_titles ) ?>
-				</p>
-
-				<div id="docs-filter-sections">
-					<?php do_action( 'bp_docs_filter_sections' ) ?>
-				</div>
-			</div>
-
-			<div class="clear"> </div>
-		<?php endif ?>
-
 		<div class="docs-filters" id="docs-view-as">
 			<p>
 				<?php printf(
@@ -268,8 +237,42 @@ function bp_docs_info_header() {
 				) ?>
 			</p>
 		</div>
-
 		<?php
+
+		// Set the message based on the current filters
+		// These filters are only relevant when on 'list' view
+		if ( ( 'list' === $default_view && empty( $_GET['view'] ) ) || ( ! empty( $_GET['view'] ) && 'list' === $_GET['view'] ) ) {
+			if ( empty( $filters ) ) {
+				$message = __( 'You are viewing <strong>all</strong> docs.', 'bp-docs' );
+			} else {
+				$message = array();
+
+				$message = apply_filters( 'bp_docs_info_header_message', $message, $filters );
+
+				$message = implode( "\n", $message );
+
+				// We are viewing a subset of docs, so we'll add a link to clear filters
+				$message .= ' - ' . sprintf( __( '<strong><a href="%s" title="View All Docs">View All Docs</a></strong>', 'bp-docs' ), remove_query_arg( array( 'bpd_tag', 's', 'search_submit', 'folder' ) ) );
+			}
+
+			?>
+
+			<p class="currently-viewing"><?php echo $message ?></p>
+
+			<?php if ( $filter_titles = bp_docs_filter_titles() ) : ?>
+				<div class="docs-filters">
+					<p id="docs-filter-meta">
+						<?php printf( __( 'Filter by: %s', 'bp-docs' ), $filter_titles ) ?>
+					</p>
+
+					<div id="docs-filter-sections">
+						<?php do_action( 'bp_docs_filter_sections' ) ?>
+					</div>
+				</div>
+
+				<div class="clear"> </div>
+			<?php endif ?>
+		<?php }
 	}
 
 /**
