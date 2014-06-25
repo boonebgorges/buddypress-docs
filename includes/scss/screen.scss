@@ -502,22 +502,25 @@ td.desc-column {
 	margin-bottom: 0;
 }
 
-#docs-filter-meta {
+.docs-filters > p {
 	font-size: .8em;
 	color: #666;
 	margin-bottom: 0;
 }
 
-a.docs-filter-title {
+a.docs-filter-title,
+a.docs-view-title {
 	margin: 0 7px;
 	text-decoration: none;
 }
 
-a.docs-filter-title:visited {
+a.docs-filter-title:visited,
+a.docs-view-title:visited {
 	color: inherit;
 }
 
-a.docs-filter-title.current {
+a.docs-filter-title.current,
+a.docs-view-title.current {
 	font-weight: bold;
 }
 

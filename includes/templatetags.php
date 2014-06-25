@@ -197,6 +197,37 @@ function bp_docs_info_header() {
 	function bp_docs_get_info_header() {
 		$filters = bp_docs_get_current_filters();
 
+		$link_base = trailingslashit( remove_query_arg( 'view', bp_get_requested_url() ) );
+		$views = array(
+			'list' => array(
+				'name' => __( 'List', 'bp-docs' ),
+			),
+			'tree' => array(
+				'name' => __( 'Tree', 'bp-docs' ),
+			),
+		);
+
+		$default_view = apply_filters( 'bp_docs_default_view', 'list' );
+
+		$view_links = array();
+		foreach ( $views as $query_arg => $view_info ) {
+			if ( $query_arg === $default_view ) {
+				$href = $link_base;
+				$class = empty( $_GET['view'] ) || $query_arg === $_GET['view'] ? 'current' : '';
+			} else {
+				$href = add_query_arg( 'view', $query_arg, $link_base );
+				$class = ! empty( $_GET['view'] ) && $query_arg === $_GET['view'] ? 'current' : '';
+			}
+
+			$view_links[] = sprintf(
+				'<a id="docs-view-%s" class="docs-view-title %s" href="%s">%s</a>',
+				esc_attr( $query_arg ),
+				$class,
+				esc_url( $href ),
+				esc_html( $view_info['name'] )
+			);
+		}
+
 		// Set the message based on the current filters
 		if ( empty( $filters ) ) {
 			$message = __( 'You are viewing <strong>all</strong> docs.', 'bp-docs' );
@@ -228,6 +259,15 @@ function bp_docs_info_header() {
 
 			<div class="clear"> </div>
 		<?php endif ?>
+
+		<div class="docs-filters" id="docs-view-as">
+			<p>
+				<?php printf(
+					__( 'View As: %s' ),
+					implode( $view_links )
+				) ?>
+			</p>
+		</div>
 
 		<?php
 	}
