@@ -271,6 +271,8 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
 				$doc_id = $doc->ID;
 			}
 		}
+	} else {
+		$doc = get_post( $doc_id );
 	}
 
 	$user_can = false;

@@ -530,7 +530,7 @@ class BP_Docs_Component extends BP_Component {
 	 */
 
 	/**
-	 * Approve all Doc comments
+	 * Approve Doc comments as necessary.
 	 *
 	 * Docs handles its own comment permissions, so we override WP's value
 	 *
@@ -542,7 +542,11 @@ class BP_Docs_Component extends BP_Component {
 	public function approve_doc_comments( $approved, $commentdata ) {
 		$post = get_post( $commentdata['comment_post_ID'] );
 		if ( bp_docs_get_post_type_name() === $post->post_type ) {
-			$approved = 1;
+			if ( bp_docs_user_can( 'post_comments', bp_loggedin_user_id(), $post->ID ) ) {
+				$approved = 1;
+			} else {
+				$approved = 0;
+			}
 		}
 
 		return $approved;
