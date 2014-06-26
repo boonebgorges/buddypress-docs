@@ -35,6 +35,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 = 1.7.2 =
 * Use submitted values to rerender page after a failed create/edit action
+* Better protection against comment spam
 
 = 1.7.1 =
 * Don't run document protection check on AJAX calls
