@@ -15,6 +15,7 @@ if ( !class_exists( 'BP_Component' ) ) {
 
 class BP_Docs_Component extends BP_Component {
 	var $groups_integration;
+	var $submitted_data = array();
 
 	var $post_type_name;
 	var $associated_tax_name;
@@ -68,6 +69,9 @@ class BP_Docs_Component extends BP_Component {
 
 		$this->attachments = new BP_Docs_Attachments();
 //		add_action( 'wp', array( $this, 'setup_attachments' ), 1 );
+
+		// Get submitted form data out of the cookie
+		add_action( 'bp_actions', array( $this, 'submitted_form_data' ) );
 
 		/**
 		 * Methods related to comment behavior
@@ -200,6 +204,18 @@ class BP_Docs_Component extends BP_Component {
 		}
 
 		parent::setup_admin_bar( $wp_admin_nav );
+	}
+
+	/**
+	 * Get previously submitted form data out of the cookie, and stash.
+	 *
+	 * @since 1.7.2
+	 */
+	public function submitted_form_data() {
+		if ( isset( $_COOKIE['bp-docs-submit-data'] ) ) {
+			$this->submitted_data = json_decode( stripslashes( $_COOKIE['bp-docs-submit-data'] ) );
+			setcookie( 'bp-docs-submit-data', '', time() - 24*60*60, '/' );
+		}
 	}
 
 	/**
@@ -880,6 +896,7 @@ class BP_Docs_Component extends BP_Component {
 				'upload_button' => __( 'OK', 'bp-docs' ),
 				'still_working'	=> __( 'Still working?', 'bp-docs' ),
 				'and_x_more' => __( 'and %d more', 'bp-docs' ),
+				'failed_submission' => ! empty( buddypress()->bp_docs->submitted_data ) ? 1 : 0,
 			);
 
 			if ( bp_docs_is_doc_edit() ) {

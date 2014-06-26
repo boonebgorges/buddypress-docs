@@ -568,6 +568,12 @@ class BP_Docs_Query {
 
 		$message_type = $result['redirect'] == 'single' ? 'success' : 'error';
 
+
+		// Stuff data into a cookie so it can be accessed on next page load
+		if ( 'error' === $message_type ) {
+			setcookie( 'bp-docs-submit-data', json_encode( $_POST ), time() + 30, '/' );
+		}
+
 		$redirect_url = trailingslashit( bp_get_root_domain() . '/' . bp_docs_get_docs_slug() );
 
 		if ( $result['redirect'] == 'single' ) {

@@ -1,6 +1,9 @@
 jQuery(document).ready(function($){
-	// To do on pageload
-	bpdv_refresh_access_settings();
+	// Refresh access settings on pageload, unless this is a failed
+	// submission (in which case trust whatever was submitted in POST)
+	if ( '1' != bp_docs.failed_submission ) {
+		bpdv_refresh_access_settings();
+	}
 
 	// Binders
 	$('#associated_group_id').on('change',function(){ bpdv_refresh_access_settings(); });

@@ -719,6 +719,12 @@ function bp_docs_doc_associated_group_markup() {
 		$selected_group = bp_docs_get_associated_group_id( get_the_ID() );
 	}
 
+	// Last check: if this is a second attempt at a newly created Doc,
+	// there may be a previously submitted value
+	if ( empty( $selected_group ) && ! empty( buddypress()->bp_docs->submitted_data->associated_group_id ) ) {
+		$selected_group = intval( buddypress()->bp_docs->submitted_data->associated_group_id );
+	}
+
 	$groups_args = array(
 		'per_page' => false,
 		'populate_extras' => false,
@@ -897,7 +903,13 @@ function bp_docs_doc_settings_markup( $doc_id = 0, $group_id = 0 ) {
 function bp_docs_access_options_helper( $settings_field, $doc_id = 0, $group_id = 0 ) {
 	$doc_settings = bp_docs_get_doc_settings( $doc_id );
 
-	$setting = isset( $doc_settings[ $settings_field['name'] ] ) ? $doc_settings[ $settings_field['name'] ] : '';
+	// If this is a failed form submission, check the submitted values first
+	if ( ! empty( buddypress()->bp_docs->submitted_data->settings->{$settings_field['name']} ) ) {
+		$setting = buddypress()->bp_docs->submitted_data->settings->{$settings_field['name']};
+	} else {
+		$setting = isset( $doc_settings[ $settings_field['name'] ] ) ? $doc_settings[ $settings_field['name'] ] : '';
+	}
+
 	?>
 	<tr class="bp-docs-access-row bp-docs-access-row-<?php echo esc_attr( $settings_field['name'] ) ?>">
 		<td class="desc-column">
