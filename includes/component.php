@@ -209,7 +209,7 @@ class BP_Docs_Component extends BP_Component {
 	/**
 	 * Get previously submitted form data out of the cookie, and stash.
 	 *
-	 * @since 1.7.2
+	 * @since 1.8
 	 */
 	public function submitted_form_data() {
 		if ( isset( $_COOKIE['bp-docs-submit-data'] ) ) {

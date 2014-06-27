@@ -33,7 +33,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
-= 1.7.2 =
+= 1.8 =
 * Use submitted values to rerender page after a failed create/edit action
 * Better protection against comment spam
 
