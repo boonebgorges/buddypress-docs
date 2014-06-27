@@ -17,8 +17,12 @@ $toggle_radius: 2px;
   column-gap: $column_gap;
 }
 
-.hide-if-no-js {
-	display: none;
+body.no-js .hide-if-no-js {
+	display: none !important;
+}
+
+body.js .hide-if-js {
+	display: none !important;
 }
 
 .description {

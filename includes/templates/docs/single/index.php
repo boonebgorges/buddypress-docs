@@ -18,8 +18,6 @@
 				<?php endif ?>
 			</div>
 		</div>
-
-		<?php bp_docs_inline_toggle_js() ?>
 	<?php endif ?>
 
 	<?php do_action( 'bp_docs_before_doc_content' ) ?>

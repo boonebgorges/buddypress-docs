@@ -6,8 +6,6 @@
 	<?php bp_docs_info_header() ?>
 </div>
 
-<?php bp_docs_inline_toggle_js() ?>
-
 <?php if ( bp_docs_has_docs() ) : ?>
 	<table class="doctable">
 
