@@ -8,20 +8,6 @@
  */
 
 /**
- * Get previously submitted values from a cookie.
- *
- * @since 1.7.2
- */
-function bp_docs_previously_submitted_values() {
-	$data = array();
-	if ( isset( $_COOKIE['bp-docs-submit-data'] ) ) {
-		$data = json_decode( stripslashes( $_COOKIE['bp-docs-submit-data'] ) );
-	}
-
-	return $data;
-}
-
-/**
  * Echoes the output of bp_docs_get_edit_doc_title()
  *
  * @package BuddyPress Docs
