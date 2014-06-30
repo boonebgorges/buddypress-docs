@@ -421,7 +421,7 @@ class BP_Docs_Component extends BP_Component {
 		}
 
 		if ( bp_docs_is_doc_create() ) {
-			if ( !bp_docs_current_user_can( 'create' ) ) {
+			if ( ! current_user_can( 'bp_docs_create' ) ) {
 				// The user does not have edit permission. Redirect.
 				if ( function_exists( 'bp_core_no_access' ) && !is_user_logged_in() )
 					bp_core_no_access();
@@ -436,21 +436,19 @@ class BP_Docs_Component extends BP_Component {
 		}
 
 		if ( !empty( $bp->bp_docs->current_view ) && 'history' == $bp->bp_docs->current_view ) {
-			if ( !bp_docs_current_user_can( 'view_history' ) ) {
-				if ( !bp_docs_current_user_can( 'view_history' ) ) {
-					// The user does not have edit permission. Redirect.
-					if ( function_exists( 'bp_core_no_access' ) && !is_user_logged_in() )
-						bp_core_no_access();
+			if ( ! current_user_can( 'bp_docs_view_history' ) ) {
+				// The user does not have edit permission. Redirect.
+				if ( function_exists( 'bp_core_no_access' ) && !is_user_logged_in() )
+					bp_core_no_access();
 
-					bp_core_add_message( __( 'You do not have permission to view this Doc\'s history.', 'bp-docs' ), 'error' );
+				bp_core_add_message( __( 'You do not have permission to view this Doc\'s history.', 'bp-docs' ), 'error' );
 
-					$doc = bp_docs_get_current_doc();
+				$doc = bp_docs_get_current_doc();
 
-					$redirect = bp_docs_get_doc_link( $doc->ID );
+				$redirect = bp_docs_get_doc_link( $doc->ID );
 
-					// Redirect back to the Doc list view
-					bp_core_redirect( $redirect );
-				}
+				// Redirect back to the Doc list view
+				bp_core_redirect( $redirect );
 			}
 		}
 
@@ -487,7 +485,7 @@ class BP_Docs_Component extends BP_Component {
 
 			check_admin_referer( 'bp_docs_delete' );
 
-			if ( bp_docs_current_user_can( 'manage' ) ) {
+			if ( current_user_can( 'bp_docs_manage' ) ) {
 				$delete_doc_id = get_queried_object_id();
 
 				if ( bp_docs_trash_doc( $delete_doc_id ) ) {
@@ -507,7 +505,7 @@ class BP_Docs_Component extends BP_Component {
 
 			$untrash_doc_id = absint( $_GET['doc_id'] );
 
-			if ( bp_docs_current_user_can( 'manage', $untrash_doc_id ) ) {
+			if ( current_user_can( 'bp_docs_manage', $untrash_doc_id ) ) {
 				if ( bp_docs_untrash_doc( $untrash_doc_id ) ) {
 					bp_core_add_message( __( 'Doc successfully removed from Trash!', 'bp-docs' ) );
 				} else {
