@@ -1293,7 +1293,7 @@ function bp_docs_tabs( $show_create_button = true ) {
  * @since 1.2
  */
 function bp_docs_create_button() {
-	if ( ! bp_docs_is_doc_create() && bp_docs_current_user_can( 'create' ) ) {
+	if ( ! bp_docs_is_doc_create() && current_user_can( 'bp_docs_create' ) ) {
 		echo apply_filters( 'bp_docs_create_button', '<a class="button" id="bp-create-doc-button" href="' . bp_docs_get_create_link() . '">' . __( "Create New Doc", 'bp-docs' ) . '</a>' );
 	}
 }
