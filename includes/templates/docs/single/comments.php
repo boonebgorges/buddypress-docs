@@ -21,7 +21,7 @@ foreach ( (array)$comments as $comment ) {
 
 ?>
 
-<?php if ( bp_docs_current_user_can( 'read_comments' ) ) : ?>
+<?php if ( current_user_can( 'bp_docs_read_comments' ) ) : ?>
 	<div id="comments">
 		<h3>
 			<?php printf( __( 'Discussion (%d)', 'bp-docs' ), $num_comments ) ?>
@@ -60,7 +60,7 @@ foreach ( (array)$comments as $comment ) {
 
 <?php endif; ?>
 
-<?php if ( comments_open() && bp_docs_current_user_can( 'post_comments' ) ) : ?>
+<?php if ( comments_open() && current_user_can( 'bp_docs_post_comments' ) ) : ?>
 	<?php comment_form( array(), get_the_ID() ) ?>
 <?php else : ?>
 	<p class="comments-closed comment-posting-disabled">
