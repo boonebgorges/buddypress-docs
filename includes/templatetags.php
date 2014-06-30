@@ -1472,7 +1472,7 @@ function bp_docs_doc_permissions_snapshot( $args = array() ) {
 	$html .=     '<li class="bp-docs-can-view_history ' . $view_history_class . '"><span class="bp-docs-level-icon"></span>' . '<span class="perms-text">' . $view_history_text . '</span></li>';
 	$html .=   '</ul>';
 
-	if ( bp_docs_current_user_can( 'manage' ) )
+	if ( current_user_can( 'bp_docs_manage' ) )
 		$html .=   '<a href="' . bp_docs_get_doc_edit_link() . '#doc-settings" id="doc-permissions-edit">' . __( 'Edit', 'bp-docs' ) . '</a>';
 
 	$html .=   '<a href="#" class="doc-permissions-toggle" id="doc-permissions-less">' . __( 'Hide Details', 'bp-docs' ) . '</a>';
