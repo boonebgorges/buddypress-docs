@@ -33,11 +33,11 @@ function bp_docs_map_meta_caps( $caps, $cap, $user_id, $args ) {
 		return $caps;
 	}
 
-	// Reset all caps. We bake from scratch
-	$caps = array();
-
 	switch ( $cap ) {
 		case 'bp_docs_create' :
+			// Reset all caps. We bake from scratch
+			$caps = array();
+
 			// Should never get here if there's no user
 			if ( ! $user_id ) {
 				$caps[] = 'do_not_allow';
@@ -55,6 +55,14 @@ function bp_docs_map_meta_caps( $caps, $cap, $user_id, $args ) {
 		case 'bp_docs_manage' :
 		case 'bp_docs_read_comments' :
 		case 'bp_docs_post_comments' :
+			// Reset all caps. We bake from scratch
+			$caps = array();
+
+			// Admins can do everything
+			if ( user_can( $user_id, 'bp_moderate' ) ) {
+				return array( 'exist' );
+			}
+
 			$doc = bp_docs_get_doc_for_caps( $args );
 
 			if ( empty( $doc ) ) {
