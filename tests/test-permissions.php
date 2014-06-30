@@ -799,4 +799,78 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( $u3 );
 		$this->asserttrue( current_user_can( 'bp_docs_associate_with_group', $d ) );
 	}
+
+	/**
+	 * @group map_meta_cap
+	 * @group associate_with_group
+	 */
+	public function test_user_can_associate_with_group_mod() {
+		if ( ! bp_is_active( 'groups' ) ) {
+			return;
+		}
+
+		$g = $this->factory->group->create();
+		$d = $this->factory->doc->create( array(
+			'group' => $g,
+		) );
+		$doc_settings = bp_docs_get_doc_settings( $d );
+		$doc_settings['can-create'] = 'mod';
+		update_post_meta( $d, 'bp_docs_settings', $doc_settings );
+
+		$this->set_current_user( 0 );
+		$this->assertFalse( current_user_can( 'bp_docs_associate_with_group', $d ) );
+
+		$u1 = $this->create_user();
+		$this->set_current_user( $u1 );
+		$this->assertFalse( current_user_can( 'bp_docs_associate_with_group', $d ) );
+
+		$u2 = $this->create_user();
+		$this->add_user_to_group( $u2, $g );
+		$this->set_current_user( $u2 );
+		$this->assertFalse( current_user_can( 'bp_docs_associate_with_group', $d ) );
+
+		$u3 = $this->create_user();
+		$this->add_user_to_group( $u3, $g );
+		$gm3 = new BP_Groups_Member( $u3, $g );
+		$gm3->promote( 'mod' );
+		$this->set_current_user( $u3 );
+		$this->assertTrue( current_user_can( 'bp_docs_associate_with_group', $d ) );
+
+		$u4 = $this->create_user();
+		$this->add_user_to_group( $u4, $g );
+		$gm4 = new BP_Groups_Member( $u4, $g );
+		$gm4->promote( 'mod' );
+		$this->set_current_user( $u4 );
+		$this->assertTrue( current_user_can( 'bp_docs_associate_with_group', $d ) );
+	}
+
+	/**
+	 * @group map_meta_cap
+	 * @group associate_with_group
+	 */
+	public function test_user_can_associate_with_group_member() {
+		if ( ! bp_is_active( 'groups' ) ) {
+			return;
+		}
+
+		$g = $this->factory->group->create();
+		$d = $this->factory->doc->create( array(
+			'group' => $g,
+		) );
+		$doc_settings = bp_docs_get_doc_settings( $d );
+		$doc_settings['can-create'] = 'member';
+		update_post_meta( $d, 'bp_docs_settings', $doc_settings );
+
+		$this->set_current_user( 0 );
+		$this->assertFalse( current_user_can( 'bp_docs_associate_with_group', $d ) );
+
+		$u1 = $this->create_user();
+		$this->set_current_user( $u1 );
+		$this->assertFalse( current_user_can( 'bp_docs_associate_with_group', $d ) );
+
+		$u2 = $this->create_user();
+		$this->add_user_to_group( $u2, $g );
+		$this->set_current_user( $u2 );
+		$this->assertTrue( current_user_can( 'bp_docs_associate_with_group', $d ) );
+	}
 }
