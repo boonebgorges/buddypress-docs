@@ -525,25 +525,24 @@ class BP_Docs {
 	 * Protects group docs from unauthorized access
 	 *
 	 * @since 1.2
-	 * @uses bp_docs_current_user_can() This does most of the heavy lifting
 	 */
 	function protect_doc_access() {
 		// What is the user trying to do?
 		if ( bp_docs_is_doc_read() ) {
-			$action = 'read';
+			$action = 'bp_docs_read';
 		} else if ( bp_docs_is_doc_create() ) {
-			$action = 'create';
+			$action = 'bp_docs_create';
 		} else if ( bp_docs_is_doc_edit() ) {
-			$action = 'edit';
+			$action = 'bp_docs_edit';
 		} else if ( bp_docs_is_doc_history() ) {
-			$action = 'view_history';
+			$action = 'bp_docs_view_history';
 		}
 
 		if ( ! isset( $action ) ) {
 			return;
 		}
 
-		if ( ! bp_docs_current_user_can( $action ) ) {
+		if ( ! current_user_can( $action ) ) {
 			$redirect_to = bp_docs_get_doc_link();
 
 			bp_core_no_access( array(
