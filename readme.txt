@@ -37,6 +37,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Overhauled internal capabilities system, for better reliability and customization
 * Use submitted values to rerender page after a failed create/edit action
 * Better protection against comment spam
+* Better suggestions for default access settings when changing Doc group associations
 
 = 1.7.1 =
 * Don't run document protection check on AJAX calls
