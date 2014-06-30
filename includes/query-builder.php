@@ -443,7 +443,7 @@ class BP_Docs_Query {
 			// This group id is only used to check whether the user can associate the doc with the group.
 			$associated_group_id = isset( $_POST['associated_group_id'] ) ? intval( $_POST['associated_group_id'] ) : null;
 
-			if ( ! empty( $associated_group_id ) && ! BP_Docs_Groups_Integration::user_can_associate_doc_with_group( bp_loggedin_user_id(), $associated_group_id ) ) {
+			if ( ! empty( $associated_group_id ) && ! current_user_can( 'bp_docs_associate_with_group', $associated_group_id ) ) {
 				$retval = array(
 					'message_type' => 'error',
 					'message' => __( 'You are not allowed to associate a Doc with that group.', 'bp-docs' ),

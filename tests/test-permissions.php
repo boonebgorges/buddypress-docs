@@ -773,31 +773,32 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		}
 
 		$g = $this->factory->group->create();
+		groups_update_groupmeta( $g, 'bp-docs', array(
+			'can-create' => 'admin',
+		) );
+
 		$d = $this->factory->doc->create( array(
 			'group' => $g,
 		) );
-		$doc_settings = bp_docs_get_doc_settings( $d );
-		$doc_settings['can-create'] = 'admin';
-		update_post_meta( $d, 'bp_docs_settings', $doc_settings );
 
 		$this->set_current_user( 0 );
-		$this->assertFalse( current_user_can( 'bp_docs_associate_with_group', $d ) );
+		$this->assertFalse( current_user_can( 'bp_docs_associate_with_group', $g ) );
 
 		$u1 = $this->create_user();
 		$this->set_current_user( $u1 );
-		$this->assertFalse( current_user_can( 'bp_docs_associate_with_group', $d ) );
+		$this->assertFalse( current_user_can( 'bp_docs_associate_with_group', $g ) );
 
 		$u2 = $this->create_user();
 		$this->add_user_to_group( $u2, $g );
 		$this->set_current_user( $u2 );
-		$this->assertFalse( current_user_can( 'bp_docs_associate_with_group', $d ) );
+		$this->assertFalse( current_user_can( 'bp_docs_associate_with_group', $g ) );
 
 		$u3 = $this->create_user();
 		$this->add_user_to_group( $u3, $g );
 		$gm3 = new BP_Groups_Member( $u3, $g );
 		$gm3->promote( 'admin' );
 		$this->set_current_user( $u3 );
-		$this->asserttrue( current_user_can( 'bp_docs_associate_with_group', $d ) );
+		$this->asserttrue( current_user_can( 'bp_docs_associate_with_group', $g ) );
 	}
 
 	/**
@@ -810,38 +811,39 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		}
 
 		$g = $this->factory->group->create();
+		groups_update_groupmeta( $g, 'bp-docs', array(
+			'can-create' => 'mod',
+		) );
+
 		$d = $this->factory->doc->create( array(
 			'group' => $g,
 		) );
-		$doc_settings = bp_docs_get_doc_settings( $d );
-		$doc_settings['can-create'] = 'mod';
-		update_post_meta( $d, 'bp_docs_settings', $doc_settings );
 
 		$this->set_current_user( 0 );
-		$this->assertFalse( current_user_can( 'bp_docs_associate_with_group', $d ) );
+		$this->assertFalse( current_user_can( 'bp_docs_associate_with_group', $g ) );
 
 		$u1 = $this->create_user();
 		$this->set_current_user( $u1 );
-		$this->assertFalse( current_user_can( 'bp_docs_associate_with_group', $d ) );
+		$this->assertFalse( current_user_can( 'bp_docs_associate_with_group', $g ) );
 
 		$u2 = $this->create_user();
 		$this->add_user_to_group( $u2, $g );
 		$this->set_current_user( $u2 );
-		$this->assertFalse( current_user_can( 'bp_docs_associate_with_group', $d ) );
+		$this->assertFalse( current_user_can( 'bp_docs_associate_with_group', $g ) );
 
 		$u3 = $this->create_user();
 		$this->add_user_to_group( $u3, $g );
 		$gm3 = new BP_Groups_Member( $u3, $g );
 		$gm3->promote( 'mod' );
 		$this->set_current_user( $u3 );
-		$this->assertTrue( current_user_can( 'bp_docs_associate_with_group', $d ) );
+		$this->assertTrue( current_user_can( 'bp_docs_associate_with_group', $g ) );
 
 		$u4 = $this->create_user();
 		$this->add_user_to_group( $u4, $g );
 		$gm4 = new BP_Groups_Member( $u4, $g );
 		$gm4->promote( 'mod' );
 		$this->set_current_user( $u4 );
-		$this->assertTrue( current_user_can( 'bp_docs_associate_with_group', $d ) );
+		$this->assertTrue( current_user_can( 'bp_docs_associate_with_group', $g ) );
 	}
 
 	/**
@@ -854,28 +856,30 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		}
 
 		$g = $this->factory->group->create();
+		groups_update_groupmeta( $g, 'bp-docs', array(
+			'can-create' => 'member',
+		) );
+
 		$d = $this->factory->doc->create( array(
 			'group' => $g,
 		) );
-		$doc_settings = bp_docs_get_doc_settings( $d );
-		$doc_settings['can-create'] = 'member';
-		update_post_meta( $d, 'bp_docs_settings', $doc_settings );
 
 		$this->set_current_user( 0 );
-		$this->assertFalse( current_user_can( 'bp_docs_associate_with_group', $d ) );
+		$this->assertFalse( current_user_can( 'bp_docs_associate_with_group', $g ) );
 
 		$u1 = $this->create_user();
 		$this->set_current_user( $u1 );
-		$this->assertFalse( current_user_can( 'bp_docs_associate_with_group', $d ) );
+		$this->assertFalse( current_user_can( 'bp_docs_associate_with_group', $g ) );
 
 		$u2 = $this->create_user();
 		$this->add_user_to_group( $u2, $g );
 		$this->set_current_user( $u2 );
-		$this->assertTrue( current_user_can( 'bp_docs_associate_with_group', $d ) );
+		$this->assertTrue( current_user_can( 'bp_docs_associate_with_group', $g ) );
 	}
 
 	/**
 	 * @group user_can_associate_doc_with_group
+	 * @expectedDeprecated user_can_associate_doc_with_group
 	 */
 	public function test_associate_with_group_no_group() {
 		$u = $this->create_user();
@@ -884,6 +888,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 
 	/**
 	 * @group user_can_associate_doc_with_group
+	 * @expectedDeprecated user_can_associate_doc_with_group
 	 */
 	public function test_associate_with_group_non_group_member() {
 		$u = $this->create_user();
@@ -893,6 +898,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 
 	/**
 	 * @group user_can_associate_doc_with_group
+	 * @expectedDeprecated user_can_associate_doc_with_group
 	 */
 	public function test_associate_with_group_default_can_create_value() {
 		$g = $this->factory->group->create();
@@ -909,6 +915,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 
 	/**
 	 * @group user_can_associate_doc_with_group
+	 * @expectedDeprecated user_can_associate_doc_with_group
 	 */
 	public function test_associate_with_group_member() {
 		$g = $this->factory->group->create();
@@ -927,6 +934,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 
 	/**
 	 * @group user_can_associate_doc_with_group
+	 * @expectedDeprecated user_can_associate_doc_with_group
 	 */
 	public function test_associate_with_group_mod() {
 		$g = $this->factory->group->create();
@@ -957,6 +965,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 
 	/**
 	 * @group user_can_associate_doc_with_group
+	 * @expectedDeprecated user_can_associate_doc_with_group
 	 */
 	public function test_associate_with_group_admin() {
 		$g = $this->factory->group->create();

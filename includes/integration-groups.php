@@ -469,9 +469,7 @@ class BP_Docs_Groups_Integration {
 			}
 		}
 
-		$can_associate = self::user_can_associate_doc_with_group( bp_loggedin_user_id(), $group_id );
-
-		if ( $can_associate ) {
+		if ( current_user_can( 'bp_docs_associate_with_group', $group_id ) ) {
 			$group = groups_get_group( 'group_id=' . intval( $group_id ) );
 
 			$options[40] = array(
@@ -515,6 +513,8 @@ class BP_Docs_Groups_Integration {
 	 * Can a given user associate a doc with a given group?
 	 */
 	public static function user_can_associate_doc_with_group( $user_id, $group_id ) {
+		_deprecated_function( __FUNCTION__, '1.8', "Use current_user_can( 'bp_docs_associate_with_group' ) instead" );
+
 		$group = groups_get_group( 'group_id=' . intval( $group_id ) );
 
 		// No one can associate anything with a non-existent group
@@ -895,7 +895,7 @@ class BP_Docs_Groups_Integration {
 	function get_create_link( $link ) {
 
 		$slug = bp_get_current_group_slug();
-		if ( $slug && self::user_can_associate_doc_with_group( bp_loggedin_user_id(), bp_get_current_group_id() ) ) {
+		if ( $slug && current_user_can( 'bp_docs_associate_with_group', bp_get_current_group_id() ) ) {
 			$link = add_query_arg( 'group', $slug, $link );
 		}
 
@@ -1541,6 +1541,8 @@ function bp_docs_groups_map_meta_caps( $caps, $cap, $user_id, $args ) {
 		case 'bp_docs_manage' :
 		case 'bp_docs_read_comments' :
 		case 'bp_docs_post_comments' :
+			$caps = array();
+
 			$doc = bp_docs_get_doc_for_caps( $args );
 
 			if ( empty( $doc ) ) {
@@ -1582,22 +1584,21 @@ function bp_docs_groups_map_meta_caps( $caps, $cap, $user_id, $args ) {
 			break;
 
 		case 'bp_docs_associate_with_group' :
-			$doc = bp_docs_get_doc_for_caps( $args );
+			$caps = array();
 
-			if ( empty( $doc ) ) {
+			if ( isset( $args[0] ) ) {
+				$group_id = intval( $args[0] );
+			} else if ( bp_is_group() ) {
+				$group_id = bp_get_current_group_id();
+			}
+
+			if ( empty( $group_id ) ) {
 				break;
 			}
 
-			$group_id = bp_docs_get_associated_group_id( $doc->ID, $doc );
+			$group_settings = bp_docs_get_group_settings( $group_id );
 
-			// If not associated with a group, nothing to do here
-			if ( ! $group_id ) {
-				break;
-			}
-
-			$doc_settings = bp_docs_get_doc_settings( $doc->ID );
-
-			switch ( $doc_settings['can-create'] ) {
+			switch ( $group_settings['can-create'] ) {
 				case 'admin' :
 					if ( groups_is_user_admin( $user_id, $group_id ) ) {
 						$caps[] = 'exist';
