@@ -469,7 +469,7 @@ class BP_Docs_Groups_Integration {
 			}
 		}
 
-		if ( current_user_can( 'bp_docs_associate_with_group', $group_id ) ) {
+		if ( $group_id && current_user_can( 'bp_docs_associate_with_group', $group_id ) ) {
 			$group = groups_get_group( 'group_id=' . intval( $group_id ) );
 
 			$options[40] = array(
@@ -1559,6 +1559,10 @@ function bp_docs_groups_map_meta_caps( $caps, $cap, $user_id, $args ) {
 				break;
 			}
 
+			if ( user_can( $user_id, 'bp_moderate' ) ) {
+				return array( 'exist' );
+			}
+
 			$caps = array();
 
 			$doc_settings = bp_docs_get_doc_settings( $doc->ID );
@@ -1597,6 +1601,10 @@ function bp_docs_groups_map_meta_caps( $caps, $cap, $user_id, $args ) {
 
 			if ( empty( $group_id ) ) {
 				break;
+			}
+
+			if ( user_can( $user_id, 'bp_moderate' ) ) {
+				return array( 'exist' );
 			}
 
 			$caps = array();

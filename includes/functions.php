@@ -428,9 +428,11 @@ function bp_docs_is_docs_component() {
  * yet been saved for this Doc.
  *
  * @param int $doc_id
+ * @param string $type 'default' parses with default options to ensure that all
+ *        keys have values. 'raw' returns results as stored in the database.
  * @return array
  */
-function bp_docs_get_doc_settings( $doc_id = 0 ) {
+function bp_docs_get_doc_settings( $doc_id = 0, $type = 'default' ) {
 	$doc_settings = array();
 
 	$q = get_queried_object();
@@ -443,9 +445,6 @@ function bp_docs_get_doc_settings( $doc_id = 0 ) {
 		$saved_settings = array();
 	}
 
-	// Empty string settings can slip through sometimes
-	$saved_settings = array_filter( $saved_settings );
-
 	$default_settings = array(
 		'read'          => 'anyone',
 		'edit'          => 'loggedin',
@@ -455,7 +454,12 @@ function bp_docs_get_doc_settings( $doc_id = 0 ) {
 		'manage'        => 'creator',
 	);
 
-	$doc_settings = wp_parse_args( $saved_settings, $default_settings );
+	if ( 'raw' !== $type ) {
+		// Empty string settings can slip through sometimes
+		$saved_settings = array_filter( $saved_settings );
+
+		$doc_settings = wp_parse_args( $saved_settings, $default_settings );
+	}
 
 	return apply_filters( 'bp_docs_get_doc_settings', $doc_settings, $doc_id, $default_settings );
 }

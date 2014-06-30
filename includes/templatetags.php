@@ -725,9 +725,12 @@ function bp_docs_doc_associated_group_markup() {
 		$selected_group = intval( buddypress()->bp_docs->submitted_data->associated_group_id );
 	}
 
+	$selected_group = intval( $selected_group );
+
 	$groups_args = array(
 		'per_page' => false,
 		'populate_extras' => false,
+		'type' => 'alphabetical',
 	);
 
 	if ( ! bp_current_user_can( 'bp_moderate' ) ) {
@@ -741,20 +744,9 @@ function bp_docs_doc_associated_group_markup() {
 	// Filter out the groups where associate_with permissions forbid
 	$removed = 0;
 	foreach ( $groups_template->groups as $gtg_key => $gtg ) {
-		$this_group_settings = groups_get_groupmeta( $gtg->id, 'bp-docs' );
-		if ( isset( $this_group_settings['can-create'] ) && in_array( $this_group_settings['can-create'], array( 'admin', 'mod' ) ) ) {
-			$is_admin = groups_is_user_admin( bp_loggedin_user_id(), $gtg->id );
-			if ( 'mod' == $this_group_settings['can-create'] ) {
-				$is_mod = groups_is_user_mod( bp_loggedin_user_id(), $gtg->id );
-				$remove = ! $is_mod && ! $is_admin;
-			} else {
-				$remove = ! $is_admin;
-			}
-
-			if ( $remove ) {
-				unset( $groups_template->groups[ $gtg_key ] );
-				$removed++;
-			}
+		if ( ! current_user_can( 'bp_docs_associate_with_group', $gtg->id ) ) {
+			unset( $groups_template->groups[ $gtg_key ] );
+			$removed++;
 		}
 	}
 
@@ -901,7 +893,13 @@ function bp_docs_doc_settings_markup( $doc_id = 0, $group_id = 0 ) {
 }
 
 function bp_docs_access_options_helper( $settings_field, $doc_id = 0, $group_id = 0 ) {
-	$doc_settings = bp_docs_get_doc_settings( $doc_id );
+	if ( $group_id ) {
+		$settings_type = 'raw';
+	} else {
+		$settings_type = 'default';
+	}
+
+	$doc_settings = bp_docs_get_doc_settings( $doc_id, $settings_type );
 
 	// If this is a failed form submission, check the submitted values first
 	if ( ! empty( buddypress()->bp_docs->submitted_data->settings->{$settings_field['name']} ) ) {
