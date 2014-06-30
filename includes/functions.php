@@ -440,6 +440,9 @@ function bp_docs_get_doc_settings( $doc_id = 0 ) {
 		$saved_settings = array();
 	}
 
+	// Empty string settings can slip through sometimes
+	$saved_settings = array_filter( $saved_settings );
+
 	$default_settings = array(
 		'read'          => 'anyone',
 		'edit'          => 'loggedin',

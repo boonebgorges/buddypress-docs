@@ -33,12 +33,6 @@ function bp_docs_map_meta_caps( $caps, $cap, $user_id, $args ) {
 		return $caps;
 	}
 
-	// Set up some data we'll need for these permission checks
-	//$doc = bp_docs_get_doc_for_caps( $args );
-
-//	$post_type    = get_post_type_object( $doc->post_type );
-//	$doc_settings = bp_docs_get_doc_settings( $doc_id );
-
 	// Reset all caps. We bake from scratch
 	$caps = array();
 
@@ -98,6 +92,7 @@ function bp_docs_map_meta_caps( $caps, $cap, $user_id, $args ) {
 
 				case 'no-one' :
 				default :
+					$caps[] = 'do_not_allow';
 					break;
 
 				// Group-specific caps get passed to filter

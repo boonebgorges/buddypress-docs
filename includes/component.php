@@ -389,8 +389,8 @@ class BP_Docs_Component extends BP_Component {
 
 		// If this is the edit screen, ensure that the user can edit the
 		// doc before querying, and redirect if necessary
-		if ( !empty( $bp->bp_docs->current_view ) && 'edit' == $bp->bp_docs->current_view ) {
-			if ( bp_docs_current_user_can( 'edit' ) ) {
+		if ( bp_docs_is_doc_edit() ) {
+			if ( current_user_can( 'bp_docs_edit' ) ) {
 				$doc = bp_docs_get_current_doc();
 
 				// The user can edit, so we check for edit locks
@@ -403,24 +403,20 @@ class BP_Docs_Component extends BP_Component {
 				if ( $lock ) {
 					bp_core_add_message( sprintf( __( 'This doc is currently being edited by %s. To prevent overwrites, you cannot edit until that user has finished. Please try again in a few minutes.', 'bp-docs' ), bp_core_get_user_displayname( $lock ) ), 'error' );
 
-					$group_permalink = bp_get_group_permalink( $bp->groups->current_group );
-					$doc_slug = $bp->bp_docs->doc_slug;
-
 					// Redirect back to the non-edit view of this document
+					bp_core_redirect( bp_docs_get_doc_link( $doc->ID ) );
 					bp_core_redirect( $group_permalink . $bp->bp_docs->slug . '/' . $doc_slug );
 				}
 			} else {
-				if ( function_exists( 'bp_core_no_access' ) && !is_user_logged_in() )
+				if ( function_exists( 'bp_core_no_access' ) && !is_user_logged_in() ) {
 					bp_core_no_access();
+				}
 
 				// The user does not have edit permission. Redirect.
 				bp_core_add_message( __( 'You do not have permission to edit the doc.', 'bp-docs' ), 'error' );
 
-				$group_permalink = bp_get_group_permalink( $bp->groups->current_group );
-				$doc_slug = $bp->bp_docs->doc_slug;
-
 				// Redirect back to the non-edit view of this document
-				bp_core_redirect( $group_permalink . $bp->bp_docs->slug . '/' . $doc_slug );
+				bp_core_redirect( bp_docs_get_doc_link( $doc->ID ) );
 			}
 		}
 
