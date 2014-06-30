@@ -1339,7 +1339,7 @@ function bp_docs_group_tabs( $group = false ) {
 ?>
 	<li<?php if ( $bp->bp_docs->current_view == 'list' ) : ?> class="current"<?php endif; ?>><a href="<?php echo $bp->root_domain . '/' . $groups_slug ?>/<?php echo $group->slug ?>/<?php echo $bp->bp_docs->slug ?>/"><?php _e( 'View Docs', 'bp-docs' ) ?></a></li>
 
-	<?php if ( bp_docs_current_user_can( 'create' ) ) : ?>
+	<?php if ( current_user_can( 'bp_docs_create' ) ) : ?>
 		<li<?php if ( 'create' == $bp->bp_docs->current_view ) : ?> class="current"<?php endif; ?>><a href="<?php echo $bp->root_domain . '/' . $groups_slug ?>/<?php echo $group->slug ?>/<?php echo $bp->bp_docs->slug ?>/create"><?php _e( 'New Doc', 'bp-docs' ) ?></a></li>
 	<?php endif ?>
 
