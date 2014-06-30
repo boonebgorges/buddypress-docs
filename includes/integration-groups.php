@@ -538,7 +538,7 @@ class BP_Docs_Groups_Integration {
 		$can_create = isset( $group_settings['can-create'] ) ? $group_settings['can-create'] : 'member';
 
 		if ( 'admin' == $can_create ) {
-			return groups_is_user_admin( $user_id, $group_id );
+			return (bool) groups_is_user_admin( $user_id, $group_id );
 		} else if ( 'mod' == $can_create ) {
 			return groups_is_user_admin( $user_id, $group_id ) || groups_is_user_mod( $user_id, $group_id );
 		}

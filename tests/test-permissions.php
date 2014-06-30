@@ -873,4 +873,115 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( $u2 );
 		$this->assertTrue( current_user_can( 'bp_docs_associate_with_group', $d ) );
 	}
+
+	/**
+	 * @group user_can_associate_doc_with_group
+	 */
+	public function test_associate_with_group_no_group() {
+		$u = $this->create_user();
+		$this->assertFalse( BP_Docs_Groups_Integration::user_can_associate_doc_with_group( $u, 0 ) );
+	}
+
+	/**
+	 * @group user_can_associate_doc_with_group
+	 */
+	public function test_associate_with_group_non_group_member() {
+		$u = $this->create_user();
+		$g = $this->factory->group->create();
+		$this->assertFalse( BP_Docs_Groups_Integration::user_can_associate_doc_with_group( $u, $g ) );
+	}
+
+	/**
+	 * @group user_can_associate_doc_with_group
+	 */
+	public function test_associate_with_group_default_can_create_value() {
+		$g = $this->factory->group->create();
+		$d = $this->factory->doc->create( array(
+			'group' => $g,
+		) );
+
+		groups_delete_groupmeta( $g, 'bp-docs' );
+
+		$u = $this->create_user();
+		$this->add_user_to_group( $u, $g );
+		$this->assertTrue( BP_Docs_Groups_Integration::user_can_associate_doc_with_group( $u, $g ) );
+	}
+
+	/**
+	 * @group user_can_associate_doc_with_group
+	 */
+	public function test_associate_with_group_member() {
+		$g = $this->factory->group->create();
+		$d = $this->factory->doc->create( array(
+			'group' => $g,
+		) );
+
+		groups_update_groupmeta( $g, 'bp-docs', array(
+			'can-create' => 'member',
+		) );
+
+		$u = $this->create_user();
+		$this->add_user_to_group( $u, $g );
+		$this->assertTrue( BP_Docs_Groups_Integration::user_can_associate_doc_with_group( $u, $g ) );
+	}
+
+	/**
+	 * @group user_can_associate_doc_with_group
+	 */
+	public function test_associate_with_group_mod() {
+		$g = $this->factory->group->create();
+		$d = $this->factory->doc->create( array(
+			'group' => $g,
+		) );
+
+		groups_update_groupmeta( $g, 'bp-docs', array(
+			'can-create' => 'mod',
+		) );
+
+		$u1 = $this->create_user();
+		$this->add_user_to_group( $u1, $g );
+		$this->assertFalse( BP_Docs_Groups_Integration::user_can_associate_doc_with_group( $u1, $g ) );
+
+		$u2 = $this->create_user();
+		$this->add_user_to_group( $u2, $g );
+		$gm2 = new BP_Groups_Member( $u2, $g );
+		$gm2->promote( 'mod' );
+		$this->assertTrue( BP_Docs_Groups_Integration::user_can_associate_doc_with_group( $u2, $g ) );
+
+		$u3 = $this->create_user();
+		$this->add_user_to_group( $u3, $g );
+		$gm3 = new BP_Groups_Member( $u3, $g );
+		$gm3->promote( 'admin' );
+		$this->assertTrue( BP_Docs_Groups_Integration::user_can_associate_doc_with_group( $u3, $g ) );
+	}
+
+	/**
+	 * @group user_can_associate_doc_with_group
+	 */
+	public function test_associate_with_group_admin() {
+		$g = $this->factory->group->create();
+		$d = $this->factory->doc->create( array(
+			'group' => $g,
+		) );
+
+		groups_update_groupmeta( $g, 'bp-docs', array(
+			'can-create' => 'admin',
+		) );
+
+		$u1 = $this->create_user();
+		$this->add_user_to_group( $u1, $g );
+		$this->assertFalse( BP_Docs_Groups_Integration::user_can_associate_doc_with_group( $u1, $g ) );
+
+		$u2 = $this->create_user();
+		$this->add_user_to_group( $u2, $g );
+		$gm2 = new BP_Groups_Member( $u2, $g );
+		$gm2->promote( 'mod' );
+		$this->assertFalse( BP_Docs_Groups_Integration::user_can_associate_doc_with_group( $u2, $g ) );
+
+		$u3 = $this->create_user();
+		$this->add_user_to_group( $u3, $g );
+		$gm3 = new BP_Groups_Member( $u3, $g );
+		$gm3->promote( 'admin' );
+		$this->assertTrue( BP_Docs_Groups_Integration::user_can_associate_doc_with_group( $u3, $g ) );
+	}
 }
