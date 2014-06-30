@@ -1851,7 +1851,7 @@ function bp_docs_attachment_item_markup( $attachment_id, $format = 'full' ) {
 
 	if ( 'full' === $format ) {
 		$attachment_delete_html = '';
-		if ( bp_docs_current_user_can( 'edit' ) && ( bp_docs_is_doc_edit() || bp_docs_is_doc_create() ) ) {
+		if ( current_user_can( 'bp_docs_edit' ) && ( bp_docs_is_doc_edit() || bp_docs_is_doc_create() ) ) {
 			$attachment_delete_url = wp_nonce_url( $doc_url, 'bp_docs_delete_attachment_' . $attachment_id );
 			$attachment_delete_url = add_query_arg( array(
 				'delete_attachment' => $attachment_id,
