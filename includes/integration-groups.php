@@ -1522,7 +1522,12 @@ function bp_docs_get_group_settings( $group_id ) {
 		$settings = array();
 	}
 
-	return $settings;
+	$parsed_settings = wp_parse_args( $settings, array(
+		'group-enable'	=> 1,
+		'can-create' 	=> 'member',
+	) );
+
+	return $parsed_settings;
 }
 
 /**
@@ -1541,8 +1546,6 @@ function bp_docs_groups_map_meta_caps( $caps, $cap, $user_id, $args ) {
 		case 'bp_docs_manage' :
 		case 'bp_docs_read_comments' :
 		case 'bp_docs_post_comments' :
-			$caps = array();
-
 			$doc = bp_docs_get_doc_for_caps( $args );
 
 			if ( empty( $doc ) ) {
@@ -1555,6 +1558,8 @@ function bp_docs_groups_map_meta_caps( $caps, $cap, $user_id, $args ) {
 			if ( ! $group_id ) {
 				break;
 			}
+
+			$caps = array();
 
 			$doc_settings = bp_docs_get_doc_settings( $doc->ID );
 
@@ -1584,8 +1589,6 @@ function bp_docs_groups_map_meta_caps( $caps, $cap, $user_id, $args ) {
 			break;
 
 		case 'bp_docs_associate_with_group' :
-			$caps = array();
-
 			if ( isset( $args[0] ) ) {
 				$group_id = intval( $args[0] );
 			} else if ( bp_is_group() ) {
@@ -1595,6 +1598,8 @@ function bp_docs_groups_map_meta_caps( $caps, $cap, $user_id, $args ) {
 			if ( empty( $group_id ) ) {
 				break;
 			}
+
+			$caps = array();
 
 			$group_settings = bp_docs_get_group_settings( $group_id );
 
