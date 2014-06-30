@@ -228,11 +228,14 @@ function bp_docs_locate_template( $template = '', $load = false, $require_once =
  *
  * @package BuddyPress Docs
  * @since 1.0-beta
+ * @deprecated 1.8
  *
  * @param str $action The cap being tested
  * @return bool $user_can
  */
 function bp_docs_current_user_can( $action = 'edit', $doc_id = false ) {
+	_deprecated_function( __FUNCTION__, '1.8', 'Use current_user_can() with "bp_docs_" prefixed capabilities instead.' );
+
 	$user_can = bp_docs_user_can( $action, bp_loggedin_user_id(), $doc_id );
 
 	return apply_filters( 'bp_docs_current_user_can', $user_can, $action );
