@@ -1524,3 +1524,110 @@ function bp_docs_get_group_settings( $group_id ) {
 
 	return $settings;
 }
+
+/**
+ * Group-specific meta cap mapping.
+ *
+ * Some bp_docs_ capabilities require referencing group-specific info. We do
+ * this here.
+ *
+ * @since 1.8
+ */
+function bp_docs_groups_map_meta_caps( $caps, $cap, $user_id, $args ) {
+	switch ( $cap ) {
+		case 'bp_docs_read' :
+		case 'bp_docs_edit' :
+		case 'bp_docs_view_history' :
+		case 'bp_docs_manage' :
+		case 'bp_docs_read_comments' :
+		case 'bp_docs_post_comments' :
+			$doc = bp_docs_get_doc_for_caps( $args );
+
+			if ( empty( $doc ) ) {
+				break;
+			}
+
+			$group_id = bp_docs_get_associated_group_id( $doc->ID, $doc );
+
+			// If not associated with a group, nothing to do here
+			if ( ! $group_id ) {
+				break;
+			}
+
+			$doc_settings = bp_docs_get_doc_settings( $doc->ID );
+
+			// Caps are stored without the 'bp_docs_' prefix,
+			// mostly for legacy reasons
+			$cap_name = substr( $cap, 8 );
+
+			switch ( $doc_settings[ $cap_name ] ) {
+				case 'group-members' :
+					if ( groups_is_user_member( $user_id, $group_id ) ) {
+						$caps[] = 'exist';
+					} else {
+						$caps[] = 'do_not_allow';
+					}
+
+					break;
+
+				case 'admins-mods' :
+					if ( groups_is_user_admin( $user_id, $group_id ) || groups_is_user_mod( $user_id, $group_id ) ) {
+						$caps[] = 'exist';
+					} else {
+						$caps[] = 'do_not_allow';
+					}
+					break;
+			}
+
+			break;
+
+		case 'bp_docs_associate_with_group' :
+			$doc = bp_docs_get_doc_for_caps( $args );
+
+			if ( empty( $doc ) ) {
+				break;
+			}
+
+			$group_id = bp_docs_get_associated_group_id( $doc->ID, $doc );
+
+			// If not associated with a group, nothing to do here
+			if ( ! $group_id ) {
+				break;
+			}
+
+			$doc_settings = bp_docs_get_doc_settings( $doc->ID );
+
+			switch ( $doc_settings['can-create'] ) {
+				case 'admin' :
+					if ( groups_is_user_admin( $user_id, $group_id ) ) {
+						$caps[] = 'exist';
+					} else {
+						$caps[] = 'do_not_allow';
+					}
+
+					break;
+				case 'mod' :
+					if ( groups_is_user_mod( $user_id, $group_id ) || groups_is_user_admin( $user_id, $group_id ) ) {
+						$caps[] = 'exist';
+					} else {
+						$caps[] = 'do_not_allow';
+					}
+
+					break;
+				case 'member' :
+				default :
+					if ( groups_is_user_member( $user_id, $group_id ) ) {
+						$caps[] = 'exist';
+					} else {
+						$caps[] = 'do_not_allow';
+					}
+
+					break;
+			}
+
+			break;
+	}
+
+	return $caps;
+}
+add_filter( 'bp_docs_map_meta_caps', 'bp_docs_groups_map_meta_caps', 10, 4 );
