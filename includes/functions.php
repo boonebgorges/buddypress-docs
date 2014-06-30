@@ -336,9 +336,9 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
  */
 function bp_docs_current_user_can_create_in_context() {
 	if ( function_exists( 'bp_is_group' ) && bp_is_group() ) {
-		$can_create = bp_docs_current_user_can( 'associate_with_group' );
+		$can_create = current_user_can( 'bp_docs_associate_with_group', bp_get_current_group_id() );
 	} else {
-		$can_create = bp_docs_current_user_can( 'create' );
+		$can_create = current_user_can( 'bp_docs_create' );
 	}
 
 	return apply_filters( 'bp_docs_current_user_can_create_in_context', $can_create );
