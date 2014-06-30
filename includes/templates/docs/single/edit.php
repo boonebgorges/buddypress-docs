@@ -71,7 +71,7 @@
 		<?php endif ?>
 
 		<div id="doc-meta">
-			<?php if ( bp_is_active( 'groups' ) && bp_docs_current_user_can( 'manage' ) && apply_filters( 'bp_docs_allow_associated_group', true ) ) : ?>
+			<?php if ( bp_is_active( 'groups' ) && current_user_can( 'bp_docs_manage' ) && apply_filters( 'bp_docs_allow_associated_group', true ) ) : ?>
 				<div id="doc-associated-group" class="doc-meta-box">
 					<div class="toggleable">
 						<p class="toggle-switch" id="associated-group-toggle">
@@ -88,7 +88,7 @@
 				</div>
 			<?php endif ?>
 
-			<?php if ( bp_docs_current_user_can( 'manage' ) && apply_filters( 'bp_docs_allow_access_settings', true ) ) : ?>
+			<?php if ( current_user_can( 'bp_docs_manage' ) && apply_filters( 'bp_docs_allow_access_settings', true ) ) : ?>
 				<div id="doc-settings" class="doc-meta-box">
 					<div class="toggleable">
 						<p class="toggle-switch" id="settings-toggle">
@@ -166,7 +166,7 @@
 			<input type="submit" name="doc-edit-submit" id="doc-edit-submit" value="<?php _e( 'Save', 'bp-docs' ) ?>"> <a href="<?php bp_docs_cancel_edit_link() ?>" class="action safe"><?php _e( 'Cancel', 'bp-docs' ); ?></a>
 
 			<?php if ( bp_docs_is_existing_doc() ) : ?>
-				<?php if ( bp_docs_current_user_can( 'manage', $doc_id ) ) : ?>
+				<?php if ( current_user_can( 'bp_docs_manage', $doc_id ) ) : ?>
 					<?php bp_docs_delete_doc_button() ?>
 				<?php endif ?>
 			<?php endif ?>
