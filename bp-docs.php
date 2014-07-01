@@ -342,7 +342,9 @@ class BP_Docs {
 		$this->hierarchy = new BP_Docs_Hierarchy;
 
 		// Don't load the History component if post revisions are disabled
-		if ( defined( 'WP_POST_REVISIONS' ) && WP_POST_REVISIONS ) {
+		$wp_post_revisions = defined( 'WP_POST_REVISIONS' ) && WP_POST_REVISIONS;
+		$bp_docs_revisions = defined( 'BP_DOCS_REVISIONS' ) && BP_DOCS_REVISIONS;
+		if ( $wp_post_revisions || $bp_docs_revisions ) {
 			require_once( BP_DOCS_INCLUDES_PATH . 'addon-history.php' );
 			$this->history = new BP_Docs_History;
 		}

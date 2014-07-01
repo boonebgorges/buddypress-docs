@@ -58,15 +58,21 @@ function bp_docs_map_meta_caps( $caps, $cap, $user_id, $args ) {
 			// Reset all caps. We bake from scratch
 			$caps = array();
 
-			// Admins can do everything
-			if ( user_can( $user_id, 'bp_moderate' ) ) {
-				return array( 'exist' );
-			}
-
 			$doc = bp_docs_get_doc_for_caps( $args );
 
 			if ( empty( $doc ) ) {
 				break;
+			}
+
+			// Special case: view_history requires post revisions
+			// @todo Move this to addon-history
+			if ( 'bp_docs_view_history' === $cap && ! wp_revisions_enabled( $doc ) ) {
+				return array( 'do_not_allow' );
+			}
+
+			// Admins can do everything
+			if ( user_can( $user_id, 'bp_moderate' ) ) {
+				return array( 'exist' );
 			}
 
 			$doc_settings = bp_docs_get_doc_settings( $doc->ID );

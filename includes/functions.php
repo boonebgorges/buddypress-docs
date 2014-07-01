@@ -770,3 +770,27 @@ function bp_docs_get_doc_ids_accessible_to_current_user() {
 	$items_sql = $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post_type = %s AND ID NOT IN $exclude_sql", bp_docs_get_post_type_name() );
 	return $wpdb->get_col( $items_sql );
 }
+
+/**
+ * Determine how many revisions to retain for Docs.
+ *
+ * @since 1.8
+ *
+ * @return int
+ */
+function bp_docs_revisions_to_keep( $num, $post ) {
+	if ( bp_docs_get_post_type_name() !== $post->post_type ) {
+		return $num;
+	}
+
+	if ( defined( 'BP_DOCS_REVISIONS' ) ) {
+		if ( true === BP_DOCS_REVISIONS ) {
+			$num = -1;
+		} else {
+			$num = intval( BP_DOCS_REVISIONS );
+		}
+	}
+
+	return intval( $num );
+}
+add_filter( 'wp_revisions_to_keep', 'bp_docs_revisions_to_keep', 10, 2 );

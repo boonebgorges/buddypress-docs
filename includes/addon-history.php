@@ -104,7 +104,7 @@ class BP_Docs_History {
 				break;
 
 			// Revisions disabled and we're not looking at an autosave
-			if ( ( ! WP_POST_REVISIONS || !post_type_supports( $post->post_type, 'revisions') ) && !wp_is_post_autosave( $this->revision ) ) {
+			if ( ! wp_revisions_enabled( $post ) && !wp_is_post_autosave( $this->revision ) ) {
 				$redirect = 'edit.php?post_type=' . $post->post_type;
 				break;
 			}
@@ -138,7 +138,7 @@ class BP_Docs_History {
 			else
 				break; // Don't diff two unrelated revisions
 
-			if ( ! WP_POST_REVISIONS || !post_type_supports( $post->post_type, 'revisions' ) ) { // Revisions disabled
+			if ( ! wp_revisions_enabled( $post ) ) { // Revisions disabled
 
 				if (
 					// we're not looking at an autosave
@@ -184,7 +184,7 @@ class BP_Docs_History {
 				break;
 
 			// Revisions disabled and we're not looking at an autosave
-			if ( ( ! WP_POST_REVISIONS || !post_type_supports($post->post_type, 'revisions') ) && !wp_is_post_autosave( $this->revision ) ) {
+			if ( ! wp_revisions_enabled( $post ) && !wp_is_post_autosave( $this->revision ) ) {
 				$redirect = 'edit.php?post_type=' . $post->post_type;
 				break;
 			}
