@@ -33,6 +33,13 @@ function bp_docs_edit_doc_title() {
 			$title = bp_docs_is_existing_doc() ? get_the_title() : '';
 		}
 
+		// If no title has been found yet, check to see whether one has
+		// been submitted using create_title URL param (from the
+		// [[wikitext]] linking functionality)
+		if ( empty( $title ) && ! empty( $_GET['create_title'] ) ) {
+			$title = urldecode( $_GET['create_title'] );
+		}
+
 		return apply_filters( 'bp_docs_get_edit_doc_title', esc_attr( $title ) );
 	}
 

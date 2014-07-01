@@ -123,7 +123,7 @@ class BP_Docs_Wikitext {
 			$class 	   = 'existing-doc';
 		} else {
 			// If no result is found, create a link to the edit page
-			$permalink = add_query_arg( 'create_title', urlencode( $link_page ), bp_docs_get_item_docs_link() . BP_DOCS_CREATE_SLUG );
+			$permalink = add_query_arg( 'create_title', urlencode( $link_page ), bp_docs_get_create_link() );
 			$class	   = 'nonexistent-doc';
 		}
 
