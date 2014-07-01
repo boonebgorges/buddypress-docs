@@ -38,6 +38,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Use submitted values to rerender page after a failed create/edit action
 * Better protection against comment spam
 * Better suggestions for default access settings when changing Doc group associations
+* Fix wikitext-style [[links]] when pointing to non-existent Docs
 
 = 1.7.1 =
 * Don't run document protection check on AJAX calls
