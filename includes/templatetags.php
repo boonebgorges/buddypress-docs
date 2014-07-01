@@ -1993,3 +1993,16 @@ function bp_docs_is_doc_trashed( $doc_id = false ) {
 
 	return isset( $doc->post_status ) && 'trash' == $doc->post_status;
 }
+
+/**
+ * Output 'toggle-open' or 'toggle-closed' class for toggleable div.
+ *
+ * @since 1.8
+ */
+function bp_docs_toggleable_open_or_closed_class() {
+	if ( bp_docs_is_doc_create() ) {
+		echo 'toggle-open';
+	} else {
+		echo 'toggle-closed';
+	}
+}

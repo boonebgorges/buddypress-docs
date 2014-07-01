@@ -73,7 +73,7 @@
 		<div id="doc-meta">
 			<?php if ( bp_is_active( 'groups' ) && current_user_can( 'bp_docs_manage' ) && apply_filters( 'bp_docs_allow_associated_group', true ) ) : ?>
 				<div id="doc-associated-group" class="doc-meta-box">
-					<div class="toggleable">
+					<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class() ?>">
 						<p class="toggle-switch" id="associated-group-toggle">
 							<span class="hide-if-js toggle-link-no-js"><?php _e( 'Associated Group', 'bp-docs' ) ?></span>
 							<a class="hide-if-no-js toggle-link" id="associated-toggle-link" href="#"><span class="show-pane plus-or-minus"></span><?php _e( 'Associated Group', 'bp-docs' ) ?></a>
@@ -90,7 +90,7 @@
 
 			<?php if ( current_user_can( 'bp_docs_manage' ) && apply_filters( 'bp_docs_allow_access_settings', true ) ) : ?>
 				<div id="doc-settings" class="doc-meta-box">
-					<div class="toggleable">
+					<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class() ?>">
 						<p class="toggle-switch" id="settings-toggle">
 							<span class="hide-if-js toggle-link-no-js"><?php _e( 'Access', 'bp-docs' ) ?></span>
 							<a class="hide-if-no-js toggle-link" id="settings-toggle-link" href="#"><span class="show-pane plus-or-minus"></span><?php _e( 'Access', 'bp-docs' ) ?></a>
@@ -106,7 +106,7 @@
 			<?php endif ?>
 
 			<div id="doc-tax" class="doc-meta-box">
-				<div class="toggleable">
+				<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class() ?>">
 					<p id="tags-toggle-edit" class="toggle-switch">
 						<span class="hide-if-js toggle-link-no-js"><?php _e( 'Tags', 'bp-docs' ) ?></span>
 						<a class="hide-if-no-js toggle-link" id="tags-toggle-link" href="#"><span class="show-pane plus-or-minus"></span><?php _e( 'Tags', 'bp-docs' ) ?></a>
@@ -130,7 +130,7 @@
 			</div>
 
 			<div id="doc-parent" class="doc-meta-box">
-				<div class="toggleable">
+				<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class() ?>">
 					<p class="toggle-switch" id="parent-toggle">
 						<span class="hide-if-js toggle-link-no-js"><?php _e( 'Parent', 'bp-docs' ) ?></span>
 						<a class="hide-if-no-js toggle-link" id="parent-toggle-link" href="#"><span class="show-pane plus-or-minus"></span><?php _e( 'Parent', 'bp-docs' ) ?></a>
