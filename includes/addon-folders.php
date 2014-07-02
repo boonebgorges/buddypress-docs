@@ -457,11 +457,24 @@ function bp_docs_get_folders( $args = array() ) {
 		$user_id = bp_displayed_user_id();
 	}
 
+	$parent_id = 0;
+	if ( isset( $_GET['folder'] ) ) {
+		$parent_id = intval( $_GET['folder'] );
+	}
+
+	// Don't try to do a tree display with a parent ID
+	if ( ! is_null( $parent_id ) ) {
+		$display = 'flat';
+	} else {
+		$display = 'tree';
+	}
+
 	$r = wp_parse_args( $args, array(
 		'group_id' => $group_id,
 		'user_id' => $user_id,
-		'display' => 'tree',
+		'display' => $display,
 		'force_all_folders' => false,
+		'parent_id' => $parent_id,
 	) );
 
 	$post_args = array(
@@ -517,6 +530,10 @@ function bp_docs_get_folders( $args = array() ) {
 			'field' => 'term_id',
 			'operator' => 'NOT IN',
 		);
+	}
+
+	if ( ! is_null( $r['parent_id'] ) ) {
+		$post_args['post_parent__in'] = wp_parse_id_list( $r['parent_id'] );
 	}
 
 	$folders = get_posts( $post_args );

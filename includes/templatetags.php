@@ -760,6 +760,7 @@ function bp_docs_associated_group_dropdown( $args = array() ) {
 	$groups_args = array(
 		'per_page' => false,
 		'populate_extras' => false,
+		'type' => 'alphabetical',
 	);
 
 	if ( ! bp_current_user_can( 'bp_moderate' ) ) {
@@ -776,20 +777,9 @@ function bp_docs_associated_group_dropdown( $args = array() ) {
 	// Filter out the groups where associate_with permissions forbid
 	$removed = 0;
 	foreach ( $groups_template->groups as $gtg_key => $gtg ) {
-		$this_group_settings = groups_get_groupmeta( $gtg->id, 'bp-docs' );
-		if ( isset( $this_group_settings['can-create'] ) && in_array( $this_group_settings['can-create'], array( 'admin', 'mod' ) ) ) {
-			$is_admin = groups_is_user_admin( bp_loggedin_user_id(), $gtg->id );
-			if ( 'mod' == $this_group_settings['can-create'] ) {
-				$is_mod = groups_is_user_mod( bp_loggedin_user_id(), $gtg->id );
-				$remove = ! $is_mod && ! $is_admin;
-			} else {
-				$remove = ! $is_admin;
-			}
-
-			if ( $remove ) {
-				unset( $groups_template->groups[ $gtg_key ] );
-				$removed++;
-			}
+		if ( ! current_user_can( 'bp_docs_associate_with_group', $gtg->id ) ) {
+			unset( $groups_template->groups[ $gtg_key ] );
+			$removed++;
 		}
 	}
 
