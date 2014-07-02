@@ -49,11 +49,17 @@
 	 * Update the list of available folders when changing associated groups
 	 */
 	function update_folder_selector( group_id ) {
+		if ( $( '#existing-doc-id' ).length ) {
+			doc_id = $( '#existing-doc-id' ).val();
+		} else {
+			doc_id = 0;
+		}
+
 		$.ajax( {
 			url: ajaxurl,
 			type: 'POST',
 			data: {
-				doc_id: $( '#existing-doc-id' ).val(),
+				doc_id: doc_id,
 				action: 'bp_docs_update_folders',
 				group_id: group_id
 			},

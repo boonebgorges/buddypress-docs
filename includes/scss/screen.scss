@@ -885,9 +885,7 @@ ul.docs-folder-tree {
 // JS-specific folder tree styling
 body.js {
 	li.folder-closed {
-			opacity: .5;
-		.genericon-category {
-		}
+		opacity: .5;
 
 		& > ul {
 			display: none;
@@ -896,9 +894,6 @@ body.js {
 
 	li.folder-open {
 		opacity: 1;
-		.genericon-category {
-//			opacity: 1;
-		}
 	}
 }
 

@@ -594,7 +594,7 @@ function bp_docs_get_folders( $args = array() ) {
  * @return array
  */
 function bp_docs_folder_tax_query( $tax_query, $bp_docs_query ) {
-	if ( ! empty( $bp_docs_query->query_args['folder_id'] ) ) {
+	if ( ! is_null( $bp_docs_query->query_args['folder_id'] ) ) {
 		$folder_ids = wp_parse_id_list( $bp_docs_query->query_args['folder_id'] );
 
 		$folder_terms = array();
@@ -1060,9 +1060,10 @@ function bp_docs_folder_selector( $args = array() ) {
 		$types['global'] = array(
 			'label' => __( 'Global', 'bp-docs' ),
 			'folders' => bp_docs_get_folders( array(
-				'display'  => 'flat',
-				'group_id' => 0,
-				'user_id'  => 0,
+				'display'   => 'flat',
+				'group_id'  => null,
+				'user_id'   => null,
+				'parent_id' => null,
 			) ),
 		);
 	}
@@ -1076,8 +1077,9 @@ function bp_docs_folder_selector( $args = array() ) {
 			$types['group'] = array(
 				'label' => $group->name,
 				'folders' => bp_docs_get_folders( array(
-					'display' => 'flat',
-					'group_id' => $r['group_id'],
+					'display'   => 'flat',
+					'group_id'  => $r['group_id'],
+					'parent_id' => null,
 				) ),
 			);
 		}
@@ -1091,8 +1093,9 @@ function bp_docs_folder_selector( $args = array() ) {
 			$types['user'] = array(
 				'label' => $label,
 				'folders' => bp_docs_get_folders( array(
-					'display' => 'flat',
-					'user_id' => $r['user_id'],
+					'display'   => 'flat',
+					'user_id'   => $r['user_id'],
+					'parent_id' => null,
 				) ),
 			);
 		}
@@ -1243,6 +1246,13 @@ function bp_docs_folders_meta_box() {
 
 	$associated_group_id = bp_docs_get_associated_group_id( get_the_ID() );
 
+	if ( ! $associated_group_id && isset( $_GET['group'] ) ) {
+		$group_id = BP_Groups_Group::get_id_from_slug( urldecode( $_GET['group'] ) );
+		if ( current_user_can( 'bp_docs_associate_with_group', $group_id ) ) {
+			$associated_group_id = $group_id;
+		}
+	}
+
 	?>
 
 	<div id="doc-folders" class="doc-meta-box">
@@ -1331,18 +1341,56 @@ function bp_docs_get_folder_url( $folder_id ) {
 	$user_id  = bp_docs_get_folder_user( $folder_id );
 
 	if ( $group_id && bp_is_active( 'groups' ) ) {
-		$group = groups_get_group( array(
-			'group_id' => $group_id,
-		) );
-		$base_url = bp_get_group_permalink( $group ) . bp_docs_get_slug() . '/';
+		$base_url = bp_docs_get_directory_url( 'group', $group_id );
 	} else if ( $user_id ) {
-		$base_url = bp_core_get_user_domain( $user_id ) . bp_docs_get_slug() . '/';
+		$base_url = bp_docs_get_directory_url( 'user', $user_id );
 	} else {
-		$base_url = bp_docs_get_archive_link();
+		$base_url = bp_docs_get_directory_url( 'global' );
 	}
 
-	$url = add_query_arg( 'folder', $folder_id, $base_url );
+	$folder_id = intval( $folder_id );
+
+	if ( $folder_id ) {
+		$url = add_query_arg( 'folder', $folder_id, $base_url );
+	} else {
+		$url = $base_url;
+	}
+
 	return apply_filters( 'bp_docs_get_folder_url', $url, $folder_id );
+}
+
+/**
+ * Get the URL for a parent folder view.
+ *
+ * @param int $folder_id ID of the folder whose parent URL is being fetched.
+ * @return string URL
+ */
+function bp_docs_get_parent_folder_url( $folder_id = null ) {
+	if ( is_null( $folder_id ) && isset( $_GET['folder'] ) ) {
+		$folder_id = intval( $_GET['folder'] );
+	}
+
+	$parent_url = '';
+
+	$folder = get_post( $folder_id );
+
+	if ( ! empty( $folder->post_parent ) ) {
+		$parent_url = bp_docs_get_folder_url( $folder->post_parent );
+	} else {
+		// Folderless directory link for this specific item
+		$group_id = bp_docs_get_folder_group( $folder_id );
+		$user_id  = bp_docs_get_folder_user( $folder_id );
+
+		if ( $group_id && bp_is_active( 'groups' ) ) {
+			$parent_url = bp_docs_get_directory_url( 'group', $group_id );
+		} else if ( $user_id ) {
+			$parent_url = bp_docs_get_directory_url( 'user', $user_id );
+		} else {
+			$parent_url = bp_docs_get_directory_url( 'global' );
+		}
+	}
+
+	return $parent_url;
 }
 
 /**

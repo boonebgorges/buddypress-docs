@@ -77,7 +77,7 @@ function bp_docs_has_docs( $args = array() ) {
 		$d_parent_id = !empty( $_REQUEST['parent_doc'] ) ? (int)$_REQUEST['parent_doc'] : '';
 
 		// Folder id
-		$d_folder_id = ! empty( $_GET['folder'] ) ? intval( $_GET['folder'] ) : null;
+		$d_folder_id = ! empty( $_GET['folder'] ) ? intval( $_GET['folder'] ) : 0;
 
 		// Page number, posts per page
 		$d_paged = 1;
@@ -1147,6 +1147,40 @@ function bp_docs_delete_doc_button( $doc_id = false ) {
 
 		return $button;
 	}
+
+/**
+ * Get a directory link appropriate for this item.
+ *
+ * @since 1.9
+ *
+ * @param string $item_type 'global', 'group', 'user'. Default: 'global'.
+ * @param int $item_id If $item_type is not 'global', the ID of the item.
+ * @return string
+ */
+function bp_docs_get_directory_url( $item_type = 'global', $item_id = 0 ) {
+	switch ( $item_type ) {
+		case 'user' :
+			$url = bp_core_get_user_domain( $item_id ) . bp_docs_get_slug() . '/';
+			break;
+
+		case 'group' :
+			if ( bp_is_active( 'groups' ) ) {
+				$group = groups_get_group( array(
+					'group_id' => $item_id,
+				) );
+				$url = bp_get_group_permalink( $group ) . bp_docs_get_slug() . '/';
+				break;
+			}
+			// otherwise fall through
+
+		case 'global' :
+		default :
+			$url = bp_docs_get_archive_link();
+			break;
+	}
+
+	return $url;
+}
 
 /**
  * Echo the pagination links for the doc list view
