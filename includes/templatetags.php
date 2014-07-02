@@ -747,20 +747,19 @@ function bp_docs_inline_toggle_js() {
  *
  * @since 1.8
  */
-=======
-
-	// Last check: if this is a second attempt at a newly created Doc,
-	// there may be a previously submitted value
-	if ( empty( $selected_group ) && ! empty( buddypress()->bp_docs->submitted_data->associated_group_id ) ) {
-		$selected_group = intval( buddypress()->bp_docs->submitted_data->associated_group_id );
-	}
-
-	$selected_group = intval( $selected_group );
+function bp_docs_associated_group_dropdown( $args = array() ) {
+	$r = wp_parse_args( $args, array(
+		'name'         => 'associated_group_id',
+		'id'           => 'associated_group_id',
+		'selected'     => null,
+		'options_only' => false,
+		'echo'         => true,
+		'null_option'  => true,
+	) );
 
 	$groups_args = array(
 		'per_page' => false,
 		'populate_extras' => false,
-		'type' => 'alphabetical',
 	);
 
 	if ( ! bp_current_user_can( 'bp_moderate' ) ) {
@@ -777,9 +776,20 @@ function bp_docs_inline_toggle_js() {
 	// Filter out the groups where associate_with permissions forbid
 	$removed = 0;
 	foreach ( $groups_template->groups as $gtg_key => $gtg ) {
-		if ( ! current_user_can( 'bp_docs_associate_with_group', $gtg->id ) ) {
-			unset( $groups_template->groups[ $gtg_key ] );
-			$removed++;
+		$this_group_settings = groups_get_groupmeta( $gtg->id, 'bp-docs' );
+		if ( isset( $this_group_settings['can-create'] ) && in_array( $this_group_settings['can-create'], array( 'admin', 'mod' ) ) ) {
+			$is_admin = groups_is_user_admin( bp_loggedin_user_id(), $gtg->id );
+			if ( 'mod' == $this_group_settings['can-create'] ) {
+				$is_mod = groups_is_user_mod( bp_loggedin_user_id(), $gtg->id );
+				$remove = ! $is_mod && ! $is_admin;
+			} else {
+				$remove = ! $is_admin;
+			}
+
+			if ( $remove ) {
+				unset( $groups_template->groups[ $gtg_key ] );
+				$removed++;
+			}
 		}
 	}
 
@@ -845,6 +855,14 @@ function bp_docs_doc_associated_group_markup() {
 	if ( ! $selected_group && is_singular() ) {
 		$selected_group = bp_docs_get_associated_group_id( get_the_ID() );
 	}
+
+	// Last check: if this is a second attempt at a newly created Doc,
+	// there may be a previously submitted value
+	if ( empty( $selected_group ) && ! empty( buddypress()->bp_docs->submitted_data->associated_group_id ) ) {
+		$selected_group = buddypress()->bp_docs->submitted_data->associated_group_id;
+	}
+
+	$selected_group = intval( $selected_group );
 
 	?>
 	<tr>
