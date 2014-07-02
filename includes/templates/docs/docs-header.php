@@ -25,7 +25,7 @@
 				<a href="<?php bp_docs_doc_link() ?>"><?php _e( 'Read', 'bp-docs' ) ?></a>
 			</li>
 
-			<?php if ( bp_docs_current_user_can( 'edit' ) ) : ?>
+			<?php if ( current_user_can( 'bp_docs_edit' ) ) : ?>
 				<li<?php if ( bp_docs_is_doc_edit() ) : ?> class="current"<?php endif ?>>
 					<a href="<?php bp_docs_doc_edit_link() ?>"><?php _e( 'Edit', 'bp-docs' ) ?></a>
 				</li>

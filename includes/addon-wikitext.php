@@ -8,18 +8,8 @@ class BP_Docs_Wikitext {
 	 * @package BuddyPress Docs
 	 * @since 1.2
 	 */
-	function __construct() {
+	public function __construct() {
 		add_filter( 'the_content', array( $this, 'bracket_links' ) );
-	}
-
-	/**
-	 * PHP 4 constructor
-	 *
-	 * @package BuddyPress Docs
-	 * @since 1.2
-	 */
-	function bp_docs_wikitext() {
-		$this->__construct();
 	}
 
 	/**
@@ -30,15 +20,13 @@ class BP_Docs_Wikitext {
 	 */
 	function bracket_links( $content ) {
 		// Don't do this on a non-Doc
-		global $post;
-
-		if ( empty( $post->post_type ) || $post->post_type != bp_docs_get_post_type_name() ) {
+		if ( ! bp_docs_is_existing_doc() ) {
 			return $content;
 		}
 
 		// Find the text enclosed in double brackets.
 		// Letters, numbers, spaces, parentheses, pipes
-		$pattern = '|\[\[([a-zA-Z\s0-9\(\)\|]+?)\]\]|';
+		$pattern = '|\[\[([a-zA-Z\s0-9\-\(\)\|]+?)\]\]|';
 		$content = preg_replace_callback( $pattern, array( $this, 'process_bracket_content' ), $content );
 
 		return $content;
@@ -70,39 +58,6 @@ class BP_Docs_Wikitext {
 			$link_text = $link_page = $match[1];
 		}
 
-		// Exclude docs from other groups. Todo: move this out
-
-		// Query for all the current group's docs
-		if ( isset( $bp->groups->current_group->id ) ) {
-			$query_args = array(
-				'tax_query' => array(
-					array(
-						'taxonomy' => $bp->bp_docs->associated_item_tax_name,
-						'terms' => array( $bp->groups->current_group->id ),
-						'field' => 'name',
-						'operator' => 'IN',
-						'include_children' => false
-					),
-				),
-				'post_type' => $bp->bp_docs->post_type_name,
-				'showposts' => '-1'
-			);
-		}
-
-		$this_group_docs = new WP_Query( $query_args );
-
-		$this_group_doc_ids = array();
-		foreach( $this_group_docs->posts as $gpost ) {
-			$this_group_doc_ids[] = $gpost->ID;
-		}
-
-		if ( !empty( $this_group_doc_ids ) ) {
-			$in_clause = " AND $wpdb->posts.ID IN (" . implode(',', $this_group_doc_ids ) . ")";
-		} else {
-			$in_clause = '';
-		}
-
-
 		// Look for a page with this title. WP_Query does not allow this for some reason
 		$docs = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->posts WHERE post_title = %s AND post_type = %s {$in_clause}", $link_page, bp_docs_get_post_type_name() ) );
 
@@ -123,7 +78,7 @@ class BP_Docs_Wikitext {
 			$class 	   = 'existing-doc';
 		} else {
 			// If no result is found, create a link to the edit page
-			$permalink = add_query_arg( 'create_title', urlencode( $link_page ), bp_docs_get_item_docs_link() . BP_DOCS_CREATE_SLUG );
+			$permalink = add_query_arg( 'create_title', urlencode( $link_page ), bp_docs_get_create_link() );
 			$class	   = 'nonexistent-doc';
 		}
 

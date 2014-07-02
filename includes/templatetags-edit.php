@@ -25,8 +25,22 @@ function bp_docs_edit_doc_title() {
 	 * @return string Doc title
 	 */
 	function bp_docs_get_edit_doc_title() {
-		$title = bp_docs_is_existing_doc() ? esc_attr( get_the_title() ) : '';
-		return apply_filters( 'bp_docs_get_edit_doc_title', $title );
+		// If a previously-submitted value is found, prefer it. It
+		// means that there was a failed submission just prior to this
+		if ( ! empty( buddypress()->bp_docs->submitted_data->doc->title ) ) {
+			$title = buddypress()->bp_docs->submitted_data->doc->title;
+		} else {
+			$title = bp_docs_is_existing_doc() ? get_the_title() : '';
+		}
+
+		// If no title has been found yet, check to see whether one has
+		// been submitted using create_title URL param (from the
+		// [[wikitext]] linking functionality)
+		if ( empty( $title ) && ! empty( $_GET['create_title'] ) ) {
+			$title = urldecode( $_GET['create_title'] );
+		}
+
+		return apply_filters( 'bp_docs_get_edit_doc_title', esc_attr( $title ) );
 	}
 
 /**
@@ -49,9 +63,15 @@ function bp_docs_edit_doc_slug() {
 	function bp_docs_get_edit_doc_slug() {
 		global $post;
 
-		$slug = isset( $post->post_name ) ? esc_attr( $post->post_name ) : '';
+		// If a previously-submitted value is found, prefer it. It
+		// means that there was a failed submission just prior to this
+		if ( ! empty( buddypress()->bp_docs->submitted_data->doc->permalink ) ) {
+			$slug = buddypress()->bp_docs->submitted_data->doc->permalink;
+		} else {
+			$slug = isset( $post->post_name ) ? $post->post_name : '';
+		}
 
-		return apply_filters( 'bp_docs_get_edit_doc_slug', $slug );
+		return apply_filters( 'bp_docs_get_edit_doc_slug', esc_attr( $slug ) );
 	}
 
 /**
@@ -73,7 +93,13 @@ function bp_docs_edit_doc_content() {
 	 */
 	function bp_docs_get_edit_doc_content() {
 		global $post;
-		$content = bp_docs_is_existing_doc() ? $post->post_content : '';
+
+		if ( ! empty( buddypress()->bp_docs->submitted_data->doc_content ) ) {
+			$content = buddypress()->bp_docs->submitted_data->doc_content;
+		} else {
+			$content = bp_docs_is_existing_doc() ? $post->post_content : '';
+		}
+
 		return apply_filters( 'bp_docs_get_edit_doc_content', $content );
 	}
 
@@ -101,7 +127,10 @@ function bp_docs_edit_parent_dropdown() {
 	$current_doc = get_queried_object();
 	$exclude = $parent = false;
 
-	if ( isset( $current_doc->post_type ) && bp_docs_get_post_type_name() === $current_doc->post_type ) {
+	// If this is a failed submission, use the value from the POST cookie
+	if ( ! empty( buddypress()->bp_docs->submitted_data->parent_id ) ) {
+		$parent = intval( buddypress()->bp_docs->submitted_data->parent_id );
+	} else if ( isset( $current_doc->post_type ) && bp_docs_get_post_type_name() === $current_doc->post_type ) {
 		$exclude = array( $current_doc->ID );
 		$parent = $current_doc->post_parent;
 	}

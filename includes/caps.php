@@ -22,10 +22,6 @@ if ( !defined( 'ABSPATH' ) ) exit;
  * @param string $cap Capability name
  * @param int $user_id User id
  * @param mixed $args Arguments passed to map_meta_cap filter
- * @uses get_post() To get the post
- * @uses get_post_type_object() To get the post type object
- * @uses apply_filters() Calls 'bp_docs_map_meta_caps' with caps, cap, user id and
- *                        args
  * @return array Actual capabilities for meta capability
  */
 function bp_docs_map_meta_caps( $caps, $cap, $user_id, $args ) {
@@ -37,65 +33,91 @@ function bp_docs_map_meta_caps( $caps, $cap, $user_id, $args ) {
 		return $caps;
 	}
 
-	// Set up some data we'll need for these permission checks
-	$doc = bp_docs_get_doc_for_caps( $args );
-
-	// Nothing to check
-	if ( empty( $doc ) ) {
-		return $caps;
-	}
-
-	$post_type    = get_post_type_object( $doc->post_type );
-	$doc_settings = bp_docs_get_doc_settings( $doc_id );
-
-	// Reset all caps. We bake from scratch
-	$caps = array();
-
 	switch ( $cap ) {
-		case 'create_bp_doc' :
-			// @todo This will probably need more thought
-			if ( ! is_user_logged_in() ) {
+		case 'bp_docs_create' :
+			// Reset all caps. We bake from scratch
+			$caps = array();
+
+			// Should never get here if there's no user
+			if ( ! $user_id ) {
 				$caps[] = 'do_not_allow';
+
+			// All logged-in users can create
 			} else {
-				// @todo - need to detect group membership
-				$caps[] = $cap;
+				$caps[] = 'exist';
 			}
 
 			break;
 
-		case 'read_bp_doc' :
-			$caps[] = 'exist'; // anyone can read Docs by default
-			break;
+		case 'bp_docs_read' :
+		case 'bp_docs_edit' :
+		case 'bp_docs_view_history' :
+		case 'bp_docs_manage' :
+		case 'bp_docs_read_comments' :
+		case 'bp_docs_post_comments' :
+			// Reset all caps. We bake from scratch
+			$caps = array();
 
-		case 'edit_bp_doc' :
-			if ( $user_id == $doc->post_author ) {
-				$caps[] = $cap;
-			} else if ( isset( $doc_settings['edit'] ) ) {
-				var_dump( $doc_settings['edit'] );
-			} else if ( bp_docs_user_has_custom_access( $user_id, $doc_settings, 'edit' ) ) {
-				$caps[] = $cap;
-			} else {
-				$caps[] = 'do_not_allow';
+			$doc = bp_docs_get_doc_for_caps( $args );
+
+			if ( empty( $doc ) ) {
+				break;
+			}
+
+			// Special case: view_history requires post revisions
+			// @todo Move this to addon-history
+			if ( 'bp_docs_view_history' === $cap && ! wp_revisions_enabled( $doc ) ) {
+				return array( 'do_not_allow' );
+			}
+
+			// Admins can do everything
+			if ( user_can( $user_id, 'bp_moderate' ) ) {
+				return array( 'exist' );
+			}
+
+			$doc_settings = bp_docs_get_doc_settings( $doc->ID );
+
+			// Caps are stored without the 'bp_docs_' prefix,
+			// mostly for legacy reasons
+			$cap_name = substr( $cap, 8 );
+
+			switch ( $doc_settings[ $cap_name ] ) {
+				case 'anyone' :
+					$caps[] = 'exist';
+					break;
+
+				case 'loggedin' :
+					if ( ! $user_id ) {
+						$caps[] = 'do_not_allow';
+					} else {
+						$caps[] = 'exist';
+					}
+
+					break;
+
+				case 'creator' :
+					if ( $user_id == $doc->post_author ) {
+						$caps[] = 'exist';
+					} else {
+						$caps[] = 'do_not_allow';
+					}
+
+					break;
+
+				case 'no-one' :
+				default :
+					$caps[] = 'do_not_allow';
+					break;
+
+				// Group-specific caps get passed to filter
 			}
 
 			break;
-
-		case 'view_bp_doc_history' :
-			if ( $user_id == $doc->post_author ) {
-				$caps[] = $cap;
-			} else if ( bp_docs_user_has_custom_access( $user_id, $doc_settings, 'view_history' ) ) {
-				$caps[] = $cap;
-			} else {
-				$caps[] = 'do_not_allow';
-			}
-
-			break;
-
 	}
 
 	return apply_filters( 'bp_docs_map_meta_caps', $caps, $cap, $user_id, $args );
 }
-//add_filter( 'map_meta_cap', 'bp_docs_map_meta_caps', 10, 4 );
+add_filter( 'map_meta_cap', 'bp_docs_map_meta_caps', 10, 4 );
 
 /**
  * Load up the doc to check against for meta cap mapping
@@ -115,6 +137,10 @@ function bp_docs_get_doc_for_caps( $args = array() ) {
 		$doc = get_post( $doc_id );
 	} else if ( isset( $post->ID ) ) {
 		$doc = $post;
+	}
+
+	if ( ! is_a( $doc, 'WP_Post' ) || bp_docs_get_post_type_name() !== $doc->post_type ) {
+		$doc = null;
 	}
 
 	return $doc;

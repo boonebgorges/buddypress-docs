@@ -326,7 +326,7 @@ class BP_Docs_Attachments {
 			return;
 		}
 
-		if ( ! bp_docs_current_user_can( 'edit' ) ) {
+		if ( ! current_user_can( 'bp_docs_edit' ) ) {
 			return;
 		}
 

@@ -203,6 +203,72 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 
 		$this->assertNotEquals( $last_activity, groups_get_groupmeta( $g, 'last_activity' ) );
 	}
+
+	/**
+	 * @group comments
+	 */
+	public function test_comment_as_logged_out_user_failure() {
+		$old_current_user = get_current_user_id();
+		$this->set_current_user( 0 );
+
+		$d = $this->factory->doc->create();
+		$d_settings = bp_docs_get_doc_settings( $d );
+		$d_settings['post_comments'] = 'loggedin';
+		update_post_meta( $d, 'bp_docs_settings', $d_settings );
+
+		$c_args = array(
+			'comment_post_ID' => $d,
+			'comment_content' => 'Test',
+			'comment_author' => 'foo',
+			'comment_author_url' => '',
+			'comment_author_email' => 'foo@bar.com',
+			'comment_type' => '',
+		);
+
+		// Gah
+		add_filter( 'pre_option_moderation_notify', '__return_zero' );
+		$c = wp_new_comment( $c_args );
+		remove_filter( 'pre_option_moderation_notify', '__return_zero' );
+
+		$this->set_current_user( $old_current_user );
+
+		$comment = get_comment( $c );
+
+		$this->assertEquals( 0, $comment->comment_approved );
+	}
+
+	/**
+	 * @group comments
+	 */
+	public function test_comment_as_logged_out_user_success() {
+		$old_current_user = get_current_user_id();
+		$this->set_current_user( 0 );
+
+		$d = $this->factory->doc->create();
+		$d_settings = bp_docs_get_doc_settings( $d );
+		$d_settings['post_comments'] = 'anyone';
+		update_post_meta( $d, 'bp_docs_settings', $d_settings );
+
+		$c_args = array(
+			'comment_post_ID' => $d,
+			'comment_content' => 'Test',
+			'comment_author' => 'foo',
+			'comment_author_url' => '',
+			'comment_author_email' => 'foo@bar.com',
+			'comment_type' => '',
+		);
+
+		// Gah
+		add_filter( 'pre_option_moderation_notify', '__return_zero' );
+		$c = wp_new_comment( $c_args );
+		remove_filter( 'pre_option_moderation_notify', '__return_zero' );
+
+		$this->set_current_user( $old_current_user );
+
+		$comment = get_comment( $c );
+
+		$this->assertEquals( 1, $comment->comment_approved );
+	}
 }
 
 
