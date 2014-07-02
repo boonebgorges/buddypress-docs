@@ -197,82 +197,38 @@ function bp_docs_info_header() {
 	function bp_docs_get_info_header() {
 		$filters = bp_docs_get_current_filters();
 
-		$link_base = trailingslashit( remove_query_arg( 'view', bp_get_requested_url() ) );
-		$views = array(
-			'list' => array(
-				'name' => __( 'List', 'bp-docs' ),
-			),
-			'tree' => array(
-				'name' => __( 'Tree', 'bp-docs' ),
-			),
-		);
+		// Set the message based on the current filters
+		if ( empty( $filters ) ) {
+			$message = __( 'You are viewing <strong>all</strong> docs.', 'bp-docs' );
+		} else {
+			$message = array();
 
-		$default_view = apply_filters( 'bp_docs_default_view', 'list' );
+			$message = apply_filters( 'bp_docs_info_header_message', $message, $filters );
 
-		$view_links = array();
-		foreach ( $views as $query_arg => $view_info ) {
-			if ( $query_arg === $default_view ) {
-				$href = $link_base;
-				$class = empty( $_GET['view'] ) || $query_arg === $_GET['view'] ? 'current' : '';
-			} else {
-				$href = add_query_arg( 'view', $query_arg, $link_base );
-				$class = ! empty( $_GET['view'] ) && $query_arg === $_GET['view'] ? 'current' : '';
-			}
+			$message = implode( "\n", $message );
 
-			$view_links[] = sprintf(
-				'<a id="docs-view-%s" class="docs-view-title %s" href="%s">%s</a>',
-				esc_attr( $query_arg ),
-				$class,
-				esc_url( $href ),
-				esc_html( $view_info['name'] )
-			);
+			// We are viewing a subset of docs, so we'll add a link to clear filters
+			$message .= ' - ' . sprintf( __( '<strong><a href="%s" title="View All Docs">View All Docs</a></strong>', 'bp-docs' ), remove_query_arg( array( 'bpd_tag', 's', 'search_submit', 'folder' ) ) );
 		}
 
 		?>
-		<div class="docs-filters" id="docs-view-as">
-			<p>
-				<?php printf(
-					__( 'View As: %s' ),
-					implode( $view_links )
-				) ?>
-			</p>
-		</div>
-		<?php
 
-		// Set the message based on the current filters
-		// These filters are only relevant when on 'list' view
-		if ( ( 'list' === $default_view && empty( $_GET['view'] ) ) || ( ! empty( $_GET['view'] ) && 'list' === $_GET['view'] ) ) {
-			if ( empty( $filters ) ) {
-				$message = __( 'You are viewing <strong>all</strong> docs.', 'bp-docs' );
-			} else {
-				$message = array();
+		<p class="currently-viewing"><?php echo $message ?></p>
 
-				$message = apply_filters( 'bp_docs_info_header_message', $message, $filters );
+		<?php if ( $filter_titles = bp_docs_filter_titles() ) : ?>
+			<div class="docs-filters">
+				<p id="docs-filter-meta">
+					<?php printf( __( 'Filter by: %s', 'bp-docs' ), $filter_titles ) ?>
+				</p>
 
-				$message = implode( "\n", $message );
-
-				// We are viewing a subset of docs, so we'll add a link to clear filters
-				$message .= ' - ' . sprintf( __( '<strong><a href="%s" title="View All Docs">View All Docs</a></strong>', 'bp-docs' ), remove_query_arg( array( 'bpd_tag', 's', 'search_submit', 'folder' ) ) );
-			}
-
-			?>
-
-			<p class="currently-viewing"><?php echo $message ?></p>
-
-			<?php if ( $filter_titles = bp_docs_filter_titles() ) : ?>
-				<div class="docs-filters">
-					<p id="docs-filter-meta">
-						<?php printf( __( 'Filter by: %s', 'bp-docs' ), $filter_titles ) ?>
-					</p>
-
-					<div id="docs-filter-sections">
-						<?php do_action( 'bp_docs_filter_sections' ) ?>
-					</div>
+				<div id="docs-filter-sections">
+					<?php do_action( 'bp_docs_filter_sections' ) ?>
 				</div>
+			</div>
 
-				<div class="clear"> </div>
-			<?php endif ?>
-		<?php }
+			<div class="clear"> </div>
+		<?php endif ?>
+		<?php
 	}
 
 /**

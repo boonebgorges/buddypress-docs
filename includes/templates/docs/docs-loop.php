@@ -67,7 +67,9 @@
 		</tr>
 	<?php endforeach ?>
 
+	<?php $has_docs = false ?>
 	<?php if ( bp_docs_has_docs() ) : ?>
+		<?php $has_docs = true ?>
 		<?php while ( bp_docs_has_docs() ) : bp_docs_the_doc() ?>
 			<tr<?php bp_docs_doc_row_classes(); ?>>
 				<?php if ( bp_docs_enable_attachments() ) : ?>
@@ -107,23 +109,19 @@
 				<?php do_action( 'bp_docs_loop_additional_td' ) ?>
 			</tr>
 		<?php endwhile ?>
-	<?php else : ?>
-		<?php if ( bp_docs_current_user_can_create_in_context() ) : ?>
-			<p class="no-docs"><?php printf( __( 'There are no docs for this view. Why not <a href="%s">create one</a>?', 'bp-docs' ), bp_docs_get_create_link() ) ?>
-		<?php else : ?>
-			<p class="no-docs"><?php _e( 'There are no docs for this view.', 'bp-docs' ) ?></p>
-		<?php endif ?>
 	<?php endif ?>
 	</tbody>
 	</table>
 
-	<div id="bp-docs-pagination">
-		<div id="bp-docs-pagination-count">
-			<?php printf( __( 'Viewing %1$s-%2$s of %3$s docs', 'bp-docs' ), bp_docs_get_current_docs_start(), bp_docs_get_current_docs_end(), bp_docs_get_total_docs_num() ) ?>
-		</div>
+	<?php if ( $has_docs ) : ?>
+		<div id="bp-docs-pagination">
+			<div id="bp-docs-pagination-count">
+				<?php printf( __( 'Viewing %1$s-%2$s of %3$s docs', 'bp-docs' ), bp_docs_get_current_docs_start(), bp_docs_get_current_docs_end(), bp_docs_get_total_docs_num() ) ?>
+			</div>
 
-		<div id="bp-docs-paginate-links">
-			<?php bp_docs_paginate_links() ?>
+			<div id="bp-docs-paginate-links">
+				<?php bp_docs_paginate_links() ?>
+			</div>
 		</div>
-	</div>
+	<?php endif; ?>
 </div><!-- /#buddypress -->
