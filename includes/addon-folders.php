@@ -594,7 +594,23 @@ function bp_docs_get_folders( $args = array() ) {
  * @return array
  */
 function bp_docs_folder_tax_query( $tax_query, $bp_docs_query ) {
-	if ( ! is_null( $bp_docs_query->query_args['folder_id'] ) ) {
+	// Folder 0 means: find Docs not in a folder
+	if ( 0 === $bp_docs_query->query_args['folder_id'] ) {
+		// Get all folders
+		// @todo Is there a better way? Not in WP_Query I don't think
+		$folder_terms = get_terms( 'bp_docs_doc_in_folder', array(
+			'fields' => 'ids',
+		) );
+
+		$tax_query[] = array(
+			'taxonomy' => 'bp_docs_doc_in_folder',
+			'field'    => 'term_id',
+			'terms'    => $folder_terms,
+			'operator' => 'NOT IN',
+		);
+
+	// Find Docs in the following folders
+	} else if ( ! is_null( $bp_docs_query->query_args['folder_id'] ) ) {
 		$folder_ids = wp_parse_id_list( $bp_docs_query->query_args['folder_id'] );
 
 		$folder_terms = array();
