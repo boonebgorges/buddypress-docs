@@ -62,9 +62,9 @@ window.wp = window.wp || {};
 
 	$(document).ready(function(){
 		file_frame = new BP_Docs_MediaFrame({
-			title: bp_docs.upload_title,
+			title: bp_docs_attachments.upload_title,
 			button: {
-				text: bp_docs.upload_button,
+				text: bp_docs_attachments.upload_button,
 			},
 			multiple: false
 		});
