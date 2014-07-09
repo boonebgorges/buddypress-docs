@@ -153,7 +153,7 @@ jQuery(document).ready(function($){
 
 		wp.heartbeat.interval( Number( bp_docs.pulse ) );
 
-		jq.fn.extend({
+		$.fn.extend({
 			'heartbeat-send': function() {
 			return this.bind( 'heartbeat-send.buddypress-docs' );
 	        },
@@ -246,7 +246,7 @@ function bp_docs_load_idle() {
 
 		/* Remove the edit lock when the user clicks away */
 		jQuery( "a" ).click(function( event ){
-			if ( $( event.target ).hasClass( 'toggle-link' ) ) {
+			if ( jQuery( event.target ).hasClass( 'toggle-link' ) ) {
 				return true;
 			}
 
