@@ -153,7 +153,7 @@ jQuery(document).ready(function($){
 
 		wp.heartbeat.interval( Number( bp_docs.pulse ) );
 
-		jq.fn.extend({
+		$.fn.extend({
 			'heartbeat-send': function() {
 			return this.bind( 'heartbeat-send.buddypress-docs' );
 	        },
