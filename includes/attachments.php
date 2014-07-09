@@ -615,24 +615,18 @@ class BP_Docs_Attachments {
 		$is_ajax = isset( $_SERVER['REQUEST_METHOD'] ) && 'POST' === $_SERVER['REQUEST_METHOD'] && 'async-upload.php' === substr( $_SERVER['REQUEST_URI'], strrpos( $_SERVER['REQUEST_URI'], '/' ) + 1 );
 
 		if ( $is_ajax ) {
-			// Clean up referer
-			$referer = $_SERVER['HTTP_REFERER'];
-			$qp = strpos( $referer, '?' );
-			if ( false !== $qp ) {
-				$referer = substr( $referer, 0, $qp );
-			}
-			$referer = trailingslashit( $referer );
+			// WordPress sends the 'media-form' nonce, which we use
+			// as an initial screen
+			$nonce   = isset( $_REQUEST['_wpnonce'] ) ? stripslashes( $_REQUEST['_wpnonce'] ) : '';
+			$post_id = isset( $_REQUEST['post_id'] ) ? intval( $_REQUEST['post_id'] ) : '';
 
-			// Existing Doc
-			$item_id = self::get_doc_id_from_url( $referer );
-			if ( $item_id ) {
-				$item = get_post( $item_id );
-				$is_doc = bp_docs_get_post_type_name() === $item->post_type;
-			}
+			if ( wp_verify_nonce( $nonce, 'media-form' ) && $post_id ) {
+				$post   = get_post( $post_id );
 
-			// Create Doc
-			if ( ! $is_doc ) {
-				$is_doc = $referer === bp_docs_get_create_link();
+				// The dummy Doc created during the Create
+				// process should pass this test, in addition to
+				// existing Docs
+				$is_doc = isset( $post->post_type ) && bp_docs_get_post_type_name() === $post->post_type;
 			}
 		} else {
 			$is_doc = bp_docs_is_existing_doc() || bp_docs_is_doc_create();
@@ -662,7 +656,7 @@ class BP_Docs_Attachments {
 	 * @since 1.4
 	 */
 	public static function map_meta_cap_supp( $caps, $cap, $user_id, $args ) {
-		if ( 'edit_post' !== $cap ) {
+		if ( 'upload_files' !== $cap ) {
 			return $caps;
 		}
 
