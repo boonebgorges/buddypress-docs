@@ -3,14 +3,14 @@
 /**
  * Folder functionality.
  *
- * @since 1.8
+ * @since 1.9
  */
 class BP_Docs_Folders {
 
 	/**
 	 * Constructor.
 	 *
-	 * @since 1.8
+	 * @since 1.9
 	 */
 	public function __construct() {
 		$this->register_post_type();
@@ -28,7 +28,7 @@ class BP_Docs_Folders {
 	 * This add-on is loaded after 'init', so we call it directly from the
 	 * constructor.
 	 *
-	 * @since 1.8
+	 * @since 1.9
 	 */
 	public function register_post_type() {
 		$labels = array(
@@ -55,7 +55,7 @@ class BP_Docs_Folders {
 	 * - bp_docs_folder_in_group contains relationships between Folders
 	 *   and Groups
 	 *
-	 * @since 1.8
+	 * @since 1.9
 	 */
 	public function register_taxonomies() {
 		register_taxonomy( 'bp_docs_doc_in_folder', bp_docs_get_post_type_name(), array(
@@ -76,7 +76,7 @@ class BP_Docs_Folders {
 	/**
 	 * Enqueue CSS and JS assets.
 	 *
-	 * @since 1.8
+	 * @since 1.9
 	 */
 	public function enqueue_assets() {
 		wp_register_script( 'bp-docs-chosen', plugins_url() . '/buddypress-docs/lib/js/chosen/chosen.jquery.min.js', array( 'jquery' ) );
@@ -95,7 +95,7 @@ class BP_Docs_Folders {
 	}
 
 	/**
-	 * @since 1.8
+	 * @since 1.9
 	 */
 	public function user_can( $user_can, $action, $user_id, $doc_id ) {
 		$folders_caps = array(
@@ -240,7 +240,7 @@ function bp_docs_get_folder_in_item_term( $item_id, $item_type ) {
 /**
  * Get the ID of folder that a Doc is in.
  *
- * @since 1.8
+ * @since 1.9
  *
  * @param int $doc_id ID of the Doc.
  * @return int|bool ID of the folder if found, otherwise false.
@@ -296,7 +296,7 @@ function bp_docs_get_folder_user( $folder_id ) {
 /**
  * Add a Doc to a Folder.
  *
- * @since 1.8
+ * @since 1.9
  *
  * @param int $doc_id
  * @param int $folder_id
@@ -347,7 +347,7 @@ function bp_docs_add_doc_to_folder( $doc_id, $folder_id, $append = false ) {
 /**
  * Create a Folder.
  *
- * @since 1.8
+ * @since 1.9
  *
  * @param array $args {
  *     Array of parameters.
@@ -431,7 +431,7 @@ function bp_docs_create_folder( $args ) {
 /**
  * Get a list of folders.
  *
- * @since 1.8
+ * @since 1.9
  *
  * @param array $args {
  *     List of arguments.
@@ -587,7 +587,7 @@ function bp_docs_get_folders( $args = array() ) {
 /**
  * Filter the BP_Docs_Query tax_query to account for the folder_id param.
  *
- * @since 1.8
+ * @since 1.9
  *
  * @param array $tax_query Tax query to be passed to WP_Query.
  * @param BP_Docs_Query $bp_docs_query
@@ -634,7 +634,7 @@ add_filter( 'bp_docs_tax_query', 'bp_docs_folder_tax_query', 10, 2 );
 /**
  * Save folder selections on Doc save.
  *
- * @since 1.8
+ * @since 1.9
  *
  * @param int $doc_id
  * @return bool True on success, false on failure.
@@ -699,7 +699,7 @@ add_action( 'bp_docs_after_save', 'bp_docs_save_folder_selection' );
 /**
  * Update folders based on group selections.
  *
- * @since 1.8
+ * @since 1.9
  */
 function bp_docs_update_folders_cb() {
 	if ( ! isset( $_POST['doc_id'] ) || ! isset( $_POST['group_id'] ) ) {
@@ -722,7 +722,7 @@ add_action( 'wp_ajax_bp_docs_update_folders', 'bp_docs_update_folders_cb' );
 /**
  * Update parent folder selector based on folder type.
  *
- * @since 1.8
+ * @since 1.9
  */
 function bp_docs_update_parent_folders_cb() {
 	if ( ! isset( $_POST['folder_type'] ) ) {
@@ -815,7 +815,7 @@ add_action( 'wp_ajax_bp_docs_update_folder_type', 'bp_docs_update_folder_type_cb
 /**
  * Process folder drops.
  *
- * @since 1.8
+ * @since 1.9
  */
 function bp_docs_process_folder_drop_cb() {
 	if ( empty( $_POST['doc_id'] ) ) {
@@ -991,7 +991,7 @@ add_action( 'bp_actions', 'bp_docs_process_folder_create_cb' );
 /**
  * Is this 'tree' view?
  *
- * @since 1.8
+ * @since 1.9
  *
  * @return bool
  */
@@ -1006,7 +1006,7 @@ function bp_docs_is_folder_tree_view() {
 /**
  * Is this 'manage' view?
  *
- * @since 1.8
+ * @since 1.9
  *
  * @return bool
  */
@@ -1021,7 +1021,7 @@ function bp_docs_is_folder_manage_view() {
 /**
  * Fetch <select> box for folder selection.
  *
- * @since 1.8
+ * @since 1.9
  *
  * @param array $args {
  *     Array of optional arguments.
@@ -1151,7 +1151,7 @@ function bp_docs_folder_selector( $args = array() ) {
 /**
  * Get a Type selector dropdown.
  *
- * @since 1.8
+ * @since 1.9
  */
 function bp_docs_folder_type_selector( $args = array() ) {
 	$r = wp_parse_args( $args, array(
@@ -1193,7 +1193,7 @@ function bp_docs_folder_type_selector( $args = array() ) {
  *
  * Used on Doc Edit/Create as well as the Folders management page.
  *
- * @since 1.8
+ * @since 1.9
  */
 function bp_docs_create_new_folder_markup( $args = array() ) {
 	$default_group_id = null;
@@ -1256,7 +1256,7 @@ function bp_docs_create_new_folder_markup( $args = array() ) {
 /**
  * Add the meta box to the edit page.
  *
- * @since 1.8
+ * @since 1.9
  */
 function bp_docs_folders_meta_box() {
 
@@ -1319,7 +1319,7 @@ add_action( 'bp_docs_before_tags_meta_box', 'bp_docs_folders_meta_box' );
 /**
  * Show Folder info on a single Doc.
  *
- * @since 1.8
+ * @since 1.9
  */
 function bp_docs_display_folder_meta() {
 	$doc_id    = get_the_ID();
@@ -1412,7 +1412,7 @@ function bp_docs_get_parent_folder_url( $folder_id = null ) {
 /**
  * Add folder-related filters to the list of current directory filters.
  *
- * @since 1.8
+ * @since 1.9
  *
  * @param array $filters
  * @return array
@@ -1430,7 +1430,7 @@ add_filter( 'bp_docs_get_current_filters', 'bp_docs_folder_current_filters' );
 /**
  * Add folder filter info to the directory header message.
  *
- * @since 1.8
+ * @since 1.9
  *
  * @param array $message
  * @param array $filters
@@ -1466,27 +1466,27 @@ add_filter( 'bp_docs_info_header_message', 'bp_docs_folder_info_header_message',
 /**
  * Create dropdown <option> values for BP Docs Folders.
  *
- * @since 1.8
+ * @since 1.9
  * @uses Walker
  */
 class BP_Docs_Folder_Dropdown_Walker extends Walker {
 	/**
 	 * @see Walker::$tree_type
-	 * @since 1.8
+	 * @since 1.9
 	 * @var string
 	 */
 	var $tree_type = 'bp_docs_folder';
 
 	/**
 	 * @see Walker::$db_fields
-	 * @since 1.8
+	 * @since 1.9
 	 * @var array
 	 */
 	var $db_fields = array( 'parent' => 'post_parent', 'id' => 'ID' );
 
 	/**
 	 * @see Walker::start_el()
-	 * @since 1.8
+	 * @since 1.9
 	 *
 	 * @param string $output Passed by reference. Used to append additional content.
 	 * @param object $page Page data object.
@@ -1515,20 +1515,20 @@ class BP_Docs_Folder_Dropdown_Walker extends Walker {
 /**
  * Get a folder tree for the Manage screen.
  *
- * @since 1.8
+ * @since 1.9
  * @uses Walker
  */
 class BP_Docs_Folder_Manage_Walker extends Walker {
 	/**
 	 * @see Walker::$tree_type
-	 * @since 1.8
+	 * @since 1.9
 	 * @var string
 	 */
 	var $tree_type = 'bp_docs_folder';
 
 	/**
 	 * @see Walker::$db_fields
-	 * @since 1.8
+	 * @since 1.9
 	 * @var array
 	 */
 	var $db_fields = array( 'parent' => 'post_parent', 'id' => 'ID' );
@@ -1545,7 +1545,7 @@ class BP_Docs_Folder_Manage_Walker extends Walker {
 
 	/**
 	 * @see Walker::start_el()
-	 * @since 1.8
+	 * @since 1.9
 	 *
 	 * @param string $output Passed by reference. Used to append additional content.
 	 * @param object $page Page data object.
@@ -1637,20 +1637,20 @@ class BP_Docs_Folder_Manage_Walker extends Walker {
 /**
  * Get a folder tree.
  *
- * @since 1.8
+ * @since 1.9
  * @uses Walker
  */
 class BP_Docs_Folder_Walker extends Walker {
 	/**
 	 * @see Walker::$tree_type
-	 * @since 1.8
+	 * @since 1.9
 	 * @var string
 	 */
 	var $tree_type = 'bp_docs_folder';
 
 	/**
 	 * @see Walker::$db_fields
-	 * @since 1.8
+	 * @since 1.9
 	 * @var array
 	 */
 	var $db_fields = array( 'parent' => 'post_parent', 'id' => 'ID' );
@@ -1667,7 +1667,7 @@ class BP_Docs_Folder_Walker extends Walker {
 
 	/**
 	 * @see Walker::start_el()
-	 * @since 1.8
+	 * @since 1.9
 	 *
 	 * @param string $output Passed by reference. Used to append additional content.
 	 * @param object $page Page data object.
