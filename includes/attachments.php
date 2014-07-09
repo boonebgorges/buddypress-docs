@@ -589,7 +589,7 @@ class BP_Docs_Attachments {
 	}
 
 	/**
-	 * Give users the 'upload_files' cap, when appropriate
+	 * Give users the 'edit_post' and 'upload_files' cap, when appropriate
 	 *
 	 * @since 1.4
 	 *
@@ -600,7 +600,7 @@ class BP_Docs_Attachments {
 	 * @return array $caps
 	 */
 	public static function map_meta_cap( $caps, $cap, $user_id, $args ) {
-		if ( 'upload_files' !== $cap ) {
+		if ( 'upload_files' !== $cap && 'edit_post' !== $cap ) {
 			return $caps;
 		}
 
@@ -645,7 +645,7 @@ class BP_Docs_Attachments {
 	}
 
 	/**
-	 * Make sure the current user has the 'edit_post' cap, when appropriate
+	 * Make sure the current user has the 'edit_post' and 'upload_files' caps, when appropriate
 	 *
 	 * We do the necessary permissions checks in self::map_meta_cap(). If
 	 * the checks pass, then we can blindly hook this filter without doing
@@ -656,7 +656,7 @@ class BP_Docs_Attachments {
 	 * @since 1.4
 	 */
 	public static function map_meta_cap_supp( $caps, $cap, $user_id, $args ) {
-		if ( 'upload_files' !== $cap ) {
+		if ( 'upload_files' !== $cap && 'edit_post' !== $cap ) {
 			return $caps;
 		}
 
