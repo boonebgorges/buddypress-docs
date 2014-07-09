@@ -35,11 +35,13 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 = 1.8 =
 * Settings boxes default to closed on existing Docs, simplifying the interface, especially on mobile devices
+* Improved handling of permissions for uploading attachments
 * Overhauled internal capabilities system, for better reliability and customization
 * Use submitted values to rerender page after a failed create/edit action
 * Better protection against comment spam
 * Better suggestions for default access settings when changing Doc group associations
 * Fix wikitext-style [[links]] when pointing to non-existent Docs
+* Better localization for some strings as used in Javascript
 
 = 1.7.1 =
 * Don't run document protection check on AJAX calls
