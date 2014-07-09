@@ -195,6 +195,8 @@ function bp_docs_info_header() {
 	 * @return str Permalink for the group doc
 	 */
 	function bp_docs_get_info_header() {
+		do_action( 'bp_docs_before_info_header' );
+
 		$filters = bp_docs_get_current_filters();
 
 		// Set the message based on the current filters

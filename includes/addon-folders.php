@@ -1189,6 +1189,53 @@ function bp_docs_folder_type_selector( $args = array() ) {
 }
 
 /**
+ * Info Header breadcrumbs.
+ *
+ * @since 1.9
+ */
+function bp_docs_folder_breadcrumb() {
+	$folder_id = 0;
+	if ( isset( $_GET['folder'] ) ) {
+		$folder_id = intval( $_GET['folder'] );
+	}
+
+	$descendants    = array();
+	$this_folder_id = $folder_id;
+
+	// Recurse up the tree
+	while ( 0 !== $this_folder_id ) {
+		$folder = get_post( $this_folder_id );
+		$descendants[] = array(
+			'id'     => $folder->ID,
+			'parent' => $folder->post_parent,
+			'name'   => $folder->post_title,
+		);
+
+		$this_folder_id = intval( $folder->post_parent );
+	}
+
+	// Sort from top to bottom
+	$descendants = array_reverse( $descendants );
+
+	$breadcrumb_items = array();
+	foreach ( $descendants as $d ) {
+		$breadcrumb_items[] = sprintf(
+			'<span class="bp-docs-folder-breadcrumb" id="bp-docs-folder-breadcrumb-%s"><i class="genericon genericon-category"></i><a href="%s">%s</a></span>',
+			$d['id'],
+			'#',
+			esc_html( $d['name'] )
+		);
+	}
+
+	$breadcrumbs  = '<div class="bp-docs-folder-breadcrumbs">';
+	$breadcrumbs .= implode( ' > ', $breadcrumb_items );
+	$breadcrumbs .= '</div>';
+
+	echo $breadcrumbs;
+}
+add_action( 'bp_docs_before_info_header', 'bp_docs_folder_breadcrumb' );
+
+/**
  * Create the markup for creating a new folder.
  *
  * Used on Doc Edit/Create as well as the Folders management page.
