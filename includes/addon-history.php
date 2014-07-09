@@ -98,13 +98,13 @@ class BP_Docs_History {
 		case 'restore' :
 			if ( !$this->revision = wp_get_post_revision( $this->revision_id ) )
 				break;
-			if ( !bp_docs_current_user_can( 'edit' ) )
+			if ( ! current_user_can( 'bp_docs_edit' ) )
 				break;
 			if ( !$post = get_post( $this->revision->post_parent ) )
 				break;
 
 			// Revisions disabled and we're not looking at an autosave
-			if ( ( ! WP_POST_REVISIONS || !post_type_supports( $post->post_type, 'revisions') ) && !wp_is_post_autosave( $this->revision ) ) {
+			if ( ! wp_revisions_enabled( $post ) && !wp_is_post_autosave( $this->revision ) ) {
 				$redirect = 'edit.php?post_type=' . $post->post_type;
 				break;
 			}
@@ -138,7 +138,7 @@ class BP_Docs_History {
 			else
 				break; // Don't diff two unrelated revisions
 
-			if ( ! WP_POST_REVISIONS || !post_type_supports( $post->post_type, 'revisions' ) ) { // Revisions disabled
+			if ( ! wp_revisions_enabled( $post ) ) { // Revisions disabled
 
 				if (
 					// we're not looking at an autosave
@@ -184,7 +184,7 @@ class BP_Docs_History {
 				break;
 
 			// Revisions disabled and we're not looking at an autosave
-			if ( ( ! WP_POST_REVISIONS || !post_type_supports($post->post_type, 'revisions') ) && !wp_is_post_autosave( $this->revision ) ) {
+			if ( ! wp_revisions_enabled( $post ) && !wp_is_post_autosave( $this->revision ) ) {
 				$redirect = 'edit.php?post_type=' . $post->post_type;
 				break;
 			}
@@ -364,7 +364,7 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
 
 	$rows = $right_checked = '';
 	$class = false;
-	$can_edit_post = bp_docs_current_user_can( 'edit' );
+	$can_edit_post = current_user_can( 'bp_docs_edit' );
 	foreach ( $revisions as $revision ) {
 		if ( 'revision' === $type && wp_is_post_autosave( $revision ) )
 			continue;
@@ -453,7 +453,7 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
  * @since 1.1.4
  */
 function bp_docs_history_tab() {
-	if ( bp_docs_current_user_can( 'view_history' ) ) : ?>
+	if ( current_user_can( 'bp_docs_view_history' ) ) : ?>
 		<li<?php if ( bp_docs_is_doc_history() ) : ?> class="current"<?php endif ?>>
 			<a href="<?php echo bp_docs_get_doc_link() . BP_DOCS_HISTORY_SLUG ?>"><?php _e( 'History', 'bp-docs' ) ?></a>
 		</li>

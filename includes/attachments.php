@@ -326,7 +326,7 @@ class BP_Docs_Attachments {
 			return;
 		}
 
-		if ( ! bp_docs_current_user_can( 'edit' ) ) {
+		if ( ! current_user_can( 'bp_docs_edit' ) ) {
 			return;
 		}
 
@@ -382,6 +382,11 @@ class BP_Docs_Attachments {
 	function enqueue_scripts() {
 		if ( bp_docs_is_doc_edit() || bp_docs_is_doc_create() ) {
 			wp_enqueue_script( 'bp-docs-attachments', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/attachments.js' ), array( 'media-editor', 'media-views' ), false, true );
+
+			wp_localize_script( 'bp-docs-attachments', 'bp_docs_attachments', array(
+				'upload_title'  => __( 'Upload File', 'bp-docs' ),
+				'upload_button' => __( 'OK', 'bp-docs' ),
+			) );
 		}
 	}
 
@@ -589,7 +594,7 @@ class BP_Docs_Attachments {
 	}
 
 	/**
-	 * Give users the 'upload_files' cap, when appropriate
+	 * Give users the 'edit_post' and 'upload_files' cap, when appropriate
 	 *
 	 * @since 1.4
 	 *
@@ -600,7 +605,7 @@ class BP_Docs_Attachments {
 	 * @return array $caps
 	 */
 	public static function map_meta_cap( $caps, $cap, $user_id, $args ) {
-		if ( 'upload_files' !== $cap ) {
+		if ( 'upload_files' !== $cap && 'edit_post' !== $cap ) {
 			return $caps;
 		}
 
@@ -615,24 +620,18 @@ class BP_Docs_Attachments {
 		$is_ajax = isset( $_SERVER['REQUEST_METHOD'] ) && 'POST' === $_SERVER['REQUEST_METHOD'] && 'async-upload.php' === substr( $_SERVER['REQUEST_URI'], strrpos( $_SERVER['REQUEST_URI'], '/' ) + 1 );
 
 		if ( $is_ajax ) {
-			// Clean up referer
-			$referer = $_SERVER['HTTP_REFERER'];
-			$qp = strpos( $referer, '?' );
-			if ( false !== $qp ) {
-				$referer = substr( $referer, 0, $qp );
-			}
-			$referer = trailingslashit( $referer );
+			// WordPress sends the 'media-form' nonce, which we use
+			// as an initial screen
+			$nonce   = isset( $_REQUEST['_wpnonce'] ) ? stripslashes( $_REQUEST['_wpnonce'] ) : '';
+			$post_id = isset( $_REQUEST['post_id'] ) ? intval( $_REQUEST['post_id'] ) : '';
 
-			// Existing Doc
-			$item_id = self::get_doc_id_from_url( $referer );
-			if ( $item_id ) {
-				$item = get_post( $item_id );
-				$is_doc = bp_docs_get_post_type_name() === $item->post_type;
-			}
+			if ( wp_verify_nonce( $nonce, 'media-form' ) && $post_id ) {
+				$post   = get_post( $post_id );
 
-			// Create Doc
-			if ( ! $is_doc ) {
-				$is_doc = $referer === bp_docs_get_create_link();
+				// The dummy Doc created during the Create
+				// process should pass this test, in addition to
+				// existing Docs
+				$is_doc = isset( $post->post_type ) && bp_docs_get_post_type_name() === $post->post_type;
 			}
 		} else {
 			$is_doc = bp_docs_is_existing_doc() || bp_docs_is_doc_create();
@@ -651,7 +650,7 @@ class BP_Docs_Attachments {
 	}
 
 	/**
-	 * Make sure the current user has the 'edit_post' cap, when appropriate
+	 * Make sure the current user has the 'edit_post' and 'upload_files' caps, when appropriate
 	 *
 	 * We do the necessary permissions checks in self::map_meta_cap(). If
 	 * the checks pass, then we can blindly hook this filter without doing
@@ -662,7 +661,7 @@ class BP_Docs_Attachments {
 	 * @since 1.4
 	 */
 	public static function map_meta_cap_supp( $caps, $cap, $user_id, $args ) {
-		if ( 'edit_post' !== $cap ) {
+		if ( 'upload_files' !== $cap && 'edit_post' !== $cap ) {
 			return $caps;
 		}
 

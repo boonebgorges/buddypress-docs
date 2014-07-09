@@ -469,9 +469,7 @@ class BP_Docs_Groups_Integration {
 			}
 		}
 
-		$can_associate = self::user_can_associate_doc_with_group( bp_loggedin_user_id(), $group_id );
-
-		if ( $can_associate ) {
+		if ( $group_id && current_user_can( 'bp_docs_associate_with_group', $group_id ) ) {
 			$group = groups_get_group( 'group_id=' . intval( $group_id ) );
 
 			$options[40] = array(
@@ -515,6 +513,8 @@ class BP_Docs_Groups_Integration {
 	 * Can a given user associate a doc with a given group?
 	 */
 	public static function user_can_associate_doc_with_group( $user_id, $group_id ) {
+		_deprecated_function( __FUNCTION__, '1.8', "Use current_user_can( 'bp_docs_associate_with_group' ) instead" );
+
 		$group = groups_get_group( 'group_id=' . intval( $group_id ) );
 
 		// No one can associate anything with a non-existent group
@@ -538,7 +538,7 @@ class BP_Docs_Groups_Integration {
 		$can_create = isset( $group_settings['can-create'] ) ? $group_settings['can-create'] : 'member';
 
 		if ( 'admin' == $can_create ) {
-			return groups_is_user_admin( $user_id, $group_id );
+			return (bool) groups_is_user_admin( $user_id, $group_id );
 		} else if ( 'mod' == $can_create ) {
 			return groups_is_user_admin( $user_id, $group_id ) || groups_is_user_mod( $user_id, $group_id );
 		}
@@ -893,8 +893,9 @@ class BP_Docs_Groups_Integration {
 	}
 
 	function get_create_link( $link ) {
+
 		$slug = bp_get_current_group_slug();
-		if ( $slug ) {
+		if ( $slug && current_user_can( 'bp_docs_associate_with_group', bp_get_current_group_id() ) ) {
 			$link = add_query_arg( 'group', $slug, $link );
 		}
 
@@ -1338,7 +1339,7 @@ function bp_docs_group_tabs( $group = false ) {
 ?>
 	<li<?php if ( $bp->bp_docs->current_view == 'list' ) : ?> class="current"<?php endif; ?>><a href="<?php echo $bp->root_domain . '/' . $groups_slug ?>/<?php echo $group->slug ?>/<?php echo $bp->bp_docs->slug ?>/"><?php _e( 'View Docs', 'bp-docs' ) ?></a></li>
 
-	<?php if ( bp_docs_current_user_can( 'create' ) ) : ?>
+	<?php if ( current_user_can( 'bp_docs_create' ) ) : ?>
 		<li<?php if ( 'create' == $bp->bp_docs->current_view ) : ?> class="current"<?php endif; ?>><a href="<?php echo $bp->root_domain . '/' . $groups_slug ?>/<?php echo $group->slug ?>/<?php echo $bp->bp_docs->slug ?>/create"><?php _e( 'New Doc', 'bp-docs' ) ?></a></li>
 	<?php endif ?>
 
@@ -1521,5 +1522,126 @@ function bp_docs_get_group_settings( $group_id ) {
 		$settings = array();
 	}
 
-	return $settings;
+	$parsed_settings = wp_parse_args( $settings, array(
+		'group-enable'	=> 1,
+		'can-create' 	=> 'member',
+	) );
+
+	return $parsed_settings;
 }
+
+/**
+ * Group-specific meta cap mapping.
+ *
+ * Some bp_docs_ capabilities require referencing group-specific info. We do
+ * this here.
+ *
+ * @since 1.8
+ */
+function bp_docs_groups_map_meta_caps( $caps, $cap, $user_id, $args ) {
+	switch ( $cap ) {
+		case 'bp_docs_read' :
+		case 'bp_docs_edit' :
+		case 'bp_docs_view_history' :
+		case 'bp_docs_manage' :
+		case 'bp_docs_read_comments' :
+		case 'bp_docs_post_comments' :
+			$doc = bp_docs_get_doc_for_caps( $args );
+
+			if ( empty( $doc ) ) {
+				break;
+			}
+
+			$group_id = bp_docs_get_associated_group_id( $doc->ID, $doc );
+
+			// If not associated with a group, nothing to do here
+			if ( ! $group_id ) {
+				break;
+			}
+
+			if ( user_can( $user_id, 'bp_moderate' ) ) {
+				return array( 'exist' );
+			}
+
+			$caps = array();
+
+			$doc_settings = bp_docs_get_doc_settings( $doc->ID );
+
+			// Caps are stored without the 'bp_docs_' prefix,
+			// mostly for legacy reasons
+			$cap_name = substr( $cap, 8 );
+
+			switch ( $doc_settings[ $cap_name ] ) {
+				case 'group-members' :
+					if ( groups_is_user_member( $user_id, $group_id ) ) {
+						$caps[] = 'exist';
+					} else {
+						$caps[] = 'do_not_allow';
+					}
+
+					break;
+
+				case 'admins-mods' :
+					if ( groups_is_user_admin( $user_id, $group_id ) || groups_is_user_mod( $user_id, $group_id ) ) {
+						$caps[] = 'exist';
+					} else {
+						$caps[] = 'do_not_allow';
+					}
+					break;
+			}
+
+			break;
+
+		case 'bp_docs_associate_with_group' :
+			if ( isset( $args[0] ) ) {
+				$group_id = intval( $args[0] );
+			} else if ( bp_is_group() ) {
+				$group_id = bp_get_current_group_id();
+			}
+
+			if ( empty( $group_id ) ) {
+				break;
+			}
+
+			if ( user_can( $user_id, 'bp_moderate' ) ) {
+				return array( 'exist' );
+			}
+
+			$caps = array();
+
+			$group_settings = bp_docs_get_group_settings( $group_id );
+
+			switch ( $group_settings['can-create'] ) {
+				case 'admin' :
+					if ( groups_is_user_admin( $user_id, $group_id ) ) {
+						$caps[] = 'exist';
+					} else {
+						$caps[] = 'do_not_allow';
+					}
+
+					break;
+				case 'mod' :
+					if ( groups_is_user_mod( $user_id, $group_id ) || groups_is_user_admin( $user_id, $group_id ) ) {
+						$caps[] = 'exist';
+					} else {
+						$caps[] = 'do_not_allow';
+					}
+
+					break;
+				case 'member' :
+				default :
+					if ( groups_is_user_member( $user_id, $group_id ) ) {
+						$caps[] = 'exist';
+					} else {
+						$caps[] = 'do_not_allow';
+					}
+
+					break;
+			}
+
+			break;
+	}
+
+	return $caps;
+}
+add_filter( 'bp_docs_map_meta_caps', 'bp_docs_groups_map_meta_caps', 10, 4 );

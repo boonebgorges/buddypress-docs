@@ -71,10 +71,13 @@
 		<?php endif ?>
 
 		<div id="doc-meta">
-			<?php if ( bp_is_active( 'groups' ) && bp_docs_current_user_can( 'manage' ) && apply_filters( 'bp_docs_allow_associated_group', true ) ) : ?>
+			<?php if ( bp_is_active( 'groups' ) && current_user_can( 'bp_docs_manage' ) && apply_filters( 'bp_docs_allow_associated_group', true ) ) : ?>
 				<div id="doc-associated-group" class="doc-meta-box">
-					<div class="toggleable">
-						<p class="toggle-switch" id="associated-group-toggle"><?php _e( 'Associated Group', 'bp-docs' ) ?></p>
+					<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class() ?>">
+						<p class="toggle-switch" id="associated-group-toggle">
+							<span class="hide-if-js toggle-link-no-js"><?php _e( 'Associated Group', 'bp-docs' ) ?></span>
+							<a class="hide-if-no-js toggle-link" id="associated-toggle-link" href="#"><span class="show-pane plus-or-minus"></span><?php _e( 'Associated Group', 'bp-docs' ) ?></a>
+						</p>
 
 						<div class="toggle-content">
 							<table class="toggle-table" id="toggle-table-associated-group">
@@ -85,10 +88,13 @@
 				</div>
 			<?php endif ?>
 
-			<?php if ( bp_docs_current_user_can( 'manage' ) && apply_filters( 'bp_docs_allow_access_settings', true ) ) : ?>
+			<?php if ( current_user_can( 'bp_docs_manage' ) && apply_filters( 'bp_docs_allow_access_settings', true ) ) : ?>
 				<div id="doc-settings" class="doc-meta-box">
-					<div class="toggleable">
-						<p class="toggle-switch" id="settings-toggle"><?php _e( 'Access', 'bp-docs' ) ?></p>
+					<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class() ?>">
+						<p class="toggle-switch" id="settings-toggle">
+							<span class="hide-if-js toggle-link-no-js"><?php _e( 'Access', 'bp-docs' ) ?></span>
+							<a class="hide-if-no-js toggle-link" id="settings-toggle-link" href="#"><span class="show-pane plus-or-minus"></span><?php _e( 'Access', 'bp-docs' ) ?></a>
+						</p>
 
 						<div class="toggle-content">
 							<table class="toggle-table" id="toggle-table-settings">
@@ -100,8 +106,11 @@
 			<?php endif ?>
 
 			<div id="doc-tax" class="doc-meta-box">
-				<div class="toggleable">
-					<p id="tags-toggle-edit" class="toggle-switch"><?php _e( 'Tags', 'bp-docs' ) ?></p>
+				<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class() ?>">
+					<p id="tags-toggle-edit" class="toggle-switch">
+						<span class="hide-if-js toggle-link-no-js"><?php _e( 'Tags', 'bp-docs' ) ?></span>
+						<a class="hide-if-no-js toggle-link" id="tags-toggle-link" href="#"><span class="show-pane plus-or-minus"></span><?php _e( 'Tags', 'bp-docs' ) ?></a>
+					</p>
 
 					<div class="toggle-content">
 						<table class="toggle-table" id="toggle-table-tags">
@@ -121,8 +130,11 @@
 			</div>
 
 			<div id="doc-parent" class="doc-meta-box">
-				<div class="toggleable">
-					<p class="toggle-switch" id="parent-toggle"><?php _e( 'Parent', 'bp-docs' ) ?></p>
+				<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class() ?>">
+					<p class="toggle-switch" id="parent-toggle">
+						<span class="hide-if-js toggle-link-no-js"><?php _e( 'Parent', 'bp-docs' ) ?></span>
+						<a class="hide-if-no-js toggle-link" id="parent-toggle-link" href="#"><span class="show-pane plus-or-minus"></span><?php _e( 'Parent', 'bp-docs' ) ?></a>
+					</p>
 
 					<div class="toggle-content">
 						<table class="toggle-table" id="toggle-table-parent">
@@ -154,7 +166,7 @@
 			<input type="submit" name="doc-edit-submit" id="doc-edit-submit" value="<?php _e( 'Save', 'bp-docs' ) ?>"> <a href="<?php bp_docs_cancel_edit_link() ?>" class="action safe"><?php _e( 'Cancel', 'bp-docs' ); ?></a>
 
 			<?php if ( bp_docs_is_existing_doc() ) : ?>
-				<?php if ( bp_docs_current_user_can( 'manage', $doc_id ) ) : ?>
+				<?php if ( current_user_can( 'bp_docs_manage', $doc_id ) ) : ?>
 					<?php bp_docs_delete_doc_button() ?>
 				<?php endif ?>
 			<?php endif ?>
@@ -166,8 +178,6 @@
 	</form>
 
 	</div><!-- .doc-content -->
-
-	<?php bp_docs_inline_toggle_js() ?>
 
 	<?php if ( !function_exists( 'wp_editor' ) ) : ?>
 	<script type="text/javascript">

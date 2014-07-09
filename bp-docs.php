@@ -342,7 +342,9 @@ class BP_Docs {
 		$this->hierarchy = new BP_Docs_Hierarchy;
 
 		// Don't load the History component if post revisions are disabled
-		if ( defined( 'WP_POST_REVISIONS' ) && WP_POST_REVISIONS ) {
+		$wp_post_revisions = defined( 'WP_POST_REVISIONS' ) && WP_POST_REVISIONS;
+		$bp_docs_revisions = defined( 'BP_DOCS_REVISIONS' ) && BP_DOCS_REVISIONS;
+		if ( $wp_post_revisions || $bp_docs_revisions ) {
 			require_once( BP_DOCS_INCLUDES_PATH . 'addon-history.php' );
 			$this->history = new BP_Docs_History;
 		}
@@ -525,25 +527,24 @@ class BP_Docs {
 	 * Protects group docs from unauthorized access
 	 *
 	 * @since 1.2
-	 * @uses bp_docs_current_user_can() This does most of the heavy lifting
 	 */
 	function protect_doc_access() {
 		// What is the user trying to do?
 		if ( bp_docs_is_doc_read() ) {
-			$action = 'read';
+			$action = 'bp_docs_read';
 		} else if ( bp_docs_is_doc_create() ) {
-			$action = 'create';
+			$action = 'bp_docs_create';
 		} else if ( bp_docs_is_doc_edit() ) {
-			$action = 'edit';
+			$action = 'bp_docs_edit';
 		} else if ( bp_docs_is_doc_history() ) {
-			$action = 'view_history';
+			$action = 'bp_docs_view_history';
 		}
 
 		if ( ! isset( $action ) ) {
 			return;
 		}
 
-		if ( ! bp_docs_current_user_can( $action ) ) {
+		if ( ! current_user_can( $action ) ) {
 			$redirect_to = bp_docs_get_doc_link();
 
 			bp_core_no_access( array(

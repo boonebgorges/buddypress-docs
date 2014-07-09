@@ -474,9 +474,20 @@ function bp_docs_post_tags_meta_box() {
 	$tax_name = esc_attr( $taxonomy );
 	$taxonomy = get_taxonomy( $taxonomy );
 
-	$terms = bp_docs_is_existing_doc() ? get_terms_to_edit( get_the_ID(), $bp->bp_docs->docs_tag_tax_name ) : '';
+	// If this is a failed submission, use the value from the POST cookie
+	if ( ! empty( buddypress()->bp_docs->submitted_data->{$tax_name} ) ) {
+		$terms = buddypress()->bp_docs->submitted_data->{$tax_name};
+
+	// If it's an existing Doc, look up the terms
+	} else if ( bp_docs_is_existing_doc() ) {
+		$terms = get_terms_to_edit( get_the_ID(), $bp->bp_docs->docs_tag_tax_name );
+
+	// Otherwise nothing to show
+	} else {
+		$terms = '';
+	}
 ?>
-	<textarea name="<?php echo "$tax_name"; ?>" class="the-tags" id="tax-input-<?php echo $tax_name; ?>"><?php echo $terms; // textarea_escaped by esc_attr() ?></textarea>
+	<textarea name="<?php echo "$tax_name"; ?>" class="the-tags" id="tax-input-<?php echo $tax_name; ?>"><?php echo esc_textarea( $terms ); ?></textarea>
 <?php
 }
 

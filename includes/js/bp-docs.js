@@ -46,39 +46,16 @@ jQuery(document).ready(function($){
 	/* When a toggle is clicked, show the toggle-content */
 	$('.toggle-link').click(function(){
 		// Traverse for some items
-		var $toggleable = $(this).parents('.toggleable');
-		var tc = $toggleable.find('.toggle-content');
-		var ts = $toggleable.find('.toggle-switch');
-		var $pom = $(this).find('.plus-or-minus');
+		var $toggleable = $( this ).parents( '.toggleable' );
+		var $tc = $toggleable.find( '.toggle-content' );
+		var $ts = $toggleable.find( '.toggle-switch' );
+		var $pom = $( this ).find( '.plus-or-minus' );
 
-		// Toggle the active-content class
-		if($(tc).hasClass('active-content')){
-			$(tc).removeClass('active-content');
-		}else{
-			$(tc).addClass('active-content');
-		}
-
-		// Toggle the active-switch class
-		if($(ts).hasClass('active-switch')){
-			$(ts).removeClass('active-switch');
-		}else{
-			$(ts).addClass('active-switch');
-		}
-
-		// Slide the tags up or down
-		var rclass, aclass;
-		if ( $pom.hasClass('show-pane') ) {
-			rclass = 'show-pane';
-			aclass = 'hide-pane';
+		if ( $toggleable.hasClass( 'toggle-open' ) ) {
 			$toggleable.removeClass( 'toggle-open' ).addClass( 'toggle-closed' );
 		} else {
-			rclass = 'hide-pane';
-			aclass = 'show-pane';
 			$toggleable.removeClass( 'toggle-closed' ).addClass( 'toggle-open' );
 		}
-
-		$pom.removeClass(rclass);
-		$pom.addClass(aclass);
 
 		return false;
 	});
@@ -176,7 +153,7 @@ jQuery(document).ready(function($){
 
 		wp.heartbeat.interval( Number( bp_docs.pulse ) );
 
-		jq.fn.extend({
+		$.fn.extend({
 			'heartbeat-send': function() {
 			return this.bind( 'heartbeat-send.buddypress-docs' );
 	        },
@@ -268,7 +245,11 @@ function bp_docs_load_idle() {
 		}
 
 		/* Remove the edit lock when the user clicks away */
-		jQuery("a").click(function(){
+		jQuery( "a" ).click(function( event ){
+			if ( jQuery( event.target ).hasClass( 'toggle-link' ) ) {
+				return true;
+			}
+
 			var doc_id = jQuery("#existing-doc-id").val();
 			var data = {action:'remove_edit_lock', doc_id:doc_id};
 			jQuery.ajax({

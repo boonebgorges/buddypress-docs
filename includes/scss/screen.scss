@@ -17,8 +17,12 @@ $toggle_radius: 2px;
   column-gap: $column_gap;
 }
 
-.hide-if-no-js {
-	display: none;
+body.no-js .hide-if-no-js {
+	display: none !important;
+}
+
+body.js .hide-if-js {
+	display: none !important;
 }
 
 .description {
@@ -413,7 +417,7 @@ body.js .bp-docs-attachment-drawer {
 	display: none;
 }
 
-.hide-pane, .show-pane, .paperclip-vertical, .paperclip-jaunty{
+.plus-or-minus, .paperclip-vertical, .paperclip-jaunty {
 	background: url('../images/bp-docs-ui-sprites.png') no-repeat;
 	display: block;
 	float: left;
@@ -421,16 +425,20 @@ body.js .bp-docs-attachment-drawer {
 	margin-top: 5px;
 }
 
-.hide-pane{
-	background-position: 0 0;
-	width: 16px;
-	height: 16px;
+.toggleable.toggle-closed {
+	.plus-or-minus {
+		background-position: 0 0;
+		width: 16px;
+		height: 16px;
+	}
 }
 
-.show-pane{
-	background-position: 0 -28px ;
-	width: 16px;
-	height: 16px;
+.toggleable.toggle-open {
+	.plus-or-minus {
+		background-position: 0 -28px;
+		width: 16px;
+		height: 16px;
+	}
 }
 
 .paperclip-vertical{
@@ -458,13 +466,6 @@ body.js .bp-docs-attachment-drawer {
 	text-indent: 16px;
 	margin: 16px 0 0;
 
-	&.active-switch {
-		-moz-border-radius-bottomleft: 10px;
-		-webkit-border-bottom-left-radius: 10px;
-		-moz-border-radius-bottomright: 10px;
-		-webkit-border-bottom-right-radius: 10px;
-		border-radius: 3px 3px 0px 0px;
-	}
 
 	a {
 		color: $grey_text;
@@ -477,6 +478,16 @@ body.js .bp-docs-attachment-drawer {
 			font-weight: bold;
 		}
 	}
+}
+
+// Remove border radius on bottom when toggle is open
+.toggleable.toggle-open .toggle-switch,
+.toggleable.toggle-open .entry-content p.toggle-switch {
+		-moz-border-radius-bottomleft: 10px;
+		-webkit-border-bottom-left-radius: 10px;
+		-moz-border-radius-bottomright: 10px;
+		-webkit-border-bottom-right-radius: 10px;
+		border-radius: 3px 3px 0px 0px;
 }
 
 .standard-form label.toggle-switch {

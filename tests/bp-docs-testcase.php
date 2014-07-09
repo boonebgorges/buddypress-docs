@@ -9,7 +9,6 @@ class BP_Docs_TestCase extends BP_UnitTestCase {
 		$this->factory->doc = new BP_Docs_UnitTest_Factory_For_Doc( $this->factory );
 
 		$this->old_current_user = get_current_user_id();
-		$this->set_current_user( $this->factory->user->create( array( 'role' => 'subscriber' ) ) );
 	}
 
 	public function tearDown() {

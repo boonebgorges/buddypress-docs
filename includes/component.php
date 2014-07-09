@@ -15,6 +15,7 @@ if ( !class_exists( 'BP_Component' ) ) {
 
 class BP_Docs_Component extends BP_Component {
 	var $groups_integration;
+	var $submitted_data = array();
 
 	var $post_type_name;
 	var $associated_tax_name;
@@ -68,6 +69,9 @@ class BP_Docs_Component extends BP_Component {
 
 		$this->attachments = new BP_Docs_Attachments();
 //		add_action( 'wp', array( $this, 'setup_attachments' ), 1 );
+
+		// Get submitted form data out of the cookie
+		add_action( 'bp_actions', array( $this, 'submitted_form_data' ) );
 
 		/**
 		 * Methods related to comment behavior
@@ -200,6 +204,18 @@ class BP_Docs_Component extends BP_Component {
 		}
 
 		parent::setup_admin_bar( $wp_admin_nav );
+	}
+
+	/**
+	 * Get previously submitted form data out of the cookie, and stash.
+	 *
+	 * @since 1.8
+	 */
+	public function submitted_form_data() {
+		if ( isset( $_COOKIE['bp-docs-submit-data'] ) ) {
+			$this->submitted_data = json_decode( stripslashes( $_COOKIE['bp-docs-submit-data'] ) );
+			setcookie( 'bp-docs-submit-data', '', time() - 24*60*60, '/' );
+		}
 	}
 
 	/**
@@ -373,8 +389,8 @@ class BP_Docs_Component extends BP_Component {
 
 		// If this is the edit screen, ensure that the user can edit the
 		// doc before querying, and redirect if necessary
-		if ( !empty( $bp->bp_docs->current_view ) && 'edit' == $bp->bp_docs->current_view ) {
-			if ( bp_docs_current_user_can( 'edit' ) ) {
+		if ( bp_docs_is_doc_edit() ) {
+			if ( current_user_can( 'bp_docs_edit' ) ) {
 				$doc = bp_docs_get_current_doc();
 
 				// The user can edit, so we check for edit locks
@@ -387,29 +403,25 @@ class BP_Docs_Component extends BP_Component {
 				if ( $lock ) {
 					bp_core_add_message( sprintf( __( 'This doc is currently being edited by %s. To prevent overwrites, you cannot edit until that user has finished. Please try again in a few minutes.', 'bp-docs' ), bp_core_get_user_displayname( $lock ) ), 'error' );
 
-					$group_permalink = bp_get_group_permalink( $bp->groups->current_group );
-					$doc_slug = $bp->bp_docs->doc_slug;
-
 					// Redirect back to the non-edit view of this document
+					bp_core_redirect( bp_docs_get_doc_link( $doc->ID ) );
 					bp_core_redirect( $group_permalink . $bp->bp_docs->slug . '/' . $doc_slug );
 				}
 			} else {
-				if ( function_exists( 'bp_core_no_access' ) && !is_user_logged_in() )
+				if ( function_exists( 'bp_core_no_access' ) && !is_user_logged_in() ) {
 					bp_core_no_access();
+				}
 
 				// The user does not have edit permission. Redirect.
 				bp_core_add_message( __( 'You do not have permission to edit the doc.', 'bp-docs' ), 'error' );
 
-				$group_permalink = bp_get_group_permalink( $bp->groups->current_group );
-				$doc_slug = $bp->bp_docs->doc_slug;
-
 				// Redirect back to the non-edit view of this document
-				bp_core_redirect( $group_permalink . $bp->bp_docs->slug . '/' . $doc_slug );
+				bp_core_redirect( bp_docs_get_doc_link( $doc->ID ) );
 			}
 		}
 
 		if ( bp_docs_is_doc_create() ) {
-			if ( !bp_docs_current_user_can( 'create' ) ) {
+			if ( ! current_user_can( 'bp_docs_create' ) ) {
 				// The user does not have edit permission. Redirect.
 				if ( function_exists( 'bp_core_no_access' ) && !is_user_logged_in() )
 					bp_core_no_access();
@@ -424,21 +436,19 @@ class BP_Docs_Component extends BP_Component {
 		}
 
 		if ( !empty( $bp->bp_docs->current_view ) && 'history' == $bp->bp_docs->current_view ) {
-			if ( !bp_docs_current_user_can( 'view_history' ) ) {
-				if ( !bp_docs_current_user_can( 'view_history' ) ) {
-					// The user does not have edit permission. Redirect.
-					if ( function_exists( 'bp_core_no_access' ) && !is_user_logged_in() )
-						bp_core_no_access();
+			if ( ! current_user_can( 'bp_docs_view_history' ) ) {
+				// The user does not have edit permission. Redirect.
+				if ( function_exists( 'bp_core_no_access' ) && !is_user_logged_in() )
+					bp_core_no_access();
 
-					bp_core_add_message( __( 'You do not have permission to view this Doc\'s history.', 'bp-docs' ), 'error' );
+				bp_core_add_message( __( 'You do not have permission to view this Doc\'s history.', 'bp-docs' ), 'error' );
 
-					$doc = bp_docs_get_current_doc();
+				$doc = bp_docs_get_current_doc();
 
-					$redirect = bp_docs_get_doc_link( $doc->ID );
+				$redirect = bp_docs_get_doc_link( $doc->ID );
 
-					// Redirect back to the Doc list view
-					bp_core_redirect( $redirect );
-				}
+				// Redirect back to the Doc list view
+				bp_core_redirect( $redirect );
 			}
 		}
 
@@ -475,7 +485,7 @@ class BP_Docs_Component extends BP_Component {
 
 			check_admin_referer( 'bp_docs_delete' );
 
-			if ( bp_docs_current_user_can( 'manage' ) ) {
+			if ( current_user_can( 'bp_docs_manage' ) ) {
 				$delete_doc_id = get_queried_object_id();
 
 				if ( bp_docs_trash_doc( $delete_doc_id ) ) {
@@ -495,7 +505,7 @@ class BP_Docs_Component extends BP_Component {
 
 			$untrash_doc_id = absint( $_GET['doc_id'] );
 
-			if ( bp_docs_current_user_can( 'manage', $untrash_doc_id ) ) {
+			if ( current_user_can( 'bp_docs_manage', $untrash_doc_id ) ) {
 				if ( bp_docs_untrash_doc( $untrash_doc_id ) ) {
 					bp_core_add_message( __( 'Doc successfully removed from Trash!', 'bp-docs' ) );
 				} else {
@@ -514,7 +524,7 @@ class BP_Docs_Component extends BP_Component {
 	 */
 
 	/**
-	 * Approve all Doc comments
+	 * Approve Doc comments as necessary.
 	 *
 	 * Docs handles its own comment permissions, so we override WP's value
 	 *
@@ -526,7 +536,11 @@ class BP_Docs_Component extends BP_Component {
 	public function approve_doc_comments( $approved, $commentdata ) {
 		$post = get_post( $commentdata['comment_post_ID'] );
 		if ( bp_docs_get_post_type_name() === $post->post_type ) {
-			$approved = 1;
+			if ( bp_docs_user_can( 'post_comments', bp_loggedin_user_id(), $post->ID ) ) {
+				$approved = 1;
+			} else {
+				$approved = 0;
+			}
 		}
 
 		return $approved;
@@ -880,6 +894,7 @@ class BP_Docs_Component extends BP_Component {
 				'upload_button' => __( 'OK', 'bp-docs' ),
 				'still_working'	=> __( 'Still working?', 'bp-docs' ),
 				'and_x_more' => __( 'and %d more', 'bp-docs' ),
+				'failed_submission' => ! empty( buddypress()->bp_docs->submitted_data ) ? 1 : 0,
 			);
 
 			if ( bp_docs_is_doc_edit() ) {

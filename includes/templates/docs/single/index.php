@@ -5,7 +5,7 @@
 
 	<?php include( apply_filters( 'bp_docs_header_template', bp_docs_locate_template( 'docs-header.php' ) ) ) ?>
 
-	<?php if ( bp_docs_is_doc_edit_locked() && bp_docs_current_user_can( 'edit' ) ) : ?>
+	<?php if ( bp_docs_is_doc_edit_locked() && current_user_can( 'bp_docs_edit' ) ) : ?>
 		<div class="toggleable doc-is-locked">
 			<span class="toggle-switch" id="toggle-doc-is-locked"><?php _e( 'Locked', 'bp-docs' ) ?> <span class="hide-if-no-js description"><?php _e( '(click for more info)', 'bp-docs' ) ?></span></span>
 			<div class="toggle-content">
@@ -18,8 +18,6 @@
 				<?php endif ?>
 			</div>
 		</div>
-
-		<?php bp_docs_inline_toggle_js() ?>
 	<?php endif ?>
 
 	<?php do_action( 'bp_docs_before_doc_content' ) ?>

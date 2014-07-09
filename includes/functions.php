@@ -228,11 +228,14 @@ function bp_docs_locate_template( $template = '', $load = false, $require_once =
  *
  * @package BuddyPress Docs
  * @since 1.0-beta
+ * @deprecated 1.8
  *
  * @param str $action The cap being tested
  * @return bool $user_can
  */
 function bp_docs_current_user_can( $action = 'edit', $doc_id = false ) {
+	_deprecated_function( __FUNCTION__, '1.8', 'Use current_user_can() with "bp_docs_" prefixed capabilities instead.' );
+
 	$user_can = bp_docs_user_can( $action, bp_loggedin_user_id(), $doc_id );
 
 	return apply_filters( 'bp_docs_current_user_can', $user_can, $action );
@@ -271,6 +274,8 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
 				$doc_id = $doc->ID;
 			}
 		}
+	} else {
+		$doc = get_post( $doc_id );
 	}
 
 	$user_can = false;
@@ -331,9 +336,9 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
  */
 function bp_docs_current_user_can_create_in_context() {
 	if ( function_exists( 'bp_is_group' ) && bp_is_group() ) {
-		$can_create = bp_docs_current_user_can( 'associate_with_group' );
+		$can_create = current_user_can( 'bp_docs_associate_with_group', bp_get_current_group_id() );
 	} else {
-		$can_create = bp_docs_current_user_can( 'create' );
+		$can_create = current_user_can( 'bp_docs_create' );
 	}
 
 	return apply_filters( 'bp_docs_current_user_can_create_in_context', $can_create );
@@ -423,9 +428,11 @@ function bp_docs_is_docs_component() {
  * yet been saved for this Doc.
  *
  * @param int $doc_id
+ * @param string $type 'default' parses with default options to ensure that all
+ *        keys have values. 'raw' returns results as stored in the database.
  * @return array
  */
-function bp_docs_get_doc_settings( $doc_id = 0 ) {
+function bp_docs_get_doc_settings( $doc_id = 0, $type = 'default' ) {
 	$doc_settings = array();
 
 	$q = get_queried_object();
@@ -447,7 +454,12 @@ function bp_docs_get_doc_settings( $doc_id = 0 ) {
 		'manage'        => 'creator',
 	);
 
-	$doc_settings = wp_parse_args( $saved_settings, $default_settings );
+	if ( 'raw' !== $type ) {
+		// Empty string settings can slip through sometimes
+		$saved_settings = array_filter( $saved_settings );
+
+		$doc_settings = wp_parse_args( $saved_settings, $default_settings );
+	}
 
 	return apply_filters( 'bp_docs_get_doc_settings', $doc_settings, $doc_id, $default_settings );
 }
@@ -758,3 +770,27 @@ function bp_docs_get_doc_ids_accessible_to_current_user() {
 	$items_sql = $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post_type = %s AND ID NOT IN $exclude_sql", bp_docs_get_post_type_name() );
 	return $wpdb->get_col( $items_sql );
 }
+
+/**
+ * Determine how many revisions to retain for Docs.
+ *
+ * @since 1.8
+ *
+ * @return int
+ */
+function bp_docs_revisions_to_keep( $num, $post ) {
+	if ( bp_docs_get_post_type_name() !== $post->post_type ) {
+		return $num;
+	}
+
+	if ( defined( 'BP_DOCS_REVISIONS' ) ) {
+		if ( true === BP_DOCS_REVISIONS ) {
+			$num = -1;
+		} else {
+			$num = intval( BP_DOCS_REVISIONS );
+		}
+	}
+
+	return intval( $num );
+}
+add_filter( 'wp_revisions_to_keep', 'bp_docs_revisions_to_keep', 10, 2 );
