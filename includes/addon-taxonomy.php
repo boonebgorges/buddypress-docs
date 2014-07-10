@@ -340,6 +340,8 @@ class BP_Docs_Taxonomy {
 	 * @since 1.0-beta
 	 */
 	function filter_markup() {
+		do_action( 'bp_docs_directory_filter_taxonomy_before' );
+
 		$existing_terms = $this->get_item_terms();
 
 		$tag_filter = ! empty( $_GET['bpd_tag'] );
@@ -378,6 +380,8 @@ class BP_Docs_Taxonomy {
 		</div>
 
 		<?php
+
+		do_action( 'bp_docs_directory_filter_taxonomy_after' );
 	}
 
 	/**

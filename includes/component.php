@@ -841,6 +841,7 @@ class BP_Docs_Component extends BP_Component {
 			<form action="" method="get">
 				<input name="s" value="<?php the_search_query() ?>">
 				<input name="search_submit" type="submit" value="<?php _e( 'Search', 'bp-docs' ) ?>" />
+				<?php do_action( 'bp_docs_directory_filter_search_form' ) ?>
 			</form>
 		</div>
 		<?php

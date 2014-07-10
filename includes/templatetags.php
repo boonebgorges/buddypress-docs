@@ -207,7 +207,7 @@ function bp_docs_info_header() {
 
 			$message = apply_filters( 'bp_docs_info_header_message', $message, $filters );
 
-			$message = implode( "\n", $message );
+			$message = implode( "<br />", $message );
 
 			// We are viewing a subset of docs, so we'll add a link to clear filters
 			$message .= ' - ' . sprintf( __( '<strong><a href="%s" title="View All Docs">View All Docs</a></strong>', 'bp-docs' ), remove_query_arg( array( 'bpd_tag', 's', 'search_submit', 'folder' ) ) );
@@ -308,6 +308,26 @@ function bp_docs_the_content() {
 
 		return $content;
 	}
+
+/**
+ * 'action' URL for directory filter forms.
+ *
+ * @since 1.9.0
+ *
+ * @return string
+ */
+function bp_docs_directory_filter_form_action() {
+	$form_action = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+	$keeper_keys = array( 'folder' );
+	foreach ( $_GET as $k => $v ) {
+		if ( ! in_array( $k, $keeper_keys ) ) {
+			$form_action = remove_query_arg( $k, $form_action );
+		}
+	}
+
+	return $form_action;
+}
+
 /**
  * Filters the output of the doc list header for search terms
  *

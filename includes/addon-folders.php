@@ -1542,6 +1542,62 @@ function bp_docs_folder_info_header_message( $message, $filters ) {
 add_filter( 'bp_docs_info_header_message', 'bp_docs_folder_info_header_message', 10, 2 );
 
 /**
+ * Add a hidden 'folder' param to directory filter forms.
+ *
+ * This is a dumb trick to ensure that the folder filter is maintained when
+ * adding an attachment filter to the directory.
+ *
+ * @since 1.9.0
+ */
+function bp_docs_folders_directory_filter_form_argument() {
+	if ( ! empty( $_GET['folder'] ) ) {
+		printf(
+			'<input type="hidden" name="folder" value="%s" />',
+			intval( $_GET['folder'] )
+		);
+	}
+}
+add_action( 'bp_docs_directory_filter_attachments_form', 'bp_docs_folders_directory_filter_form_argument' );
+add_action( 'bp_docs_directory_filter_search_form', 'bp_docs_folders_directory_filter_form_argument' );
+
+/**
+ * Add the 'folder' param to Doc tag URLs when in a directory.
+ *
+ * @since 1.9.0
+ */
+function bp_docs_folders_directory_tag_link_argument( $link ) {
+	if ( ! empty( $_GET['folder'] ) ) {
+		add_query_arg( 'folder', intval( $_GET['folder'] ), $link );
+	}
+
+	return $link;
+}
+
+/**
+ * Callback for hooking bp_docs_folders_directory_tag_link_argument().
+ *
+ * Oh boy.
+ *
+ * @since 1.9.0
+ */
+function bp_docs_folders_directory_filter_taxonomy_hooker() {
+	add_filter( 'bp_docs_get_tag_link_url', 'bp_docs_folders_directory_tag_link_argument' );
+}
+add_action( 'bp_docs_directory_filter_taxonomy_before', 'bp_docs_folders_directory_filter_taxonomy_hooker' );
+
+/**
+ * Callback for hooking bp_docs_folders_directory_tag_link_argument().
+ *
+ * Oh boy x2.
+ *
+ * @since 1.9.0
+ */
+function bp_docs_folders_directory_filter_taxonomy_unhooker() {
+	remove_filter( 'bp_docs_get_tag_link_url', 'bp_docs_folders_directory_tag_link_argument' );
+}
+add_action( 'bp_docs_directory_filter_taxonomy_after', 'bp_docs_folders_directory_filter_taxonomy_unhooker' );
+
+/**
  * Create dropdown <option> values for BP Docs Folders.
  *
  * @since 1.9
