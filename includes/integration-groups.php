@@ -1503,6 +1503,69 @@ function bp_docs_get_group_tab_name() {
 }
 
 /**
+ * Add group information to directory breadcrumbs.
+ *
+ * @since 1.9.0
+ *
+ * @param array $crumbs
+ * @return array
+ */
+function bp_docs_group_directory_breadcrumb( $crumbs ) {
+	if ( bp_is_group() ) {
+		$group_crumbs = array(
+			sprintf(
+				'<a href="%s">%s&#8217;s Docs</a>',
+				bp_get_group_permalink( groups_get_current_group() ) . bp_docs_get_slug() . '/',
+				esc_html( bp_get_current_group_name() )
+			),
+		);
+
+		$crumbs = array_merge( $group_crumbs, $crumbs );
+	}
+
+	return $crumbs;
+}
+add_filter( 'bp_docs_directory_breadcrumb', 'bp_docs_group_directory_breadcrumb', 2 );
+
+/**
+ * Add group information to individual Doc breadcrumbs.
+ *
+ * Hooked very late to ensure it's the first item on the list.
+ *
+ * @since 1.9.0
+ *
+ * @param array $crumbs
+ * @return array
+ */
+function bp_docs_group_single_breadcrumb( $crumbs ) {
+	$group_id = null;
+	if ( bp_docs_is_existing_doc() ) {
+		$group_id = bp_docs_get_associated_group_id( get_queried_object_id() );
+	}
+
+	if ( $group_id ) {
+		$group = groups_get_group( array(
+			'group_id' => $group_id,
+		) );
+	}
+
+	if ( ! empty( $group->name ) ) {
+		$group_crumbs = array(
+			sprintf(
+				'<a href="%s">%s&#8217;s Docs</a>',
+				bp_get_group_permalink( $group ) . bp_docs_get_slug() . '/',
+				esc_html( $group->name )
+			),
+		);
+
+		$crumbs = array_merge( $group_crumbs, $crumbs );
+	}
+
+	return $crumbs;
+}
+add_action( 'bp_docs_doc_breadcrumbs', 'bp_docs_group_single_breadcrumb', 99 );
+
+/**
  * Get group's Docs settings.
  *
  * We use this wrapper function because of changes in BP 2.0.0 that exposed

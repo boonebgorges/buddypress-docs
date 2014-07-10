@@ -255,6 +255,28 @@ function bp_docs_filter_titles() {
 }
 
 /**
+ * Echoes the breadcrumb of a Doc.
+ *
+ * @since 1.9.0
+ */
+function bp_docs_the_breadcrumb() {
+	echo bp_docs_get_the_breadcrumb();
+}
+	/**
+	 * Returns the breadcrumb of a Doc.
+	 */
+	function bp_docs_get_the_breadcrumb() {
+		$title = sprintf(
+			'<span class="breadcrumb-current"><i class="genericon genericon-document"></i>%s</span>',
+			get_the_title()
+		);
+
+		$crumbs = apply_filters( 'bp_docs_doc_breadcrumbs', array( $title ) );
+
+		return implode( ' <span class="directory-breadcrumb-separator">&#9656;</span> ', $crumbs );
+	}
+
+/**
  * Echoes the content of a Doc
  *
  * @since 1.3
@@ -562,6 +584,35 @@ function bp_docs_item_docs_link() {
 		}
 
 		return apply_filters( 'bp_docs_get_item_docs_link', $base_url . $bp->bp_docs->slug . '/', $base_url, $r );
+	}
+
+/**
+ * Output the breadcrumb for use in directories.
+ *
+ * @since 1.9.0
+ */
+function bp_docs_directory_breadcrumb() {
+	echo bp_docs_get_directory_breadcrumb();
+}
+	/**
+	 * Generate a breadcrumb for use in directories.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @return string
+	 */
+	function bp_docs_get_directory_breadcrumb() {
+		$crumbs = array();
+
+		$crumbs = apply_filters( 'bp_docs_directory_breadcrumb', $crumbs );
+
+		// Last item is the "current" item
+		$last = array_pop( $crumbs );
+		$last = strip_tags( $last, '<i>' );
+		$last = '<span class="breadcrumb-current">' . $last . '</a>';
+		$crumbs[] = $last;
+
+		return implode( ' <span class="directory-breadcrumb-separator">&#9656;</span> ', $crumbs );
 	}
 
 /**

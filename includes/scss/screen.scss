@@ -777,9 +777,20 @@ a.nonexistent-doc {
 	color: #f33;
 }
 
-h2.doc-title {
+h2.doc-title,
+h2.directory-title {
 	display: inline-block;
-	width: 50%;
+	font-weight: normal;
+	font-size: .9em;
+
+	.breadcrumb-current {
+		font-weight: bold;
+	}
+}
+
+.directory-breadcrumb-separator {
+	padding: 0 4px 0 6px;
+	opacity: .5;
 }
 
 /* Comment section */

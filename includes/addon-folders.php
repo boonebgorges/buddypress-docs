@@ -1189,13 +1189,40 @@ function bp_docs_folder_type_selector( $args = array() ) {
 }
 
 /**
- * Info Header breadcrumbs.
+ * Add breadcrumbs to Doc titles.
  *
- * @since 1.9
+ * @since 1.9.0
+ *
+ * @param array $crumbs
+ * @return array
  */
-function bp_docs_folder_breadcrumb() {
+function bp_docs_folder_single_breadcrumb( $crumbs ) {
+	$folder_crumbs = bp_docs_get_folder_breadcrumbs();
+	return array_merge( $folder_crumbs, $crumbs );
+}
+add_action( 'bp_docs_doc_breadcrumbs', 'bp_docs_folder_single_breadcrumb' );
+
+/**
+ * Add folder information to directory breadcrumbs.
+ *
+ * @since 1.9.0
+ */
+function bp_docs_folders_directory_breadcrumb( $crumbs ) {
+	$folder_crumbs = bp_docs_get_folder_breadcrumbs();
+	return array_merge( $crumbs, $folder_crumbs );
+}
+add_filter( 'bp_docs_directory_breadcrumb', 'bp_docs_folders_directory_breadcrumb', 6 );
+
+/**
+ * Generate folder breadcrumbs for the current item.
+ *
+ * @since 1.9.0
+ */
+function bp_docs_get_folder_breadcrumbs() {
 	$folder_id = 0;
-	if ( isset( $_GET['folder'] ) ) {
+	if ( bp_docs_is_existing_doc() ) {
+		$folder_id = bp_docs_get_doc_folder( get_queried_object_id() );
+	} else if ( isset( $_GET['folder'] ) ) {
 		$folder_id = intval( $_GET['folder'] );
 	}
 
@@ -1222,10 +1249,12 @@ function bp_docs_folder_breadcrumb() {
 		$breadcrumb_items[] = sprintf(
 			'<span class="bp-docs-folder-breadcrumb" id="bp-docs-folder-breadcrumb-%s"><i class="genericon genericon-category"></i><a href="%s">%s</a></span>',
 			$d['id'],
-			'#',
+			esc_url( bp_docs_get_folder_url( $d['id'] ) ),
 			esc_html( $d['name'] )
 		);
 	}
+
+	return $breadcrumb_items;
 
 	$breadcrumbs  = '<div class="bp-docs-folder-breadcrumbs">';
 	$breadcrumbs .= implode( ' > ', $breadcrumb_items );
@@ -1233,7 +1262,6 @@ function bp_docs_folder_breadcrumb() {
 
 	echo $breadcrumbs;
 }
-add_action( 'bp_docs_before_info_header', 'bp_docs_folder_breadcrumb' );
 
 /**
  * Create the markup for creating a new folder.
