@@ -48,7 +48,7 @@ class BP_Docs_Query {
 			'group_id'	 => array(),     // Array or comma-separated string
 			'parent_id'	 => 0,		 // int
 			'author_id'	 => array(),     // Array or comma-separated string
-			'folder_id'      => array(),
+			'folder_id'      => null,
 			'edited_by_id'   => array(),     // Array or comma-separated string
 			'tags'		 => array(),     // Array or comma-separated string
 			'order'		 => 'ASC',       // ASC or DESC
@@ -249,7 +249,6 @@ class BP_Docs_Query {
 
 		$this->query = new WP_Query( $wp_query_args );
 
-		//echo $yes;var_dump( $wp_query_args ); die();
 		return $this->query;
 	}
 
