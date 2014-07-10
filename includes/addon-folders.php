@@ -1226,6 +1226,8 @@ function bp_docs_get_folder_breadcrumbs() {
 		$folder_id = intval( $_GET['folder'] );
 	}
 
+	$folder_id = intval( $folder_id );
+
 	$descendants    = array();
 	$this_folder_id = $folder_id;
 
