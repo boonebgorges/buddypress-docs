@@ -618,7 +618,7 @@ add_filter( 'bp_docs_tax_query', 'bp_docs_folder_tax_query', 10, 2 );
 function bp_docs_folders_map_meta_caps( $caps, $cap, $user_id, $args ) {
 	switch ( $cap ) {
 		case 'bp_docs_manage_folders' :
-			$caps = array();
+			$caps = array( 'do_not_allow' );
 
 			if ( user_can( $user_id, 'bp_moderate' ) ) {
 				$caps = array( 'exist' );

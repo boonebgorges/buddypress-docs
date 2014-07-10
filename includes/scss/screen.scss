@@ -905,6 +905,12 @@ body.js {
 	}
 }
 
+.manage-folders-link {
+	font-size: .9em;
+	margin-top: -1em;
+	margin-bottom: 1em;
+}
+
 //Media query for most screens, unseen by IE 7 or 8
 @media screen and (min-width:4em) {
 	#docs-filter-section-tags a.tags-spanning-button,
