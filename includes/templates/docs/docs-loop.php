@@ -6,6 +6,16 @@
 	<?php bp_docs_directory_breadcrumb() ?>
 </h2>
 
+<?php if ( current_user_can( 'bp_docs_manage_folders' ) && bp_docs_is_folder_manage_view() ) : ?>
+	<?php bp_locate_template( 'docs/manage-folders.php', true ) ?>
+<?php else : ?>
+
+<?php if ( current_user_can( 'bp_docs_manage_folders' ) ) : ?>
+	<div class="manage-folders-link">
+		<a href="<?php bp_docs_manage_folders_url() ?>"><?php _e( 'Manage Folders', 'bp-docs' ) ?></a>
+	</div>
+<?php endif ?>
+
 <div class="docs-info-header">
 	<?php bp_docs_info_header() ?>
 </div>
@@ -128,4 +138,5 @@
 			</div>
 		</div>
 	<?php endif; ?>
+<?php endif; ?>
 </div><!-- /#buddypress -->

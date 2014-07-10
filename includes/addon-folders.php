@@ -18,8 +18,6 @@ class BP_Docs_Folders {
 
 		add_action( 'bp_docs_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		add_action( 'bp_docs_enqueue_scripts_edit', array( $this, 'enqueue_assets' ) );
-
-		add_filter( 'bp_docs_user_can', array( $this, 'user_can' ), 10, 4 );
 	}
 
 	/**
@@ -92,23 +90,6 @@ class BP_Docs_Folders {
 
 		wp_register_style( 'bp-docs-chosen', plugins_url() . '/buddypress-docs/lib/css/chosen/chosen.min.css' );
 		wp_enqueue_style( 'bp-docs-folders', plugins_url() . '/buddypress-docs/includes/css/folders.css', array( 'bp-docs-chosen' ) );
-	}
-
-	/**
-	 * @since 1.9
-	 */
-	public function user_can( $user_can, $action, $user_id, $doc_id ) {
-		$folders_caps = array(
-			'create_global_folder',
-			'create_personal_folder',
-		);
-
-		if ( ! in_array( $action, $folders_caps ) ) {
-			return $user_can;
-		}
-
-		return $user_can;
-
 	}
 }
 
@@ -629,6 +610,51 @@ function bp_docs_folder_tax_query( $tax_query, $bp_docs_query ) {
 }
 add_filter( 'bp_docs_tax_query', 'bp_docs_folder_tax_query', 10, 2 );
 
+/**
+ * Folder-specific meta cap mapping.
+ *
+ * @since 1.9.0
+ */
+function bp_docs_folders_map_meta_caps( $caps, $cap, $user_id, $args ) {
+	switch ( $cap ) {
+		case 'bp_docs_manage_folders' :
+			$caps = array();
+
+			if ( user_can( $user_id, 'bp_moderate' ) ) {
+				$caps = array( 'exist' );
+
+			// Group
+			} else if ( function_exists( 'bp_is_group' ) && bp_is_group() ) {
+				if ( groups_is_user_member( $user_id, bp_get_current_group_id() ) ) {
+					$caps = array( 'exist' );
+				}
+			// User
+			} else if ( bp_is_user() ) {
+				if ( bp_displayed_user_id() == $user_id ) {
+					$caps = array( 'exist' );
+				}
+			// Global - bp_moderate only for now
+			} else if ( bp_docs_is_global_directory() ) {
+
+			}
+
+			break;
+
+		// Temp
+		case 'bp_docs_create_global_folder' :
+		case 'bp_docs_create_personal_folder' :
+			if ( is_user_logged_in() ) {
+				$caps = array( 'exist' );
+			} else {
+				$caps = array();
+			}
+			break;
+	}
+
+	return $caps;
+}
+add_filter( 'bp_docs_map_meta_caps', 'bp_docs_folders_map_meta_caps', 10, 4 );
+
 /** "Action" functions *******************************************************/
 
 /**
@@ -831,7 +857,7 @@ function bp_docs_process_folder_drop_cb() {
 	}
 
 	// @todo This needs testing with group admins, etc
-	if ( ! bp_docs_user_can( 'manage', bp_loggedin_user_id(), $doc_id ) ) {
+	if ( ! current_user_can( 'bp_docs_manage', bp_loggedin_user_id(), $doc_id ) ) {
 		die( '-1' );
 	}
 
@@ -1297,11 +1323,11 @@ function bp_docs_create_new_folder_markup( $args = array() ) {
 
 	<label for="new-folder-type"><?php _e( 'Folder type' ) ?></label>
 	<select name="new-folder-type" id="new-folder-type" class="folder-type">
-		<?php if ( bp_docs_current_user_can( 'create_global_folder' ) ) : ?>
+		<?php if ( current_user_can( 'bp_docs_create_global_folder' ) ) : ?>
 			<option value="global" <?php echo $global_selected ?>><?php _e( 'Global', 'bp-docs' ) ?></option>
 		<?php endif ?>
 
-		<?php if ( bp_docs_current_user_can( 'create_personal_folder' ) ) : ?>
+		<?php if ( current_user_can( 'bp_docs_create_personal_folder' ) ) : ?>
 			<option value="me"><?php _e( 'Limited to me', 'bp-docs' ) ?></option>
 		<?php endif ?>
 
@@ -1488,6 +1514,28 @@ function bp_docs_get_parent_folder_url( $folder_id = null ) {
 
 	return $parent_url;
 }
+
+/**
+ * Echo the manage folders URL.
+ *
+ * Sensitive to the current context.
+ *
+ * @since 1.9.0
+ */
+function bp_docs_manage_folders_url() {
+	echo bp_docs_get_manage_folders_url();
+}
+	/**
+	 * Generate a manage-folders URL relative to the current context.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @return string
+	 */
+	function bp_docs_get_manage_folders_url() {
+		$base = bp_get_requested_url();
+		return add_query_arg( 'view', 'manage', $base );
+	}
 
 /**
  * Add folder-related filters to the list of current directory filters.

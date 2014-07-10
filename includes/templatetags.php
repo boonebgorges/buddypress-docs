@@ -1415,6 +1415,7 @@ function bp_docs_get_docs_slug() {
  * @todo Get the group stuff out
  */
 function bp_docs_tabs( $show_create_button = true ) {
+
 	?>
 
 	<ul id="bp-docs-all-docs">
