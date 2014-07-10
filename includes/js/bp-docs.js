@@ -1,6 +1,9 @@
 jQuery(document).ready(function($){
 	var doc_id = $( '#existing-doc-id' ).val();
 
+	// BP should do this, but sometimes doesn't
+	$( 'body' ).removeClass( 'no-js' ).addClass( 'js' );
+
 	/* Unhide JS content */
 	$('.hide-if-no-js').show();
 
