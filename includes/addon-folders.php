@@ -884,7 +884,7 @@ add_action( 'wp_ajax_bp_docs_process_folder_drop', 'bp_docs_process_folder_drop_
  * (not an AJAX callback, but close enough)
  */
 function bp_docs_process_folder_edit_cb() {
-	if ( ! bp_docs_is_docs_component() && ! bp_is_current_action( 'docs' ) ) {
+	if ( ! bp_docs_is_docs_component() && ! bp_is_current_action( bp_docs_get_docs_slug() ) ) {
 		return;
 	}
 
@@ -945,7 +945,7 @@ add_action( 'bp_actions', 'bp_docs_process_folder_edit_cb' );
  * (not an AJAX callback, but close enough)
  */
 function bp_docs_process_folder_create_cb() {
-	if ( ! bp_docs_is_docs_component() && ! bp_is_current_action( 'docs' ) ) {
+	if ( ! bp_docs_is_docs_component() && ! bp_is_current_action( bp_docs_get_docs_slug() ) ) {
 		return;
 	}
 
