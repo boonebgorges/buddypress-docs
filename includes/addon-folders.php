@@ -1015,6 +1015,21 @@ add_action( 'bp_actions', 'bp_docs_process_folder_create_cb' );
 /** Template functions *******************************************************/
 
 /**
+ * Get the current folder ID out of the URL.
+ *
+ * @since 1.9.0
+ *
+ * @return null|int Folder ID if it is found, otherwise null.
+ */
+function bp_docs_get_current_folder_id() {
+	$folder_id = null;
+	if ( isset( $_GET['folder'] ) ) {
+		$folder_id = intval( $_GET['folder'] );
+	}
+	return $folder_id;
+}
+
+/**
  * Is this 'tree' view?
  *
  * @since 1.9
@@ -1372,6 +1387,11 @@ function bp_docs_folders_meta_box() {
 		}
 	}
 
+	// On the Create screen, respect the 'folder' $_GET param
+	if ( bp_docs_is_doc_create() ) {
+		$folder_id = bp_docs_get_current_folder_id();
+	}
+
 	?>
 
 	<div id="doc-folders" class="doc-meta-box">
@@ -1397,6 +1417,7 @@ function bp_docs_folders_meta_box() {
 										'name'     => 'bp-docs-folder',
 										'id'       => 'bp-docs-folder',
 										'group_id' => $associated_group_id,
+										'selected' => $folder_id,
 									) ) ?>
 								</div>
 							</div>
@@ -1646,6 +1667,25 @@ function bp_docs_folders_directory_filter_taxonomy_unhooker() {
 	remove_filter( 'bp_docs_get_tag_link_url', 'bp_docs_folders_directory_tag_link_argument' );
 }
 add_action( 'bp_docs_directory_filter_taxonomy_after', 'bp_docs_folders_directory_filter_taxonomy_unhooker' );
+
+/**
+ * Make the Create Doc link sensitive to the current folder.
+ *
+ * @since 1.9.0
+ *
+ * @param string $link
+ * @return string
+ */
+function bp_docs_folders_create_link( $link ) {
+	$folder_id = bp_docs_get_current_folder_id();
+
+	if ( $folder_id ) {
+		$link = add_query_arg( 'folder', $folder_id, $link );
+	}
+
+	return $link;
+}
+add_filter( 'bp_docs_get_create_link', 'bp_docs_folders_create_link' );
 
 /**
  * Create dropdown <option> values for BP Docs Folders.
