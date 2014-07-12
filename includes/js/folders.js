@@ -78,7 +78,22 @@
 			group_id = 'global';
 		}
 
-		$( '#new-folder-type' ).val( group_id ).trigger( 'change' );
+		// Refresh the available types
+		$.ajax( {
+			url: ajaxurl,
+			type: 'POST',
+			data: {
+				action: 'bp_docs_update_folder_type_for_group',
+				group_id: group_id
+			},
+			success: function( response ) {
+				$( '#new-folder-type' ).fadeOut( function() {
+					$( this ).replaceWith( response ).fadeIn();
+					$( '#new-folder-type' ).val( group_id ).trigger( 'change' );
+				} );
+			}
+		} );
+
 	}
 
 	/**
@@ -113,7 +128,8 @@
 			data: {
 				action: 'bp_docs_update_folder_type',
 				parent_id: $parent_selector.val(),
-				group_id: $( '#associated_group_id' ).val()
+				group_id: $( '#associated_group_id' ).val(),
+				type_selector_name: $parent_selector.siblings( '.folder-type' ).attr( 'name' )
 			},
 			success: function( response ) {
 				$parent_selector.siblings( '.folder-type' ).fadeOut( function() {

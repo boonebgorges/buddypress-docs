@@ -784,6 +784,7 @@ function bp_docs_associated_group_dropdown( $args = array() ) {
 		'options_only' => false,
 		'echo'         => true,
 		'null_option'  => true,
+		'include'      => null,
 	) );
 
 	$groups_args = array(
@@ -794,6 +795,10 @@ function bp_docs_associated_group_dropdown( $args = array() ) {
 
 	if ( ! bp_current_user_can( 'bp_moderate' ) ) {
 		$groups_args['user_id'] = bp_loggedin_user_id();
+	}
+
+	if ( ! is_null( $r['include'] ) ) {
+		$groups_args['include'] = wp_parse_id_list( $r['include'] );
 	}
 
 	// Populate the $groups_template global, but stash the old one
