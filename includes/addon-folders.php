@@ -38,7 +38,7 @@ class BP_Docs_Folders {
 
 		register_post_type( 'bp_docs_folder', array(
 			'labels' => $labels,
-			'public' => true,
+			'public' => false,
 			'hierarchical' => true,
 		) );
 	}
