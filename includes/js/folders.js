@@ -8,6 +8,11 @@
 		$hover_element;
 
 	$( document ).ready( function() {
+		// Show/hide new folder details
+		$( 'input[name=existing-or-new-folder]' ).on( 'change', function() {
+			update_create_new_folder_details_visibility( $( this ) );
+		} );
+
 		// Change associated group, change available folders
 		$( '#associated_group_id' ).on( 'change', function() {
 			update_folder_selector( $( this ).val() );
@@ -44,6 +49,17 @@
 
 		init_doc_drag();
 	} );
+
+	/**
+	 * Toggle the visibility of the new folder details fields based on radio button selection.
+	 */
+	function update_create_new_folder_details_visibility( $radio ) {
+		if ( 'new' == $radio.val() ) {
+			$( '#new-folder-block .selector-content' ).show();
+		} else {
+			$( '#new-folder-block .selector-content' ).hide();
+		}
+	}
 
 	/**
 	 * Update the list of available folders when changing associated groups
