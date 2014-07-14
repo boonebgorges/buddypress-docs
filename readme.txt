@@ -33,6 +33,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.8.1 =
+* Ensure that the 'js' and 'no-js' body classes work properly across themes
+
 = 1.8.0 =
 * Settings boxes default to closed on existing Docs, simplifying the interface, especially on mobile devices
 * Improved handling of permissions for uploading attachments
