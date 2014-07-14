@@ -4,7 +4,7 @@ Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.3, BuddyPress 1.5
 Tested up to: WordPress 3.9.1, BuddyPress 2.0.1
-Stable tag: 1.8.0
+Stable tag: 1.8.1
 
 Adds collaborative Docs to BuddyPress.
 
@@ -32,6 +32,11 @@ This plugin is in active development. For feature requests and bug reports, visi
 1. Sit back and watch the jack roll in
 
 == Changelog ==
+
+= 1.8.1 =
+* Replace the missing Link feature in the rich text editor with WP's custom link plugin
+* Fix bug that could allow non-authenticated user to access /edit page in some cases
+* Ensure that the 'js' and 'no-js' body classes work properly across themes
 
 = 1.8.0 =
 * Settings boxes default to closed on existing Docs, simplifying the interface, especially on mobile devices

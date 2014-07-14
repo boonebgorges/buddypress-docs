@@ -1563,8 +1563,6 @@ function bp_docs_groups_map_meta_caps( $caps, $cap, $user_id, $args ) {
 				return array( 'exist' );
 			}
 
-			$caps = array();
-
 			$doc_settings = bp_docs_get_doc_settings( $doc->ID );
 
 			// Caps are stored without the 'bp_docs_' prefix,
@@ -1573,6 +1571,8 @@ function bp_docs_groups_map_meta_caps( $caps, $cap, $user_id, $args ) {
 
 			switch ( $doc_settings[ $cap_name ] ) {
 				case 'group-members' :
+					$caps = array();
+
 					if ( groups_is_user_member( $user_id, $group_id ) ) {
 						$caps[] = 'exist';
 					} else {
@@ -1582,6 +1582,8 @@ function bp_docs_groups_map_meta_caps( $caps, $cap, $user_id, $args ) {
 					break;
 
 				case 'admins-mods' :
+					$caps = array();
+
 					if ( groups_is_user_admin( $user_id, $group_id ) || groups_is_user_mod( $user_id, $group_id ) ) {
 						$caps[] = 'exist';
 					} else {
