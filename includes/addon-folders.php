@@ -672,6 +672,12 @@ function bp_docs_save_folder_selection( $doc_id ) {
 		return;
 	}
 
+	$check = apply_filters( 'bp_docs_before_save_folder_selection', true, $doc_id );
+
+	if ( ! $check ) {
+		return $retval;
+	}
+
 	switch ( $_POST['existing-or-new-folder'] ) {
 		case 'existing' :
 			if ( isset( $_POST['bp-docs-folder'] ) ) {
@@ -719,6 +725,32 @@ function bp_docs_save_folder_selection( $doc_id ) {
 	return $retval;
 }
 add_action( 'bp_docs_after_save', 'bp_docs_save_folder_selection' );
+
+/**
+ * Validate group-folder selection when saving a Doc.
+ *
+ * @since 1.9.0
+ */
+function bp_docs_validate_group_folder_selection_on_doc_save( $check, $doc_id ) {
+	if ( ! bp_is_active( 'groups' ) ) {
+		return $check;
+	}
+
+	// If creating a new folder, make sure the type and associated group
+	// are not a mismatch
+	$folder_type     = stripslashes( $_POST['new-folder-type'] );
+	$new_or_existing = stripslashes( $_POST['existing-or-new-folder'] );
+	if ( 'new' === $new_or_existing && is_numeric( $folder_type ) ) {
+		// Associated group ID has been saved by this point
+		$group_id = bp_docs_get_associated_group_id( $doc_id );
+		if ( $group_id && intval( $group_id ) !== intval( $folder_type ) ) {
+			$check = false;
+		}
+	}
+
+	return $check;
+}
+add_filter( 'bp_docs_before_save_folder_selection', 'bp_docs_validate_group_folder_selection_on_doc_save', 10, 2 );
 
 /** AJAX Handlers ************************************************************/
 
