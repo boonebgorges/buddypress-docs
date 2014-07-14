@@ -410,6 +410,89 @@ function bp_docs_create_folder( $args ) {
 }
 
 /**
+ * Delete a folder.
+ *
+ * @since 1.9.0
+ *
+ * @param array $args {
+ *     $type int $folder_id ID of the folder to be deleted.
+ *     $type bool $delete_contents Delete folder contents (subfolders and docs)
+ * }
+ * @return bool
+ */
+function bp_docs_delete_folder( $args = array() ) {
+	$r = wp_parse_args( $args, array(
+		'folder_id'       => 0,
+		'delete_contents' => false,
+	) );
+
+	if ( empty( $r['folder_id'] ) ) {
+		return false;
+	}
+
+	if ( true === $r['delete_contents'] ) {
+		bp_docs_delete_folder_contents( $r['folder_id'] );
+	}
+
+	wp_trash_post( $r['folder_id'] );
+
+	return true;
+}
+
+/**
+ * Delete folder contents.
+ *
+ * @since 1.9.0
+ *
+ * @param int $folder_id
+ * @return bool
+ */
+function bp_docs_delete_folder_contents( $folder_id ) {
+
+	// Docs first
+	$folder_term = bp_docs_get_folder_term( $folder_id );
+	$folder_docs = get_posts( array(
+		'post_type' => bp_docs_get_post_type_name(),
+		'tax_query' => array(
+			array(
+				'taxonomy' => 'bp_docs_doc_in_folder',
+				'field' => 'term_id',
+				'terms' => $folder_term,
+			),
+		),
+		'update_meta_cache' => false,
+		'update_term_cache' => false,
+	) );
+
+	$retval = true;
+
+	foreach ( $folder_docs as $fd ) {
+		if ( ! wp_trash_post( $fd->ID ) ) {
+			$retval = false;
+		}
+	}
+
+	// Subfolders
+	$folder_subfolders = bp_docs_get_folders( array(
+		'parent_id' => $folder_id,
+	) );
+
+	// Recurse
+	foreach ( $folder_subfolders as $fs ) {
+		$deleted_fs = bp_docs_delete_folder( array(
+			'folder_id' => $fs->ID,
+			'delete_contents' => true,
+		) );
+
+		if ( ! $deleted_fs ) {
+			$retval = false;
+		}
+	}
+
+	return $retval;
+}
+
+/**
  * Get a list of folders.
  *
  * @since 1.9
@@ -636,6 +719,33 @@ function bp_docs_folders_map_meta_caps( $caps, $cap, $user_id, $args ) {
 			// Global - bp_moderate only for now
 			} else if ( bp_docs_is_global_directory() ) {
 
+			}
+
+			break;
+
+		case 'bp_docs_manage_folder' :
+			$caps = array( 'do_not_allow' );
+
+			$folder_id = 0;
+			if ( isset( $args[0] ) ) {
+				$folder_id = intval( $args[0] );
+			}
+
+			if ( ! $folder_id ) {
+				return $caps;
+			}
+
+			$group_id  = bp_docs_get_folder_group( $folder_id );
+			$f_user_id = bp_docs_get_folder_user( $folder_id );
+
+			if ( user_can( $user_id, 'bp_moderate' ) ) {
+				$caps = array( 'exist' );
+			} else if ( $group_id && groups_is_user_admin( $user_id, $group_id ) ) {
+				$caps = array( 'exist' );
+			} else if ( $f_user_id && $f_user_id == $user_id ) {
+				$caps = array( 'exist' );
+			} else if ( user_can( $user_id, 'bp_moderate' ) ) {
+				$caps = array( 'exist' );
 			}
 
 			break;
@@ -1077,6 +1187,58 @@ function bp_docs_process_folder_create_cb() {
 	die();
 }
 add_action( 'bp_actions', 'bp_docs_process_folder_create_cb' );
+
+/**
+ * Catch a request to delete a folder.
+ *
+ * @since 1.9.0
+ */
+function bp_docs_process_folder_delete_cb() {
+	if ( ! bp_docs_is_folder_manage_view() ) {
+		return;
+	}
+
+	$folder_id = 0;
+	if ( isset( $_GET['delete-folder'] ) ) {
+		$folder_id = intval( $_GET['delete-folder'] );
+	}
+
+	if ( ! $folder_id ) {
+		return;
+	}
+
+	$nonce = '';
+	if ( isset( $_POST['_wpnonce'] ) ) {
+		$nonce = stripslashes( $_POST['_wpnonce'] );
+	}
+
+	if ( ! wp_verify_nonce( $nonce, 'bp-docs-delete-folder-' . $folder_id ) ) {
+		return;
+	}
+
+	if ( ! current_user_can( 'bp_docs_manage_folder', $folder_id ) ) {
+		return;
+	}
+
+	if ( empty( $_POST['delete-confirm'] ) || '1' !== $_POST['delete-confirm'] ) {
+		return;
+	}
+
+	$deleted = bp_docs_delete_folder( array(
+		'folder_id'       => $folder_id,
+		'delete_contents' => true,
+	) );
+
+	if ( $deleted ) {
+		bp_core_add_message( __( 'Folder deleted.', 'bp-docs' ) );
+	} else {
+		bp_core_add_message( __( 'Could not delete folder.', 'bp-docs' ) );
+	}
+
+	bp_core_redirect( remove_query_arg( 'delete-folder', bp_get_requested_url() ) );
+	die();
+}
+add_action( 'bp_actions', 'bp_docs_process_folder_delete_cb' );
 
 /** Template functions *******************************************************/
 
@@ -1894,7 +2056,7 @@ class BP_Docs_Folder_Manage_Walker extends Walker {
 				%s
 				<input type="hidden" class="folder-id" name="folder-id" value="%d" />
 				%s
-				<input type="submit" value="%s" class="primary-button" />
+				<input type="submit" value="%s" class="primary-button" /> <a class="folder-delete" href="%s">%s</a>
 			</form>
 		</div>
 	</div>',
@@ -1913,7 +2075,9 @@ class BP_Docs_Folder_Manage_Walker extends Walker {
 			$type_selector_markup,
 			intval( $page->ID ), // hidden input value
 			wp_nonce_field( 'bp-docs-edit-folder-' . $page->ID, 'bp-docs-edit-folder-nonce-' . $page->ID, false, false ), // nonce
-			__( 'Save Changes', 'bp-docs' )
+			__( 'Save Changes', 'bp-docs' ), // save button text
+			add_query_arg( 'delete-folder', $page->ID, bp_get_requested_url() ), // No nonce because actual deletion is done on the subsequent page
+			__( 'Delete', 'bp-docs' )
 		);
 	}
 

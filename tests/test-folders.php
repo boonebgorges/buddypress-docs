@@ -400,7 +400,7 @@ class BP_Docs_Folders_Tests extends BP_Docs_TestCase {
 		) );
 
 		$folders = bp_docs_get_folders();
-		$this->assertSame( array( $f2 => $f2, $f1 => $f1 ), wp_list_pluck( $folders, 'ID' ) );
+		$this->assertSame( array( $f2, $f1 ), wp_list_pluck( $folders, 'ID' ) );
 	}
 
 	/**
@@ -438,20 +438,20 @@ class BP_Docs_Folders_Tests extends BP_Docs_TestCase {
 		$f4_obj = get_post( $f4 );
 		$f5_obj = get_post( $f5 );
 
-		$f5_obj->children = array();
-		$f4_obj->children = array();
-		$f3_obj->children = array();
+//		$f5_obj->children = array();
+//		$f4_obj->children = array();
+//		$f3_obj->children = array();
 		$f2_obj->children = array(
 			$f5 => $f5_obj,
 			$f4 => $f4_obj,
 		);
-		$f1_obj->children = array(
+/*		$f1_obj->children = array(
 			$f2 => $f2_obj,
-		);
+		); */
 
 		$expected = array(
-			$f3 => $f3_obj,
-			$f1 => $f1_obj,
+			$f3_obj,
+			$f1_obj,
 		);
 
 		$this->assertEquals( $expected, $folders );
@@ -475,7 +475,7 @@ class BP_Docs_Folders_Tests extends BP_Docs_TestCase {
 		) );
 
 		$expected = array(
-			$f1 => $f1,
+			$f1,
 		);
 
 		$this->assertSame( $expected, wp_list_pluck( $folders, 'ID' ) );
@@ -499,7 +499,7 @@ class BP_Docs_Folders_Tests extends BP_Docs_TestCase {
 		) );
 
 		$expected = array(
-			$f1 => $f1,
+			$f1,
 		);
 
 		$this->assertSame( $expected, wp_list_pluck( $folders, 'ID' ) );
@@ -526,7 +526,7 @@ class BP_Docs_Folders_Tests extends BP_Docs_TestCase {
 		$folders = bp_docs_get_folders();
 
 		$expected = array(
-			$f2 => $f2,
+			$f2,
 		);
 
 		$this->assertSame( $expected, wp_list_pluck( $folders, 'ID' ) );
@@ -555,9 +555,9 @@ class BP_Docs_Folders_Tests extends BP_Docs_TestCase {
 		) );
 
 		$expected = array(
-			$f1 => $f1,
-			$f2 => $f2,
-			$f3 => $f3,
+			$f1,
+			$f2,
+			$f3,
 		);
 
 		$this->assertSame( $expected, wp_list_pluck( $folders, 'ID' ) );
@@ -600,5 +600,110 @@ class BP_Docs_Folders_Tests extends BP_Docs_TestCase {
 		bp_docs_add_doc_to_folder( $d, $f );
 
 		$this->assertSame( $f, bp_docs_get_doc_folder( $d ) );
+	}
+
+	/**
+	 * @group bp_docs_delete_folder_contents
+	 */
+	public function test_bp_docs_delete_folder_contents() {
+		$f1 = bp_docs_create_folder( array(
+			'name' => 'foo',
+		) );
+		$f1_d1 = $this->factory->doc->create();
+		$f1_d2 = $this->factory->doc->create();
+		bp_docs_add_doc_to_folder( $f1_d1, $f1 );
+		bp_docs_add_doc_to_folder( $f1_d2, $f1 );
+
+		$f2 = bp_docs_create_folder( array(
+			'name' => 'foo',
+			'parent' => $f1,
+		) );
+		$f2_d1 = $this->factory->doc->create();
+		$f2_d2 = $this->factory->doc->create();
+		bp_docs_add_doc_to_folder( $f2_d1, $f2 );
+		bp_docs_add_doc_to_folder( $f2_d2, $f2 );
+
+		$f3 = bp_docs_create_folder( array(
+			'name' => 'foo',
+			'parent' => $f1,
+		) );
+		$f3_d1 = $this->factory->doc->create();
+		$f3_d2 = $this->factory->doc->create();
+		bp_docs_add_doc_to_folder( $f3_d1, $f3 );
+		bp_docs_add_doc_to_folder( $f3_d2, $f3 );
+
+		$f4 = bp_docs_create_folder( array(
+			'name' => 'foo',
+			'parent' => $f2,
+		) );
+		$f4_d1 = $this->factory->doc->create();
+		$f4_d2 = $this->factory->doc->create();
+		bp_docs_add_doc_to_folder( $f4_d1, $f4 );
+		bp_docs_add_doc_to_folder( $f4_d2, $f4 );
+
+		$this->assertTrue( bp_docs_delete_folder_contents( $f1 ) );
+
+		$f1_term = bp_docs_get_folder_term( $f1 );
+		$f1_docs = get_posts( array(
+			'post_type' => bp_docs_get_post_type_name(),
+			'tax_query' => array(
+				array(
+					'taxonomy' => 'bp_docs_doc_in_folder',
+					'field' => 'term_id',
+					'terms' => $f1_term,
+				),
+			),
+			'update_meta_cache' => false,
+			'update_term_cache' => false,
+		) );
+		$this->assertSame( array(), $f1_docs );
+
+		$f2_term = bp_docs_get_folder_term( $f2 );
+		$f2_docs = get_posts( array(
+			'post_type' => bp_docs_get_post_type_name(),
+			'tax_query' => array(
+				array(
+					'taxonomy' => 'bp_docs_doc_in_folder',
+					'field' => 'term_id',
+					'terms' => $f2_term,
+				),
+			),
+			'update_meta_cache' => false,
+			'update_term_cache' => false,
+		) );
+		$this->assertSame( array(), $f2_docs );
+
+		$f3_term = bp_docs_get_folder_term( $f3 );
+		$f3_docs = get_posts( array(
+			'post_type' => bp_docs_get_post_type_name(),
+			'tax_query' => array(
+				array(
+					'taxonomy' => 'bp_docs_doc_in_folder',
+					'field' => 'term_id',
+					'terms' => $f3_term,
+				),
+			),
+			'update_meta_cache' => false,
+			'update_term_cache' => false,
+		) );
+		$this->assertSame( array(), $f3_docs );
+
+		$f4_term = bp_docs_get_folder_term( $f4 );
+		$f4_docs = get_posts( array(
+			'post_type' => bp_docs_get_post_type_name(),
+			'tax_query' => array(
+				array(
+					'taxonomy' => 'bp_docs_doc_in_folder',
+					'field' => 'term_id',
+					'terms' => $f4_term,
+				),
+			),
+			'update_meta_cache' => false,
+			'update_term_cache' => false,
+		) );
+		$this->assertSame( array(), $f4_docs );
+
+		$this->assertSame( array(), bp_docs_get_folders( array( 'parent_id' => $f1 ) ) );
+		$this->assertSame( array(), bp_docs_get_folders( array( 'parent_id' => $f2 ) ) );
 	}
 }

@@ -993,4 +993,79 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$gm3->promote( 'admin' );
 		$this->assertTrue( BP_Docs_Groups_Integration::user_can_associate_doc_with_group( $u3, $g ) );
 	}
+
+	/**
+	 * @group manage_folder
+	 * @group folders
+	 */
+	public function test_manage_folder_global() {
+		$f = bp_docs_create_folder( array(
+			'name' => 'foo',
+		) );
+
+		$u1 = $this->create_user();
+		$this->set_current_user( $u1 );
+
+		$this->assertFalse( current_user_can( 'bp_docs_manage_folder', $f ) );
+
+		$u2 = $this->create_user( array( 'role' => 'administrator' ) );
+		$this->set_current_user( $u2 );
+
+		$this->assertTrue( current_user_can( 'bp_docs_manage_folder', $f ) );
+	}
+
+	/**
+	 * @group manage_folder
+	 * @group folders
+	 */
+	public function test_manage_folder_group() {
+		$g = $this->factory->group->create();
+		$f = bp_docs_create_folder( array(
+			'name' => 'foo',
+			'group_id' => $g,
+		) );
+
+		$u1 = $this->create_user();
+		$this->set_current_user( $u1 );
+		$this->assertFalse( current_user_can( 'bp_docs_manage_folder', $f ) );
+
+		$u2 = $this->create_user( array( 'role' => 'administrator' ) );
+		$this->set_current_user( $u2 );
+		$this->assertTrue( current_user_can( 'bp_docs_manage_folder', $f ) );
+
+		$u3 = $this->create_user();
+		$this->set_current_user( $u3 );
+		$this->add_user_to_group( $u3, $g );
+		$this->assertFalse( current_user_can( 'bp_docs_manage_folder', $f ) );
+
+		$u4 = $this->create_user();
+		$this->set_current_user( $u4 );
+		$this->add_user_to_group( $u4, $g );
+		$gm4 = new BP_Groups_Member( $u4, $g );
+		$gm4->promote( 'admin' );
+		$this->assertTrue( current_user_can( 'bp_docs_manage_folder', $f ) );
+	}
+
+	/**
+	 * @group manage_folder
+	 * @group folders
+	 */
+	public function test_manage_folder_user() {
+		$u = $this->create_user();
+		$f = bp_docs_create_folder( array(
+			'name' => 'foo',
+			'user_id' => $u,
+		) );
+
+		$u1 = $this->create_user();
+		$this->set_current_user( $u1 );
+		$this->assertFalse( current_user_can( 'bp_docs_manage_folder', $f ) );
+
+		$u2 = $this->create_user( array( 'role' => 'administrator' ) );
+		$this->set_current_user( $u2 );
+		$this->assertTrue( current_user_can( 'bp_docs_manage_folder', $f ) );
+
+		$this->set_current_user( $u );
+		$this->assertTrue( current_user_can( 'bp_docs_manage_folder', $f ) );
+	}
 }
