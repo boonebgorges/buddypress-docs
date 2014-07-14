@@ -2,9 +2,9 @@
 # This file is distributed under the same license as the BuddyPress Docs package.
 msgid ""
 msgstr ""
-"Project-Id-Version: BuddyPress Docs 1.8.0\n"
+"Project-Id-Version: BuddyPress Docs 1.8.1\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/support/plugin/buddypress-docs\n"
-"POT-Creation-Date: 2014-07-09 20:02:16+00:00\n"
+"POT-Creation-Date: 2014-07-14 16:40:00+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -57,7 +57,7 @@ msgstr ""
 msgid "No Docs found in Trash"
 msgstr ""
 
-#. #-#-#-#-#  bp-docs.pot (BuddyPress Docs 1.8.0)  #-#-#-#-#
+#. #-#-#-#-#  bp-docs.pot (BuddyPress Docs 1.8.1)  #-#-#-#-#
 #. Plugin Name of the plugin/theme
 #: bp-docs.php:279 includes/component.php:41
 #: includes/integration-groups.php:1138

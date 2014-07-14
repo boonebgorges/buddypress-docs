@@ -172,40 +172,6 @@ function bp_docs_remove_tinymce_more_button( $buttons ) {
 add_filter( 'mce_buttons', 'bp_docs_remove_tinymce_more_button' );
 
 /**
- * Modifies TinyMCE init parameters to include and exclude plugins
- *
- * WP 3.1 introduced a fancy wplink plugin for TinyMCE, which allows for internal linking. It's not
- * playing nice with BuddyPress Docs, so I'm removing it for the moment and falling back on
- * TinyMCE's default link button.
- *
- * This function also adds the
- *
- * @package BuddyPress Docs
- * @since 1.0.4
- *
- * @param array $initArray The default TinyMCE init array as set by WordPress
- * @return array $initArray The init array with the wplink plugin removed
- */
-function bp_docs_remove_tinymce_plugins( $initArray ) {
-	if ( bp_docs_is_bp_docs_page() ) {
-		$plugins 	= explode( ',', $initArray['plugins'] );
-
-		// Remove internal linking
-		$wplink_key = array_search( 'wplink', $plugins );
-		if ( $wplink_key ) {
-			unset( $plugins[$wplink_key] );
-		}
-
-		$plugins = array_values( $plugins );
-
-		$initArray['plugins'] = implode( ',', $plugins );
-	}
-
-	return $initArray;
-}
-add_filter( 'tiny_mce_before_init', 'bp_docs_remove_tinymce_plugins' );
-
-/**
  * Hook our idle function to the TinyMCE.onInit event
  *
  * @package BuddyPress_Docs
