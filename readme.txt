@@ -35,6 +35,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 = 1.8.1 =
 * Replace the missing Link feature in the rich text editor with WP's custom link plugin
+* Fix bug that could allow non-authenticated user to access /edit page in some cases
 * Ensure that the 'js' and 'no-js' body classes work properly across themes
 
 = 1.8.0 =
