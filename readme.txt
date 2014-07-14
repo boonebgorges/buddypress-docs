@@ -34,6 +34,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 == Changelog ==
 
 = 1.8.1 =
+* Replace the missing Link feature in the rich text editor with WP's custom link plugin
 * Ensure that the 'js' and 'no-js' body classes work properly across themes
 
 = 1.8.0 =
