@@ -533,6 +533,13 @@ function bp_docs_get_folders( $args = array() ) {
 		$display = 'tree';
 	}
 
+	// Default order
+	if ( isset( $_GET['order'] ) && 'desc' === strtolower( $_GET['order'] ) ) {
+		$order = 'DESC';
+	} else {
+		$order = 'ASC';
+	}
+
 	$r = wp_parse_args( $args, array(
 		'group_id' => $group_id,
 		'user_id' => $user_id,
@@ -544,7 +551,7 @@ function bp_docs_get_folders( $args = array() ) {
 	$post_args = array(
 		'post_type' => 'bp_docs_folder',
 		'orderby' => 'title',
-		'order' => 'ASC',
+		'order' => $order,
 		'posts_per_page' => '-1',
 		'tax_query' => array(),
 	);
