@@ -255,6 +255,18 @@ function bp_docs_filter_titles() {
 }
 
 /**
+ * Get the breadcrumb separator character.
+ *
+ * @since 1.9.0
+ *
+ * @param string $context 'doc' or 'directory'
+ */
+function bp_docs_get_breadcrumb_separator( $context = 'doc' ) {
+	// Default value is a right-facing triangle
+	return apply_filters( 'bp_docs_breadcrumb_separator', '&#9656;', $context );
+}
+
+/**
  * Echoes the breadcrumb of a Doc.
  *
  * @since 1.9.0
@@ -273,7 +285,9 @@ function bp_docs_the_breadcrumb() {
 
 		$crumbs = apply_filters( 'bp_docs_doc_breadcrumbs', array( $title ) );
 
-		return implode( ' <span class="directory-breadcrumb-separator">&#9656;</span> ', $crumbs );
+		$sep = bp_docs_get_breadcrumb_separator( 'doc' );
+
+		return implode( ' <span class="directory-breadcrumb-separator">' . $sep . '</span> ', $crumbs );
 	}
 
 /**
@@ -632,7 +646,9 @@ function bp_docs_directory_breadcrumb() {
 		$last = '<span class="breadcrumb-current">' . $last . '</a>';
 		$crumbs[] = $last;
 
-		return implode( ' <span class="directory-breadcrumb-separator">&#9656;</span> ', $crumbs );
+		$sep = bp_docs_get_breadcrumb_separator( 'directory' );
+
+		return implode( ' <span class="directory-breadcrumb-separator">' . $sep . '</span> ', $crumbs );
 	}
 
 /**
