@@ -869,6 +869,188 @@ function bp_docs_validate_group_folder_selection_on_doc_save( $check, $doc_id ) 
 }
 add_filter( 'bp_docs_before_save_folder_selection', 'bp_docs_validate_group_folder_selection_on_doc_save', 10, 2 );
 
+/**
+ * Process folder edits.
+ */
+function bp_docs_process_folder_edit_cb() {
+	if ( ! bp_docs_is_docs_component() && ! bp_is_current_action( bp_docs_get_docs_slug() ) ) {
+		return;
+	}
+
+	if ( ! bp_docs_is_folder_manage_view() ) {
+		return;
+	}
+
+	if ( empty( $_POST['folder-id'] ) ) {
+		return;
+	}
+
+	$folder_id = intval( $_POST['folder-id'] );
+
+	$nonce = isset( $_POST['bp-docs-edit-folder-nonce-' . $folder_id] ) ? stripslashes( $_POST['bp-docs-edit-folder-nonce-' . $folder_id] ) : '';
+
+	$redirect_url = bp_get_requested_url();
+
+	if ( ! wp_verify_nonce( $nonce, 'bp-docs-edit-folder-' . $folder_id ) ) {
+		bp_core_add_message( __( 'There was a problem editing that folder. Please try again.', 'bp-docs' ), 'error' );
+		bp_core_redirect( $redirect_url );
+		die();
+	}
+
+	$parent = isset( $_POST['folder-parent-' . $folder_id] ) ? intval( $_POST['folder-parent-' . $folder_id] ) : '';
+
+
+	$edit_args = array(
+		'folder_id' => $folder_id,
+		'name'      => stripslashes( $_POST['folder-name-' . $folder_id] ),
+	);
+
+	if ( ! empty( $parent ) ) {
+		$edit_args['parent'] = $parent;
+
+		// Force the document to the type of the parent
+		$edit_args['group_id'] = bp_docs_get_folder_group( $parent );
+		$edit_args['user_id']  = bp_docs_get_folder_user( $parent );
+
+	}
+
+	// @todo permissions checks!!
+	$success = bp_docs_create_folder( $edit_args );
+
+	if ( ! empty( $success ) && ! is_wp_error( $success ) ) {
+		bp_core_add_message( __( 'Folder successfully updated.', 'bp-docs' ), 'success' );
+	} else {
+		bp_core_add_message( __( 'There was a problem editing that folder. Please try again.', 'bp-docs' ), 'error' );
+	}
+
+	bp_core_redirect( $redirect_url );
+	die();
+}
+add_action( 'bp_actions', 'bp_docs_process_folder_edit_cb' );
+
+/**
+ * Process folder creation from manage-folders.
+ */
+function bp_docs_process_folder_create_cb() {
+	if ( ! bp_docs_is_docs_component() && ! bp_is_current_action( bp_docs_get_docs_slug() ) ) {
+		return;
+	}
+
+	if ( ! bp_docs_is_folder_manage_view() ) {
+		return;
+	}
+
+	if ( empty( $_POST['bp-docs-create-folder-submit'] ) ) {
+		return;
+	}
+
+	$nonce = isset( $_POST['bp-docs-create-folder-nonce'] ) ? stripslashes( $_POST['bp-docs-create-folder-nonce'] ) : '';
+
+	$redirect_url = bp_get_requested_url();
+
+	if ( ! wp_verify_nonce( $nonce, 'bp-docs-create-folder' ) ) {
+		bp_core_add_message( __( 'There was a problem editing that folder. Please try again.', 'bp-docs' ), 'error' );
+		bp_core_redirect( $redirect_url );
+		die();
+	}
+
+	$folder_args = array(
+		'name' => stripslashes( $_POST['new-folder'] ),
+	);
+
+	$parent = isset( $_POST['new-folder-parent'] ) ? intval( $_POST['new-folder-parent'] ) : null;
+
+	if ( ! empty( $parent ) ) {
+		$folder_args['parent'] = $parent;
+	}
+
+	// If there's a parent, the parent's folder type takes precedence
+	if ( ! empty( $parent ) ) {
+		$folder_args['group_id'] = bp_docs_get_folder_group( $parent );
+		$folder_args['user_id']  = bp_docs_get_folder_user( $parent );
+
+	// Otherwise, trust the values passed
+	} else {
+		// Type
+		$folder_type = stripslashes( $_POST['new-folder-type'] );
+
+		if ( 'global' === $folder_type ) {
+			// Nothing to do
+		} else if ( 'me' === $folder_type ) {
+			$folder_args['user_id'] = bp_loggedin_user_id();
+		} else if ( is_numeric( $folder_type ) ) {
+			// This is a group
+			$folder_args['group_id'] = intval( $folder_type );
+		}
+	}
+
+	// Create the folder
+	// @todo permissions checks
+	$success = bp_docs_create_folder( $folder_args );
+
+	if ( ! empty( $success ) && ! is_wp_error( $success ) ) {
+		bp_core_add_message( __( 'Folder successfully created.', 'bp-docs' ), 'success' );
+	} else {
+		bp_core_add_message( __( 'There was a problem creating the folder. Please try again.', 'bp-docs' ), 'error' );
+	}
+
+	bp_core_redirect( $redirect_url );
+	die();
+}
+add_action( 'bp_actions', 'bp_docs_process_folder_create_cb' );
+
+/**
+ * Catch a request to delete a folder.
+ *
+ * @since 1.9.0
+ */
+function bp_docs_process_folder_delete_cb() {
+	if ( ! bp_docs_is_folder_manage_view() ) {
+		return;
+	}
+
+	$folder_id = 0;
+	if ( isset( $_GET['delete-folder'] ) ) {
+		$folder_id = intval( $_GET['delete-folder'] );
+	}
+
+	if ( ! $folder_id ) {
+		return;
+	}
+
+	$nonce = '';
+	if ( isset( $_POST['_wpnonce'] ) ) {
+		$nonce = stripslashes( $_POST['_wpnonce'] );
+	}
+
+	if ( ! wp_verify_nonce( $nonce, 'bp-docs-delete-folder-' . $folder_id ) ) {
+		return;
+	}
+
+	if ( ! current_user_can( 'bp_docs_manage_folder', $folder_id ) ) {
+		return;
+	}
+
+	if ( empty( $_POST['delete-confirm'] ) || '1' !== $_POST['delete-confirm'] ) {
+		return;
+	}
+
+	$deleted = bp_docs_delete_folder( array(
+		'folder_id'       => $folder_id,
+		'delete_contents' => true,
+	) );
+
+	if ( $deleted ) {
+		bp_core_add_message( __( 'Folder deleted.', 'bp-docs' ) );
+	} else {
+		bp_core_add_message( __( 'Could not delete folder.', 'bp-docs' ) );
+	}
+
+	bp_core_redirect( remove_query_arg( 'delete-folder', bp_get_requested_url() ) );
+	die();
+}
+add_action( 'bp_actions', 'bp_docs_process_folder_delete_cb' );
+
 /** AJAX Handlers ************************************************************/
 
 /**
@@ -1060,192 +1242,6 @@ function bp_docs_process_folder_drop_cb() {
 	}
 }
 add_action( 'wp_ajax_bp_docs_process_folder_drop', 'bp_docs_process_folder_drop_cb' );
-
-/**
- * Process folder edits.
- *
- * (not an AJAX callback, but close enough)
- */
-function bp_docs_process_folder_edit_cb() {
-	if ( ! bp_docs_is_docs_component() && ! bp_is_current_action( bp_docs_get_docs_slug() ) ) {
-		return;
-	}
-
-	if ( ! bp_docs_is_folder_manage_view() ) {
-		return;
-	}
-
-	if ( empty( $_POST['folder-id'] ) ) {
-		return;
-	}
-
-	$folder_id = intval( $_POST['folder-id'] );
-
-	$nonce = isset( $_POST['bp-docs-edit-folder-nonce-' . $folder_id] ) ? stripslashes( $_POST['bp-docs-edit-folder-nonce-' . $folder_id] ) : '';
-
-	$redirect_url = bp_get_requested_url();
-
-	if ( ! wp_verify_nonce( $nonce, 'bp-docs-edit-folder-' . $folder_id ) ) {
-		bp_core_add_message( __( 'There was a problem editing that folder. Please try again.', 'bp-docs' ), 'error' );
-		bp_core_redirect( $redirect_url );
-		die();
-	}
-
-	$parent = isset( $_POST['folder-parent-' . $folder_id] ) ? intval( $_POST['folder-parent-' . $folder_id] ) : '';
-
-
-	$edit_args = array(
-		'folder_id' => $folder_id,
-		'name'      => stripslashes( $_POST['folder-name-' . $folder_id] ),
-	);
-
-	if ( ! empty( $parent ) ) {
-		$edit_args['parent'] = $parent;
-
-		// Force the document to the type of the parent
-		$edit_args['group_id'] = bp_docs_get_folder_group( $parent );
-		$edit_args['user_id']  = bp_docs_get_folder_user( $parent );
-
-	}
-
-	// @todo permissions checks!!
-	$success = bp_docs_create_folder( $edit_args );
-
-	if ( ! empty( $success ) && ! is_wp_error( $success ) ) {
-		bp_core_add_message( __( 'Folder successfully updated.', 'bp-docs' ), 'success' );
-	} else {
-		bp_core_add_message( __( 'There was a problem editing that folder. Please try again.', 'bp-docs' ), 'error' );
-	}
-
-	bp_core_redirect( $redirect_url );
-	die();
-}
-add_action( 'bp_actions', 'bp_docs_process_folder_edit_cb' );
-
-/**
- * Process folder creation from manage-folders.
- *
- * (not an AJAX callback, but close enough)
- */
-function bp_docs_process_folder_create_cb() {
-	if ( ! bp_docs_is_docs_component() && ! bp_is_current_action( bp_docs_get_docs_slug() ) ) {
-		return;
-	}
-
-	if ( ! bp_docs_is_folder_manage_view() ) {
-		return;
-	}
-
-	if ( empty( $_POST['bp-docs-create-folder-submit'] ) ) {
-		return;
-	}
-
-	$nonce = isset( $_POST['bp-docs-create-folder-nonce'] ) ? stripslashes( $_POST['bp-docs-create-folder-nonce'] ) : '';
-
-	$redirect_url = bp_get_requested_url();
-
-	if ( ! wp_verify_nonce( $nonce, 'bp-docs-create-folder' ) ) {
-		bp_core_add_message( __( 'There was a problem editing that folder. Please try again.', 'bp-docs' ), 'error' );
-		bp_core_redirect( $redirect_url );
-		die();
-	}
-
-	$folder_args = array(
-		'name' => stripslashes( $_POST['new-folder'] ),
-	);
-
-	$parent = isset( $_POST['new-folder-parent'] ) ? intval( $_POST['new-folder-parent'] ) : null;
-
-	if ( ! empty( $parent ) ) {
-		$folder_args['parent'] = $parent;
-	}
-
-	// If there's a parent, the parent's folder type takes precedence
-	if ( ! empty( $parent ) ) {
-		$folder_args['group_id'] = bp_docs_get_folder_group( $parent );
-		$folder_args['user_id']  = bp_docs_get_folder_user( $parent );
-
-	// Otherwise, trust the values passed
-	} else {
-		// Type
-		$folder_type = stripslashes( $_POST['new-folder-type'] );
-
-		if ( 'global' === $folder_type ) {
-			// Nothing to do
-		} else if ( 'me' === $folder_type ) {
-			$folder_args['user_id'] = bp_loggedin_user_id();
-		} else if ( is_numeric( $folder_type ) ) {
-			// This is a group
-			$folder_args['group_id'] = intval( $folder_type );
-		}
-	}
-
-	// Create the folder
-	// @todo permissions checks
-	$success = bp_docs_create_folder( $folder_args );
-
-	if ( ! empty( $success ) && ! is_wp_error( $success ) ) {
-		bp_core_add_message( __( 'Folder successfully created.', 'bp-docs' ), 'success' );
-	} else {
-		bp_core_add_message( __( 'There was a problem creating the folder. Please try again.', 'bp-docs' ), 'error' );
-	}
-
-	bp_core_redirect( $redirect_url );
-	die();
-}
-add_action( 'bp_actions', 'bp_docs_process_folder_create_cb' );
-
-/**
- * Catch a request to delete a folder.
- *
- * @since 1.9.0
- */
-function bp_docs_process_folder_delete_cb() {
-	if ( ! bp_docs_is_folder_manage_view() ) {
-		return;
-	}
-
-	$folder_id = 0;
-	if ( isset( $_GET['delete-folder'] ) ) {
-		$folder_id = intval( $_GET['delete-folder'] );
-	}
-
-	if ( ! $folder_id ) {
-		return;
-	}
-
-	$nonce = '';
-	if ( isset( $_POST['_wpnonce'] ) ) {
-		$nonce = stripslashes( $_POST['_wpnonce'] );
-	}
-
-	if ( ! wp_verify_nonce( $nonce, 'bp-docs-delete-folder-' . $folder_id ) ) {
-		return;
-	}
-
-	if ( ! current_user_can( 'bp_docs_manage_folder', $folder_id ) ) {
-		return;
-	}
-
-	if ( empty( $_POST['delete-confirm'] ) || '1' !== $_POST['delete-confirm'] ) {
-		return;
-	}
-
-	$deleted = bp_docs_delete_folder( array(
-		'folder_id'       => $folder_id,
-		'delete_contents' => true,
-	) );
-
-	if ( $deleted ) {
-		bp_core_add_message( __( 'Folder deleted.', 'bp-docs' ) );
-	} else {
-		bp_core_add_message( __( 'Could not delete folder.', 'bp-docs' ) );
-	}
-
-	bp_core_redirect( remove_query_arg( 'delete-folder', bp_get_requested_url() ) );
-	die();
-}
-add_action( 'bp_actions', 'bp_docs_process_folder_delete_cb' );
 
 /** Template functions *******************************************************/
 
