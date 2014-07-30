@@ -1593,7 +1593,7 @@ function bp_docs_create_new_folder_markup( $args = array() ) {
 		'name'     => 'new-folder-parent',
 		'id'       => 'new-folder-parent',
 		'class'    => 'folder-parent',
-		'selected' => false,
+		'selected' => isset( $_GET['folder'] ) ? intval( $_GET['folder'] ) : false,
 		'group_id' => $r['group_id'],
 	) ) ?>
 
