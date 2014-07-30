@@ -1514,9 +1514,9 @@ function bp_docs_group_directory_breadcrumb( $crumbs ) {
 	if ( bp_is_group() ) {
 		$group_crumbs = array(
 			sprintf(
-				'<a href="%s">%s&#8217;s Docs</a>',
+				'<a href="%s">%s</a>',
 				bp_get_group_permalink( groups_get_current_group() ) . bp_docs_get_slug() . '/',
-				esc_html( bp_get_current_group_name() )
+				sprintf( _x( '%s&#8217;s Docs', 'group Docs directory breadcrumb', 'bp-docs' ), esc_html( bp_get_current_group_name() ) )
 			),
 		);
 

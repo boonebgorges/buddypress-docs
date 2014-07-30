@@ -247,9 +247,9 @@ function bp_docs_user_directory_breadcrumb( $crumbs ) {
 	if ( bp_is_user() ) {
 		$user_crumbs = array(
 			sprintf(
-				'<a href="%s">%s&#8217;s Docs</a>',
+				'<a href="%s">%s</a>',
 				bp_displayed_user_domain() . bp_docs_get_slug() . '/',
-				esc_html( bp_displayed_user_fullname() )
+				sprintf( _x( '%s&#8217;s Docs', 'user Docs directory breadcrumb', 'bp-docs' ), esc_html( bp_get_displayed_user_fullname() ) )
 			),
 		);
 
