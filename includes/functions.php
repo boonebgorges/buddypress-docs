@@ -805,3 +805,34 @@ function bp_docs_revisions_to_keep( $num, $post ) {
 	return intval( $num );
 }
 add_filter( 'wp_revisions_to_keep', 'bp_docs_revisions_to_keep', 10, 2 );
+
+/**
+ * Remove the Docs component from the bp-active-components array.
+ *
+ * See https://buddypress.trac.wordpress.org/ticket/5552 for the disgusting
+ * details.
+ */
+function bp_docs_filter_active_components( $components ) {
+	unset( $components['bp_docs'] );
+	return $components;
+}
+
+/**
+ * Hook the bp_docs_filter_active_components() filter as close to options_nav rendering as possible.
+ *
+ * @since 1.9
+ */
+function bp_docs_filter_active_components_hook() {
+	add_filter( 'bp_active_components', 'bp_docs_filter_active_components' );
+}
+add_action( 'bp_before_member_plugin_template', 'bp_docs_filter_active_components_hook' );
+
+/**
+ * Unhook the bp_docs_filter_active_components() filter as soon as possible after rendering options_nav.
+ *
+ * @since 1.9
+ */
+function bp_docs_filter_active_components_unhook() {
+	remove_filter( 'bp_active_components', 'bp_docs_filter_active_components' );
+}
+add_action( 'bp_member_plugin_options_nav', 'bp_docs_filter_active_components_unhook' );
