@@ -887,7 +887,7 @@ function bp_docs_doc_associated_group_markup() {
 	}
 
 	$selected_group = BP_Groups_Group::get_id_from_slug( $selected_group_slug );
-	if ( $selected_group && ! BP_Docs_Groups_Integration::user_can_associate_doc_with_group( bp_loggedin_user_id(), $selected_group ) ) {
+	if ( $selected_group && ! current_user_can( 'bp_docs_associate_with_group', $selected_group ) ) {
 		$selected_group = 0;
 	}
 
