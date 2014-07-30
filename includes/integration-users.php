@@ -234,3 +234,28 @@ function bp_docs_get_user_tab_name() {
 	}
 	return apply_filters( 'bp_docs_get_user_tab_name', $name );
 }
+
+/**
+ * Add user information to directory breadcrumbs.
+ *
+ * @since 1.9.0
+ *
+ * @param array $crumbs
+ * @return array
+ */
+function bp_docs_user_directory_breadcrumb( $crumbs ) {
+	if ( bp_is_user() ) {
+		$user_crumbs = array(
+			sprintf(
+				'<a href="%s">%s&#8217;s Docs</a>',
+				bp_displayed_user_domain() . bp_docs_get_slug() . '/',
+				esc_html( bp_displayed_user_fullname() )
+			),
+		);
+
+		$crumbs = array_merge( $user_crumbs, $crumbs );
+	}
+
+	return $crumbs;
+}
+add_filter( 'bp_docs_directory_breadcrumb', 'bp_docs_user_directory_breadcrumb', 2 );
