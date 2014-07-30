@@ -253,6 +253,26 @@ function bp_docs_user_directory_breadcrumb( $crumbs ) {
 			),
 		);
 
+		switch ( bp_current_action() ) {
+			case 'started' :
+				$user_crumbs[] = sprintf(
+					'<a href="%s">%s</a>',
+					bp_docs_get_mydocs_started_link(),
+					__( 'Started By Me', 'bp-docs' )
+				);
+
+				break;
+
+			case 'edited' :
+				$user_crumbs[] = sprintf(
+					'<a href="%s">%s</a>',
+					bp_docs_get_mydocs_edited_link(),
+					__( 'Edited By Me', 'bp-docs' )
+				);
+
+				break;
+		}
+
 		$crumbs = array_merge( $user_crumbs, $crumbs );
 	}
 
