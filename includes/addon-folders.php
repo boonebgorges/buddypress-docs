@@ -540,13 +540,23 @@ function bp_docs_get_folders( $args = array() ) {
 		$order = 'ASC';
 	}
 
-	$r = wp_parse_args( $args, array(
-		'group_id' => $group_id,
-		'user_id' => $user_id,
-		'display' => $display,
-		'force_all_folders' => false,
-		'parent_id' => $parent_id,
-	) );
+	if ( function_exists( 'bp_parse_args' ) ) {
+		$r = bp_parse_args( $args, array(
+			'group_id' => $group_id,
+			'user_id' => $user_id,
+			'display' => $display,
+			'force_all_folders' => false,
+			'parent_id' => $parent_id,
+		), 'bp_docs_has_folders' );
+	} else {
+		$r = wp_parse_args( $args, array(
+			'group_id' => $group_id,
+			'user_id' => $user_id,
+			'display' => $display,
+			'force_all_folders' => false,
+			'parent_id' => $parent_id,
+		) );
+	}
 
 	$post_args = array(
 		'post_type' => 'bp_docs_folder',

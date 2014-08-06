@@ -107,7 +107,12 @@ function bp_docs_has_docs( $args = array() ) {
 			'posts_per_page' => $d_posts_per_page,
 			'search_terms'   => $d_search_terms,
 		);
-		$r = wp_parse_args( $args, $defaults );
+
+		if ( function_exists( 'bp_parse_args' ) ) {
+			$r = bp_parse_args( $args, $defaults, 'bp_docs_has_docs' );
+		} else {
+			$r = wp_parse_args( $args, $defaults );
+		}
 
 		$doc_query_builder      = new BP_Docs_Query( $r );
 		$bp->bp_docs->doc_query = $doc_query_builder->get_wp_query();
