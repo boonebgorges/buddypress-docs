@@ -175,7 +175,7 @@ class BP_Docs_Groups_Integration {
 	 * When looking at a group, this filters the group
 	 */
 	function pre_query_args( $query_args, $bp_docs_query ) {
-		if ( ! empty( $bp_docs_query->query_args['group_id'] ) ) {
+		if ( ! is_null( $bp_docs_query->query_args['group_id'] ) ) {
 			$query_args['tax_query'][] = self::tax_query_arg_for_groups( $bp_docs_query->query_args['group_id'] );
 		}
 		return $query_args;
@@ -192,20 +192,37 @@ class BP_Docs_Groups_Integration {
 	public static function tax_query_arg_for_groups( $group_ids ) {
 		$group_ids = wp_parse_id_list( $group_ids );
 
-		$terms = array();
-		foreach ( $group_ids as $gid ) {
-			$terms[] = bp_docs_get_term_slug_from_group_id( $gid );
-		}
+		if ( array() === $group_ids ) {
+			$group_terms = get_terms( bp_docs_get_associated_item_tax_name(), array(
+				'fields' => 'ids',
+			) );
 
-		if ( empty( $terms ) ) {
-			$terms = array( 0 );
-		}
+			if ( ! empty( $group_terms ) ) {
+				$arg = array(
+					'taxonomy' => bp_docs_get_associated_item_tax_name(),
+					'field'    => 'id',
+					'operator' => 'NOT IN',
+					'terms'    => $group_terms,
+				);
+			} else {
+				$arg = array();
+			}
+		} else {
+			$terms = array();
+			foreach ( $group_ids as $gid ) {
+				$terms[] = bp_docs_get_term_slug_from_group_id( $gid );
+			}
 
-		$arg = array(
-			'taxonomy' => bp_docs_get_associated_item_tax_name(),
-			'field'    => 'slug',
-			'terms'    => $terms,
-		);
+			if ( empty( $terms ) ) {
+				$terms = array( 0 );
+			}
+
+			$arg = array(
+				'taxonomy' => bp_docs_get_associated_item_tax_name(),
+				'field'    => 'slug',
+				'terms'    => $terms,
+			);
+		}
 
 		return $arg;
 	}

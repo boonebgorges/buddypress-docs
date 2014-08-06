@@ -45,7 +45,7 @@ class BP_Docs_Query {
 		$defaults = array(
 			'doc_id'	 => array(),     // Array or comma-separated string
 			'doc_slug'	 => $this->doc_slug, // String
-			'group_id'	 => array(),     // Array or comma-separated string
+			'group_id'	 => null,     // Array or comma-separated string
 			'parent_id'	 => 0,		 // int
 			'author_id'	 => array(),     // Array or comma-separated string
 			'folder_id'      => null,

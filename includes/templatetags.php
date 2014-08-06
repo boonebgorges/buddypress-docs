@@ -44,7 +44,7 @@ function bp_docs_has_docs( $args = array() ) {
 			$my_groups = groups_get_user_groups( bp_loggedin_user_id() );
 			$d_group_id = ! empty( $my_groups['total'] ) ? $my_groups['groups'] : array( 0 );
 		} else {
-			$d_group_id = array();
+			$d_group_id = null;
 		}
 
 		// If this is a Started By tab, set the author ID
