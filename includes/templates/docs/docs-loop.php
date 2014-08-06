@@ -32,9 +32,11 @@
 				<a href="<?php bp_docs_order_by_link( 'title' ) ?>"><?php _e( 'Title', 'bp-docs' ); ?></a>
 			</th>
 
-			<th scope="column" class="author-cell<?php bp_docs_is_current_orderby_class( 'author' ) ?>">
-				<a href="<?php bp_docs_order_by_link( 'author' ) ?>"><?php _e( 'Author', 'bp-docs' ); ?></a>
-			</th>
+			<?php if ( ! bp_docs_is_started_by() ) : ?>
+				<th scope="column" class="author-cell<?php bp_docs_is_current_orderby_class( 'author' ) ?>">
+					<a href="<?php bp_docs_order_by_link( 'author' ) ?>"><?php _e( 'Author', 'bp-docs' ); ?></a>
+				</th>
+			<?php endif; ?>
 
 			<th scope="column" class="created-date-cell<?php bp_docs_is_current_orderby_class( 'created' ) ?>">
 				<a href="<?php bp_docs_order_by_link( 'created' ) ?>"><?php _e( 'Created', 'bp-docs' ); ?></a>
@@ -108,9 +110,11 @@
 					</div>
 				</td>
 
-				<td class="author-cell">
-					<a href="<?php echo bp_core_get_user_domain( get_the_author_meta( 'ID' ) ) ?>" title="<?php echo bp_core_get_user_displayname( get_the_author_meta( 'ID' ) ) ?>"><?php echo bp_core_get_user_displayname( get_the_author_meta( 'ID' ) ) ?></a>
-				</td>
+				<?php if ( ! bp_docs_is_started_by() ) : ?>
+					<td class="author-cell">
+						<a href="<?php echo bp_core_get_user_domain( get_the_author_meta( 'ID' ) ) ?>" title="<?php echo bp_core_get_user_displayname( get_the_author_meta( 'ID' ) ) ?>"><?php echo bp_core_get_user_displayname( get_the_author_meta( 'ID' ) ) ?></a>
+					</td>
+				<?php endif; ?>
 
 				<td class="date-cell created-date-cell">
 					<?php echo get_the_date() ?>
