@@ -613,6 +613,10 @@ function bp_docs_get_folders( $args = array() ) {
 		$post_args['post_parent__in'] = wp_parse_id_list( $r['parent_id'] );
 	}
 
+	if ( ! is_null( $r['include'] ) ) {
+		$post_args['post__in'] = wp_parse_id_list( $r['include'] );
+	}
+
 	$folders = get_posts( $post_args );
 
 	// Poor-man's walker
