@@ -539,23 +539,19 @@ function bp_docs_get_folders( $args = array() ) {
 	} else {
 		$order = 'ASC';
 	}
+	$defaults = array(
+		'group_id'          => $group_id,
+		'user_id'           => $user_id,
+		'display'           => $display,
+		'force_all_folders' => false,
+		'parent_id'         => $parent_id,
+		'include'           => null,
+	);
 
 	if ( function_exists( 'bp_parse_args' ) ) {
-		$r = bp_parse_args( $args, array(
-			'group_id' => $group_id,
-			'user_id' => $user_id,
-			'display' => $display,
-			'force_all_folders' => false,
-			'parent_id' => $parent_id,
-		), 'bp_docs_has_folders' );
+		$r = bp_parse_args( $args, $defaults, 'bp_docs_has_folders' );
 	} else {
-		$r = wp_parse_args( $args, array(
-			'group_id' => $group_id,
-			'user_id' => $user_id,
-			'display' => $display,
-			'force_all_folders' => false,
-			'parent_id' => $parent_id,
-		) );
+		$r = wp_parse_args( $args, $defaults );
 	}
 
 	$post_args = array(
