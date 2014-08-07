@@ -279,3 +279,38 @@ function bp_docs_user_directory_breadcrumb( $crumbs ) {
 	return $crumbs;
 }
 add_filter( 'bp_docs_directory_breadcrumb', 'bp_docs_user_directory_breadcrumb', 2 );
+
+/**
+ * Add user information to individual Doc breadcrumbs.
+ *
+ * Hooked very late to ensure it's the first item on the list.
+ *
+ * @since 1.9.0
+ *
+ * @param array $crumbs
+ * @return array
+ */
+function bp_docs_user_single_breadcrumb( $crumbs ) {
+	if ( bp_docs_is_existing_doc() ) {
+		$folder_id = bp_docs_get_doc_folder( get_queried_object_id() );
+
+		if ( $folder_id ) {
+			$user_id = bp_docs_get_folder_user( $folder_id );
+		}
+	}
+
+	if ( ! empty( $user_id ) ) {
+		$user_crumbs = array(
+			sprintf(
+				'<a href="%s">%s&#8217;s Docs</a>',
+				bp_core_get_user_domain( $user_id ) . bp_docs_get_slug() . '/',
+				bp_core_get_user_displayname( $user_id )
+			),
+		);
+
+		$crumbs = array_merge( $user_crumbs, $crumbs );
+	}
+
+	return $crumbs;
+}
+add_action( 'bp_docs_doc_breadcrumbs', 'bp_docs_user_single_breadcrumb', 99 );
