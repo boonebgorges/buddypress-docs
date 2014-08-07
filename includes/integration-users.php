@@ -290,9 +290,16 @@ add_filter( 'bp_docs_directory_breadcrumb', 'bp_docs_user_directory_breadcrumb',
  * @param array $crumbs
  * @return array
  */
-function bp_docs_user_single_breadcrumb( $crumbs ) {
-	if ( bp_docs_is_existing_doc() ) {
-		$folder_id = bp_docs_get_doc_folder( get_queried_object_id() );
+function bp_docs_user_single_breadcrumb( $crumbs, $doc = null ) {
+
+	if ( is_a( $doc, 'WP_Post' ) ) {
+		$doc_id = $doc->ID;
+	} else if ( bp_docs_is_existing_doc() ) {
+		$doc_id = get_queried_object_id();
+	}
+
+	if ( ! empty( $doc_id ) ) {
+		$folder_id = bp_docs_get_doc_folder( $doc_id );
 
 		if ( $folder_id ) {
 			$user_id = bp_docs_get_folder_user( $folder_id );
@@ -313,7 +320,7 @@ function bp_docs_user_single_breadcrumb( $crumbs ) {
 
 	return $crumbs;
 }
-add_action( 'bp_docs_doc_breadcrumbs', 'bp_docs_user_single_breadcrumb', 99 );
+add_action( 'bp_docs_doc_breadcrumbs', 'bp_docs_user_single_breadcrumb', 99, 2 );
 
 /**
  * Add breadcrumbs to Started and Edited screens.

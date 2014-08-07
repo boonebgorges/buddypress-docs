@@ -1566,9 +1566,11 @@ add_filter( 'bp_docs_directory_breadcrumb', 'bp_docs_group_directory_breadcrumb'
  * @param array $crumbs
  * @return array
  */
-function bp_docs_group_single_breadcrumb( $crumbs ) {
+function bp_docs_group_single_breadcrumb( $crumbs, $doc = null ) {
 	$group_id = null;
-	if ( bp_docs_is_existing_doc() ) {
+	if ( is_a( $doc, 'WP_Post' ) ) {
+		$group_id = bp_docs_get_associated_group_id( $doc->ID );
+	} else if ( bp_docs_is_existing_doc() ) {
 		$group_id = bp_docs_get_associated_group_id( get_queried_object_id() );
 	}
 
@@ -1592,7 +1594,7 @@ function bp_docs_group_single_breadcrumb( $crumbs ) {
 
 	return $crumbs;
 }
-add_action( 'bp_docs_doc_breadcrumbs', 'bp_docs_group_single_breadcrumb', 99 );
+add_action( 'bp_docs_doc_breadcrumbs', 'bp_docs_group_single_breadcrumb', 99, 2 );
 
 /**
  * Get group's Docs settings.
