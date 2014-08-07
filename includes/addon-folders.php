@@ -1464,7 +1464,7 @@ function bp_docs_folder_type_selector( $args = array() ) {
 
 	$type_selector  = '<select name="' . esc_attr( $r['name'] ) . '" id="' . esc_attr( $r['id'] ) . '" class="folder-type">';
 	$type_selector .=   '<option ' . selected( $r['selected'], 'global', false ) . ' value="global">' . __( 'Global', 'bp-docs' ) . '</option>';
-	$type_selector .=   '<option ' . selected( $r['selected'], 'me', false ) . ' value="me">' . __( 'Limited to me', 'bp-docs' ) . '</option>';
+	$type_selector .=   '<option ' . selected( $r['selected'], 'me', false ) . ' value="me">' . __( 'Personal', 'bp-docs' ) . '</option>';
 
 	if ( isset( $group_selector ) ) {
 		$type_selector .=   '<optgroup label="' . __( 'Group-specific', 'bp-docs' ) . '">';
