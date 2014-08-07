@@ -77,7 +77,13 @@ function bp_docs_has_docs( $args = array() ) {
 		$d_parent_id = !empty( $_REQUEST['parent_doc'] ) ? (int)$_REQUEST['parent_doc'] : '';
 
 		// Folder id
-		$d_folder_id = ! empty( $_GET['folder'] ) ? intval( $_GET['folder'] ) : 0;
+		$d_folder_id = null;
+		if ( ! empty( $_GET['folder'] ) ) {
+			$d_folder_id = intval( $_GET['folder'] );
+		} else if ( ! bp_docs_is_started_by() && ! bp_docs_is_edited_by() ) {
+			// On Started and Edited pages, we're folder-agnostic
+			$d_folder_id = 0;
+		}
 
 		// Page number, posts per page
 		$d_paged = 1;
@@ -276,19 +282,35 @@ function bp_docs_get_breadcrumb_separator( $context = 'doc' ) {
  *
  * @since 1.9.0
  */
-function bp_docs_the_breadcrumb() {
-	echo bp_docs_get_the_breadcrumb();
+function bp_docs_the_breadcrumb( $args = array() ) {
+	echo bp_docs_get_the_breadcrumb( $args );
 }
 	/**
 	 * Returns the breadcrumb of a Doc.
 	 */
-	function bp_docs_get_the_breadcrumb() {
-		$title = sprintf(
-			'<span class="breadcrumb-current"><i class="genericon genericon-document"></i>%s</span>',
-			get_the_title()
-		);
+	function bp_docs_get_the_breadcrumb( $args = array() ) {
+		$d_doc_id = 0;
+		if ( bp_docs_is_existing_doc() ) {
+			$d_doc_id = get_queried_object_id();
+		}
 
-		$crumbs = apply_filters( 'bp_docs_doc_breadcrumbs', array( $title ) );
+		$r = wp_parse_args( $args, array(
+			'include_doc' => true,
+			'doc_id'      => $d_doc_id,
+		) );
+
+		$crumbs = array();
+
+		$doc = get_post( $r['doc_id'] );
+
+		if ( $r['include_doc'] ) {
+			$crumbs[] = sprintf(
+				'<span class="breadcrumb-current"><i class="genericon genericon-document"></i>%s</span>',
+				$doc->post_title
+			);
+		}
+
+		$crumbs = apply_filters( 'bp_docs_doc_breadcrumbs', $crumbs, $doc );
 
 		$sep = bp_docs_get_breadcrumb_separator( 'doc' );
 

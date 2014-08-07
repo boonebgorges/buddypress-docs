@@ -131,6 +131,10 @@ body.bp-docs div.page ul {
 	}
 }
 
+.attachment-clip-cell {
+	max-width: 30px;
+}
+
 .bp-docs-trashed-doc-notice {
 	color: red;
 	font-size: .9em;
@@ -190,10 +194,6 @@ body.mobile .row-actions {
 	margin: 10px 4px;
 }
 
-.title-cell {
-	width: 30%;
-}
-
 .author-cell, .created-date-cell, .edited-date-cell {
 	text-align: center;
 	width: 100px;
@@ -201,6 +201,20 @@ body.mobile .row-actions {
 
 .group-cell {
 
+}
+
+.tags-cell {
+	width: 200px;
+}
+
+.doc-excerpt {
+	margin-left: 16px;
+}
+
+.list-item-breadcrumb {
+	font-size: .9em;
+	opacity: 1;
+	margin-top: .5em;
 }
 
 .current-orderby a {

@@ -314,3 +314,20 @@ function bp_docs_user_single_breadcrumb( $crumbs ) {
 	return $crumbs;
 }
 add_action( 'bp_docs_doc_breadcrumbs', 'bp_docs_user_single_breadcrumb', 99 );
+
+/**
+ * Add breadcrumbs to Started and Edited screens.
+ */
+function bp_docs_user_breadcrumbs_in_doc_list() {
+	if ( ! bp_docs_is_started_by() && ! bp_docs_is_edited_by() ) {
+		return;
+	} ?>
+
+	<div class="list-item-breadcrumb">
+		<?php bp_docs_the_breadcrumb( array(
+			'include_doc' => false,
+			'doc_id'      => get_the_ID(),
+		) ) ?>
+	</div><?php
+}
+add_action( 'bp_docs_loop_after_doc_excerpt', 'bp_docs_user_breadcrumbs_in_doc_list' );

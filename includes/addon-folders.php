@@ -1489,11 +1489,11 @@ function bp_docs_folder_type_selector( $args = array() ) {
  * @param array $crumbs
  * @return array
  */
-function bp_docs_folder_single_breadcrumb( $crumbs ) {
-	$folder_crumbs = bp_docs_get_folder_breadcrumbs();
+function bp_docs_folder_single_breadcrumb( $crumbs, $doc ) {
+	$folder_crumbs = bp_docs_get_folder_breadcrumbs( $doc );
 	return array_merge( $folder_crumbs, $crumbs );
 }
-add_action( 'bp_docs_doc_breadcrumbs', 'bp_docs_folder_single_breadcrumb' );
+add_action( 'bp_docs_doc_breadcrumbs', 'bp_docs_folder_single_breadcrumb', 10, 2 );
 
 /**
  * Add folder information to directory breadcrumbs.
@@ -1511,9 +1511,12 @@ add_filter( 'bp_docs_directory_breadcrumb', 'bp_docs_folders_directory_breadcrum
  *
  * @since 1.9.0
  */
-function bp_docs_get_folder_breadcrumbs() {
+function bp_docs_get_folder_breadcrumbs( $doc = null ) {
 	$folder_id = 0;
-	if ( bp_docs_is_existing_doc() ) {
+
+	if ( is_a( $doc, 'WP_Post' ) ) {
+		$folder_id = bp_docs_get_doc_folder( $doc->ID );
+	} else if ( bp_docs_is_existing_doc() ) {
 		$folder_id = bp_docs_get_doc_folder( get_queried_object_id() );
 	} else if ( isset( $_GET['folder'] ) ) {
 		$folder_id = intval( $_GET['folder'] );

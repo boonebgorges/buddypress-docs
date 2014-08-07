@@ -98,8 +98,12 @@
 					<i class="genericon genericon-document"></i><a href="<?php bp_docs_doc_link() ?>"><?php the_title() ?></a> <?php bp_docs_doc_trash_notice(); ?>
 
 					<?php if ( bp_docs_get_excerpt_length() ) : ?>
-						<?php the_excerpt() ?>
+						<div class="doc-excerpt">
+							<?php the_excerpt() ?>
+						</div>
 					<?php endif ?>
+
+					<?php do_action( 'bp_docs_loop_after_doc_excerpt' ) ?>
 
 					<div class="row-actions">
 						<?php bp_docs_doc_action_links() ?>
