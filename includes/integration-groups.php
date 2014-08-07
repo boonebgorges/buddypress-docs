@@ -723,6 +723,12 @@ class BP_Docs_Groups_Integration {
 			return;
 		}
 
+		// Don't show on Started or Edited panels, where the info is
+		// presented in the breadcrumb
+		if ( bp_docs_is_started_by() || bp_docs_is_edited_by() ) {
+			return;
+		}
+
 		?>
 
 		<th scope="column" class="groups-cell"><?php _e( 'Group', 'bp-docs' ); ?></th>
@@ -743,6 +749,12 @@ class BP_Docs_Groups_Integration {
 		// Don't show on single group pages
 		// @todo - When multiple group associations are supported, this should be added
 		if ( bp_is_group() ) {
+			return;
+		}
+
+		// Don't show on Started or Edited panels, where the info is
+		// presented in the breadcrumb
+		if ( bp_docs_is_started_by() || bp_docs_is_edited_by() ) {
 			return;
 		}
 
