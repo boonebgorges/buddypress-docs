@@ -1550,12 +1550,6 @@ function bp_docs_get_folder_breadcrumbs() {
 	}
 
 	return $breadcrumb_items;
-
-	$breadcrumbs  = '<div class="bp-docs-folder-breadcrumbs">';
-	$breadcrumbs .= implode( ' > ', $breadcrumb_items );
-	$breadcrumbs .= '</div>';
-
-	echo $breadcrumbs;
 }
 
 /**
