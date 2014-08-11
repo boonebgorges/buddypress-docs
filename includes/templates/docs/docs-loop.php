@@ -2,13 +2,13 @@
 
 <?php include( apply_filters( 'bp_docs_header_template', bp_docs_locate_template( 'docs-header.php' ) ) ) ?>
 
-<h2 class="directory-title">
-	<?php bp_docs_directory_breadcrumb() ?>
-</h2>
-
 <?php if ( current_user_can( 'bp_docs_manage_folders' ) && bp_docs_is_folder_manage_view() ) : ?>
 	<?php bp_locate_template( 'docs/manage-folders.php', true ) ?>
 <?php else : ?>
+
+<h2 class="directory-title">
+	<?php bp_docs_directory_breadcrumb() ?>
+</h2>
 
 <?php if ( current_user_can( 'bp_docs_manage_folders' ) ) : ?>
 	<div class="manage-folders-link">
