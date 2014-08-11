@@ -6,10 +6,9 @@
 	<?php bp_docs_info_header() ?>
 </div>
 
-<?php if ( bp_docs_has_docs() ) : ?>
-<?php bp_docs_inline_toggle_js() ?>
-
 <?php if ( bp_docs_has_docs() && 'minimal' == bp_docs_get_theme() ): ?> 
+
+<?php bp_docs_inline_toggle_js() ?>
 
 	<?php while ( bp_docs_has_docs() ) : bp_docs_the_doc() ?>
 		<div class="bp-docs-doc-minimal"> 
@@ -30,7 +29,9 @@
 				      _e('Created '); echo $created_date; _e(' by '); ?>
 				      <a href="<?php echo bp_core_get_user_domain( get_the_author_meta( 'ID' ) ) ?>" title="<?php echo bp_core_get_user_displayname( get_the_author_meta( 'ID' ) ) ?>"><?php echo bp_core_get_user_displayname( get_the_author_meta( 'ID' ) ) ?></a>
 				<?php if ( $modified_date != $created_date ) { 
-				      _e(' and last modified '); echo $modified_date; } ?>
+					_e(' and last modified '); 
+					echo $modified_date; 
+				} ?>
 			</p> 
 
 			<p class="bp-docs-tags"> 
