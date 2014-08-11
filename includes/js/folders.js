@@ -20,6 +20,7 @@
 		$( '#associated_group_id' ).on( 'change', function() {
 			update_folder_selector( $( this ).val() );
 			update_new_folder_selectors_for_group( $( this ).val() );
+
 			update_folder_tab_title();
 		} );
 

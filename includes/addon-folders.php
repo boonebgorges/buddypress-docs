@@ -1491,6 +1491,8 @@ function bp_docs_folder_type_selector( $args = array() ) {
 
 	$type_selector .= '</select>';
 
+	$type_selector = apply_filters( 'bp_docs_folder_type_selector', $type_selector );
+
 	if ( false === $r['echo'] ) {
 		return $type_selector;
 	} else {
