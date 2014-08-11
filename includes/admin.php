@@ -134,12 +134,31 @@ class BP_Docs_Admin {
 			'bp-docs-attachments'
 		);
 		register_setting( 'bp-docs-settings', 'bp-docs-enable-attachments' );
+
+		// Appearance
+		add_settings_section(
+			'bp-docs-appearance', 
+			__( 'Appearance', 'bp-docs' ), 
+			array( $this, 'appearance_section' ), 
+			'bp-docs-settings'
+		); 
+
+		// Appearance - Theme
+		add_settings_field(
+			'bp-docs-theme', 
+			__( 'Theme', 'bp-docs' ), 
+			array( $this, 'theme_setting_markup' ), 
+			'bp-docs-settings', 
+			'bp-docs-appearance'
+		); 
+		register_setting( 'bp-docs-settings', 'bp-docs-theme' ); 
 	}
 
 	public function general_section() {}
 	public function users_section() {}
 	public function groups_section() {}
 	public function attachments_section() {}
+	public function appearance_section() {}
 
 	public function slug_setting_markup() {
 		global $bp;
@@ -196,6 +215,19 @@ class BP_Docs_Admin {
 
 		<?php
 	}
+
+	public function theme_setting_markup() { 
+		$theme = bp_docs_get_theme(); 
+
+		?> 
+		<select name="bp-docs-theme" id="bp-docs-theme">
+			<option value="default" <?php selected( $theme, 'default' ) ?>><?php _e( 'Default', 'bp-docs' ) ?></option>
+			<option value="minimal" <?php selected( $theme, 'minimal' ) ?>><?php _e( 'Minimal', 'bp-docs' ) ?></option>
+		</select>
+		<p class="description"><?php _e( "Change the look and feel of Buddypress Docs.", 'bp-docs' ) ?></p>
+
+		<?php
+	} 
 
 	function replace_recent_comments_dashboard_widget() {
 		global $wp_meta_boxes;
