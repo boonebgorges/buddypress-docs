@@ -10,6 +10,7 @@
 
 	$( document ).ready( function() {
 		// Show/hide new folder details
+		update_create_new_folder_details_visibility( $( 'input[name=existing-or-new-folder]' ) );
 		$( 'input[name=existing-or-new-folder]' ).on( 'change', function() {
 			update_create_new_folder_details_visibility( $( this ) );
 		} );
@@ -121,7 +122,7 @@
 			success: function( response ) {
 				$( '#new-folder-type' ).fadeOut( function() {
 					$( this ).replaceWith( response ).fadeIn();
-					$( '#new-folder-type' ).val( group_id ).trigger( 'change' );
+					update_parent_folder_selector( $( '#new-folder-type' ) );
 				} );
 			}
 		} );
