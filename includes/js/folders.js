@@ -1,6 +1,7 @@
 ( function( $ ) {
 	var date,
 		doc_id,
+		folder_tab_name = '',
 		hover_element = '',
 		hover_time = '',
 		$doc_clone,
@@ -14,9 +15,11 @@
 		} );
 
 		// Change associated group, change available folders
+		update_folder_tab_title();
 		$( '#associated_group_id' ).on( 'change', function() {
 			update_folder_selector( $( this ).val() );
 			update_new_folder_selectors_for_group( $( this ).val() );
+			update_folder_tab_title();
 		} );
 
 		// Change folder type, change available parents
@@ -84,6 +87,19 @@
 			}
 
 		} );
+	}
+
+	/**
+	 * Update the 'Folders' label for the Folders section when the Associated Group setting is changed
+	 */
+	function update_folder_tab_title() {
+		if ( $( '#associated_group_id' ).val().length ) {
+			folder_tab_name = BP_Docs_Folders.folders_tab_label_groups;
+		} else {
+			folder_tab_name = BP_Docs_Folders.folders_tab_label;
+		}
+
+		$( '#doc-folders .toggle-title' ).html( folder_tab_name );
 	}
 
 	/**

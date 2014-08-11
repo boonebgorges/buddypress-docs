@@ -90,6 +90,11 @@ class BP_Docs_Folders {
 
 		wp_register_style( 'bp-docs-chosen', plugins_url() . '/buddypress-docs/lib/css/chosen/chosen.min.css' );
 		wp_enqueue_style( 'bp-docs-folders', plugins_url() . '/buddypress-docs/includes/css/folders.css', array( 'bp-docs-chosen' ) );
+
+		wp_localize_script( 'bp-docs-folders', 'BP_Docs_Folders', array(
+			'folders_tab_label' => _x( 'Folders', 'Doc edit tab name', 'bp-docs' ),
+			'folders_tab_label_groups' => _x( 'Group Folders', 'Doc edit tab name', 'bp-docs' ),
+		) );
 	}
 }
 
@@ -1643,7 +1648,7 @@ function bp_docs_folders_meta_box() {
 		<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class() ?>">
 			<p id="folders-toggle-edit" class="toggle-switch">
 				<span class="hide-if-js toggle-link-no-js"><?php _e( 'Folders', 'bp-docs' ) ?></span>
-				<a class="hide-if-no-js toggle-link" id="folders-toggle-link" href="#"><span class="show-pane plus-or-minus"></span><?php _e( 'Folders', 'bp-docs' ) ?></a>
+				<a class="hide-if-no-js toggle-link" id="folders-toggle-link" href="#"><span class="show-pane plus-or-minus"></span><span class="toggle-title"><?php _e( 'Folders', 'bp-docs' ) ?></span></a>
 			</p>
 
 			<div class="toggle-content">
