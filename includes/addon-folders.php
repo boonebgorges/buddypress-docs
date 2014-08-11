@@ -562,7 +562,7 @@ function bp_docs_get_folders( $args = array() ) {
 	);
 
 	if ( function_exists( 'bp_parse_args' ) ) {
-		$r = bp_parse_args( $args, $defaults, 'bp_docs_has_folders' );
+		$r = bp_parse_args( $args, $defaults, 'bp_docs_get_folders' );
 	} else {
 		$r = wp_parse_args( $args, $defaults );
 	}
