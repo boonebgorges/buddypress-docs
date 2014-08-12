@@ -4,6 +4,7 @@
 		folder_tab_name = '',
 		hover_element = '',
 		hover_time = '',
+		$associated_group_selector,
 		$doc_clone,
 		$editing_folder,
 		$hover_element;
@@ -16,8 +17,9 @@
 		} );
 
 		// Change associated group, change available folders
+		$associated_group_selector = $( '#associated_group_id' );
 		update_folder_tab_title();
-		$( '#associated_group_id' ).on( 'change', function() {
+		$associated_group_selector.on( 'change', function() {
 			update_folder_selector( $( this ).val() );
 			update_new_folder_selectors_for_group( $( this ).val() );
 
@@ -95,7 +97,11 @@
 	 * Update the 'Folders' label for the Folders section when the Associated Group setting is changed
 	 */
 	function update_folder_tab_title() {
-		if ( $( '#associated_group_id' ).val().length ) {
+		if ( ! $associated_group_selector.length ) {
+			return;
+		}
+
+		if ( $associated_group_selector.val().length ) {
 			folder_tab_name = BP_Docs_Folders.folders_tab_label_groups;
 		} else {
 			folder_tab_name = BP_Docs_Folders.folders_tab_label;
