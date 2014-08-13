@@ -4,3 +4,7 @@
 tests/wp-tests-config.php
 config.rb
 .sass-cache
+
+languages/bp-docs-en_US.po
+
+languages/bp-docs-en_US.mo
