@@ -33,6 +33,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.8.2 =
+* Avoid fatal errors if loading Groups integration in an unorthodox order
+
 = 1.8.1 =
 * Replace the missing Link feature in the rich text editor with WP's custom link plugin
 * Fix bug that could allow non-authenticated user to access /edit page in some cases
