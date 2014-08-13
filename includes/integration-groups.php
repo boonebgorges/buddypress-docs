@@ -918,6 +918,9 @@ class BP_Docs_Groups_Integration {
  * @package BuddyPress Docs
  * @since 1.0-beta
  */
+
+if ( class_exists( 'BP_Group_Extension' ) ) :
+
 class BP_Docs_Group_Extension extends BP_Group_Extension {
 
 	var $group_enable;
@@ -1309,6 +1312,8 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	 */
 	function widget_display() { }
 }
+
+endif; // if ( class_exists( 'BP_Group_Extension' ) )
 
 
 /**************************
