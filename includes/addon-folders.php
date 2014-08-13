@@ -1331,7 +1331,7 @@ function bp_docs_is_folder_manage_view() {
  * @return string
  */
 function bp_docs_folder_selector( $args = array() ) {
-	$r = wp_parse_args( $args, array(
+	$defaults = array(
 		'name'         => 'bp-docs-folder',
 		'id'           => 'bp-docs-folder',
 		'class'        => '',
@@ -1341,7 +1341,13 @@ function bp_docs_folder_selector( $args = array() ) {
 		'doc_id'       => null,
 		'force_global' => false,
 		'echo'         => true,
-	) );
+	);
+
+	if ( function_exists( 'bp_parse_args' ) ) {
+		$r = bp_parse_args( $args, $defaults, 'bp_docs_folder_selector' );
+	} else {
+		$r = wp_parse_args( $args, $defaults );
+	}
 
 	// If no manual 'selected' value is passed, try to infer it from the
 	// current context
@@ -1491,7 +1497,7 @@ function bp_docs_folder_type_selector( $args = array() ) {
 
 	$type_selector .= '</select>';
 
-	$type_selector = apply_filters( 'bp_docs_folder_type_selector', $type_selector );
+	$type_selector = apply_filters( 'bp_docs_folder_type_selector', $type_selector, $r );
 
 	if ( false === $r['echo'] ) {
 		return $type_selector;
