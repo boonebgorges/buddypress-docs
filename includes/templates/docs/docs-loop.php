@@ -68,20 +68,22 @@
 		</tr>
 	<?php endif ?>
 
-	<?php foreach ( bp_docs_get_folders() as $folder ) : ?>
-		<tr class="folder-row">
-			<?php /* Just to keep things even */ ?>
-			<?php if ( bp_docs_enable_attachments() ) : ?>
-				<td class="attachment-clip-cell">
-					<?php bp_docs_attachment_icon() ?>
-				</td>
-			<?php endif ?>
+	<?php if ( ! isset( $_GET['bpd_tag'] ) ) : ?>
+		<?php foreach ( bp_docs_get_folders() as $folder ) : ?>
+			<tr class="folder-row">
+				<?php /* Just to keep things even */ ?>
+				<?php if ( bp_docs_enable_attachments() ) : ?>
+					<td class="attachment-clip-cell">
+						<?php bp_docs_attachment_icon() ?>
+					</td>
+				<?php endif ?>
 
-			<td colspan=10>
-				<i class="genericon genericon-category"></i><a href="<?php echo esc_url( bp_docs_get_folder_url( $folder->ID ) ) ?>"><?php echo esc_html( $folder->post_title ) ?></a>
-			</td>
-		</tr>
-	<?php endforeach ?>
+				<td colspan=10>
+					<i class="genericon genericon-category"></i><a href="<?php echo esc_url( bp_docs_get_folder_url( $folder->ID ) ) ?>"><?php echo esc_html( $folder->post_title ) ?></a>
+				</td>
+			</tr>
+		<?php endforeach ?>
+	<?php endif; ?>
 
 	<?php $has_docs = false ?>
 	<?php if ( bp_docs_has_docs() ) : ?>
