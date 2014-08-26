@@ -918,6 +918,8 @@ class BP_Docs_Groups_Integration {
  * @package BuddyPress Docs
  * @since 1.0-beta
  */
+if ( class_exists( 'BP_Group_Extension' ) ) :
+
 class BP_Docs_Group_Extension extends BP_Group_Extension {
 
 	var $group_enable;
@@ -1100,6 +1102,15 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 		$settings = !empty( $_POST['bp-docs'] ) ? $_POST['bp-docs'] : array();
 
 		$old_settings = bp_docs_get_group_settings( $group_id );
+
+		// Validate settings to ensure that all values are provided
+		// This is particularly meant for can-create, which is a
+		// checkbox and thus may not show up in the POST array
+		foreach ( $old_settings as $k => $v ) {
+			if ( ! isset( $settings[ $k ] ) ) {
+				$settings[ $k ] = 0;
+			}
+		}
 
 		if ( $old_settings == $settings ) {
 			// No need to resave settings if they're the same
@@ -1309,6 +1320,8 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	 */
 	function widget_display() { }
 }
+
+endif; // if ( class_exists( 'BP_Group_Extension' )
 
 
 /**************************
