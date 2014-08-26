@@ -273,6 +273,21 @@ class BP_Docs_Folders_Tests extends BP_Docs_TestCase {
 	}
 
 	/**
+	 * @group bp_docs_remove_doc_from_folder
+	 */
+	public function test_bp_docs_remove_doc_from_folder() {
+		$doc_id = $this->factory->doc->create();
+
+		$folder_id = $this->factory->post->create( array(
+			'post_type' => 'bp_docs_folder',
+		) );
+
+		$this->assertTrue( bp_docs_add_doc_to_folder( $doc_id, $folder_id ) );
+		$this->assertTrue( bp_docs_remove_doc_from_folder( $doc_id, $folder_id ) );
+		$this->assertEquals( false, bp_docs_get_doc_folder( $doc_id ) );
+	}
+
+	/**
 	 * @group bp_docs_create_folder
 	 */
 	public function test_bp_docs_create_folder_empty_name() {

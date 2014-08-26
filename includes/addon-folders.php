@@ -279,6 +279,7 @@ function bp_docs_get_folder_user( $folder_id ) {
 
 	return $user_id;
 }
+
 /**
  * Add a Doc to a Folder.
  *
@@ -330,6 +331,52 @@ function bp_docs_add_doc_to_folder( $doc_id, $folder_id, $append = false ) {
 	return (bool) wp_set_object_terms( $doc_id, $term_ids, 'bp_docs_doc_in_folder' );
 }
 
+/**
+ * Remove a Doc from a Folder.
+ *
+ * @since 1.9
+ *
+ * @param int $doc_id
+ * @param int $folder_id
+ * @return bool True on success, false on failure.
+ */
+function bp_docs_remove_doc_from_folder( $doc_id, $folder_id ) {
+	$doc = get_post( $doc_id );
+
+	if ( is_wp_error( $doc ) || empty( $doc ) || bp_docs_get_post_type_name() !== $doc->post_type ) {
+		return false;
+	}
+
+	$folder = get_post( $folder_id );
+
+	if ( is_wp_error( $folder ) || empty( $folder ) || 'bp_docs_folder' !== $folder->post_type ) {
+		return false;
+	}
+
+	$term_id = bp_docs_get_folder_term( $folder_id );
+
+	// misc error
+	if ( ! $term_id ) {
+		return false;
+	}
+
+	$existing_folders = wp_get_object_terms( $doc_id, 'bp_docs_doc_in_folder' );
+
+	// Return false if not in folder
+	$in_folder = false;
+	foreach ( $existing_folders as $existing_folder ) {
+		if ( $term_id === $existing_folder->term_id ) {
+			$in_folder = true;
+			break;
+		}
+	}
+
+	if ( ! $in_folder ) {
+		return false;
+	}
+
+	return (bool) wp_remove_object_terms( $doc_id, $term_id, 'bp_docs_doc_in_folder' );
+}
 /**
  * Create a Folder.
  *
