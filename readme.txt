@@ -34,6 +34,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 == Changelog ==
 
 = 1.8.2 =
+* Fix performance issue related to the 'check_is_protected()' check for Doc attachments
 * Avoid fatal errors if loading Groups integration in an unorthodox order
 
 = 1.8.1 =
