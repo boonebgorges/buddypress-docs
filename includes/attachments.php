@@ -775,7 +775,7 @@ class BP_Docs_Attachments {
 		// Fall back on cached value if it exists
 		if ( ! $force_check ) {
 			$is_protected = bp_get_option( 'bp_docs_attachment_protection' );
-			if ( '' === $is_protected ) {
+			if ( '' !== $is_protected ) {
 				return (bool) $is_protected;
 			}
 		}
