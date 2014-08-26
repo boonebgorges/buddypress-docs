@@ -1103,6 +1103,15 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 
 		$old_settings = bp_docs_get_group_settings( $group_id );
 
+		// Validate settings to ensure that all values are provided
+		// This is particularly meant for can-create, which is a
+		// checkbox and thus may not show up in the POST array
+		foreach ( $old_settings as $k => $v ) {
+			if ( ! isset( $settings[ $k ] ) ) {
+				$settings[ $k ] = 0;
+			}
+		}
+
 		if ( $old_settings == $settings ) {
 			// No need to resave settings if they're the same
 			$success = true;
