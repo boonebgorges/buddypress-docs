@@ -873,7 +873,13 @@ function bp_docs_save_folder_selection( $doc_id ) {
 		case 'existing' :
 			if ( isset( $_POST['bp-docs-folder'] ) ) {
 				$folder_id = intval( $_POST['bp-docs-folder'] );
-				$retval = bp_docs_add_doc_to_folder( $doc_id, $folder_id );
+
+				if ( 0 === $folder_id ) {
+					$existing_folder_id = bp_docs_get_doc_folder( $doc_id );
+					$retval = bp_docs_remove_doc_from_folder( $doc_id, $existing_folder_id );
+				} else {
+					$retval = bp_docs_add_doc_to_folder( $doc_id, $folder_id );
+				}
 			}
 
 			break;
