@@ -499,7 +499,8 @@ class BP_Docs_Query {
 				}
 			} else {
 				$this->is_new_doc = false;
-				$doc = get_queried_object();
+
+				$doc = bp_docs_get_current_doc();
 
 				$this->doc_id     = $doc->ID;
 				$r['ID']          = $this->doc_id;
