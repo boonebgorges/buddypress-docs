@@ -32,7 +32,8 @@ class BP_Docs_Groups_Integration {
 	 */
 	function __construct() {
 		if ( class_exists( 'BP_Group_Extension' ) ) {
-			bp_register_group_extension( 'BP_Docs_Group_Extension' );
+			$group_extension_class = apply_filters( 'bp_docs_group_extension_class_name', 'BP_Docs_Group_Extension' );
+			bp_register_group_extension( $group_extension_class );
 		}
 
 		// Filter some properties of the query object

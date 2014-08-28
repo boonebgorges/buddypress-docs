@@ -279,7 +279,7 @@ function bp_docs_the_content() {
 			bp_remove_all_filters( 'the_content' );
 		}
 
-		return $content;
+		return apply_filters( 'bp_docs_get_the_content', $content );
 	}
 /**
  * Filters the output of the doc list header for search terms
@@ -1182,11 +1182,13 @@ function bp_docs_list_comments() {
 function bp_docs_is_existing_doc() {
 	global $wp_query;
 
-	if ( ! isset( $wp_query ) || ! is_a( $wp_query, 'WP_Query' ) ) {
-		return false;
+	$is_existing_doc = false;
+
+	if ( isset( $wp_query ) && is_a( $wp_query, 'WP_Query' ) && is_singular( bp_docs_get_post_type_name() ) ) {
+		$is_existing_doc = true;
 	}
 
-	return is_singular( bp_docs_get_post_type_name() );
+	return apply_filters( 'bp_docs_is_existing_doc', is_singular( bp_docs_get_post_type_name() ) );
 }
 
 /**
