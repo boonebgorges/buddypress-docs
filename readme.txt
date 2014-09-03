@@ -33,6 +33,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.8.3 =
+* Fix conflict with Events Organizer and certain other plugins using the 'pre_get_posts' hook
+
 = 1.8.2 =
 * Fix performance issue related to the 'check_is_protected()' check for Doc attachments
 * Fix bug that caused Docs tab to be enabled for groups in some situations where it was not intended
