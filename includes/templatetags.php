@@ -1395,7 +1395,7 @@ function bp_docs_is_existing_doc() {
 		$is_existing_doc = true;
 	}
 
-	return apply_filters( 'bp_docs_is_existing_doc', is_singular( bp_docs_get_post_type_name() ) );
+	return apply_filters( 'bp_docs_is_existing_doc', $is_existing_doc );
 }
 
 /**
