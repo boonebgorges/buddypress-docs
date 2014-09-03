@@ -1594,7 +1594,18 @@ function bp_docs_group_single_breadcrumb( $crumbs, $doc = null ) {
 		) );
 	}
 
-	if ( ! empty( $group->name ) ) {
+	if ( empty( $group->name ) ) {
+		return $crumbs;
+	}
+
+	// Ensure that the user has access to the group before adding t othe
+	// breadcrumb
+	$user_has_access = true;
+	if ( 'public' !== $group->status ) {
+		$user_has_access = current_user_can( 'bp_moderate' ) || groups_is_user_member( bp_loggedin_user_id(), $group->id );
+	}
+
+	if ( $user_has_access ) {
 		$group_crumbs = array(
 			sprintf(
 				'<a href="%s">%s&#8217;s Docs</a>',
@@ -1604,6 +1615,11 @@ function bp_docs_group_single_breadcrumb( $crumbs, $doc = null ) {
 		);
 
 		$crumbs = array_merge( $group_crumbs, $crumbs );
+	} else {
+		// If the user doesn't have access to the associated group,
+		// don't show the group folder breadcrumb either
+		$doc_crumb = array_pop( $crumbs );
+		$crumbs    = array( $doc_crumb );
 	}
 
 	return $crumbs;
