@@ -36,11 +36,7 @@ class BP_Docs_Query {
 		$this->associated_item_tax_name	= $bp->bp_docs->associated_item_tax_name;
 
 		// Get the item slug, if there is one available
-		if ( bp_docs_is_single_doc() ) {
-			$this->doc_slug = $this->get_doc_slug();
-		} else {
-			$this->doc_slug = '';
-		}
+		$this->doc_slug = $this->get_doc_slug();
 
 		$defaults = array(
 			'doc_id'	 => array(),     // Array or comma-separated string
