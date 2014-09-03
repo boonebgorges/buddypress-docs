@@ -502,8 +502,8 @@ class BP_Docs_Query {
 
 				$doc = bp_docs_get_current_doc();
 
-				$this->doc_id     = $doc->ID;
-				$r['ID']          = $this->doc_id;
+				$this->doc_id = $doc->ID;
+				$r['ID']      = $this->doc_id;
 
 				// Make sure the post_name is set
 				if ( empty( $r['post_name'] ) )
