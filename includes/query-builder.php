@@ -36,11 +36,7 @@ class BP_Docs_Query {
 		$this->associated_item_tax_name	= $bp->bp_docs->associated_item_tax_name;
 
 		// Get the item slug, if there is one available
-		if ( bp_docs_is_single_doc() ) {
-			$this->doc_slug = $this->get_doc_slug();
-		} else {
-			$this->doc_slug = '';
-		}
+		$this->doc_slug = $this->get_doc_slug();
 
 		$defaults = array(
 			'doc_id'	 => array(),     // Array or comma-separated string
@@ -499,10 +495,11 @@ class BP_Docs_Query {
 				}
 			} else {
 				$this->is_new_doc = false;
-				$doc = get_queried_object();
 
-				$this->doc_id     = $doc->ID;
-				$r['ID']          = $this->doc_id;
+				$doc = bp_docs_get_current_doc();
+
+				$this->doc_id = $doc->ID;
+				$r['ID']      = $this->doc_id;
 
 				// Make sure the post_name is set
 				if ( empty( $r['post_name'] ) )
@@ -568,13 +565,12 @@ class BP_Docs_Query {
 
 		$message_type = $result['redirect'] == 'single' ? 'success' : 'error';
 
-
 		// Stuff data into a cookie so it can be accessed on next page load
 		if ( 'error' === $message_type ) {
 			setcookie( 'bp-docs-submit-data', json_encode( $_POST ), time() + 30, '/' );
 		}
 
-		$redirect_url = trailingslashit( bp_get_root_domain() . '/' . bp_docs_get_docs_slug() );
+		$redirect_url = apply_filters( 'bp_docs_post_save_redirect_base', trailingslashit( bp_get_root_domain() . '/' . bp_docs_get_docs_slug() ) );
 
 		if ( $result['redirect'] == 'single' ) {
 			$redirect_url .= $this->doc_slug;
