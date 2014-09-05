@@ -68,7 +68,7 @@ function bp_docs_get_current_doc() {
 		}
 	}
 
-	return $current_doc;
+	return apply_filters( 'bp_docs_get_current_doc', $current_doc );
 }
 
 
