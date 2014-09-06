@@ -143,7 +143,7 @@ function bp_docs_get_doc_for_caps( $args = array() ) {
 		$doc = null;
 	}
 
-	return $doc;
+	return apply_filters( 'bp_docs_get_doc_for_caps', $doc, $args );
 }
 
 /**
