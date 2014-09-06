@@ -739,6 +739,8 @@ function bp_docs_doc_associated_group_markup() {
 
 	// Populate the $groups_template global
 	global $groups_template;
+	$old_gt = $groups_template;
+
 	bp_has_groups( $groups_args );
 
 	// Filter out the groups where associate_with permissions forbid
@@ -778,6 +780,8 @@ function bp_docs_doc_associated_group_markup() {
 		</td>
 	</tr>
 	<?php
+
+	$groups_template = $old_gt;
 }
 
 /**
