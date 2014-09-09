@@ -52,28 +52,23 @@ function bp_docs_get_access_tax_name() {
  * @return obj Current doc
  */
 function bp_docs_get_current_doc() {
-	global $bp, $post;
+	$current_doc = null;
 
-	if ( empty( $bp->bp_docs->doc_slug ) )
-		return false;
+	// Check the queried object first - this works on custom post type
+	// pages
+	$maybe_doc = get_queried_object();
+	if ( is_a( $maybe_doc, 'WP_Post' ) && bp_docs_get_post_type_name() === $maybe_doc->post_type ) {
+		$current_doc = $maybe_doc;
 
-	$doc = false;
-
-	if ( empty( $bp->bp_docs->current_post ) ) {
-
-		if ( bp_docs_has_docs( array( 'doc_slug' => $bp->bp_docs->doc_slug ) ) ) {
-			while ( bp_docs_has_docs() ) {
-				bp_docs_the_doc();
-				$doc = $bp->bp_docs->current_post = $post;
-				break;
-			}
+	// Check if we're in the loop
+	} else if ( $maybe_doc_id = get_the_ID() ) {
+		$maybe_doc = get_post( $maybe_doc_id );
+		if ( bp_docs_get_post_type_name() === $maybe_doc->post_type ) {
+			$current_doc = $maybe_doc;
 		}
-
-	} else {
-		$doc = $bp->bp_docs->current_post;
 	}
 
-	return $doc;
+	return apply_filters( 'bp_docs_get_current_doc', $current_doc );
 }
 
 
