@@ -4,3 +4,7 @@
 tests/wp-tests-config.php
 config.rb
 .sass-cache
+
+Gruntfile.js
+package.json
+node_modules/**
