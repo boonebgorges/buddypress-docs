@@ -521,10 +521,10 @@ class BP_Docs_Groups_Integration {
 			}
 		}
 
-		if ( ! $group_id )
+		if ( empty( $group_id ) )
 			return $doc_settings;
 
-		// Group-associated docs should have the edit/post
+		// Group-associated docs should have the edit/post_comments
 		// permissions limited to group-members by default. If
 		// the group is non-public, set the other permissions
 		// to group-members as well
