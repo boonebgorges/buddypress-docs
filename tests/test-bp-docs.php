@@ -92,16 +92,15 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 		$permalink = get_permalink( $doc_id );
 		$this->go_to( $permalink );
 
-		$_POST['associated_group_id'] = $group;
-		//unset( $_POST['associated_group_id'] );
-
-		// We need this dummy $_POST data to make the save go through. Ugh
 		$doc = $this->factory->doc->get_object_by_id( $doc_id );
-		$_POST['doc_content'] = $doc->post_content;
-		$_POST['doc']['title'] = $doc->post_title;
+		$args = array(
+			'title' 	=> $doc->post_title,
+			'content'	=> $doc->post_content,
+			'group_id' 	=> $group,
+		);
 
 		$query = new BP_Docs_Query;
-		$query->save();
+		$query->save( $args );
 
 		$maybe_group_id = bp_docs_get_associated_group_id( $doc_id );
 
@@ -121,12 +120,15 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 
 		// We need this dummy $_POST data to make the save go through. Ugh
 		$doc = $this->factory->doc->get_object_by_id( $doc_id );
-		$_POST['doc_id'] = $doc_id;
-		$_POST['doc_content'] = $doc->post_content;
-		$_POST['doc']['title'] = $doc->post_title;
+		$args = array(
+			'id'		=> $doc_id,
+			'title' 	=> $doc->post_title,
+			'content'	=> $doc->post_content,
+			'group_id' 	=> null,
+		);
 
 		$query = new BP_Docs_Query;
-		$query->save();
+		$query->save( $args );
 
 		$maybe_group_id = bp_docs_get_associated_group_id( $doc_id );
 

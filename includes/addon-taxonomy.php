@@ -42,6 +42,9 @@ class BP_Docs_Taxonomy {
 		// Make sure that the bp_docs post type supports our post taxonomies
 		add_filter( 'bp_docs_init', array( $this, 'register_with_post_type' ), 12 );
 
+		// Hook into post save preparation to squeeze term information from $_POST
+		add_action( 'bp_docs_prepare_terms_via_post', array( $this, 'prepare_terms_via_post' ) );
+
 		// Hook into post saves to save any taxonomy terms.
 		add_action( 'bp_docs_doc_saved', 	array( $this, 'save_post' ) );
 
@@ -113,22 +116,22 @@ class BP_Docs_Taxonomy {
 	}
 
 	/**
-	 * Saves post taxonomy terms to a doc when saved from the front end
+	 * Hook into post save preparation to squeeze term information from $_POST
 	 *
 	 * @package BuddyPress Docs
-	 * @since 1.0-beta
+	 * @since 1.9
 	 *
-	 * @param object $query The query object created by BP_Docs_Query
-	 * @return int $post_id Returns the doc's post_id on success
+	 * @return array $tax_name => (array) $terms
 	 */
-	function save_post( $query ) {
+	function prepare_terms_via_post( $terms_array ) {
+
 		foreach ( $this->taxonomies as $tax_name ) {
 
 			if ( $tax_name == 'category' )
 				$tax_name = 'post_category';
 
 			// Separate out the terms
-			$terms = !empty( $_POST[$tax_name] ) ? explode( ',', $_POST[$tax_name] ) : array();
+			$terms = ! empty( $_POST[$tax_name] ) ? explode( ',', $_POST[$tax_name] ) : array();
 
 			// Strip whitespace from the terms
 			foreach ( $terms as $key => $term ) {
@@ -139,17 +142,28 @@ class BP_Docs_Taxonomy {
 
 			// Hierarchical terms like categories have to be handled differently, with
 			// term IDs rather than the term names themselves
-			if ( !empty( $tax->hierarchical ) ) {
+			if ( ! empty( $tax->hierarchical ) ) {
 				$term_ids = array();
 				foreach( $terms as $term ) {
 					$parent = 0;
 					$term_ids[] = term_exists( $term, $tax_id, $parent );
 				}
 			}
-
-			wp_set_post_terms( $query->doc_id, $terms, $tax_name );
+			$terms_array[$tax_name] = $terms; 
 		}
+		return $terms_array;
+	}
 
+	/**
+	 * Saves post taxonomy terms to a doc when saved from the front end
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0-beta
+	 *
+	 * @param object $query The query object created by BP_Docs_Query
+	 * @return int $post_id Returns the doc's post_id on success
+	 */
+	function save_post( $query ) {
 		do_action( 'bp_docs_taxonomy_saved', $query );
 	}
 

@@ -789,3 +789,60 @@ function bp_docs_revisions_to_keep( $num, $post ) {
 	return intval( $num );
 }
 add_filter( 'wp_revisions_to_keep', 'bp_docs_revisions_to_keep', 10, 2 );
+
+/**
+ * Wrapper to the BP_Docs_Query->save() method for docs saved via the create/edit screens.
+ * Creates an args array from $_POST in the format that BP_Docs_Query->save() expects.
+ * 
+ * @since 1.9
+ *
+ * @return boolean (success)
+ */
+function bp_docs_save_doc_via_post() {
+	// Defaults for the args that the save() method is expecting:
+	$args = array(
+		'doc_id' 			=> 0,
+		'title'			=> '',
+		'content' 		=> '',
+		'permalink'		=> '',
+		'author_id'		=> 0,
+		'group_id'		=> null,
+		'is_auto'		=> 0,
+		'taxonomies'	=> array(),
+		'parent_id'		=> 0,
+		);
+
+	if ( isset( $_POST['doc_id'] ) && 0 != $_POST['doc_id'] ) {
+		$args['doc_id'] = (int) $_POST['doc_id'];
+	}
+
+	if ( isset( $_POST['doc']['title'] ) ) {
+		$args['title'] = $_POST['doc']['title'];
+	}
+
+	// WP editor required the change to doc_content.
+	if ( isset( $_POST['doc_content'] ) ) {
+		$args['content'] = $_POST['doc_content'];
+	} else if ( isset( $_POST['doc']['content'] ) ) {
+		$args['content'] = $_POST['doc']['content'];
+	}
+
+	$args['permalink'] = isset( $_POST['doc']['permalink'] ) ? sanitize_title( $_POST['doc']['permalink'] ) : sanitize_title( $_POST['doc']['title'] );
+
+	$args['author_id'] = bp_loggedin_user_id();
+
+	if ( isset( $_POST['associated_group_id'] ) ) {
+		$args['group_id'] = intval( $_POST['associated_group_id'] );
+	}
+
+	if ( ! empty( $_POST['is_auto'] ) && $_POST['is_auto'] ) {
+		$args['is_auto'] = $_POST['is_auto'];
+	}
+
+	$args['taxonomies'] = apply_filters( 'bp_docs_prepare_terms_via_post', $args['taxonomies'] );
+
+	$args['parent_id'] = apply_filters( 'bp_docs_get_parent_id_via_post', $args['parent_id'] );
+
+	$instance = new BP_Docs_Query;
+	return $instance->save( $args );
+}

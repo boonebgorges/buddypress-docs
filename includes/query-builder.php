@@ -409,15 +409,30 @@ class BP_Docs_Query {
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
-	function save( $args = false ) {
-		global $bp;
+	function save( $passed_args = false ) {
+		$bp = buddypress();
+
+		// Sensible defaults
+		$defaults = array(
+			'doc_id' 		=> 0,
+			'title'			=> '',
+			'content' 		=> '',
+			'permalink'		=> '',
+			'author_id'		=> bp_loggedin_user_id(),
+			'group_id'		=> null,
+			'is_auto'		=> 0,
+			'taxonomies'	=> array(), // expecting the form: array( $tax_name => (array) $terms )
+			'parent_id'		=> 0,
+			);
+
+		$args = wp_parse_args( $passed_args, $defaults );
 
 		// bbPress plays naughty with revision saving
 		add_action( 'pre_post_update', 'wp_save_post_revision' );
 
 		// Get the required taxonomy items associated with the group. We only run this
 		// on a save because it requires extra database hits.
-		$this->setup_terms();
+		$this->setup_terms(); // @TODO: Not sure what this is doing
 
 		// Set up the default value for the result message
 		$results = array(
@@ -425,21 +440,11 @@ class BP_Docs_Query {
 			'redirect' => 'create'
 		);
 
-		// Backward compatibility. Had to change to doc_content to work with wp_editor
-		$doc_content = '';
-		if ( isset( $_POST['doc_content'] ) ) {
-			$doc_content = $_POST['doc_content'];
-		} else if ( isset( $_POST['doc']['content'] ) ) {
-			$doc_content = $_POST['doc']['content'];
-		}
-
 		// Check group associations
 		// @todo Move into group integration piece
 		if ( bp_is_active( 'groups' ) ) {
-			// This group id is only used to check whether the user can associate the doc with the group.
-			$associated_group_id = isset( $_POST['associated_group_id'] ) ? intval( $_POST['associated_group_id'] ) : null;
-
-			if ( ! empty( $associated_group_id ) && ! current_user_can( 'bp_docs_associate_with_group', $associated_group_id ) ) {
+			// Check whether the user can associate the doc with the group.
+			if ( ! is_null( $args['group_id'] ) && ! current_user_can( 'bp_docs_associate_with_group', array( $args['group_id'], $args['author_id'] ) ) ) {
 				$retval = array(
 					'message_type' => 'error',
 					'message' => __( 'You are not allowed to associate a Doc with that group.', 'bp-docs' ),
@@ -450,31 +455,36 @@ class BP_Docs_Query {
 			}
 		}
 
-		if ( empty( $_POST['doc']['title'] ) ) {
+		if ( empty( $args['title'] ) ) {
 			// The title field is required
 			$result['message'] = __( 'The title field is required.', 'bp-docs' );
 			$result['redirect'] = ! empty( $this->doc_slug ) ? 'edit' : 'create';
 		} else {
-			$defaults = array(
+			// Use the passed permalink if it exists, otherwise create one
+			$args['permalink'] = ! empty( $args['permalink'] ) ? sanitize_title( $args['permalink'] ) : sanitize_title( $args['title'] );
+
+			$r = array(
 				'post_type'    => $this->post_type_name,
-				'post_title'   => $_POST['doc']['title'],
-				'post_name'    => isset( $_POST['doc']['permalink'] ) ? sanitize_title( $_POST['doc']['permalink'] ) : sanitize_title( $_POST['doc']['title'] ),
-				'post_content' => sanitize_post_field( 'post_content', $doc_content, 0, 'db' ),
+				'post_title'   => $args['title'],
+				'post_name'    => $args['permalink'],
+				'post_content' => sanitize_post_field( 'post_content', $args['content'], 0, 'db' ),
 				'post_status'  => 'publish'
 			);
 
-			$r = wp_parse_args( $args, $defaults );
+			// If a post parent ID has been set, include it.
+			if ( ! empty( $args['parent_id'] ) )
+				$r['post_parent'] = $args['parent_id'];
+
 
 			if ( empty( $this->doc_slug ) ) {
 				$this->is_new_doc = true;
 
-				$r['post_author'] = bp_loggedin_user_id();
+				$r['post_author'] = $args['author_id'];
 
-				// If there's a 'doc_id' value in the POST, use
+				// If there's a 'doc_id' value use
 				// the autodraft as a starting point
-				if ( isset( $_POST['doc_id'] ) && 0 != $_POST['doc_id'] ) {
-					$post_id = (int) $_POST['doc_id'];
-					$r['ID'] = $post_id;
+				if ( 0 != $args['doc_id'] ) {
+					$r['ID'] = (int) $args['doc_id'];
 					wp_update_post( $r );
 				} else {
 					$post_id = wp_insert_post( $r );
@@ -501,11 +511,7 @@ class BP_Docs_Query {
 				$this->doc_id = $doc->ID;
 				$r['ID']      = $this->doc_id;
 
-				// Make sure the post_name is set
-				if ( empty( $r['post_name'] ) )
-					$r['post_name'] = sanitize_title( $r['post_title'] );
-
-				// Make sure the post_name is unique
+				// Make sure the post_name is unique, wp_unique_post_slug requires a post_id
 				$r['post_name'] = wp_unique_post_slug( $r['post_name'], $this->doc_id, $r['post_status'], $this->post_type_name, $doc->post_parent );
 
 				$this->doc_slug = $r['post_name'];
@@ -520,7 +526,7 @@ class BP_Docs_Query {
 
 					// When the post has been autosaved, we need to leave a
 					// special success message
-					if ( !empty( $_POST['is_auto'] ) && $_POST['is_auto'] ) {
+					if ( ! empty( $args['is_auto'] ) && $args['is_auto'] ) {
 						$result['message'] = __( 'You idled a bit too long while in Edit mode. In order to allow others to edit the doc you were working on, your changes have been autosaved. Click the Edit button to return to Edit mode.', 'bp-docs' );
 					} else {
 						// A normal, successful save
@@ -537,15 +543,23 @@ class BP_Docs_Query {
 		if ( ! empty( $post_id ) ) {
 
 			// Add to a group, if necessary
-			if ( ! is_null( $associated_group_id ) ) {
-				bp_docs_set_associated_group_id( $post_id, $associated_group_id );
+			if ( ! is_null( $args['group_id'] ) ) {
+				bp_docs_set_associated_group_id( $post_id, $args['group_id'] );
 			}
 
 			// Make sure the current user is added as one of the authors
+			// @TODO: Is this still used?
 			wp_set_post_terms( $post_id, $this->user_term_id, $this->associated_item_tax_name, true );
 
 			// Save the last editor id. We'll use this to create an activity item
-			update_post_meta( $this->doc_id, 'bp_docs_last_editor', bp_loggedin_user_id() );
+			update_post_meta( $this->doc_id, 'bp_docs_last_editor', $args['author_id'] );
+
+			// Update taxonomies if necessary
+			if ( ! empty( $args['taxonomies'] ) ) {
+				foreach ( $args['taxonomies'] as $tax_name => $terms ) {
+					wp_set_post_terms( $post_id, $terms, $tax_name );
+				}
+			}
 
 			// Save settings
 			bp_docs_save_doc_access_settings( $this->doc_id );
