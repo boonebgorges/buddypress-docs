@@ -69,6 +69,53 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 		$wp_query = $wpq;
 	}
 
+	public function test_bp_docs_save_new_doc() {
+		$g = $this->factory->group->create();
+		groups_update_groupmeta( $g, 'bp-docs', array(
+			'can-create' => 'member',
+		) );
+		$u1 = $this->create_user();
+		$this->add_user_to_group( $u1, $g );
+
+		$title = 'Doc title for testing';
+		$content = 'Doc content for testing';
+
+		$args = array(
+			'title' 	=> $title,
+			'content'	=> $content,
+			'author_id'	=> $u1,
+			'group_id'	=> $g,
+		);
+
+		$query = new BP_Docs_Query;
+		$retval = $query->save( $args );
+
+		$doc = $this->factory->doc->get_object_by_id( $retval['doc_id'] );
+
+		// Make sure the saved data matches what we passed in.
+		$this->assertEquals( $doc->post_title, $title );
+		$this->assertEquals( $doc->post_content, $content );
+		$this->assertEquals( $doc->post_author, $u1);
+		$this->assertEquals( $g, bp_docs_get_associated_group_id( $retval['doc_id'] ) );
+	}
+
+	public function test_bp_docs_update_existing_doc() {
+		$doc_id = $this->factory->doc->create();
+
+		$doc = $this->factory->doc->get_object_by_id( $doc_id );
+		$args = array(
+			'doc_id'	=> $doc_id,
+			'title' 	=> $doc->post_title,
+			'content'	=> $doc->post_content,
+		);
+
+		$query = new BP_Docs_Query;
+		$retval = $query->save( $args );
+
+		// Make sure the id didn't change.
+		$this->assertEquals( $doc_id, $retval['doc_id'] );
+	}
+
 	/**
 	 * see #286
 	 */
@@ -77,7 +124,7 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 		$group2 = $this->factory->group->create();
 
 		$doc_id = $this->factory->doc->create( array(
-			'group' => $group,
+			'group' => $group2,
 		) );
 
 		bp_docs_set_associated_group_id( $doc_id, $group );
@@ -87,20 +134,10 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 
 	function test_set_group_association_on_create() {
 		$group = $this->factory->group->create();
-		$doc_id = $this->factory->doc->create( array( 'group' => $group ) );
 
-		$permalink = get_permalink( $doc_id );
-		$this->go_to( $permalink );
-
-		$doc = $this->factory->doc->get_object_by_id( $doc_id );
-		$args = array(
-			'title' 	=> $doc->post_title,
-			'content'	=> $doc->post_content,
-			'group_id' 	=> $group,
-		);
-
-		$query = new BP_Docs_Query;
-		$query->save( $args );
+		$doc_id = $this->factory->doc->create( array(
+			'group' => $group,
+		) );
 
 		$maybe_group_id = bp_docs_get_associated_group_id( $doc_id );
 
@@ -115,20 +152,16 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 		$permalink = get_permalink( $doc_id );
 		$this->go_to( $permalink );
 
-		// Just to be sure
-		$_POST['associated_group_id'] = '';
-
-		// We need this dummy $_POST data to make the save go through. Ugh
 		$doc = $this->factory->doc->get_object_by_id( $doc_id );
 		$args = array(
-			'id'		=> $doc_id,
+			'doc_id'	=> $doc_id,
 			'title' 	=> $doc->post_title,
 			'content'	=> $doc->post_content,
-			'group_id' 	=> null,
+			'group_id' 	=> 0,
 		);
 
 		$query = new BP_Docs_Query;
-		$query->save( $args );
+		$retval = $query->save( $args );
 
 		$maybe_group_id = bp_docs_get_associated_group_id( $doc_id );
 

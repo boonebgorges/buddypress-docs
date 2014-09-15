@@ -422,6 +422,7 @@ class BP_Docs_Query {
 			'group_id'		=> null,
 			'is_auto'		=> 0,
 			'taxonomies'	=> array(), // expecting the form: array( $tax_name => (array) $terms )
+			'settings'		=> array(),
 			'parent_id'		=> 0,
 			);
 
@@ -444,7 +445,8 @@ class BP_Docs_Query {
 		// @todo Move into group integration piece
 		if ( bp_is_active( 'groups' ) ) {
 			// Check whether the user can associate the doc with the group.
-			if ( ! is_null( $args['group_id'] ) && ! current_user_can( 'bp_docs_associate_with_group', array( $args['group_id'], $args['author_id'] ) ) ) {
+			// $args['group_id'] could be null (untouched) or 0, which unsets existing association
+			if ( ( ! is_null( $args['group_id'] ) && $args['group_id'] != 0 ) && ! current_user_can( 'bp_docs_associate_with_group', $args['group_id'], $args['author_id'] ) ) {
 				$retval = array(
 					'message_type' => 'error',
 					'message' => __( 'You are not allowed to associate a Doc with that group.', 'bp-docs' ),
@@ -475,8 +477,7 @@ class BP_Docs_Query {
 			if ( ! empty( $args['parent_id'] ) )
 				$r['post_parent'] = $args['parent_id'];
 
-
-			if ( empty( $this->doc_slug ) ) {
+			if ( $args['doc_id'] == 0 ) {
 				$this->is_new_doc = true;
 
 				$r['post_author'] = $args['author_id'];
@@ -506,17 +507,15 @@ class BP_Docs_Query {
 			} else {
 				$this->is_new_doc = false;
 
-				$doc = bp_docs_get_current_doc();
-
-				$this->doc_id = $doc->ID;
+				$this->doc_id = $args['doc_id'];
 				$r['ID']      = $this->doc_id;
 
 				// Make sure the post_name is unique, wp_unique_post_slug requires a post_id
-				$r['post_name'] = wp_unique_post_slug( $r['post_name'], $this->doc_id, $r['post_status'], $this->post_type_name, $doc->post_parent );
+				$r['post_name'] = wp_unique_post_slug( $r['post_name'], $this->doc_id, $r['post_status'], $this->post_type_name, $args['parent_id'] );
 
 				$this->doc_slug = $r['post_name'];
 
-				if ( !wp_update_post( $r ) ) {
+				if ( ! wp_update_post( $r ) ) {
 					$result['message'] = __( 'There was an error when saving the doc.', 'bp-docs' );
 					$result['redirect'] = 'edit';
 				} else {
@@ -562,7 +561,7 @@ class BP_Docs_Query {
 			}
 
 			// Save settings
-			bp_docs_save_doc_access_settings( $this->doc_id );
+			bp_docs_save_doc_access_settings( $this->doc_id, $args['author_id'], $args['settings'] );
 
 			// Increment the revision count
 			$revision_count = get_post_meta( $this->doc_id, 'bp_docs_revision_count', true );
@@ -595,9 +594,10 @@ class BP_Docs_Query {
 		}
 
 		$retval = array(
-			'message_type' => $message_type,
-			'message' => $result['message'],
-			'redirect_url' => $redirect_url,
+			'message_type' 	=> $message_type,
+			'message' 		=> $result['message'],
+			'redirect_url' 	=> $redirect_url,
+			'doc_id' 		=> $this->doc_id,
 		);
 
 		return $retval;

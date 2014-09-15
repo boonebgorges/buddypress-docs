@@ -1615,7 +1615,7 @@ function bp_docs_groups_map_meta_caps( $caps, $cap, $user_id, $args ) {
 				$group_id = bp_get_current_group_id();
 			}
 
-			// If this request was sent from BP_Docs_Query->save, it will have an extra argument with the user_id to check.
+			// If this request was sent from BP_Docs_Query->save, it will include the author user_id as an extra argument.
 			if ( isset( $args[1] ) ) {
 				$user_id = intval( $args[1] );
 			}

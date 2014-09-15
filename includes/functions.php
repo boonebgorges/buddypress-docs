@@ -558,12 +558,11 @@ function bp_docs_get_access_options( $settings_field, $doc_id = 0, $group_id = 0
  * @param int $doc_id The numeric ID of the doc
  * @return null
  */
-function bp_docs_save_doc_access_settings( $doc_id ) {
+function bp_docs_save_doc_access_settings( $doc_id, $author_id, $settings ) {
 	// Two cases:
 	// 1. User is saving a doc for which he can update the access settings
-	if ( isset( $_POST['settings'] ) ) {
-		$settings = ! empty( $_POST['settings'] ) ? $_POST['settings'] : array();
-		$verified_settings = bp_docs_verify_settings( $settings, $doc_id, bp_loggedin_user_id() );
+	if ( ! empty( $settings ) ) {
+		$verified_settings = bp_docs_verify_settings( $settings, $doc_id, $author_id );
 
 		$new_settings = array();
 		foreach ( $verified_settings as $verified_setting_name => $verified_setting ) {
@@ -806,19 +805,18 @@ function bp_docs_save_doc_via_post() {
 		'content' 		=> '',
 		'permalink'		=> '',
 		'author_id'		=> 0,
-		'group_id'		=> null,
+		'group_id'		=> null, // value of null does nothing, 0 will unset existing group association
 		'is_auto'		=> 0,
 		'taxonomies'	=> array(),
+		'settings'		=> array(),
 		'parent_id'		=> 0,
 		);
 
-	if ( isset( $_POST['doc_id'] ) && 0 != $_POST['doc_id'] ) {
+	if ( isset( $_POST['doc_id'] ) && 0 != $_POST['doc_id'] )
 		$args['doc_id'] = (int) $_POST['doc_id'];
-	}
 
-	if ( isset( $_POST['doc']['title'] ) ) {
+	if ( isset( $_POST['doc']['title'] ) )
 		$args['title'] = $_POST['doc']['title'];
-	}
 
 	// WP editor required the change to doc_content.
 	if ( isset( $_POST['doc_content'] ) ) {
@@ -831,15 +829,16 @@ function bp_docs_save_doc_via_post() {
 
 	$args['author_id'] = bp_loggedin_user_id();
 
-	if ( isset( $_POST['associated_group_id'] ) ) {
+	if ( isset( $_POST['associated_group_id'] ) )
 		$args['group_id'] = intval( $_POST['associated_group_id'] );
-	}
 
-	if ( ! empty( $_POST['is_auto'] ) && $_POST['is_auto'] ) {
+	if ( ! empty( $_POST['is_auto'] ) && $_POST['is_auto'] )
 		$args['is_auto'] = $_POST['is_auto'];
-	}
 
 	$args['taxonomies'] = apply_filters( 'bp_docs_prepare_terms_via_post', $args['taxonomies'] );
+
+	if ( ! empty( $_POST['settings'] ) )
+		$args['settings'] = $_POST['settings'];
 
 	$args['parent_id'] = apply_filters( 'bp_docs_get_parent_id_via_post', $args['parent_id'] );
 
