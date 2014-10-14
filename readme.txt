@@ -33,6 +33,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.8.4 =
+* Improve dependency logic when loading JS files
+
 = 1.8.3 =
 * Fix conflict with Events Organizer and certain other plugins using the 'pre_get_posts' hook
 * Moar filters
