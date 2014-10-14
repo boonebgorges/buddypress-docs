@@ -381,7 +381,7 @@ class BP_Docs_Attachments {
 
 	function enqueue_scripts() {
 		if ( bp_docs_is_doc_edit() || bp_docs_is_doc_create() ) {
-			wp_enqueue_script( 'bp-docs-attachments', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/attachments.js' ), array( 'media-editor', 'media-views' ), false, true );
+			wp_enqueue_script( 'bp-docs-attachments', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/attachments.js' ), array( 'media-editor', 'media-views', 'bp-docs-js' ), false, true );
 
 			wp_localize_script( 'bp-docs-attachments', 'bp_docs_attachments', array(
 				'upload_title'  => __( 'Upload File', 'bp-docs' ),
