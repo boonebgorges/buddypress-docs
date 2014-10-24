@@ -33,6 +33,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.8.5 =
+* Fixed permalinks for child Docs
+
 = 1.8.4 =
 * Improve dependency logic when loading JS files
 
