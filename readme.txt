@@ -35,6 +35,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 = 1.8.5 =
 * Fixed permalinks for child Docs
+* More fixes for JS dependency and load order
 
 = 1.8.4 =
 * Improve dependency logic when loading JS files
