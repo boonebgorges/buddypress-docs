@@ -133,21 +133,86 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 		$this->assertFalse( (bool) $maybe_group_id );
 	}
 
-	function test_bp_docs_get_doc_link() {
-		// rewrite - @todo This stinks
-		global $wp_rewrite;
-		$GLOBALS['wp_rewrite']->init();
-		flush_rewrite_rules();
 
-		$doc_id = $this->factory->doc->create( array( 'post_name' => 'foo' ) );
-		$this->assertEquals( bp_docs_get_doc_link( $doc_id ), 'http://example.org/docs/foo/' );
+	function test_set_access_defaults_on_create_no_group() {
+		$doc_id = $this->factory->doc->create();
 
-		// Set a parent to make sure it still works
-		$doc_id2 = $this->factory->doc->create();
-		wp_update_post( array( 'ID' => $doc_id, 'post_parent' => $doc_id2 ) );
-		$this->assertEquals( bp_docs_get_doc_link( $doc_id ), 'http://example.org/docs/foo/' );
+		$access_settings = bp_docs_get_doc_settings( $doc_id );
 
+		// Since this doc has no related group, we're expecting the following access settings:
+		$default_settings = array(
+			'read'          => 'anyone',
+			'edit'          => 'loggedin',
+			'read_comments' => 'anyone',
+			'post_comments' => 'anyone',
+			'view_history'  => 'anyone',
+			'manage'        => 'creator',
+		);
+
+		$this->assertEquals( $access_settings, $default_settings );
 	}
+
+	function test_set_access_defaults_on_create_public_group() {
+		$group = $this->factory->group->create( array(
+			'status' => 'public',
+		) );
+		$doc_id = $this->factory->doc->create( array( 'group' => $group ) );
+
+		$_POST['associated_group_id'] = $group;
+
+		$access_settings = bp_docs_get_doc_settings( $doc_id );
+
+		// Since this doc has a related public group, we're expecting the following access settings:
+		$group_access_settings = array(
+			'read'          => 'anyone',
+			'edit'          => 'group-members',
+			'read_comments' => 'anyone',
+			'post_comments' => 'group-members',
+			'view_history'  => 'anyone',
+			'manage'        => 'creator',
+		);
+
+		$this->assertEquals( $access_settings, $group_access_settings );
+	}
+
+	function test_set_access_defaults_on_create_private_group() {
+		$group = $this->factory->group->create( array(
+			'status' => 'private',
+		) );
+		$doc_id = $this->factory->doc->create( array( 'group' => $group ) );
+
+		$_POST['associated_group_id'] = $group;
+
+		$access_settings = bp_docs_get_doc_settings( $doc_id );
+
+		// Since this doc has a related private group, we're expecting the following access settings:
+		$group_access_settings = array(
+			'read'          => 'group-members',
+			'edit'          => 'group-members',
+			'read_comments' => 'group-members',
+			'post_comments' => 'group-members',
+			'view_history'  => 'group-members',
+			'manage'        => 'group-members',
+		);
+
+		$this->assertEquals( $access_settings, $group_access_settings );
+	}
+
+	// function test_bp_docs_get_doc_link() {
+	// 	// rewrite - @todo This stinks
+	// 	global $wp_rewrite;
+	// 	$GLOBALS['wp_rewrite']->init();
+	// 	flush_rewrite_rules();
+
+	// 	$doc_id = $this->factory->doc->create( array( 'post_name' => 'foo' ) );
+	// 	$this->assertEquals( bp_docs_get_doc_link( $doc_id ), 'http://example.org/docs/foo/' );
+
+	// 	// Set a parent to make sure it still works
+	// 	$doc_id2 = $this->factory->doc->create();
+	// 	wp_update_post( array( 'ID' => $doc_id, 'post_parent' => $doc_id2 ) );
+	// 	$this->assertEquals( bp_docs_get_doc_link( $doc_id ), 'http://example.org/docs/foo/' );
+
+	// }
 
 	/**
 	 * @group last_activity

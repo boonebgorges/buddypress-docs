@@ -50,6 +50,8 @@ class BP_Docs_Groups_Integration {
 
 		// Add group-specific options to the access options dropdowns
 		add_filter( 'bp_docs_get_access_options',       array( $this, 'get_access_options' ), 10, 4 );
+		// Change access defaults if associated with a group (dependent on group status)
+		add_filter( 'bp_docs_get_doc_settings',       array( $this, 'modify_access_defaults' ), 10, 3 );
 
 		// Filter the activity actions for group docs-related activity
 		add_filter( 'bp_docs_activity_action',		array( $this, 'activity_action' ), 10, 5 );
@@ -490,24 +492,48 @@ class BP_Docs_Groups_Integration {
 					'label' => sprintf( __( 'Admins and mods of %s', 'bp-docs' ), $group->name )
 				);
 			}
-
-			// Group-associated docs should have the edit/post
-			// permissions limited to group-members by default. If
-			// the group is non-public, set the other permissions
-			// to group-members as well
-
-			// First, unset existing defaults
-			foreach ( $options as &$option ) {
-				$option['default'] = 0;
-			}
-
-			// Now, set new defaults
-			if ( 'public' != $group->status || in_array( $settings_field, array( 'edit', 'post-comments' ) ) ) {
-				$options[40]['default'] = 1;
-			}
 		}
 
 		return $options;
+	}
+
+	/**
+	 * Change access defaults if associated with a group (dependent on group status)
+	 */
+	public static function modify_access_defaults( $doc_settings, $doc_id, $default_settings ) {
+
+		// If this is the Doc creation page, check to see whether a
+		// group id has been passed somewhere
+		if ( empty( $group_id ) ) {
+			if ( isset( $_POST['associated_group_id'] ) ) {
+				$group_id = intval( $_POST['associated_group_id'] );
+			} else if ( isset( $_GET['associated_group_id'] ) ) {
+				$group_id = intval( $_GET['associated_group_id'] );
+			} else if ( isset( $_GET['group'] ) ) {
+				$maybe_group = BP_Groups_Group::get_id_from_slug( $_GET['group'] );
+				if ( $maybe_group ) {
+					$group_id = $maybe_group;
+				}
+			// refresh_access_settings and refresh_associated_group AJAX request sends as 'group_id'
+			} else if ( isset( $_POST['group_id'] ) ) {
+				$group_id = intval( $_POST['group_id'] );
+			}
+		}
+
+		if ( empty( $group_id ) )
+			return $doc_settings;
+
+		// Group-associated docs should have the edit/post_comments
+		// permissions limited to group-members by default. If
+		// the group is non-public, set the other permissions
+		// to group-members as well
+		$group = groups_get_group( array( 'group_id' => $group_id ) );
+
+	    foreach ( $doc_settings as $key => $setting ) {
+	      	if ( 'public' != $group->status || in_array( $key, array( 'edit', 'post_comments' ) ) )
+	      		$doc_settings[$key] = 'group-members';    
+	    }
+	    return $doc_settings;
 	}
 
 	/**
