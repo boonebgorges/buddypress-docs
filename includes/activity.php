@@ -397,9 +397,9 @@ add_filter( 'bp_activity_prefetch_object_data', 'bp_docs_prefetch_activity_objec
 function bp_docs_activity_filter_options() {
 	?>
 
-	<option value="bp_doc_created"><?php _e( 'Show New Docs', 'bp-docs' ); ?></option>
-	<option value="bp_doc_edited"><?php _e( 'Show Doc Edits', 'bp-docs' ); ?></option>
-	<option value="bp_doc_comment"><?php _e( 'Show Doc Comments', 'bp-docs' ); ?></option>
+	<option value="bp_doc_created"><?php _e( 'New Docs', 'bp-docs' ); ?></option>
+	<option value="bp_doc_edited"><?php _e( 'Doc Edits', 'bp-docs' ); ?></option>
+	<option value="bp_doc_comment"><?php _e( 'Doc Comments', 'bp-docs' ); ?></option>
 
 	<?php
 }

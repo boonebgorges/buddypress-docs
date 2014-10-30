@@ -17,7 +17,7 @@ class BP_Docs_Attachments {
 		add_filter( 'upload_dir', array( $this, 'filter_upload_dir' ) );
 		add_action( 'bp_docs_doc_saved', array( $this, 'check_privacy' ) );
 		add_filter( 'wp_handle_upload_prefilter', array( $this, 'maybe_create_rewrites' ) );
-		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ), 20 );
 
 		add_action( 'pre_get_posts', array( $this, 'filter_gallery_posts' ) );
 		add_action( 'pre_get_posts', array( $this, 'filter_directory_posts' ) );
@@ -381,7 +381,7 @@ class BP_Docs_Attachments {
 
 	function enqueue_scripts() {
 		if ( bp_docs_is_doc_edit() || bp_docs_is_doc_create() ) {
-			wp_enqueue_script( 'bp-docs-attachments', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/attachments.js' ), array( 'media-editor', 'media-views' ), false, true );
+			wp_enqueue_script( 'bp-docs-attachments', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/attachments.js' ), array( 'media-editor', 'media-views', 'bp-docs-js' ), false, true );
 
 			wp_localize_script( 'bp-docs-attachments', 'bp_docs_attachments', array(
 				'upload_title'  => __( 'Upload File', 'bp-docs' ),
@@ -775,7 +775,7 @@ class BP_Docs_Attachments {
 		// Fall back on cached value if it exists
 		if ( ! $force_check ) {
 			$is_protected = bp_get_option( 'bp_docs_attachment_protection' );
-			if ( '' === $is_protected ) {
+			if ( '' !== $is_protected ) {
 				return (bool) $is_protected;
 			}
 		}
