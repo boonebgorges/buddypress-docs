@@ -446,6 +446,9 @@ body.js .bp-docs-attachment-drawer {
 	}
 }
 
+.single-bp_doc #comments .comments-closed { 
+	margin-left: 0; 
+} 	
 /* TOGGLES */
 
 .toggleable.toggle-closed .toggle-content {
@@ -457,7 +460,7 @@ body.js .bp-docs-attachment-drawer {
 	display: block;
 	float: left;
 	margin-left: 10px;
-	margin-top: 5px;
+	margin-top: 3px;
 }
 
 .toggleable.toggle-closed {
