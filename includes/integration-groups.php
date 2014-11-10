@@ -1215,6 +1215,8 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	 *
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta
+	 *
+	 * @param int $group_id ID of the current group. Available only in BP 2.2+.
 	 */
 	function display() {
 		global $bp;
