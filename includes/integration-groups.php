@@ -1225,7 +1225,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
-	function display() {
+	function display( $group_id = null ) {
 		global $bp;
 
 		// Docs are stored on the root blog
