@@ -1422,6 +1422,7 @@ function bp_docs_doc_permissions_snapshot( $args = array() ) {
 	//  'limited' - everything else
 	$anyone_count  = 0;
 	$private_count = 0;
+	$compared_count = 0;
 	$public_settings = array(
 		'read'          => 'anyone',
 		'edit'          => 'loggedin',
@@ -1433,9 +1434,16 @@ function bp_docs_doc_permissions_snapshot( $args = array() ) {
 
 	foreach ( $settings as $l => $v ) {
 		// Don't count comments settings if comments aren't enabled
-		if ( $comments_enabled && in_array($l, array( 'read_comments', 'post_comments' ) ) ) {
+		if ( ! $comments_enabled && in_array( $l, array( 'read_comments', 'post_comments' ) ) ) {
 			continue;
 		}
+
+		// "Manage" is included in the $settings array, but there is no "public" setting for that capability, so don't consider it when determining the access summary setting.
+		if ( 'manage' == $l ) {
+			continue;
+		}
+
+		$compared_count++;
 
 		if ( 'anyone' == $v || ( isset( $public_settings[ $l ] ) && $public_settings[ $l ] == $v ) ) {
 
@@ -1458,12 +1466,10 @@ function bp_docs_doc_permissions_snapshot( $args = array() ) {
 		}
 	}
 
-	$settings_count = count( $public_settings );
-	//@TODO: This is wrong.
-	if ( $settings_count == $private_count ) {
+	if ( $compared_count == $private_count ) {
 		$summary       = 'private';
 		$summary_label = __( 'Private', 'bp-docs' );
-	} else if ( $settings_count == $anyone_count ) {
+	} else if ( $compared_count == $anyone_count ) {
 		$summary       = 'public';
 		$summary_label = __( 'Public', 'bp-docs' );
 	} else {
