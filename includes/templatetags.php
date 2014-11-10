@@ -873,19 +873,23 @@ function bp_docs_doc_settings_markup( $doc_id = 0, $group_id = 0 ) {
 		'edit' => array(
 			'name'  => 'edit',
 			'label' => __( 'Who can edit this doc?', 'bp-docs' )
-		),
-		'read_comments' => array(
+		), 
+	);
+
+	if ( bp_docs_enable_comments() ) {
+		$settings_fields['read_comments'] = array(
 			'name'  => 'read_comments',
 			'label' => __( 'Who can read comments on this doc?', 'bp-docs' )
-		),
-		'post_comments' => array(
+		);
+		$settings_fields['post_comments'] = array(
 			'name'  => 'post_comments',
 			'label' => __( 'Who can post comments on this doc?', 'bp-docs' )
-		),
-		'view_history' => array(
-			'name'  => 'view_history',
-			'label' => __( 'Who can view the history of this doc?', 'bp-docs' )
-		)
+		);
+	}
+
+	$settings_fields['view_history'] = array(
+		'name'  => 'view_history',
+		'label' => __( 'Who can view the history of this doc?', 'bp-docs' )
 	);
 
 	foreach ( $settings_fields as $settings_field ) {
@@ -1418,6 +1422,7 @@ function bp_docs_doc_permissions_snapshot( $args = array() ) {
 	//  'limited' - everything else
 	$anyone_count  = 0;
 	$private_count = 0;
+	$compared_count = 0;
 	$public_settings = array(
 		'read'          => 'anyone',
 		'edit'          => 'loggedin',
@@ -1425,8 +1430,21 @@ function bp_docs_doc_permissions_snapshot( $args = array() ) {
 		'post_comments' => 'loggedin',
 		'view_history'  => 'anyone'
 	);
+	$comments_enabled = bp_docs_enable_comments();
 
 	foreach ( $settings as $l => $v ) {
+		// Don't count comments settings if comments aren't enabled
+		if ( ! $comments_enabled && in_array( $l, array( 'read_comments', 'post_comments' ) ) ) {
+			continue;
+		}
+
+		// "Manage" is included in the $settings array, but there is no "public" setting for that capability, so don't consider it when determining the access summary setting.
+		if ( 'manage' == $l ) {
+			continue;
+		}
+
+		$compared_count++;
+
 		if ( 'anyone' == $v || ( isset( $public_settings[ $l ] ) && $public_settings[ $l ] == $v ) ) {
 
 			$anyone_count++;
@@ -1448,11 +1466,10 @@ function bp_docs_doc_permissions_snapshot( $args = array() ) {
 		}
 	}
 
-	$settings_count = count( $public_settings );
-	if ( $settings_count == $private_count ) {
+	if ( $compared_count == $private_count ) {
 		$summary       = 'private';
 		$summary_label = __( 'Private', 'bp-docs' );
-	} else if ( $settings_count == $anyone_count ) {
+	} else if ( $compared_count == $anyone_count ) {
 		$summary       = 'public';
 		$summary_label = __( 'Public', 'bp-docs' );
 	} else {
@@ -1471,8 +1488,10 @@ function bp_docs_doc_permissions_snapshot( $args = array() ) {
 	$html .=   '<ul>';
 	$html .=     '<li class="bp-docs-can-read ' . $read_class . '"><span class="bp-docs-level-icon"></span>' . '<span class="perms-text">' . $read_text . '</span></li>';
 	$html .=     '<li class="bp-docs-can-edit ' . $edit_class . '"><span class="bp-docs-level-icon"></span>' . '<span class="perms-text">' . $edit_text . '</span></li>';
-	$html .=     '<li class="bp-docs-can-read_comments ' . $read_comments_class . '"><span class="bp-docs-level-icon"></span>' . '<span class="perms-text">' . $read_comments_text . '</span></li>';
-	$html .=     '<li class="bp-docs-can-post_comments ' . $post_comments_class . '"><span class="bp-docs-level-icon"></span>' . '<span class="perms-text">' . $post_comments_text . '</span></li>';
+	if ( bp_docs_enable_comments() ) {
+		$html .=     '<li class="bp-docs-can-read_comments ' . $read_comments_class . '"><span class="bp-docs-level-icon"></span>' . '<span class="perms-text">' . $read_comments_text . '</span></li>';
+		$html .=     '<li class="bp-docs-can-post_comments ' . $post_comments_class . '"><span class="bp-docs-level-icon"></span>' . '<span class="perms-text">' . $post_comments_text . '</span></li>';
+	}
 	$html .=     '<li class="bp-docs-can-view_history ' . $view_history_class . '"><span class="bp-docs-level-icon"></span>' . '<span class="perms-text">' . $view_history_text . '</span></li>';
 	$html .=   '</ul>';
 

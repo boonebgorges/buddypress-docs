@@ -932,3 +932,14 @@ class BP_Docs_Component extends BP_Component {
 	}
 
 }
+
+/**
+ * Are comments enabled?
+ *
+ * @since 1.9
+ * @return bool
+ */
+function bp_docs_enable_comments() {
+	$enabled = get_option( 'bp-docs-enable-comments', 'yes' );
+	return apply_filters( 'bp_docs_enable_comments', 'yes' === $enabled );
+}

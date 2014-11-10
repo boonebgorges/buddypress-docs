@@ -39,7 +39,7 @@
 		<?php do_action( 'bp_docs_single_doc_meta' ) ?>
 	</div>
 
-	<?php if ( apply_filters( 'bp_docs_allow_comment_section', true ) ) : ?>
+	<?php if ( bp_docs_enable_comments() || apply_filters( 'bp_docs_allow_comment_section', true ) ) : ?>
 		<?php comments_template( '/docs/single/comments.php' ) ?>
 	<?php endif ?>
 </div>

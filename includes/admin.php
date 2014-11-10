@@ -134,12 +134,29 @@ class BP_Docs_Admin {
 			'bp-docs-attachments'
 		);
 		register_setting( 'bp-docs-settings', 'bp-docs-enable-attachments' );
+
+		// Comments
+		add_settings_section(
+			'bp-docs-comments',
+			__( 'Comments', 'bp-docs' ),
+			array( $this, 'comments_section' ),
+			'bp-docs-settings'
+		);
+		add_settings_field(
+			'bp-docs-enable-comments',
+			__( 'Enable Comments', 'bp-docs' ),
+			array( $this, 'enable_comments_setting_markup' ),
+			'bp-docs-settings',
+			'bp-docs-comments'
+		);
+		register_setting( 'bp-docs-settings', 'bp-docs-enable-comments' );
 	}
 
 	public function general_section() {}
 	public function users_section() {}
 	public function groups_section() {}
 	public function attachments_section() {}
+	public function comments_section() {}
 
 	public function slug_setting_markup() {
 		global $bp;
@@ -193,6 +210,19 @@ class BP_Docs_Admin {
 			<option value="no" <?php selected( $enabled, false ) ?>><?php _e( 'Disabled', 'bp-docs' ) ?></option>
 		</select>
 		<p class="description"><?php _e( "Allow users to add attachments to their Docs.", 'bp-docs' ) ?></p>
+
+		<?php
+	}
+
+	public function enable_comments_setting_markup() {
+		$enabled = bp_docs_enable_comments();
+
+		?>
+		<select name="bp-docs-enable-comments" id="bp-docs-enable-comments">
+			<option value="yes" <?php selected( $enabled, true ) ?>><?php _e( 'Enabled', 'bp-docs' ) ?></option>
+			<option value="no" <?php selected( $enabled, false ) ?>><?php _e( 'Disabled', 'bp-docs' ) ?></option>
+		</select>
+		<p class="description"><?php _e( "Allow commenting on Docs.", 'bp-docs' ) ?></p>
 
 		<?php
 	}
