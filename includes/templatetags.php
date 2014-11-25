@@ -951,6 +951,8 @@ function bp_docs_doc_associated_group_markup() {
 		</td>
 	</tr>
 	<?php
+
+	$groups_template = $old_gt;
 }
 
 /**

@@ -419,6 +419,7 @@ class BP_Docs_Component extends BP_Component {
 
 				// Redirect back to the non-edit view of this document
 				bp_core_redirect( bp_docs_get_doc_link( $doc->ID ) );
+				die();
 			}
 		}
 
@@ -434,6 +435,7 @@ class BP_Docs_Component extends BP_Component {
 
 				// Redirect back to the Doc list view
 				bp_core_redirect( $group_permalink . $bp->bp_docs->slug . '/' );
+				die();
 			}
 		}
 
@@ -451,6 +453,7 @@ class BP_Docs_Component extends BP_Component {
 
 				// Redirect back to the Doc list view
 				bp_core_redirect( $redirect );
+				die();
 			}
 		}
 
@@ -468,6 +471,7 @@ class BP_Docs_Component extends BP_Component {
 
 				bp_core_add_message( __( 'Lock successfully removed', 'bp-docs' ) );
 				bp_core_redirect( bp_docs_get_doc_link( $doc->ID ) );
+				die();
 			}
 		}
 
@@ -480,6 +484,7 @@ class BP_Docs_Component extends BP_Component {
 			delete_post_meta( $doc->ID, '_bp_docs_last_pinged' );
 
 			bp_core_redirect( bp_docs_get_doc_link( $doc->ID ) );
+			die();
 		}
 
 		// Todo: get this into a proper method
@@ -500,6 +505,7 @@ class BP_Docs_Component extends BP_Component {
 			}
 
 			bp_core_redirect( home_url( bp_docs_get_docs_slug() ) );
+			die();
 		}
 
 		if ( bp_docs_is_doc_read() && ! empty( $_GET['untrash'] ) && ! empty( $_GET['doc_id'] ) ) {
@@ -518,6 +524,7 @@ class BP_Docs_Component extends BP_Component {
 			}
 
 			bp_core_redirect( bp_docs_get_doc_link( $untrash_doc_id ) );
+			die();
 		}
 	}
 
@@ -883,9 +890,7 @@ class BP_Docs_Component extends BP_Component {
 
 			wp_register_script( 'word-counter', site_url() . '/wp-admin/js/word-count.js', array( 'jquery' ) );
 
-			wp_enqueue_script( 'bp-docs-edit-validation', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/edit-validation.js' ), array( 'jquery' ) );
-
-			do_action( 'bp_docs_enqueue_scripts_edit' );
+			wp_enqueue_script( 'bp-docs-edit-validation', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/edit-validation.js' ), array( 'jquery', 'bp-docs-js' ) );
 		}
 
 		// Only load our JS on the right sorts of pages. Generous to account for

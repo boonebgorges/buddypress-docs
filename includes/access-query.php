@@ -102,7 +102,7 @@ class BP_Docs_Access_Query {
 	 * @since 1.2.8
 	 */
 	public function get_doc_ids() {
-		remove_action( 'pre_get_posts', 'bp_docs_general_access_protection' );
+		remove_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
 
 		$tax_query = $this->get_tax_query();
 		foreach ( $tax_query as &$tq ) {
@@ -126,7 +126,7 @@ class BP_Docs_Access_Query {
 			$forbidden_fruit_ids = wp_list_pluck( $forbidden_fruit, 'ID' );
 		}
 
-		add_action( 'pre_get_posts', 'bp_docs_general_access_protection' );
+		add_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
 
 		return $forbidden_fruit_ids;
 	}
@@ -196,4 +196,6 @@ function bp_docs_general_access_protection( $query ) {
 		}
 	}
 }
-add_action( 'pre_get_posts', 'bp_docs_general_access_protection' );
+// Hooked at an oddball priority to avoid conflicts with nested actions and
+// other plugins using 'pre_get_posts'. See https://github.com/boonebgorges/buddypress-docs/issues/425
+add_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );

@@ -18,6 +18,8 @@ class BP_Docs_Hierarchy {
 	 * @since 1.0-beta
 	 */
 	function __construct() {
+		add_action( 'parse_query', array( $this, 'parse_query' ) );
+
 		// Make sure that the bp_docs post type supports our post taxonomies
 		add_filter( 'bp_docs_post_type_args', array( $this, 'register_with_post_type' ) );
 
@@ -35,13 +37,33 @@ class BP_Docs_Hierarchy {
 	}
 
 	/**
-	 * PHP 4 constructor
+	 * Ensure that child Docs have the query parsed correctly.
 	 *
-	 * @package BuddyPress Docs
-	 * @since 1.0-beta
+	 * get_page_by_path() is mangling the parse, because I've filtered out
+	 * the ancestors' slugs from the URL. What I'm doing below is pretty
+	 * hackish.
+	 *
+	 * @since 1.8.5
 	 */
-	function bp_docs_hierarchy() {
-		$this->__construct();
+	public function parse_query( $q ) {
+		$pt = $q->get( 'post_type' );
+		if ( ! $pt || bp_docs_get_post_type_name() !== $pt ) {
+			return;
+		}
+
+		$post_name = $q->get( 'name' );
+
+		// Bypass get_post_by_path().
+		global $wpdb;
+		$sql = $wpdb->prepare( "SELECT * FROM {$wpdb->posts} WHERE post_name = %s AND post_type = %s AND post_parent != 0", $post_name, $pt );
+		$post_id = $wpdb->get_var( $sql );
+
+		if ( ! empty( $post_id ) ) {
+			$q->set( 'p', $post_id );
+			$q->set( 'name', '' );
+			$q->set( 'pagename', '' );
+			$q->set( bp_docs_get_post_type_name(), '' );
+		}
 	}
 
 	/**
