@@ -68,7 +68,7 @@
 	 * Toggle the visibility of the new folder details fields based on radio button selection.
 	 */
 	function update_create_new_folder_details_visibility( $radio ) {
-		if ( 'new' == $radio.val() ) {
+		if ( 'new' == $( 'input[name=existing-or-new-folder]:checked' ).val() ) {
 			$( '#new-folder-block .selector-content' ).show();
 		} else {
 			$( '#new-folder-block .selector-content' ).hide();
