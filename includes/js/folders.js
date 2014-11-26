@@ -28,6 +28,7 @@
 		} );
 
 		// Change folder type, change available parents
+		update_parent_folder_selector( $associated_group_selector.val() );
 		$( '.folder-type' ).on( 'change', function() {
 			update_parent_folder_selector( $( this ) );
 		} );
@@ -134,10 +135,9 @@
 				group_id: group_id
 			},
 			success: function( response ) {
-				$( '#new-folder-type' ).fadeOut( function() {
-					$( this ).replaceWith( response ).fadeIn();
-					update_parent_folder_selector( $( '#new-folder-type' ) );
-				} );
+				$( '#new-folder-type' ).fadeOut();
+			//	$( '#new-folder-type' ).replaceWith( response ).fadeIn();
+				update_parent_folder_selector( group_id );
 			}
 		} );
 
@@ -147,15 +147,26 @@
 	 * Update the Parent selector when the Type selector is changed.
 	 */
 	function update_parent_folder_selector( $type_selector ) {
+		var folder_type, $folder_parent;
+
+		// Groan.
+		if ( 'string' == typeof $type_selector ) {
+			folder_type = $type_selector;
+			$folder_parent = $( '.folder-parent' );
+		} else {
+			folder_type = $type_selector.val();
+			$folder_parent = $type_selector.siblings( '.folder-parent' );
+		}
+
 		$.ajax( {
 			url: ajaxurl,
 			type: 'POST',
 			data: {
 				action: 'bp_docs_update_parent_folders',
-				folder_type: $type_selector.val()
+				folder_type: folder_type
 			},
 			success: function( response ) {
-				$type_selector.siblings( '.folder-parent' ).fadeOut( function() {
+				$folder_parent.fadeOut( function() {
 					$( this ).replaceWith( response ).fadeIn();
 				} );
 			}
