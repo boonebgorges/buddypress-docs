@@ -9,20 +9,22 @@
 <h2 class="directory-title">
 	<?php bp_docs_directory_breadcrumb() ?>
 </h2>
-
-<?php if ( current_user_can( 'bp_docs_manage_folders' ) ) : ?>
-	<div class="manage-folders-link">
-		<a href="<?php bp_docs_manage_folders_url() ?>"><?php _e( 'Manage Folders', 'bp-docs' ) ?></a>
-	</div>
-<?php endif ?>
-
-<div class="toggle-folders-link hide-if-no-js">
-	<a href="#" class="toggle-folders" id="toggle-folders-hide"><?php _e( 'Hide Folders', 'bp-docs' ) ?></a>
-	<a href="#" class="toggle-folders" id="toggle-folders-show"><?php _e( 'Show Folders', 'bp-docs' ) ?></a>
-</div>
-
 <div class="docs-info-header">
 	<?php bp_docs_info_header() ?>
+</div>
+
+
+<div class="folder-action-links">
+	<?php if ( current_user_can( 'bp_docs_manage_folders' ) ) : ?>
+		<div class="manage-folders-link">
+			<a href="<?php bp_docs_manage_folders_url() ?>"><?php _e( 'Manage Folders', 'bp-docs' ) ?></a>
+		</div>
+	<?php endif ?>
+
+	<div class="toggle-folders-link hide-if-no-js">
+		<a href="#" class="toggle-folders" id="toggle-folders-hide"><?php _e( 'Hide Folders', 'bp-docs' ) ?></a>
+		<a href="#" class="toggle-folders" id="toggle-folders-show"><?php _e( 'Show Folders', 'bp-docs' ) ?></a>
+	</div>
 </div>
 
 	<table class="doctable">
