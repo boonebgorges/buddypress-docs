@@ -905,6 +905,10 @@ function bp_docs_associated_group_dropdown( $args = array() ) {
  * @since 1.2
  */
 function bp_docs_doc_associated_group_markup() {
+	global $groups_template;
+
+	$old_gt = $groups_template;
+
 	// First, try to set the preselected group by looking at the URL params
 	$selected_group_slug = isset( $_GET['group'] ) ? $_GET['group'] : '';
 
