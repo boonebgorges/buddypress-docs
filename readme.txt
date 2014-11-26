@@ -33,6 +33,11 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.9 =
+
+* Docs can now be sorted into folders
+* New breadcrumb navigation in individual Docs as well as in folder view
+
 = 1.8.5 =
 * Fixed permalinks for child Docs
 * More fixes for JS dependency and load order
