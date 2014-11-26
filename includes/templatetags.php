@@ -882,7 +882,7 @@ function bp_docs_associated_group_dropdown( $args = array() ) {
 			'<option value="%s" %s>%s</option>',
 			esc_attr( $g->id ),
 			selected( $r['selected'], $g->id, false ),
-			esc_html( $g->name )
+			esc_html( stripslashes( $g->name ) )
 		);
 	}
 
