@@ -919,10 +919,12 @@ body.js {
 	}
 }
 
-.manage-folders-link {
+div.manage-folders-link,
+div.toggle-folders-link {
+	float: left;
+	width: 150px;
 	font-size: .9em;
-	margin-top: -1em;
-	margin-bottom: 1em;
+	margin-top: 1em;
 }
 
 //Media query for most screens, unseen by IE 7 or 8

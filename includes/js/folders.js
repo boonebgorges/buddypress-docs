@@ -6,6 +6,7 @@
 		hover_time = '',
 		$associated_group_selector,
 		$doc_clone,
+		$doctable,
 		$editing_folder,
 		$hover_element;
 
@@ -52,6 +53,12 @@
 		$( '.docs-folder-manage li.folder h4 > span > a' ).on( 'click', function( event ) {
 			toggle_folder_edit_class( $( this ) );
 			return false;
+		} );
+
+		// Hide folders on list view.
+		$( '.toggle-folders' ).on( 'click', function( e ) {
+			e.preventDefault();
+			toggle_folder_list();
 		} );
 
 		init_doc_drag();
@@ -274,6 +281,23 @@
 			}
 		} );
 
+	}
+
+	function toggle_folder_list() {
+		$doctable = $( 'table.doctable' );
+		if ( ! $doctable ) {
+			return;
+		}
+
+		if ( $( '#toggle-folders-hide' ).is( ':visible' ) ) {
+			$doctable.find( 'tr.folder-row' ).hide();
+			$( '#toggle-folders-hide' ).hide();
+			$( '#toggle-folders-show' ).show();
+		} else {
+			$doctable.find( 'tr.folder-row' ).show();
+			$( '#toggle-folders-hide' ).show();
+			$( '#toggle-folders-show' ).hide();
+		}
 	}
 
 	function process_doc_drop( event, ui ) {

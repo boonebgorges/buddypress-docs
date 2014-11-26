@@ -16,6 +16,11 @@
 	</div>
 <?php endif ?>
 
+<div class="toggle-folders-link hide-if-no-js">
+	<a href="#" class="toggle-folders" id="toggle-folders-hide"><?php _e( 'Hide Folders', 'bp-docs' ) ?></a>
+	<a href="#" class="toggle-folders" id="toggle-folders-show"><?php _e( 'Show Folders', 'bp-docs' ) ?></a>
+</div>
+
 <div class="docs-info-header">
 	<?php bp_docs_info_header() ?>
 </div>
