@@ -1662,9 +1662,11 @@ function bp_docs_create_new_folder_markup( $args = array() ) {
 
 	<label for="new-folder"><?php _e( 'Name', 'bp-docs' ) ?></label> <input name="new-folder" id="new-folder" />
 
-	<?php if ( current_user_can( 'bp_docs_change_folder_type' ) ) : ?>
-		<div style="clear:both"></div>
+	<?php $folder_type_class = current_user_can( 'bp_docs_change_folder_type' ) ? 'can-change' : 'cannot-change' ?>
 
+	<div style="clear:both"></div>
+
+	<div class="folder-type-selector-div <?php echo $folder_type_class ?>">
 		<label for="new-folder-type"><?php _e( 'Folder type' ) ?></label>
 		<?php bp_docs_folder_type_selector( array(
 			'selected' => $r['selected'],
@@ -1672,7 +1674,7 @@ function bp_docs_create_new_folder_markup( $args = array() ) {
 			'name' => $r['folder_type_name'],
 			'include_all_groups' => $r['folder_type_include_all_groups'],
 		) ) ?>
-	<?php endif; ?>
+	</div>
 
 	<div style="clear:both"></div>
 	<label for="new-folder-parent"><?php _e( 'Parent (optional)', 'bp-docs' ) ?></label>

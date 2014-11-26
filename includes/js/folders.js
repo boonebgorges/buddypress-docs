@@ -19,6 +19,7 @@
 
 		// Change associated group, change available folders
 		$associated_group_selector = $( '#associated_group_id' );
+		update_new_folder_selectors_for_group( $associated_group_selector.val() );
 		update_folder_tab_title();
 		$associated_group_selector.on( 'change', function() {
 			update_folder_selector( $( this ).val() );
@@ -28,7 +29,6 @@
 		} );
 
 		// Change folder type, change available parents
-		update_parent_folder_selector( $associated_group_selector.val() );
 		$( '.folder-type' ).on( 'change', function() {
 			update_parent_folder_selector( $( this ) );
 		} );
@@ -136,7 +136,7 @@
 			},
 			success: function( response ) {
 				$( '#new-folder-type' ).fadeOut();
-			//	$( '#new-folder-type' ).replaceWith( response ).fadeIn();
+				$( '#new-folder-type' ).replaceWith( response ).fadeIn();
 				update_parent_folder_selector( group_id );
 			}
 		} );
@@ -149,8 +149,10 @@
 	function update_parent_folder_selector( $type_selector ) {
 		var folder_type, $folder_parent;
 
-		// Groan.
-		if ( 'string' == typeof $type_selector ) {
+		// Gah.
+		if ( 'undefined' == typeof $type_selector ) {
+			return;
+		} else if ( 'string' == typeof $type_selector ) {
 			folder_type = $type_selector;
 			$folder_parent = $( '.folder-parent' );
 		} else {
