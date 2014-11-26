@@ -840,6 +840,10 @@ function bp_docs_folders_map_meta_caps( $caps, $cap, $user_id, $args ) {
 				$caps = array();
 			}
 			break;
+
+		case 'bp_docs_change_folder_type' :
+			$caps = array( 'bp_moderate' );
+			break;
 	}
 
 	return $caps;
@@ -1658,15 +1662,17 @@ function bp_docs_create_new_folder_markup( $args = array() ) {
 
 	<label for="new-folder"><?php _e( 'Name', 'bp-docs' ) ?></label> <input name="new-folder" id="new-folder" />
 
-	<div style="clear:both"></div>
+	<?php if ( current_user_can( 'bp_docs_change_folder_type' ) ) : ?>
+		<div style="clear:both"></div>
 
-	<label for="new-folder-type"><?php _e( 'Folder type' ) ?></label>
-	<?php bp_docs_folder_type_selector( array(
-		'selected' => $r['selected'],
-		'id' => $r['folder_type_id'],
-		'name' => $r['folder_type_name'],
-		'include_all_groups' => $r['folder_type_include_all_groups'],
-	) ) ?>
+		<label for="new-folder-type"><?php _e( 'Folder type' ) ?></label>
+		<?php bp_docs_folder_type_selector( array(
+			'selected' => $r['selected'],
+			'id' => $r['folder_type_id'],
+			'name' => $r['folder_type_name'],
+			'include_all_groups' => $r['folder_type_include_all_groups'],
+		) ) ?>
+	<?php endif; ?>
 
 	<div style="clear:both"></div>
 	<label for="new-folder-parent"><?php _e( 'Parent (optional)', 'bp-docs' ) ?></label>
