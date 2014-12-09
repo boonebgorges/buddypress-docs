@@ -176,7 +176,7 @@ class BP_Docs_Groups_Integration {
 	 * When looking at a group, this filters the group
 	 */
 	function pre_query_args( $query_args, $bp_docs_query ) {
-		if ( ! empty( $bp_docs_query->query_args['group_id'] ) ) {
+		if ( ! is_null( $bp_docs_query->query_args['group_id'] ) ) {
 			$query_args['tax_query'][] = self::tax_query_arg_for_groups( $bp_docs_query->query_args['group_id'] );
 		}
 		return $query_args;
@@ -193,20 +193,37 @@ class BP_Docs_Groups_Integration {
 	public static function tax_query_arg_for_groups( $group_ids ) {
 		$group_ids = wp_parse_id_list( $group_ids );
 
-		$terms = array();
-		foreach ( $group_ids as $gid ) {
-			$terms[] = bp_docs_get_term_slug_from_group_id( $gid );
-		}
+		if ( array() === $group_ids ) {
+			$group_terms = get_terms( bp_docs_get_associated_item_tax_name(), array(
+				'fields' => 'ids',
+			) );
 
-		if ( empty( $terms ) ) {
-			$terms = array( 0 );
-		}
+			if ( ! empty( $group_terms ) ) {
+				$arg = array(
+					'taxonomy' => bp_docs_get_associated_item_tax_name(),
+					'field'    => 'id',
+					'operator' => 'NOT IN',
+					'terms'    => $group_terms,
+				);
+			} else {
+				$arg = array();
+			}
+		} else {
+			$terms = array();
+			foreach ( $group_ids as $gid ) {
+				$terms[] = bp_docs_get_term_slug_from_group_id( $gid );
+			}
 
-		$arg = array(
-			'taxonomy' => bp_docs_get_associated_item_tax_name(),
-			'field'    => 'slug',
-			'terms'    => $terms,
-		);
+			if ( empty( $terms ) ) {
+				$terms = array( 0 );
+			}
+
+			$arg = array(
+				'taxonomy' => bp_docs_get_associated_item_tax_name(),
+				'field'    => 'slug',
+				'terms'    => $terms,
+			);
+		}
 
 		return $arg;
 	}
@@ -707,6 +724,12 @@ class BP_Docs_Groups_Integration {
 			return;
 		}
 
+		// Don't show on Started or Edited panels, where the info is
+		// presented in the breadcrumb
+		if ( bp_docs_is_started_by() || bp_docs_is_edited_by() ) {
+			return;
+		}
+
 		?>
 
 		<th scope="column" class="groups-cell"><?php _e( 'Group', 'bp-docs' ); ?></th>
@@ -727,6 +750,12 @@ class BP_Docs_Groups_Integration {
 		// Don't show on single group pages
 		// @todo - When multiple group associations are supported, this should be added
 		if ( bp_is_group() ) {
+			return;
+		}
+
+		// Don't show on Started or Edited panels, where the info is
+		// presented in the breadcrumb
+		if ( bp_docs_is_started_by() || bp_docs_is_edited_by() ) {
 			return;
 		}
 
@@ -1517,6 +1546,87 @@ function bp_docs_get_group_tab_name() {
 	}
 	return apply_filters( 'bp_docs_get_group_tab_name', $name );
 }
+
+/**
+ * Add group information to directory breadcrumbs.
+ *
+ * @since 1.9.0
+ *
+ * @param array $crumbs
+ * @return array
+ */
+function bp_docs_group_directory_breadcrumb( $crumbs ) {
+	if ( bp_is_group() ) {
+		$group_crumbs = array(
+			sprintf(
+				'<a href="%s">%s</a>',
+				bp_get_group_permalink( groups_get_current_group() ) . bp_docs_get_slug() . '/',
+				sprintf( _x( '%s&#8217;s Docs', 'group Docs directory breadcrumb', 'bp-docs' ), esc_html( bp_get_current_group_name() ) )
+			),
+		);
+
+		$crumbs = array_merge( $group_crumbs, $crumbs );
+	}
+
+	return $crumbs;
+}
+add_filter( 'bp_docs_directory_breadcrumb', 'bp_docs_group_directory_breadcrumb', 2 );
+
+/**
+ * Add group information to individual Doc breadcrumbs.
+ *
+ * Hooked very late to ensure it's the first item on the list.
+ *
+ * @since 1.9.0
+ *
+ * @param array $crumbs
+ * @return array
+ */
+function bp_docs_group_single_breadcrumb( $crumbs, $doc = null ) {
+	$group_id = null;
+	if ( is_a( $doc, 'WP_Post' ) ) {
+		$group_id = bp_docs_get_associated_group_id( $doc->ID );
+	} else if ( bp_docs_is_existing_doc() ) {
+		$group_id = bp_docs_get_associated_group_id( get_queried_object_id() );
+	}
+
+	if ( $group_id ) {
+		$group = groups_get_group( array(
+			'group_id' => $group_id,
+		) );
+	}
+
+	if ( empty( $group->name ) ) {
+		return $crumbs;
+	}
+
+	// Ensure that the user has access to the group before adding t othe
+	// breadcrumb
+	$user_has_access = true;
+	if ( 'public' !== $group->status ) {
+		$user_has_access = current_user_can( 'bp_moderate' ) || groups_is_user_member( bp_loggedin_user_id(), $group->id );
+	}
+
+	if ( $user_has_access ) {
+		$group_crumbs = array(
+			sprintf(
+				'<a href="%s">%s&#8217;s Docs</a>',
+				bp_get_group_permalink( $group ) . bp_docs_get_slug() . '/',
+				esc_html( $group->name )
+			),
+		);
+
+		$crumbs = array_merge( $group_crumbs, $crumbs );
+	} else {
+		// If the user doesn't have access to the associated group,
+		// don't show the group folder breadcrumb either
+		$doc_crumb = array_pop( $crumbs );
+		$crumbs    = array( $doc_crumb );
+	}
+
+	return $crumbs;
+}
+add_action( 'bp_docs_doc_breadcrumbs', 'bp_docs_group_single_breadcrumb', 99, 2 );
 
 /**
  * Get group's Docs settings.

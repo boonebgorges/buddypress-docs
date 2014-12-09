@@ -41,9 +41,10 @@ class BP_Docs_Query {
 		$defaults = array(
 			'doc_id'	 => array(),     // Array or comma-separated string
 			'doc_slug'	 => $this->doc_slug, // String
-			'group_id'	 => array(),     // Array or comma-separated string
+			'group_id'	 => null,     // Array or comma-separated string
 			'parent_id'	 => 0,		 // int
 			'author_id'	 => array(),     // Array or comma-separated string
+			'folder_id'      => null,
 			'edited_by_id'   => array(),     // Array or comma-separated string
 			'tags'		 => array(),     // Array or comma-separated string
 			'order'		 => 'ASC',       // ASC or DESC
@@ -229,7 +230,7 @@ class BP_Docs_Query {
 			// Access queries are handled at pre_get_posts, using bp_docs_general_access_protection()
 
 			// Set the taxonomy query. Filtered so that plugins can alter the query
-			// Filtering by groups also happens in this way
+			// Filtering by groups and folders also happens in this way
 			$wp_query_args['tax_query'] = apply_filters( 'bp_docs_tax_query', $wp_query_args['tax_query'], $this );
 
 			if ( !empty( $this->query_args['parent_id'] ) ) {
@@ -244,7 +245,6 @@ class BP_Docs_Query {
 
 		$this->query = new WP_Query( $wp_query_args );
 
-		//echo $yes;var_dump( $wp_query_args ); die();
 		return $this->query;
 	}
 

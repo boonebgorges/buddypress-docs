@@ -305,6 +305,17 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
 		}
 	}
 
+	// Temp - this should be more organized
+	if ( 'manage_folders' === $action ) {
+		if ( bp_is_active( 'groups' ) && bp_is_group() ) {
+			$user_can = groups_is_user_admin( $user_id, bp_get_current_group_id() );
+		} else if ( bp_is_user() ) {
+			$user_can = bp_is_my_profile();
+		} else {
+			$user_can = current_user_can( 'bp_moderate' );
+		}
+	}
+
 	if ( $user_id ) {
 		if ( is_super_admin( $user_id ) ) {
 			// Super admin always gets to edit. What a big shot
@@ -789,3 +800,34 @@ function bp_docs_revisions_to_keep( $num, $post ) {
 	return intval( $num );
 }
 add_filter( 'wp_revisions_to_keep', 'bp_docs_revisions_to_keep', 10, 2 );
+
+/**
+ * Remove the Docs component from the bp-active-components array.
+ *
+ * See https://buddypress.trac.wordpress.org/ticket/5552 for the disgusting
+ * details.
+ */
+function bp_docs_filter_active_components( $components ) {
+	unset( $components['bp_docs'] );
+	return $components;
+}
+
+/**
+ * Hook the bp_docs_filter_active_components() filter as close to options_nav rendering as possible.
+ *
+ * @since 1.9
+ */
+function bp_docs_filter_active_components_hook() {
+	add_filter( 'bp_active_components', 'bp_docs_filter_active_components' );
+}
+add_action( 'bp_before_member_plugin_template', 'bp_docs_filter_active_components_hook' );
+
+/**
+ * Unhook the bp_docs_filter_active_components() filter as soon as possible after rendering options_nav.
+ *
+ * @since 1.9
+ */
+function bp_docs_filter_active_components_unhook() {
+	remove_filter( 'bp_active_components', 'bp_docs_filter_active_components' );
+}
+add_action( 'bp_member_plugin_options_nav', 'bp_docs_filter_active_components_unhook' );

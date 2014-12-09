@@ -1,0 +1,168 @@
+.existing-or-new-selector {
+	.selector-content {
+		padding-left: 30px;
+		margin: .5em 0 2em;
+	}
+
+	&#new-folder-block {
+		.selector-content {
+			label {
+				float: left;
+				width: 150px;
+				clear: left;
+			}
+
+			input, select {
+				margin: 15px 0 5px;
+				width: 300px;
+			}
+		}
+	}
+}
+
+#toggle-folders-show {
+	display: none;
+}
+
+#buddypress .standard-form .existing-or-new-selector label {
+	font-weight: normal;
+
+	&.radio-label {
+		padding-left: 5px;
+		display: inline;
+	}
+}
+
+.docs-folder-tree {
+	& > li.folder {
+		margin-left: 0;
+	}
+
+	li.folder {
+		position: relative;
+
+		&:hover > .folder-name, &.hover > .folder-name {
+			padding: 0px 9px;
+			border: 1px solid #666;
+		}
+
+		.folder-name {
+			cursor: pointer;
+			padding: 1px 10px;
+			display: inline-block;
+			width: 50%;
+		}
+
+		.docs-in-folder {
+			& > .folder-empty {
+				display: none;
+			}
+
+			&.empty > .folder-empty {
+				display: block;
+				opacity: .5;
+				font-style: italic;
+			}
+		}
+	}
+
+	.doc-in-folder {
+		& > a {
+			padding: 1px 10px;
+		}
+	}
+}
+
+.docs-folder-manage {
+	& > li.folder {
+		margin-left: 0;
+	}
+
+	li {
+		list-style-type: none;
+
+		&.folder-edit-closed {
+			& > .folder-info {
+				.folder-toggle-close {
+					display: none;
+				}
+
+				.folder-details {
+					display: none;
+				}
+			}
+		}
+
+		&.folder-edit-open {
+			& > .folder-info {
+				.folder-toggle-edit {
+					display: none;
+				}
+			}
+		}
+
+		.folder-info {
+			margin: .5em 0;
+			padding: .5em 1em;
+			border: 1px solid #eaeaea;
+
+			h4 {
+				margin: 0 0 .5em;
+
+				& > span > a {
+					font-size: .8em;
+					font-weight: normal;
+					padding-left: 8px;
+				}
+			}
+
+			label {
+				display: block;
+				float: left;
+				clear: left;
+				width: 100px;
+				margin-bottom: 1em;
+			}
+
+			a.folder-delete {
+				color: #f00;
+				font-size: .8em;
+			}
+		}
+	}
+}
+
+.create-new-folder {
+	label {
+		display: block;
+		float: left;
+		clear: left;
+		width: 170px;
+		margin-bottom: 1em;
+	}
+}
+
+.folder-type-selector-div.cannot-change {
+	display: none;
+}
+
+a#manage-folders-link {
+	float: right;
+	width: 200px;
+	text-align: right;
+	text-decoration: none;
+	font-weight: bold;
+	font-size: .9em;
+}
+
+body.no-js {
+	.docs-folder-manage h4 > span {
+		display: none;
+	}
+}
+
+body.js {
+	#new-folder-block .selector-content {
+		display: none;
+	}
+}

@@ -398,14 +398,16 @@ class BP_Docs_Component extends BP_Component {
 				// the lock interval always returns as in process
 				add_filter( 'wp_check_post_lock_window', create_function( false, 'return time();' ) );
 
-				$lock = bp_docs_check_post_lock( $doc->ID );
+				if ( $doc ) {
+					$lock = bp_docs_check_post_lock( $doc->ID );
 
-				if ( $lock ) {
-					bp_core_add_message( sprintf( __( 'This doc is currently being edited by %s. To prevent overwrites, you cannot edit until that user has finished. Please try again in a few minutes.', 'bp-docs' ), bp_core_get_user_displayname( $lock ) ), 'error' );
+					if ( $lock ) {
+						bp_core_add_message( sprintf( __( 'This doc is currently being edited by %s. To prevent overwrites, you cannot edit until that user has finished. Please try again in a few minutes.', 'bp-docs' ), bp_core_get_user_displayname( $lock ) ), 'error' );
 
-					// Redirect back to the non-edit view of this document
-					bp_core_redirect( bp_docs_get_doc_link( $doc->ID ) );
-					die();
+						// Redirect back to the non-edit view of this document
+						bp_core_redirect( bp_docs_get_doc_link( $doc->ID ) );
+						bp_core_redirect( $group_permalink . $bp->bp_docs->slug . '/' . $doc_slug );
+					}
 				}
 			} else {
 				if ( function_exists( 'bp_core_no_access' ) && !is_user_logged_in() ) {
@@ -846,6 +848,7 @@ class BP_Docs_Component extends BP_Component {
 			<form action="" method="get">
 				<input name="s" value="<?php the_search_query() ?>">
 				<input name="search_submit" type="submit" value="<?php _e( 'Search', 'bp-docs' ) ?>" />
+				<?php do_action( 'bp_docs_directory_filter_search_form' ) ?>
 			</form>
 		</div>
 		<?php
@@ -908,6 +911,8 @@ class BP_Docs_Component extends BP_Component {
 				$strings['pulse'] = bp_docs_heartbeat_pulse();
 			}
 			wp_localize_script( 'bp-docs-js', 'bp_docs', $strings );
+
+			do_action( 'bp_docs_enqueue_scripts' );
 		}
 	}
 

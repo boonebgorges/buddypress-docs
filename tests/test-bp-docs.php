@@ -133,6 +133,53 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 		$this->assertFalse( (bool) $maybe_group_id );
 	}
 
+	/**
+	 * @group BP_Docs_Query
+	 */
+	function test_bp_docs_query_default_group() {
+		$g = $this->factory->group->create();
+		$d1 = $this->factory->doc->create( array(
+			'group' => $g,
+		) );
+		$d2 = $this->factory->doc->create();
+
+		$q = new BP_Docs_Query();
+
+		// Remove access protection for the moment because I'm lazy
+		remove_action( 'pre_get_posts', 'bp_docs_general_access_protection' );
+		$wp_query = $q->get_wp_query();
+		add_action( 'pre_get_posts', 'bp_docs_general_access_protection' );
+
+		$found = wp_list_pluck( $wp_query->posts, 'ID' );
+		sort( $found );
+
+		$this->assertSame( $found, array( $d1, $d2 ) );
+	}
+	/**
+	 * @group BP_Docs_Query
+	 */
+	function test_bp_docs_query_null_group() {
+		$g = $this->factory->group->create();
+
+		$d1 = $this->factory->doc->create( array(
+			'group' => $g,
+		) );
+		$d2 = $this->factory->doc->create();
+
+		$q = new BP_Docs_Query( array(
+			'group_id' => array(),
+		) );
+
+		// Remove access protection for the moment because I'm lazy
+		remove_action( 'pre_get_posts', 'bp_docs_general_access_protection' );
+		$wp_query = $q->get_wp_query();
+		add_action( 'pre_get_posts', 'bp_docs_general_access_protection' );
+
+		$found = wp_list_pluck( $wp_query->posts, 'ID' );
+
+		$this->assertSame( $found, array( $d2 ) );
+	}
+
 	function test_bp_docs_get_doc_link() {
 		// rewrite - @todo This stinks
 		global $wp_rewrite;

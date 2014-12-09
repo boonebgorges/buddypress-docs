@@ -44,7 +44,7 @@ function bp_docs_has_docs( $args = array() ) {
 			$my_groups = groups_get_user_groups( bp_loggedin_user_id() );
 			$d_group_id = ! empty( $my_groups['total'] ) ? $my_groups['groups'] : array( 0 );
 		} else {
-			$d_group_id = array();
+			$d_group_id = null;
 		}
 
 		// If this is a Started By tab, set the author ID
@@ -76,6 +76,15 @@ function bp_docs_has_docs( $args = array() ) {
 		// Parent id
 		$d_parent_id = !empty( $_REQUEST['parent_doc'] ) ? (int)$_REQUEST['parent_doc'] : '';
 
+		// Folder id
+		$d_folder_id = null;
+		if ( ! empty( $_GET['folder'] ) ) {
+			$d_folder_id = intval( $_GET['folder'] );
+		} else if ( ! bp_docs_is_started_by() && ! bp_docs_is_edited_by() ) {
+			// On Started and Edited pages, we're folder-agnostic
+			$d_folder_id = 0;
+		}
+
 		// Page number, posts per page
 		$d_paged = 1;
 		if ( ! empty( $_GET['paged'] ) ) {
@@ -94,6 +103,7 @@ function bp_docs_has_docs( $args = array() ) {
 			'doc_slug'       => $d_doc_slug,  // String (post_name/slug)
 			'group_id'       => $d_group_id,  // Array or comma-separated string
 			'parent_id'      => $d_parent_id, // int
+			'folder_id'      => $d_folder_id, // array or comma-separated string
 			'author_id'      => $d_author_id, // Array or comma-separated string
 			'edited_by_id'   => $d_edited_by_id, // Array or comma-separated string
 			'tags'           => $d_tags,      // Array or comma-separated string
@@ -103,7 +113,12 @@ function bp_docs_has_docs( $args = array() ) {
 			'posts_per_page' => $d_posts_per_page,
 			'search_terms'   => $d_search_terms,
 		);
-		$r = wp_parse_args( $args, $defaults );
+
+		if ( function_exists( 'bp_parse_args' ) ) {
+			$r = bp_parse_args( $args, $defaults, 'bp_docs_has_docs' );
+		} else {
+			$r = wp_parse_args( $args, $defaults );
+		}
 
 		$doc_query_builder      = new BP_Docs_Query( $r );
 		$bp->bp_docs->doc_query = $doc_query_builder->get_wp_query();
@@ -191,6 +206,8 @@ function bp_docs_info_header() {
 	 * @return str Permalink for the group doc
 	 */
 	function bp_docs_get_info_header() {
+		do_action( 'bp_docs_before_info_header' );
+
 		$filters = bp_docs_get_current_filters();
 
 		// Set the message based on the current filters
@@ -201,10 +218,10 @@ function bp_docs_info_header() {
 
 			$message = apply_filters( 'bp_docs_info_header_message', $message, $filters );
 
-			$message = implode( "\n", $message );
+			$message = implode( "<br />", $message );
 
 			// We are viewing a subset of docs, so we'll add a link to clear filters
-			$message .= ' - ' . sprintf( __( '<strong><a href="%s" title="View All Docs">View All Docs</a></strong>', 'bp-docs' ), remove_query_arg( array( 'bpd_tag', 's', 'search_submit' ) ) );
+			$message .= ' - ' . sprintf( __( '<strong><a href="%s" title="View All Docs">View All Docs</a></strong>', 'bp-docs' ), remove_query_arg( array( 'bpd_tag', 's', 'search_submit', 'folder' ) ) );
 		}
 
 		?>
@@ -224,7 +241,6 @@ function bp_docs_info_header() {
 
 			<div class="clear"> </div>
 		<?php endif ?>
-
 		<?php
 	}
 
@@ -248,6 +264,58 @@ function bp_docs_filter_titles() {
 
 	return implode( '', $links );
 }
+
+/**
+ * Get the breadcrumb separator character.
+ *
+ * @since 1.9.0
+ *
+ * @param string $context 'doc' or 'directory'
+ */
+function bp_docs_get_breadcrumb_separator( $context = 'doc' ) {
+	// Default value is a right-facing triangle
+	return apply_filters( 'bp_docs_breadcrumb_separator', '&#9656;', $context );
+}
+
+/**
+ * Echoes the breadcrumb of a Doc.
+ *
+ * @since 1.9.0
+ */
+function bp_docs_the_breadcrumb( $args = array() ) {
+	echo bp_docs_get_the_breadcrumb( $args );
+}
+	/**
+	 * Returns the breadcrumb of a Doc.
+	 */
+	function bp_docs_get_the_breadcrumb( $args = array() ) {
+		$d_doc_id = 0;
+		if ( bp_docs_is_existing_doc() ) {
+			$d_doc_id = get_queried_object_id();
+		}
+
+		$r = wp_parse_args( $args, array(
+			'include_doc' => true,
+			'doc_id'      => $d_doc_id,
+		) );
+
+		$crumbs = array();
+
+		$doc = get_post( $r['doc_id'] );
+
+		if ( $r['include_doc'] ) {
+			$crumbs[] = sprintf(
+				'<span class="breadcrumb-current"><i class="genericon genericon-document"></i>%s</span>',
+				$doc->post_title
+			);
+		}
+
+		$crumbs = apply_filters( 'bp_docs_doc_breadcrumbs', $crumbs, $doc );
+
+		$sep = bp_docs_get_breadcrumb_separator( 'doc' );
+
+		return implode( ' <span class="directory-breadcrumb-separator">' . $sep . '</span> ', $crumbs );
+	}
 
 /**
  * Echoes the content of a Doc
@@ -281,6 +349,26 @@ function bp_docs_the_content() {
 
 		return apply_filters( 'bp_docs_get_the_content', $content );
 	}
+
+/**
+ * 'action' URL for directory filter forms.
+ *
+ * @since 1.9.0
+ *
+ * @return string
+ */
+function bp_docs_directory_filter_form_action() {
+	$form_action = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+	$keeper_keys = array( 'folder' );
+	foreach ( $_GET as $k => $v ) {
+		if ( ! in_array( $k, $keeper_keys ) ) {
+			$form_action = remove_query_arg( $k, $form_action );
+		}
+	}
+
+	return $form_action;
+}
+
 /**
  * Filters the output of the doc list header for search terms
  *
@@ -560,6 +648,37 @@ function bp_docs_item_docs_link() {
 	}
 
 /**
+ * Output the breadcrumb for use in directories.
+ *
+ * @since 1.9.0
+ */
+function bp_docs_directory_breadcrumb() {
+	echo bp_docs_get_directory_breadcrumb();
+}
+	/**
+	 * Generate a breadcrumb for use in directories.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @return string
+	 */
+	function bp_docs_get_directory_breadcrumb() {
+		$crumbs = array();
+
+		$crumbs = apply_filters( 'bp_docs_directory_breadcrumb', $crumbs );
+
+		// Last item is the "current" item
+		$last = array_pop( $crumbs );
+		$last = strip_tags( $last, '<i>' );
+		$last = '<span class="breadcrumb-current">' . $last . '</a>';
+		$crumbs[] = $last;
+
+		$sep = bp_docs_get_breadcrumb_separator( 'directory' );
+
+		return implode( ' <span class="directory-breadcrumb-separator">' . $sep . '</span> ', $crumbs );
+	}
+
+/**
  * Get the sort order for sortable column links
  *
  * Detects the current sort order and returns the opposite
@@ -696,11 +815,100 @@ function bp_docs_inline_toggle_js() {
 }
 
 /**
+ * Get a dropdown of associable groups for the current user.
+ *
+ * @since 1.8
+ */
+function bp_docs_associated_group_dropdown( $args = array() ) {
+	$r = wp_parse_args( $args, array(
+		'name'         => 'associated_group_id',
+		'id'           => 'associated_group_id',
+		'selected'     => null,
+		'options_only' => false,
+		'echo'         => true,
+		'null_option'  => true,
+		'include'      => null,
+	) );
+
+	$groups_args = array(
+		'per_page' => false,
+		'populate_extras' => false,
+		'type' => 'alphabetical',
+	);
+
+	if ( ! bp_current_user_can( 'bp_moderate' ) ) {
+		$groups_args['user_id'] = bp_loggedin_user_id();
+	}
+
+	if ( ! is_null( $r['include'] ) ) {
+		$groups_args['include'] = wp_parse_id_list( $r['include'] );
+	}
+
+	// Populate the $groups_template global, but stash the old one
+	// This ensures we don't mess anything up inside the group
+	global $groups_template;
+	$old_groups_template = $groups_template;
+
+	bp_has_groups( $groups_args );
+
+	// Filter out the groups where associate_with permissions forbid
+	$removed = 0;
+	foreach ( $groups_template->groups as $gtg_key => $gtg ) {
+		if ( ! current_user_can( 'bp_docs_associate_with_group', $gtg->id ) ) {
+			unset( $groups_template->groups[ $gtg_key ] );
+			$removed++;
+		}
+	}
+
+	// cleanup, if necessary from filter above
+	if ( $removed ) {
+		$groups_template->groups = array_values( $groups_template->groups );
+		$groups_template->group_count = $groups_template->group_count - $removed;
+		$groups_template->total_group_count = $groups_template->total_group_count - $removed;
+	}
+
+	$html = '';
+
+	if ( ! $r['options_only'] ) {
+		$html .= sprintf( '<select name="%s" id="%s">', esc_attr( $r['name'] ), esc_attr( $r['id'] ) );
+	}
+
+	if ( $r['null_option'] ) {
+		$html .= '<option value="">' . __( 'None', 'bp-docs' ) . '</option>';
+	}
+
+	foreach ( $groups_template->groups as $g ) {
+		$html .= sprintf(
+			'<option value="%s" %s>%s</option>',
+			esc_attr( $g->id ),
+			selected( $r['selected'], $g->id, false ),
+			esc_html( stripslashes( $g->name ) )
+		);
+	}
+
+	if ( ! $r['options_only'] ) {
+		$html .= '</select>';
+	}
+
+	$groups_template = $old_groups_template;
+
+	if ( false === $r['echo'] ) {
+		return $html;
+	} else {
+		echo $html;
+	}
+}
+
+/**
  * Outputs the markup for the Associated Group settings section
  *
  * @since 1.2
  */
 function bp_docs_doc_associated_group_markup() {
+	global $groups_template;
+
+	$old_gt = $groups_template;
+
 	// First, try to set the preselected group by looking at the URL params
 	$selected_group_slug = isset( $_GET['group'] ) ? $_GET['group'] : '';
 
@@ -722,42 +930,10 @@ function bp_docs_doc_associated_group_markup() {
 	// Last check: if this is a second attempt at a newly created Doc,
 	// there may be a previously submitted value
 	if ( empty( $selected_group ) && ! empty( buddypress()->bp_docs->submitted_data->associated_group_id ) ) {
-		$selected_group = intval( buddypress()->bp_docs->submitted_data->associated_group_id );
+		$selected_group = buddypress()->bp_docs->submitted_data->associated_group_id;
 	}
 
 	$selected_group = intval( $selected_group );
-
-	$groups_args = array(
-		'per_page' => false,
-		'populate_extras' => false,
-		'type' => 'alphabetical',
-	);
-
-	if ( ! bp_current_user_can( 'bp_moderate' ) ) {
-		$groups_args['user_id'] = bp_loggedin_user_id();
-	}
-
-	// Populate the $groups_template global
-	global $groups_template;
-	$old_gt = $groups_template;
-
-	bp_has_groups( $groups_args );
-
-	// Filter out the groups where associate_with permissions forbid
-	$removed = 0;
-	foreach ( $groups_template->groups as $gtg_key => $gtg ) {
-		if ( ! current_user_can( 'bp_docs_associate_with_group', $gtg->id ) ) {
-			unset( $groups_template->groups[ $gtg_key ] );
-			$removed++;
-		}
-	}
-
-	// cleanup, if necessary from filter above
-	if ( $removed ) {
-		$groups_template->groups = array_values( $groups_template->groups );
-		$groups_template->group_count = $groups_template->group_count - $removed;
-		$groups_template->total_group_count = $groups_template->total_group_count - $removed;
-	}
 
 	?>
 	<tr>
@@ -767,12 +943,11 @@ function bp_docs_doc_associated_group_markup() {
 		</td>
 
 		<td class="content-column">
-			<select name="associated_group_id" id="associated_group_id">
-				<option value=""><?php _e( 'None', 'bp-docs' ) ?></option>
-				<?php foreach ( $groups_template->groups as $g ) : ?>
-					<option value="<?php echo esc_attr( $g->id ) ?>" <?php selected( $selected_group, $g->id ) ?>><?php echo esc_html( $g->name ) ?></option>
-				<?php endforeach ?>
-			</select>
+			<?php bp_docs_associated_group_dropdown( array(
+				'name' => 'associated_group_id',
+				'id' => 'associated_group_id',
+				'selected' => $selected_group,
+			) ) ?>
 
 			<div id="associated_group_summary">
 				<?php bp_docs_associated_group_summary() ?>
@@ -1057,6 +1232,40 @@ function bp_docs_delete_doc_button( $doc_id = false ) {
 	}
 
 /**
+ * Get a directory link appropriate for this item.
+ *
+ * @since 1.9
+ *
+ * @param string $item_type 'global', 'group', 'user'. Default: 'global'.
+ * @param int $item_id If $item_type is not 'global', the ID of the item.
+ * @return string
+ */
+function bp_docs_get_directory_url( $item_type = 'global', $item_id = 0 ) {
+	switch ( $item_type ) {
+		case 'user' :
+			$url = bp_core_get_user_domain( $item_id ) . bp_docs_get_slug() . '/';
+			break;
+
+		case 'group' :
+			if ( bp_is_active( 'groups' ) ) {
+				$group = groups_get_group( array(
+					'group_id' => $item_id,
+				) );
+				$url = bp_get_group_permalink( $group ) . bp_docs_get_slug() . '/';
+				break;
+			}
+			// otherwise fall through
+
+		case 'global' :
+		default :
+			$url = bp_docs_get_archive_link();
+			break;
+	}
+
+	return $url;
+}
+
+/**
  * Echo the pagination links for the doc list view
  *
  * @package BuddyPress Docs
@@ -1262,7 +1471,6 @@ function bp_docs_get_docs_slug() {
  * @todo Get the group stuff out
  */
 function bp_docs_tabs( $show_create_button = true ) {
-	$current_view = '';
 
 	?>
 

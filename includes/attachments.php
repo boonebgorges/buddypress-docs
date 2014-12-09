@@ -587,6 +587,7 @@ class BP_Docs_Attachments {
 					<option value=""<?php selected( $has_attachment, '' ) ?>><?php _e( 'Doesn&#8217;t matter', 'bp-docs' ) ?></option>
 				</select>
 				<input type="submit" value="<?php _e( 'Filter', 'bp-docs' ) ?>" />
+				<?php do_action( 'bp_docs_directory_filter_attachments_form' ) ?>
 			</form>
 		</div>
 
