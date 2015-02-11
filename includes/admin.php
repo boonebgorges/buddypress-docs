@@ -79,6 +79,16 @@ class BP_Docs_Admin {
 		);
 		register_setting( 'bp-docs-settings', 'bp-docs-excerpt-length', 'absint' );
 
+		// General - Enable Comments
+		add_settings_field(
+			'bp-docs-enable-comments',
+			__( 'Enable Comments', 'bp-docs' ),
+			array( $this, 'enable_comments_setting_markup' ),
+			'bp-docs-settings',
+			'bp-docs-general'
+		);
+		register_setting( 'bp-docs-settings', 'bp-docs-enable-comments', 'absint' );
+
 		// Users
 		add_settings_section(
 			'bp-docs-users',
@@ -179,6 +189,17 @@ class BP_Docs_Admin {
 		?>
 		<input name="bp-docs-excerpt-length" id="bp-docs-excerpt-length" type="text" value="<?php echo esc_html( $length ) ?>" />
 		<p class="description"><?php _e( "Excerpts are shown on Docs directories, to provide better context. If your theme or language requires longer or shorter excerpts, change this value. Set to <code>0</code> to disable these excerpts.", 'bp-docs' ) ?></p>
+
+		<?php
+	}
+
+	public function enable_comments_setting_markup() {
+
+		$comments_enabled = bp_docs_get_setting_comments_enabled(); 
+
+		?>
+			<input name="bp-docs-enable-comments" id="bp-docs-enable-comments" type="checkbox" value="1" <?php checked( $comments_enabled ); ?> />
+		<p class="description"><?php _e( "Allow people to post comments on new docs? This will override your WordPress comments setting.", 'bp-docs' ) ?></p>
 
 		<?php
 	}
