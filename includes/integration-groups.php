@@ -44,6 +44,7 @@ class BP_Docs_Groups_Integration {
 
 		// Taxonomy helpers
 		add_filter( 'bp_docs_taxonomy_get_item_terms', 	array( $this, 'get_group_terms' ) );
+		add_filter( 'bp_docs_doc_saved',		array( $this, 'maybe_remove_doc_from_group' )  );
 
 		// Filter the core user_can_edit function for group-specific functionality
 		add_filter( 'bp_docs_user_can',			array( $this, 'user_can' ), 10, 4 );
@@ -277,6 +278,24 @@ class BP_Docs_Groups_Integration {
 		}
 
 		return apply_filters( 'bp_docs_taxonomy_get_group_terms', $terms );
+	}
+
+	/**
+	 * Dissociate a doc from a group at save.
+	 *
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.9
+	 *
+	 * @param BP_Docs_Query object
+	 */
+	function maybe_remove_doc_from_group( $bp_docs_query_object ) {
+		$dissociated_group_id = isset( $_POST['dissociated_group_id'] ) ? intval( $_POST['dissociated_group_id'] ) : null;
+
+		// Remove from a group, if necessary
+		if ( ! is_null( $dissociated_group_id ) && current_user_can( 'bp_docs_dissociate_from_group', $dissociated_group_id ) ) {
+			bp_docs_remove_associated_group_id( $bp_docs_query_object->doc_id, $dissociated_group_id );
+		}
 	}
 
 	/**
@@ -1489,6 +1508,24 @@ function bp_docs_set_associated_group_id( $doc_id, $group_id = 0 ) {
 	wp_set_post_terms( $doc_id, $term, bp_docs_get_associated_item_tax_name(), false );
 }
 
+function bp_docs_remove_associated_group_id( $doc_id, $group_id = 0 ) {
+	if ( ! empty( $group_id ) ) {
+		$term = bp_docs_get_group_term( $group_id );
+	} else {
+		$term = array();
+	}
+
+	wp_remove_object_terms( $doc_id, $term, bp_docs_get_associated_item_tax_name() );
+
+	// If the doc is no longer associated with any group, we need to make sure that it doesn't become public.
+	if ( empty( bp_docs_get_associated_group_id( $doc_id ) ) ) {
+		//@TODO: This could be simplified if we removed the $_POST dependency in bp_docs_save_doc_access_settings()
+		bp_docs_set_doc_access_settings_creator( $doc_id );
+	}
+
+	// @TODO: We need to filter the redirect, because now this user has no access to that doc.
+}
+
 function bp_docs_get_group_term( $group_id ) {
 	$group = groups_get_group( 'group_id=' . intval( $group_id ) );
 	$group_name = isset( $group->name ) ? $group->name : '';
@@ -1655,6 +1692,34 @@ function bp_docs_groups_map_meta_caps( $caps, $cap, $user_id, $args ) {
 					}
 
 					break;
+			}
+
+			break;
+
+		case 'bp_docs_dissociate_from_group' :
+			if ( isset( $args[0] ) ) {
+				$group_id = intval( $args[0] );
+			} elseif ( bp_is_group() ) {
+				$group_id = bp_get_current_group_id();
+			} else {
+				$group_id = bp_docs_get_associated_group_id( get_the_ID(), $doc );
+			}
+
+			if ( empty( $group_id ) ) {
+				break;
+			}
+
+			if ( user_can( $user_id, 'bp_moderate' ) ) {
+				return array( 'exist' );
+			}
+
+			$caps = array();
+
+			// Group admins or mods should able to remove docs from groups
+			if ( groups_is_user_mod( $user_id, $group_id ) || groups_is_user_admin( $user_id, $group_id ) ) {
+				$caps[] = 'exist';
+			} else {
+				$caps[] = 'do_not_allow';
 			}
 
 			break;
