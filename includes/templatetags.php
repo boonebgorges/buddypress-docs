@@ -1262,16 +1262,11 @@ function bp_docs_get_setting_comments_enabled() {
 	global $bp;
 
 	$enable_comments = get_option( 'bp-docs-enable-comments' );
-	_log( "option 'bp-docs-enable-comments':" ); 
-	_log( $enable_comments ); 
 
 	// Default is enabled. 
 	if ( ! isset( $enable_comments ) ) {
 		$enable_comments = 1;
 	}
-
-	_log( "option 'bp-docs-enable-comments' is now:" ); 
-	_log( $enable_comments ); 
 
 	return apply_filters( 'bp_docs_get_setting_comments_enabled', $enable_comments );
 }
