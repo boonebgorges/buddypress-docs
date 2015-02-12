@@ -460,7 +460,8 @@ class BP_Docs_Query {
 				'post_title'   => $_POST['doc']['title'],
 				'post_name'    => isset( $_POST['doc']['permalink'] ) ? sanitize_title( $_POST['doc']['permalink'] ) : sanitize_title( $_POST['doc']['title'] ),
 				'post_content' => sanitize_post_field( 'post_content', $doc_content, 0, 'db' ),
-				'post_status'  => 'publish'
+				'post_status'  => 'publish',
+				'comment_status' => ( ( bp_docs_get_setting_comments_enabled() )  ? 'open' : 'closed' ), 
 			);
 
 			$r = wp_parse_args( $args, $defaults );
