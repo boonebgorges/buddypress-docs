@@ -589,6 +589,32 @@ function bp_docs_save_doc_access_settings( $doc_id ) {
 }
 
 /**
+ * Reset doc access settings to "creator"
+ *
+ * @since 1.9
+ * @param int $doc_id The numeric ID of the doc
+ * @return null
+ */
+function bp_docs_set_doc_access_settings_creator( $doc_id ) {
+	// @TODO: This will be unnecessary once bp_docs_save_doc_access_settings() doesn't rely on $_POST
+
+	// When the doc was made private by group association, but loses that group association, we need to make sure that it doesn't become public.
+	$new_settings = array( 
+		'read' => 'creator',
+		'edit' => 'creator',
+		'read_comments' => 'creator',
+		'post_comments' => 'creator',
+		'view_history' => 'creator'
+	 );
+
+	update_post_meta( $doc_id, 'bp_docs_settings', $new_settings );
+
+	// The 'read' setting must also be saved to a taxonomy, for
+	// easier directory queries
+	bp_docs_update_doc_access( $doc_id, 'creator' );
+}
+
+/**
  * Verifies the settings associated with a given Doc
  *
  * @since 1.2

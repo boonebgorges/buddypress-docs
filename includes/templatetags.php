@@ -727,59 +727,80 @@ function bp_docs_doc_associated_group_markup() {
 
 	$selected_group = intval( $selected_group );
 
-	$groups_args = array(
-		'per_page' => false,
-		'populate_extras' => false,
-		'type' => 'alphabetical',
-	);
+	// If the user can manage the doc, show the group association select
+	if ( current_user_can( 'bp_docs_manage' ) ) {
+		$groups_args = array(
+			'per_page' => false,
+			'populate_extras' => false,
+			'type' => 'alphabetical',
+		);
 
-	if ( ! bp_current_user_can( 'bp_moderate' ) ) {
-		$groups_args['user_id'] = bp_loggedin_user_id();
-	}
-
-	// Populate the $groups_template global
-	global $groups_template;
-	$old_gt = $groups_template;
-
-	bp_has_groups( $groups_args );
-
-	// Filter out the groups where associate_with permissions forbid
-	$removed = 0;
-	foreach ( $groups_template->groups as $gtg_key => $gtg ) {
-		if ( ! current_user_can( 'bp_docs_associate_with_group', $gtg->id ) ) {
-			unset( $groups_template->groups[ $gtg_key ] );
-			$removed++;
+		if ( ! bp_current_user_can( 'bp_moderate' ) ) {
+			$groups_args['user_id'] = bp_loggedin_user_id();
 		}
+
+		// Populate the $groups_template global
+		global $groups_template;
+		$old_gt = $groups_template;
+
+		bp_has_groups( $groups_args );
+
+		// Filter out the groups where associate_with permissions forbid
+		$removed = 0;
+		foreach ( $groups_template->groups as $gtg_key => $gtg ) {
+			if ( ! current_user_can( 'bp_docs_associate_with_group', $gtg->id ) ) {
+				unset( $groups_template->groups[ $gtg_key ] );
+				$removed++;
+			}
+		}
+
+		// cleanup, if necessary from filter above
+		if ( $removed ) {
+			$groups_template->groups = array_values( $groups_template->groups );
+			$groups_template->group_count = $groups_template->group_count - $removed;
+			$groups_template->total_group_count = $groups_template->total_group_count - $removed;
+		}
+
+		?>
+		<tr>
+			<td class="desc-column">
+				<label for="associated_group_id"><?php _e( 'Which group should this Doc be associated with?', 'bp-docs' ) ?></label>
+				<span class="description"><?php _e( '(Optional) Note that the Access settings available for this Doc may be limited by the privacy settings of the group you choose.', 'bp-docs' ) ?></span>
+			</td>
+
+			<td class="content-column">
+				<select name="associated_group_id" id="associated_group_id">
+					<option value=""><?php _e( 'None', 'bp-docs' ) ?></option>
+					<?php foreach ( $groups_template->groups as $g ) : ?>
+						<option value="<?php echo esc_attr( $g->id ) ?>" <?php selected( $selected_group, $g->id ) ?>><?php echo esc_html( $g->name ) ?></option>
+					<?php endforeach ?>
+				</select>
+
+				<div id="associated_group_summary">
+					<?php bp_docs_associated_group_summary() ?>
+				</div>
+			</td>
+		</tr>
+		<?php
+	// If the user can't fully manage the group association, she may be able to simply remove it from the group.
+	// Note that current_user_can( 'bp_docs_dissociate_from_group' ) will return false if the doc is not associated with a group.
+	} elseif ( current_user_can( 'bp_docs_dissociate_from_group' ) ) {
+		?>
+		<tr>
+			<td class="desc-column">
+				<span class="description"><?php _e( 'As a group administrator or moderator, you may remove the doc from this group.', 'bp-docs' ) ?></span>
+			</td>
+
+			<td class="content-column">
+				<label for="dissociated_group_id"><input id="dissociated_group_id" name="dissociated_group_id" type="checkbox" class="checkbox" value="<?php echo $selected_group; ?>" /> <?php _e( 'Remove this doc from the associated group.', 'bp-docs' ) ?></label>
+
+				<div id="associated_group_summary">
+					<?php bp_docs_associated_group_summary() ?>
+				</div>
+			</td>
+		</tr>
+		<?php
 	}
-
-	// cleanup, if necessary from filter above
-	if ( $removed ) {
-		$groups_template->groups = array_values( $groups_template->groups );
-		$groups_template->group_count = $groups_template->group_count - $removed;
-		$groups_template->total_group_count = $groups_template->total_group_count - $removed;
-	}
-
-	?>
-	<tr>
-		<td class="desc-column">
-			<label for="associated_group_id"><?php _e( 'Which group should this Doc be associated with?', 'bp-docs' ) ?></label>
-			<span class="description"><?php _e( '(Optional) Note that the Access settings available for this Doc may be limited by the privacy settings of the group you choose.', 'bp-docs' ) ?></span>
-		</td>
-
-		<td class="content-column">
-			<select name="associated_group_id" id="associated_group_id">
-				<option value=""><?php _e( 'None', 'bp-docs' ) ?></option>
-				<?php foreach ( $groups_template->groups as $g ) : ?>
-					<option value="<?php echo esc_attr( $g->id ) ?>" <?php selected( $selected_group, $g->id ) ?>><?php echo esc_html( $g->name ) ?></option>
-				<?php endforeach ?>
-			</select>
-
-			<div id="associated_group_summary">
-				<?php bp_docs_associated_group_summary() ?>
-			</div>
-		</td>
-	</tr>
-	<?php
 
 	$groups_template = $old_gt;
 }

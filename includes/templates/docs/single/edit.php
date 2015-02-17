@@ -71,7 +71,7 @@
 		<?php endif ?>
 
 		<div id="doc-meta">
-			<?php if ( bp_is_active( 'groups' ) && current_user_can( 'bp_docs_manage' ) && apply_filters( 'bp_docs_allow_associated_group', true ) ) : ?>
+			<?php if ( bp_is_active( 'groups' ) && ( current_user_can( 'bp_docs_manage' ) || current_user_can( 'bp_docs_dissociate_from_group' ) ) && apply_filters( 'bp_docs_allow_associated_group', true ) ) : ?>
 				<div id="doc-associated-group" class="doc-meta-box">
 					<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class() ?>">
 						<p class="toggle-switch" id="associated-group-toggle">
