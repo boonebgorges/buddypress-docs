@@ -783,7 +783,8 @@ function bp_docs_doc_associated_group_markup() {
 		</tr>
 		<?php
 	// If the user can't fully manage the group association, she may be able to simply remove it from the group.
-	} elseif ( $selected_group && current_user_can( 'bp_docs_dissociate_from_group' ) ) {
+	// Note that current_user_can( 'bp_docs_dissociate_from_group' ) will return false if the doc is not associated with a group.
+	} elseif ( current_user_can( 'bp_docs_dissociate_from_group' ) ) {
 		?>
 		<tr>
 			<td class="desc-column">
