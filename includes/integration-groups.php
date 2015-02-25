@@ -74,7 +74,7 @@ class BP_Docs_Groups_Integration {
 		// Sneak into the nav before it's rendered to insert the group Doc count. Hooking
 		// to bp_actions because of the craptastic nature of the BP_Group_Extension loader
 		// @todo Temporarily disabled
-		//add_action( 'bp_actions',			array( $this, 'show_doc_count_in_tab' ), 9 );
+		add_action( 'bp_actions',			array( $this, 'show_doc_count_in_tab' ), 9 );
 
 		// Prettify the page title
 		add_filter( 'bp_page_title',			array( $this, 'page_title' ) );
