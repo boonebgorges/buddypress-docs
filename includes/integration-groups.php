@@ -60,8 +60,8 @@ class BP_Docs_Groups_Integration {
 		add_filter( 'bp_docs_hide_sitewide',		array( $this, 'hide_sitewide' ), 10, 5 );
 
 		// These functions are used to keep the group Doc count up to date
-		add_action( 'bp_docs_doc_saved',		array( $this, 'update_doc_count' ), 5 );
-		add_action( 'bp_docs_doc_deleted',		array( $this, 'update_doc_count' ), 5 );
+		add_action( 'bp_docs_doc_saved',		array( $this, 'update_doc_count' ) );
+		add_action( 'bp_docs_doc_deleted',		array( $this, 'update_doc_count' ) );
 
 		// On non-group Doc directories, add a Groups column
 		add_filter( 'bp_docs_loop_additional_th',       array( $this, 'groups_th' ), 5 );
