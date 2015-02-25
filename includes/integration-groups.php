@@ -59,8 +59,8 @@ class BP_Docs_Groups_Integration {
 		add_filter( 'bp_docs_hide_sitewide',		array( $this, 'hide_sitewide' ), 10, 5 );
 
 		// These functions are used to keep the group Doc count up to date
-		add_filter( 'bp_docs_doc_saved',		array( $this, 'update_doc_count' )  );
-		add_filter( 'bp_docs_doc_deleted',		array( $this, 'update_doc_count' ) );
+		add_action( 'bp_docs_doc_saved',		array( $this, 'update_doc_count' ), 5 );
+		add_action( 'bp_docs_doc_deleted',		array( $this, 'update_doc_count' ), 5 );
 
 		// On non-group Doc directories, add a Groups column
 		add_filter( 'bp_docs_loop_additional_th',       array( $this, 'groups_th' ), 5 );
@@ -684,12 +684,24 @@ class BP_Docs_Groups_Integration {
 	function update_doc_count() {
 		global $bp;
 
-		// If this is not a group Doc, skip it
-		if ( !bp_is_group() )
-			return;
+		if ( array_key_exists( 'delete', $_GET ) ) { 
+			// We're deleting a doc. In the deleting context,
+			// we get useful information from `bp_docs_get_associated_group_id()`. 
+			$doc_id = is_singular() ? get_the_ID() : 0;
+			$group_id = bp_docs_get_associated_group_id( $doc_id );
+		} else if ( array_key_exists( 'group', $_GET ) ) { 
+			// We're creating a doc. In the doc creation context,
+			// we don't get anything useful from `bp_docs_get_associated_group_id()`, 
+			// so we have to figure out what group we're in by looking at the 
+			// $_GET variable that's passed during this step. 
+			$group_id = BP_Groups_Group::group_exists( $_GET['group'] ); 
+		} else {  
+			// If we're not creating or deleting a document, get outta here!
+			return; 
+		} 
 
-		// Get a fresh doc count for the group
-		bp_docs_update_doc_count( bp_get_current_group_id(), 'group' );
+		// Update the doc count for the group, since it has now changed. 
+		bp_docs_update_doc_count( $group_id, 'group' );
 	}
 
 	/**
