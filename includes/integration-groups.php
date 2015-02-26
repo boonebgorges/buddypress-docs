@@ -681,7 +681,7 @@ class BP_Docs_Groups_Integration {
 	 * @package BuddyPress Docs
 	 * @since 1.0.8
 	 */
-	function update_doc_count() {
+	function update_doc_count( $group_id = 0 ) {
 		global $bp;
 
 		if ( array_key_exists( 'delete', $_GET ) ) { 
@@ -695,8 +695,15 @@ class BP_Docs_Groups_Integration {
 			// so we have to figure out what group we're in by looking at the 
 			// $_GET variable that's passed during this step. 
 			$group_id = BP_Groups_Group::group_exists( $_GET['group'] ); 
+		} else if ( 0 !== $group_id ) {  
+			// If $group_id is passed through this function, 
+			// that means it's probably being called via show_doc_count_in_tab(). 
+			// This means that the doc count is probably '', which means this is probably 
+			// the first time this function has been run for this group. 
+			// Nothing to do here. Pass along through. 
 		} else {  
-			// If we're not creating or deleting a document, get outta here!
+			// If we're not creating or deleting a document, or updating for the first time,
+			// get outta here!
 			return; 
 		} 
 
@@ -848,12 +855,14 @@ class BP_Docs_Groups_Integration {
 		if ( !empty( $bp->bp_options_nav[$group_slug] ) && !empty( $bp->bp_options_nav[$group_slug][ $docs_slug ] ) ) {
 			$current_tab_name = $bp->bp_options_nav[$group_slug][ $docs_slug ]['name'];
 
-			$doc_count = groups_get_groupmeta( $bp->groups->current_group->id, 'bp-docs-count' );
+			$group_id = $bp->groups->current_group->id; 
+
+			$doc_count = groups_get_groupmeta( $group_id, 'bp-docs-count' );
 
 			// For backward compatibility
 			if ( '' === $doc_count ) {
-				BP_Docs_Groups_Integration::update_doc_count();
-				$doc_count = groups_get_groupmeta( $bp->groups->current_group->id, 'bp-docs-count' );
+				BP_Docs_Groups_Integration::update_doc_count( $group_id );
+				$doc_count = groups_get_groupmeta( $group_id, 'bp-docs-count' );
 			}
 
 			$bp->bp_options_nav[$group_slug][ $docs_slug ]['name'] = sprintf( __( '%s <span>%d</span>', 'bp-docs' ), $current_tab_name, $doc_count );
