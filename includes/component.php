@@ -92,6 +92,9 @@ class BP_Docs_Component extends BP_Component {
 		// Keep comment notifications from being sent
 		add_filter( 'comment_post', array( $this, 'check_comment_type' ) );
 
+		// Force comments_open to obey Doc-specific settings.
+		add_filter( 'comments_open', array( $this, 'comments_open' ), 10, 2 );
+
 		// Add the Search filter markup
 		add_filter( 'bp_docs_filter_types', array( $this, 'filter_type' ) );
 		add_filter( 'bp_docs_filter_sections', array( $this, 'filter_markup' ) );
@@ -642,6 +645,24 @@ class BP_Docs_Component extends BP_Component {
 		if ( $bp->bp_docs->post_type_name == $post->post_type ) {
 			add_filter( 'pre_option_comments_notify', create_function( false, 'return 0;' ) );
 		}
+	}
+
+	/**
+	 * Force comments_open status to obey Doc-specific settings.
+	 *
+	 * @since 1.8.6
+	 *
+	 * @param bool $open    Whether the current post is open for comments.
+	 * @param int  $post_id ID of the post.
+	 * @return bool
+	 */
+	public function comments_open( $open, $post_id ) {
+		$post = get_post( $post_id );
+		if ( ! ( $post instanceof WP_Post ) || bp_docs_get_post_type_name() !== $post->post_type ) {
+			return $open;
+		}
+
+		return current_user_can( 'bp_docs_post_comments', $post_id );
 	}
 
 	/**
