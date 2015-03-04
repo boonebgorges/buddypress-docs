@@ -1537,7 +1537,12 @@ function bp_docs_unlink_from_group( $doc_id, $group_id = 0 ) {
 	
 	// If the doc is no longer associated with any group, make sure it doesn't become public.
 	if ( empty( bp_docs_get_associated_group_id( $doc_id ) ) ) {
-		bp_docs_set_doc_access_settings_creator( $doc_id );
+		bp_docs_remove_group_related_doc_access_settings( $doc_id );
+	}
+
+	// Recalculate the number of docs in the affected group.
+	if ( $retval ) {
+		bp_docs_update_doc_count( $group_id, 'group' );
 	}
 
 	return $retval;
