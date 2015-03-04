@@ -1750,7 +1750,7 @@ function bp_docs_groups_map_meta_caps( $caps, $cap, $user_id, $args ) {
 			} elseif ( bp_is_group() ) {
 				$group_id = bp_get_current_group_id();
 			} else {
-				$group_id = bp_docs_get_associated_group_id( get_the_ID(), $doc );
+				$group_id = bp_docs_get_associated_group_id( get_the_ID() );
 			}
 
 			if ( empty( $group_id ) ) {
