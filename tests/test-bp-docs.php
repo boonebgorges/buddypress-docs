@@ -269,6 +269,21 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 
 		$this->assertEquals( 1, $comment->comment_approved );
 	}
+	/**
+	 * @group bp_docs_unlink_from_group
+	 */
+	function test_bp_docs_unlink_from_group() {
+		$group = $this->factory->group->create();
+		$doc_id = $this->factory->doc->create( array(
+			'group' => $group,
+		) );
+
+		bp_docs_unlink_from_group( $doc_id, $group );
+
+		$maybe_group_id = bp_docs_get_associated_group_id( $doc_id );
+
+		$this->assertFalse( (bool) $maybe_group_id );
+	}
 }
 
 
