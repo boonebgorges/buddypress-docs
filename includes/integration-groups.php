@@ -1517,7 +1517,7 @@ function bp_docs_set_associated_group_id( $doc_id, $group_id = 0 ) {
  *
  * @param int $doc_id ID of the doc to remove from the group
  * @param int $group_id ID of the group the doc should be removed from
- * @return bool true if the term is removed 
+ * @return bool true if the term is removed
  */
 function bp_docs_unlink_from_group( $doc_id, $group_id = 0 ) {
 	if ( $group_id ) {
@@ -1529,9 +1529,9 @@ function bp_docs_unlink_from_group( $doc_id, $group_id = 0 ) {
 	}
 
 	$removed = wp_remove_object_terms( $doc_id, $term, bp_docs_get_associated_item_tax_name() );
-	// wp_remove_object_terms returns true on success, false or WP_Error on failure. 
+	// wp_remove_object_terms returns true on success, false or WP_Error on failure.
 	$retval = ( $removed == true ) ? true : false;
-	
+
 	// If the doc is no longer associated with any group, make sure it doesn't become public.
 	if ( empty( bp_docs_get_associated_group_id( $doc_id ) ) ) {
 		bp_docs_remove_group_related_doc_access_settings( $doc_id );

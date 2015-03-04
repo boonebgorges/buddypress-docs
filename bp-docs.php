@@ -215,7 +215,7 @@ class BP_Docs {
 		// The slug used when deleting a doc
 		if ( !defined( 'BP_DOCS_UNTRASH_SLUG' ) )
 			define( 'BP_DOCS_UNTRASH_SLUG', 'untrash' );
-		
+
 		// The slug used when removing a doc from a group
 		if ( ! defined( 'BP_DOCS_UNLINK_FROM_GROUP_SLUG' ) )
 			define( 'BP_DOCS_UNLINK_FROM_GROUP_SLUG', 'unlink-from-group' );
