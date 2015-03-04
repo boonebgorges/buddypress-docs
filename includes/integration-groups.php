@@ -786,14 +786,11 @@ class BP_Docs_Groups_Integration {
 	 */
 	function add_doc_action_unlink_from_group_link( $links, $doc_id ) {
 		// Only add this link to the in-group doc directory
-		if ( ! $group_id = bp_get_current_group_id() ) {
-			return;
+		if ( $group_id = bp_get_current_group_id() ) {
+			if ( current_user_can( 'bp_docs_dissociate_from_group', $group_id ) ) {
+				$links[] = '<a href="' . bp_docs_get_unlink_from_group_link( $doc_id, $group_id ) . '" class="unlink-from-group confirm">' . __( 'Unlink from Group', 'bp-docs' ) . '</a>';
+			}
 		}
-
-		if ( current_user_can( 'bp_docs_dissociate_from_group', $group_id ) ) {
-			$links[] = '<a href="' . bp_docs_get_unlink_from_group_link( $doc_id, $group_id ) . '" class="unlink-from-group confirm">' . __( 'Unlink from Group', 'bp-docs' ) . '</a>';
-		}
-
 		return $links;
 	}
 
