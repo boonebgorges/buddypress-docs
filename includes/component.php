@@ -527,6 +527,25 @@ class BP_Docs_Component extends BP_Component {
 			bp_core_redirect( bp_docs_get_doc_link( $untrash_doc_id ) );
 			die();
 		}
+
+		if ( bp_docs_is_doc_read() && ! empty( $_GET[ BP_DOCS_UNLINK_FROM_GROUP_SLUG ] ) && ! empty( $_GET['doc_id'] ) && ! empty( $_GET['group_id'] ) ) {
+			check_admin_referer( 'bp_docs_unlink_from_group' );
+
+			$unlink_doc_id = absint( $_GET['doc_id'] );
+			$unlink_group_id = absint( $_GET['group_id'] );
+
+			if ( current_user_can( 'bp_docs_dissociate_from_group', $unlink_group_id ) ) {
+				if ( bp_docs_unlink_from_group( $unlink_doc_id, $unlink_group_id ) ) {
+					bp_core_add_message( __( 'Doc successfully removed from the group', 'bp-docs' ) );
+				} else {
+					bp_core_add_message( __( 'Could not remove Doc from the group.', 'bp-docs' ) );
+				}
+			} else {
+				bp_core_add_message( __( 'You do not have permission to remove that Doc from this group.', 'bp-docs' ), 'error' );
+			}
+			bp_core_redirect( bp_get_group_permalink( groups_get_group( array( 'group_id' => $unlink_group_id ) ) ) . $bp->bp_docs->slug . '/' );
+			die();
+		}
 	}
 
 	/**
