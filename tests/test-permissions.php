@@ -1003,12 +1003,12 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 			'name' => 'foo',
 		) );
 
-		$u1 = $this->create_user();
+		$u1 = $this->factory->user->create();
 		$this->set_current_user( $u1 );
 
 		$this->assertFalse( current_user_can( 'bp_docs_manage_folder', $f ) );
 
-		$u2 = $this->create_user( array( 'role' => 'administrator' ) );
+		$u2 = $this->factory->user->create( array( 'role' => 'administrator' ) );
 		$this->set_current_user( $u2 );
 
 		$this->assertTrue( current_user_can( 'bp_docs_manage_folder', $f ) );
@@ -1025,20 +1025,20 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 			'group_id' => $g,
 		) );
 
-		$u1 = $this->create_user();
+		$u1 = $this->factory->user->create();
 		$this->set_current_user( $u1 );
 		$this->assertFalse( current_user_can( 'bp_docs_manage_folder', $f ) );
 
-		$u2 = $this->create_user( array( 'role' => 'administrator' ) );
+		$u2 = $this->factory->user->create( array( 'role' => 'administrator' ) );
 		$this->set_current_user( $u2 );
 		$this->assertTrue( current_user_can( 'bp_docs_manage_folder', $f ) );
 
-		$u3 = $this->create_user();
+		$u3 = $this->factory->user->create();
 		$this->set_current_user( $u3 );
 		$this->add_user_to_group( $u3, $g );
 		$this->assertFalse( current_user_can( 'bp_docs_manage_folder', $f ) );
 
-		$u4 = $this->create_user();
+		$u4 = $this->factory->user->create();
 		$this->set_current_user( $u4 );
 		$this->add_user_to_group( $u4, $g );
 		$gm4 = new BP_Groups_Member( $u4, $g );
@@ -1051,21 +1051,173 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 	 * @group folders
 	 */
 	public function test_manage_folder_user() {
-		$u = $this->create_user();
+		$u = $this->factory->user->create();
 		$f = bp_docs_create_folder( array(
 			'name' => 'foo',
 			'user_id' => $u,
 		) );
 
-		$u1 = $this->create_user();
+		$u1 = $this->factory->user->create();
 		$this->set_current_user( $u1 );
 		$this->assertFalse( current_user_can( 'bp_docs_manage_folder', $f ) );
 
-		$u2 = $this->create_user( array( 'role' => 'administrator' ) );
+		$u2 = $this->factory->user->create( array( 'role' => 'administrator' ) );
 		$this->set_current_user( $u2 );
 		$this->assertTrue( current_user_can( 'bp_docs_manage_folder', $f ) );
 
 		$this->set_current_user( $u );
 		$this->assertTrue( current_user_can( 'bp_docs_manage_folder', $f ) );
+	}
+
+	/*
+	 * @group map_meta_cap
+	 * @group dissociate_from_group
+	 */
+	public function test_user_can_dissociate_from_group_no_group() {
+		$this->assertFalse( current_user_can( 'bp_docs_dissociate_from_group', 0 ) );
+	}
+
+	/**
+	 * @group map_meta_cap
+	 * @group dissociate_from_group
+	 */
+	public function test_user_can_dissociate_from_group_no_user() {
+		$g = $this->factory->group->create();
+		$old_current_user = get_current_user_id();
+
+		$this->set_current_user( 0 );
+		$this->assertFalse( current_user_can( 'bp_docs_dissociate_from_group', $g ) );
+
+		$this->set_current_user( $old_current_user );
+	}
+
+	/**
+	 * @group map_meta_cap
+	 * @group dissociate_from_group
+	 */
+	public function test_user_can_dissociate_from_group_logged_in() {
+		$g = $this->factory->group->create();
+		$old_current_user = get_current_user_id();
+		$u1 = $this->factory->user->create();
+
+		$this->set_current_user( $u1 );
+		$this->assertFalse( current_user_can( 'bp_docs_dissociate_from_group', $g ) );
+
+		$this->set_current_user( $old_current_user );
+	}
+
+	/**
+	 * @group map_meta_cap
+	 * @group dissociate_from_group
+	 */
+	public function test_user_can_dissociate_from_group_group_member() {
+		$g = $this->factory->group->create();
+		$old_current_user = get_current_user_id();
+		$u1 = $this->factory->user->create();
+		$this->add_user_to_group( $u1, $g );
+
+		$this->set_current_user( $u1 );
+		$this->assertFalse( current_user_can( 'bp_docs_dissociate_from_group', $g ) );
+
+		$this->set_current_user( $old_current_user );
+	}
+
+	/**
+	 * @group map_meta_cap
+	 * @group dissociate_from_group
+	 */
+	public function test_user_can_dissociate_from_group_group_mod() {
+		$g = $this->factory->group->create();
+		$old_current_user = get_current_user_id();
+		$u1 = $this->factory->user->create();
+		$this->add_user_to_group( $u1, $g );
+		$gm1 = new BP_Groups_Member( $u1, $g );
+		$gm1->promote( 'mod' );
+
+		$this->set_current_user( $u1 );
+		$this->assertTrue( current_user_can( 'bp_docs_dissociate_from_group', $g ) );
+
+		$this->set_current_user( $old_current_user );
+	}
+
+	/**
+	 * @group map_meta_cap
+	 * @group dissociate_from_group
+	 */
+	public function test_user_can_dissociate_from_group_group_admin() {
+		$g = $this->factory->group->create();
+		$old_current_user = get_current_user_id();
+		$u1 = $this->factory->user->create();
+		$this->add_user_to_group( $u1, $g );
+		$gm1 = new BP_Groups_Member( $u1, $g );
+		$gm1->promote( 'admin' );
+
+		$this->set_current_user( $u1 );
+		$this->assertTrue( current_user_can( 'bp_docs_dissociate_from_group', $g ) );
+
+		$this->set_current_user( $old_current_user );
+	}
+
+	/**
+	 * @group map_meta_cap
+	 * @group dissociate_from_group
+	 */
+	public function test_user_can_dissociate_from_group_site_admin() {
+		$g = $this->factory->group->create();
+		$old_current_user = get_current_user_id();
+		$u1 = $this->factory->user->create();
+		$u_site_admin = new WP_user( $u1 );
+		$u_site_admin->add_role( 'administrator' );
+
+		$this->set_current_user( $u1 );
+		$this->assertTrue( current_user_can( 'bp_docs_dissociate_from_group', $g ) );
+
+		$this->set_current_user( $old_current_user );
+	}
+
+	/**
+	 * @group map_meta_cap
+	 * @group dissociate_from_group
+	 */
+	public function test_user_can_dissociate_from_group_no_group_specified() {
+		$old_current_user = get_current_user_id();
+		$u1 = $this->factory->user->create();
+
+		$this->set_current_user( $u1 );
+		$this->assertFalse( current_user_can( 'bp_docs_dissociate_from_group' ) );
+
+		$this->set_current_user( $old_current_user );
+	}
+
+	/**
+	 * @group map_meta_cap
+	 * @group dissociate_from_group
+	 */
+	public function test_user_can_dissociate_from_group_within_group_logged_in() {
+		$g = $this->factory->group->create();
+		$old_current_user = get_current_user_id();
+		$u1 = $this->factory->user->create();
+
+		$this->set_current_user( $u1 );
+		$this->go_to( bp_get_group_permalink( groups_get_group( array( 'group_id' => $g ) ) ) );
+		// $this->go_to( bp_docs_get_doc_link( $post_id ) );
+		$this->assertFalse( current_user_can( 'bp_docs_dissociate_from_group' ) );
+	}
+
+	/**
+	 * @group map_meta_cap
+	 * @group dissociate_from_group
+	 */
+	public function test_user_can_dissociate_from_group_within_group_mod() {
+		$g = $this->factory->group->create();
+		$old_current_user = get_current_user_id();
+		$u1 = $this->factory->user->create();
+		$gm1 = new BP_Groups_Member( $u1, $g );
+		$gm1->promote( 'admin' );
+
+		$this->set_current_user( $u1 );
+		$this->go_to( bp_get_group_permalink( groups_get_group( array( 'group_id' => $g ) ) ) );
+		// $this->go_to( bp_docs_get_doc_link( $post_id ) );
+		$this->assertTrue( current_user_can( 'bp_docs_dissociate_from_group' ) );
 	}
 }

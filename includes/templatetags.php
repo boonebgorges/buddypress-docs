@@ -1134,6 +1134,8 @@ function bp_docs_doc_action_links() {
 		$links[] = '<a href="' . bp_docs_get_remove_from_trash_link( get_the_ID() ) . '" class="delete confirm">' . __( 'Untrash', 'bp-docs' ) . '</a>';
 	}
 
+	$links = apply_filters( 'bp_docs_doc_action_links', $links, get_the_ID() );
+
 	echo implode( ' &#124; ', $links );
 }
 
