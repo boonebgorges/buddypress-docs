@@ -37,6 +37,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Improved compatibility with BuddyPress 2.2+
 * Extracted away from WordPress's general discussion settings
 * Fixed bug that could cause attachment corruption on download
+* Fixed JS error when editing/creating Doc
 
 = 1.8.5 =
 * Fixed permalinks for child Docs
