@@ -36,6 +36,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 = 1.8.6 =
 * Improved compatibility with BuddyPress 2.2+
 * Extracted away from WordPress's general discussion settings
+* Fixed bug that could cause attachment corruption on download
 
 = 1.8.5 =
 * Fixed permalinks for child Docs
