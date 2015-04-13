@@ -60,7 +60,7 @@ foreach ( (array)$comments as $comment ) {
 
 <?php endif; ?>
 
-<?php if ( comments_open() && current_user_can( 'bp_docs_post_comments' ) ) : ?>
+<?php if ( current_user_can( 'bp_docs_post_comments' ) ) : ?>
 	<?php comment_form( array(), get_the_ID() ) ?>
 <?php else : ?>
 	<p class="comments-closed comment-posting-disabled">

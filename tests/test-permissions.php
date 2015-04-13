@@ -42,7 +42,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 	 * @group map_meta_cap
 	 */
 	public function test_loggedin_user_can_bp_docs_create() {
-		$u = $this->create_user();
+		$u = $this->factory->user->create();
 		$this->set_current_user( $u );
 		$this->assertTrue( current_user_can( 'bp_docs_create' ) );
 	}
@@ -60,7 +60,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( 0 );
 		$this->assertTrue( current_user_can( 'bp_docs_read', $d ) );
 
-		$u = $this->create_user();
+		$u = $this->factory->user->create();
 		$this->set_current_user( $u );
 		$this->assertTrue( current_user_can( 'bp_docs_read', $d ) );
 	}
@@ -77,7 +77,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( 0 );
 		$this->assertFalse( current_user_can( 'bp_docs_read', $d ) );
 
-		$u = $this->create_user();
+		$u = $this->factory->user->create();
 		$this->set_current_user( $u );
 		$this->assertTrue( current_user_can( 'bp_docs_read', $d ) );
 	}
@@ -86,7 +86,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 	 * @group map_meta_cap
 	 */
 	public function test_user_can_read_creator() {
-		$c = $this->create_user();
+		$c = $this->factory->user->create();
 		$d = $this->factory->doc->create( array(
 			'post_author' => $c,
 		) );
@@ -97,7 +97,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( 0 );
 		$this->assertFalse( current_user_can( 'bp_docs_read', $d ) );
 
-		$u = $this->create_user();
+		$u = $this->factory->user->create();
 		$this->set_current_user( $u );
 		$this->assertFalse( current_user_can( 'bp_docs_read', $d ) );
 
@@ -124,11 +124,11 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( 0 );
 		$this->assertFalse( current_user_can( 'bp_docs_read', $d ) );
 
-		$u1 = $this->create_user();
+		$u1 = $this->factory->user->create();
 		$this->set_current_user( $u1 );
 		$this->assertFalse( current_user_can( 'bp_docs_read', $d ) );
 
-		$u2 = $this->create_user();
+		$u2 = $this->factory->user->create();
 		$this->add_user_to_group( $u2, $g );
 		$this->set_current_user( $u2 );
 		$this->assertTrue( current_user_can( 'bp_docs_read', $d ) );
@@ -153,11 +153,11 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( 0 );
 		$this->assertFalse( current_user_can( 'bp_docs_read', $d ) );
 
-		$u1 = $this->create_user();
+		$u1 = $this->factory->user->create();
 		$this->set_current_user( $u1 );
 		$this->assertFalse( current_user_can( 'bp_docs_read', $d ) );
 
-		$u2 = $this->create_user();
+		$u2 = $this->factory->user->create();
 		$this->add_user_to_group( $u2, $g );
 		$this->set_current_user( $u2 );
 		$this->assertTrue( current_user_can( 'bp_docs_read', $d ) );
@@ -176,7 +176,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( 0 );
 		$this->assertTrue( current_user_can( 'bp_docs_edit', $d ) );
 
-		$u = $this->create_user();
+		$u = $this->factory->user->create();
 		$this->set_current_user( $u );
 		$this->assertTrue( current_user_can( 'bp_docs_edit', $d ) );
 	}
@@ -194,7 +194,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( 0 );
 		$this->assertFalse( current_user_can( 'bp_docs_edit', $d ) );
 
-		$u = $this->create_user();
+		$u = $this->factory->user->create();
 		$this->set_current_user( $u );
 		$this->assertTrue( current_user_can( 'bp_docs_edit', $d ) );
 	}
@@ -204,7 +204,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 	 * @group edit
 	 */
 	public function test_user_can_edit_creator() {
-		$c = $this->create_user();
+		$c = $this->factory->user->create();
 		$d = $this->factory->doc->create( array(
 			'post_author' => $c,
 		) );
@@ -215,7 +215,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( 0 );
 		$this->assertFalse( current_user_can( 'bp_docs_edit', $d ) );
 
-		$u = $this->create_user();
+		$u = $this->factory->user->create();
 		$this->set_current_user( $u );
 		$this->assertFalse( current_user_can( 'bp_docs_edit', $d ) );
 
@@ -243,11 +243,11 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( 0 );
 		$this->assertFalse( current_user_can( 'bp_docs_edit', $d ) );
 
-		$u1 = $this->create_user();
+		$u1 = $this->factory->user->create();
 		$this->set_current_user( $u1 );
 		$this->assertFalse( current_user_can( 'bp_docs_edit', $d ) );
 
-		$u2 = $this->create_user();
+		$u2 = $this->factory->user->create();
 		$this->add_user_to_group( $u2, $g );
 		$this->set_current_user( $u2 );
 		$this->assertTrue( current_user_can( 'bp_docs_edit', $d ) );
@@ -273,11 +273,11 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( 0 );
 		$this->assertFalse( current_user_can( 'bp_docs_edit', $d ) );
 
-		$u1 = $this->create_user();
+		$u1 = $this->factory->user->create();
 		$this->set_current_user( $u1 );
 		$this->assertFalse( current_user_can( 'bp_docs_edit', $d ) );
 
-		$u2 = $this->create_user();
+		$u2 = $this->factory->user->create();
 		$this->add_user_to_group( $u2, $g );
 		$this->set_current_user( $u2 );
 		$this->assertTrue( current_user_can( 'bp_docs_edit', $d ) );
@@ -296,7 +296,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( 0 );
 		$this->assertTrue( current_user_can( 'bp_docs_manage', $d ) );
 
-		$u = $this->create_user();
+		$u = $this->factory->user->create();
 		$this->set_current_user( $u );
 		$this->assertTrue( current_user_can( 'bp_docs_manage', $d ) );
 	}
@@ -314,7 +314,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( 0 );
 		$this->assertFalse( current_user_can( 'bp_docs_manage', $d ) );
 
-		$u = $this->create_user();
+		$u = $this->factory->user->create();
 		$this->set_current_user( $u );
 		$this->assertTrue( current_user_can( 'bp_docs_manage', $d ) );
 	}
@@ -324,7 +324,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 	 * @group manage
 	 */
 	public function test_user_can_manage_creator() {
-		$c = $this->create_user();
+		$c = $this->factory->user->create();
 		$d = $this->factory->doc->create( array(
 			'post_author' => $c,
 		) );
@@ -335,7 +335,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( 0 );
 		$this->assertFalse( current_user_can( 'bp_docs_manage', $d ) );
 
-		$u = $this->create_user();
+		$u = $this->factory->user->create();
 		$this->set_current_user( $u );
 		$this->assertFalse( current_user_can( 'bp_docs_manage', $d ) );
 
@@ -363,11 +363,11 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( 0 );
 		$this->assertFalse( current_user_can( 'bp_docs_manage', $d ) );
 
-		$u1 = $this->create_user();
+		$u1 = $this->factory->user->create();
 		$this->set_current_user( $u1 );
 		$this->assertFalse( current_user_can( 'bp_docs_manage', $d ) );
 
-		$u2 = $this->create_user();
+		$u2 = $this->factory->user->create();
 		$this->add_user_to_group( $u2, $g );
 		$this->set_current_user( $u2 );
 		$this->assertTrue( current_user_can( 'bp_docs_manage', $d ) );
@@ -393,11 +393,11 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( 0 );
 		$this->assertFalse( current_user_can( 'bp_docs_manage', $d ) );
 
-		$u1 = $this->create_user();
+		$u1 = $this->factory->user->create();
 		$this->set_current_user( $u1 );
 		$this->assertFalse( current_user_can( 'bp_docs_manage', $d ) );
 
-		$u2 = $this->create_user();
+		$u2 = $this->factory->user->create();
 		$this->add_user_to_group( $u2, $g );
 		$this->set_current_user( $u2 );
 		$this->assertTrue( current_user_can( 'bp_docs_manage', $d ) );
@@ -416,7 +416,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( 0 );
 		$this->assertTrue( current_user_can( 'bp_docs_view_history', $d ) );
 
-		$u = $this->create_user();
+		$u = $this->factory->user->create();
 		$this->set_current_user( $u );
 		$this->assertTrue( current_user_can( 'bp_docs_view_history', $d ) );
 	}
@@ -434,7 +434,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( 0 );
 		$this->assertFalse( current_user_can( 'bp_docs_view_history', $d ) );
 
-		$u = $this->create_user();
+		$u = $this->factory->user->create();
 		$this->set_current_user( $u );
 		$this->assertTrue( current_user_can( 'bp_docs_view_history', $d ) );
 	}
@@ -444,7 +444,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 	 * @group view_history
 	 */
 	public function test_user_can_view_history_creator() {
-		$c = $this->create_user();
+		$c = $this->factory->user->create();
 		$d = $this->factory->doc->create( array(
 			'post_author' => $c,
 		) );
@@ -455,7 +455,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( 0 );
 		$this->assertFalse( current_user_can( 'bp_docs_view_history', $d ) );
 
-		$u = $this->create_user();
+		$u = $this->factory->user->create();
 		$this->set_current_user( $u );
 		$this->assertFalse( current_user_can( 'bp_docs_view_history', $d ) );
 
@@ -483,11 +483,11 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( 0 );
 		$this->assertFalse( current_user_can( 'bp_docs_view_history', $d ) );
 
-		$u1 = $this->create_user();
+		$u1 = $this->factory->user->create();
 		$this->set_current_user( $u1 );
 		$this->assertFalse( current_user_can( 'bp_docs_view_history', $d ) );
 
-		$u2 = $this->create_user();
+		$u2 = $this->factory->user->create();
 		$this->add_user_to_group( $u2, $g );
 		$this->set_current_user( $u2 );
 		$this->assertTrue( current_user_can( 'bp_docs_view_history', $d ) );
@@ -513,11 +513,11 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( 0 );
 		$this->assertFalse( current_user_can( 'bp_docs_view_history', $d ) );
 
-		$u1 = $this->create_user();
+		$u1 = $this->factory->user->create();
 		$this->set_current_user( $u1 );
 		$this->assertFalse( current_user_can( 'bp_docs_view_history', $d ) );
 
-		$u2 = $this->create_user();
+		$u2 = $this->factory->user->create();
 		$this->add_user_to_group( $u2, $g );
 		$this->set_current_user( $u2 );
 		$this->assertTrue( current_user_can( 'bp_docs_view_history', $d ) );
@@ -536,7 +536,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( 0 );
 		$this->assertTrue( current_user_can( 'bp_docs_read_comments', $d ) );
 
-		$u = $this->create_user();
+		$u = $this->factory->user->create();
 		$this->set_current_user( $u );
 		$this->assertTrue( current_user_can( 'bp_docs_read_comments', $d ) );
 	}
@@ -554,7 +554,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( 0 );
 		$this->assertFalse( current_user_can( 'bp_docs_read_comments', $d ) );
 
-		$u = $this->create_user();
+		$u = $this->factory->user->create();
 		$this->set_current_user( $u );
 		$this->assertTrue( current_user_can( 'bp_docs_read_comments', $d ) );
 	}
@@ -564,7 +564,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 	 * @group read_comments
 	 */
 	public function test_user_can_read_comments_creator() {
-		$c = $this->create_user();
+		$c = $this->factory->user->create();
 		$d = $this->factory->doc->create( array(
 			'post_author' => $c,
 		) );
@@ -575,7 +575,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( 0 );
 		$this->assertFalse( current_user_can( 'bp_docs_read_comments', $d ) );
 
-		$u = $this->create_user();
+		$u = $this->factory->user->create();
 		$this->set_current_user( $u );
 		$this->assertFalse( current_user_can( 'bp_docs_read_comments', $d ) );
 
@@ -603,11 +603,11 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( 0 );
 		$this->assertFalse( current_user_can( 'bp_docs_read_comments', $d ) );
 
-		$u1 = $this->create_user();
+		$u1 = $this->factory->user->create();
 		$this->set_current_user( $u1 );
 		$this->assertFalse( current_user_can( 'bp_docs_read_comments', $d ) );
 
-		$u2 = $this->create_user();
+		$u2 = $this->factory->user->create();
 		$this->add_user_to_group( $u2, $g );
 		$this->set_current_user( $u2 );
 		$this->assertTrue( current_user_can( 'bp_docs_read_comments', $d ) );
@@ -633,11 +633,11 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( 0 );
 		$this->assertFalse( current_user_can( 'bp_docs_read_comments', $d ) );
 
-		$u1 = $this->create_user();
+		$u1 = $this->factory->user->create();
 		$this->set_current_user( $u1 );
 		$this->assertFalse( current_user_can( 'bp_docs_read_comments', $d ) );
 
-		$u2 = $this->create_user();
+		$u2 = $this->factory->user->create();
 		$this->add_user_to_group( $u2, $g );
 		$this->set_current_user( $u2 );
 		$this->assertTrue( current_user_can( 'bp_docs_read_comments', $d ) );
@@ -656,7 +656,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( 0 );
 		$this->assertTrue( current_user_can( 'bp_docs_post_comments', $d ) );
 
-		$u = $this->create_user();
+		$u = $this->factory->user->create();
 		$this->set_current_user( $u );
 		$this->assertTrue( current_user_can( 'bp_docs_post_comments', $d ) );
 	}
@@ -674,7 +674,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( 0 );
 		$this->assertFalse( current_user_can( 'bp_docs_post_comments', $d ) );
 
-		$u = $this->create_user();
+		$u = $this->factory->user->create();
 		$this->set_current_user( $u );
 		$this->assertTrue( current_user_can( 'bp_docs_post_comments', $d ) );
 	}
@@ -684,7 +684,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 	 * @group post_comments
 	 */
 	public function test_user_can_post_comments_creator() {
-		$c = $this->create_user();
+		$c = $this->factory->user->create();
 		$d = $this->factory->doc->create( array(
 			'post_author' => $c,
 		) );
@@ -695,7 +695,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( 0 );
 		$this->assertFalse( current_user_can( 'bp_docs_post_comments', $d ) );
 
-		$u = $this->create_user();
+		$u = $this->factory->user->create();
 		$this->set_current_user( $u );
 		$this->assertFalse( current_user_can( 'bp_docs_post_comments', $d ) );
 
@@ -723,11 +723,11 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( 0 );
 		$this->assertFalse( current_user_can( 'bp_docs_post_comments', $d ) );
 
-		$u1 = $this->create_user();
+		$u1 = $this->factory->user->create();
 		$this->set_current_user( $u1 );
 		$this->assertFalse( current_user_can( 'bp_docs_post_comments', $d ) );
 
-		$u2 = $this->create_user();
+		$u2 = $this->factory->user->create();
 		$this->add_user_to_group( $u2, $g );
 		$this->set_current_user( $u2 );
 		$this->assertTrue( current_user_can( 'bp_docs_post_comments', $d ) );
@@ -753,11 +753,11 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( 0 );
 		$this->assertFalse( current_user_can( 'bp_docs_post_comments', $d ) );
 
-		$u1 = $this->create_user();
+		$u1 = $this->factory->user->create();
 		$this->set_current_user( $u1 );
 		$this->assertFalse( current_user_can( 'bp_docs_post_comments', $d ) );
 
-		$u2 = $this->create_user();
+		$u2 = $this->factory->user->create();
 		$this->add_user_to_group( $u2, $g );
 		$this->set_current_user( $u2 );
 		$this->assertTrue( current_user_can( 'bp_docs_post_comments', $d ) );
@@ -784,16 +784,16 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( 0 );
 		$this->assertFalse( current_user_can( 'bp_docs_associate_with_group', $g ) );
 
-		$u1 = $this->create_user();
+		$u1 = $this->factory->user->create();
 		$this->set_current_user( $u1 );
 		$this->assertFalse( current_user_can( 'bp_docs_associate_with_group', $g ) );
 
-		$u2 = $this->create_user();
+		$u2 = $this->factory->user->create();
 		$this->add_user_to_group( $u2, $g );
 		$this->set_current_user( $u2 );
 		$this->assertFalse( current_user_can( 'bp_docs_associate_with_group', $g ) );
 
-		$u3 = $this->create_user();
+		$u3 = $this->factory->user->create();
 		$this->add_user_to_group( $u3, $g );
 		$gm3 = new BP_Groups_Member( $u3, $g );
 		$gm3->promote( 'admin' );
@@ -822,23 +822,23 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( 0 );
 		$this->assertFalse( current_user_can( 'bp_docs_associate_with_group', $g ) );
 
-		$u1 = $this->create_user();
+		$u1 = $this->factory->user->create();
 		$this->set_current_user( $u1 );
 		$this->assertFalse( current_user_can( 'bp_docs_associate_with_group', $g ) );
 
-		$u2 = $this->create_user();
+		$u2 = $this->factory->user->create();
 		$this->add_user_to_group( $u2, $g );
 		$this->set_current_user( $u2 );
 		$this->assertFalse( current_user_can( 'bp_docs_associate_with_group', $g ) );
 
-		$u3 = $this->create_user();
+		$u3 = $this->factory->user->create();
 		$this->add_user_to_group( $u3, $g );
 		$gm3 = new BP_Groups_Member( $u3, $g );
 		$gm3->promote( 'mod' );
 		$this->set_current_user( $u3 );
 		$this->assertTrue( current_user_can( 'bp_docs_associate_with_group', $g ) );
 
-		$u4 = $this->create_user();
+		$u4 = $this->factory->user->create();
 		$this->add_user_to_group( $u4, $g );
 		$gm4 = new BP_Groups_Member( $u4, $g );
 		$gm4->promote( 'mod' );
@@ -867,11 +867,11 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$this->set_current_user( 0 );
 		$this->assertFalse( current_user_can( 'bp_docs_associate_with_group', $g ) );
 
-		$u1 = $this->create_user();
+		$u1 = $this->factory->user->create();
 		$this->set_current_user( $u1 );
 		$this->assertFalse( current_user_can( 'bp_docs_associate_with_group', $g ) );
 
-		$u2 = $this->create_user();
+		$u2 = $this->factory->user->create();
 		$this->add_user_to_group( $u2, $g );
 		$this->set_current_user( $u2 );
 		$this->assertTrue( current_user_can( 'bp_docs_associate_with_group', $g ) );
@@ -882,7 +882,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 	 * @expectedDeprecated user_can_associate_doc_with_group
 	 */
 	public function test_associate_with_group_no_group() {
-		$u = $this->create_user();
+		$u = $this->factory->user->create();
 		$this->assertFalse( BP_Docs_Groups_Integration::user_can_associate_doc_with_group( $u, 0 ) );
 	}
 
@@ -891,7 +891,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 	 * @expectedDeprecated user_can_associate_doc_with_group
 	 */
 	public function test_associate_with_group_non_group_member() {
-		$u = $this->create_user();
+		$u = $this->factory->user->create();
 		$g = $this->factory->group->create();
 		$this->assertFalse( BP_Docs_Groups_Integration::user_can_associate_doc_with_group( $u, $g ) );
 	}
@@ -908,7 +908,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 
 		groups_delete_groupmeta( $g, 'bp-docs' );
 
-		$u = $this->create_user();
+		$u = $this->factory->user->create();
 		$this->add_user_to_group( $u, $g );
 		$this->assertTrue( BP_Docs_Groups_Integration::user_can_associate_doc_with_group( $u, $g ) );
 	}
@@ -927,7 +927,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 			'can-create' => 'member',
 		) );
 
-		$u = $this->create_user();
+		$u = $this->factory->user->create();
 		$this->add_user_to_group( $u, $g );
 		$this->assertTrue( BP_Docs_Groups_Integration::user_can_associate_doc_with_group( $u, $g ) );
 	}
@@ -946,17 +946,17 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 			'can-create' => 'mod',
 		) );
 
-		$u1 = $this->create_user();
+		$u1 = $this->factory->user->create();
 		$this->add_user_to_group( $u1, $g );
 		$this->assertFalse( BP_Docs_Groups_Integration::user_can_associate_doc_with_group( $u1, $g ) );
 
-		$u2 = $this->create_user();
+		$u2 = $this->factory->user->create();
 		$this->add_user_to_group( $u2, $g );
 		$gm2 = new BP_Groups_Member( $u2, $g );
 		$gm2->promote( 'mod' );
 		$this->assertTrue( BP_Docs_Groups_Integration::user_can_associate_doc_with_group( $u2, $g ) );
 
-		$u3 = $this->create_user();
+		$u3 = $this->factory->user->create();
 		$this->add_user_to_group( $u3, $g );
 		$gm3 = new BP_Groups_Member( $u3, $g );
 		$gm3->promote( 'admin' );
@@ -977,20 +977,172 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 			'can-create' => 'admin',
 		) );
 
-		$u1 = $this->create_user();
+		$u1 = $this->factory->user->create();
 		$this->add_user_to_group( $u1, $g );
 		$this->assertFalse( BP_Docs_Groups_Integration::user_can_associate_doc_with_group( $u1, $g ) );
 
-		$u2 = $this->create_user();
+		$u2 = $this->factory->user->create();
 		$this->add_user_to_group( $u2, $g );
 		$gm2 = new BP_Groups_Member( $u2, $g );
 		$gm2->promote( 'mod' );
 		$this->assertFalse( BP_Docs_Groups_Integration::user_can_associate_doc_with_group( $u2, $g ) );
 
-		$u3 = $this->create_user();
+		$u3 = $this->factory->user->create();
 		$this->add_user_to_group( $u3, $g );
 		$gm3 = new BP_Groups_Member( $u3, $g );
 		$gm3->promote( 'admin' );
 		$this->assertTrue( BP_Docs_Groups_Integration::user_can_associate_doc_with_group( $u3, $g ) );
+	}
+
+	/**
+	 * @group map_meta_cap
+	 * @group dissociate_from_group
+	 */
+	public function test_user_can_dissociate_from_group_no_group() {
+		$this->assertFalse( current_user_can( 'bp_docs_dissociate_from_group', 0 ) );
+	}
+
+	/**
+	 * @group map_meta_cap
+	 * @group dissociate_from_group
+	 */
+	public function test_user_can_dissociate_from_group_no_user() {
+		$g = $this->factory->group->create();
+		$old_current_user = get_current_user_id();
+
+		$this->set_current_user( 0 );
+		$this->assertFalse( current_user_can( 'bp_docs_dissociate_from_group', $g ) );
+
+		$this->set_current_user( $old_current_user );
+	}
+
+	/**
+	 * @group map_meta_cap
+	 * @group dissociate_from_group
+	 */
+	public function test_user_can_dissociate_from_group_logged_in() {
+		$g = $this->factory->group->create();
+		$old_current_user = get_current_user_id();
+		$u1 = $this->factory->user->create();
+
+		$this->set_current_user( $u1 );
+		$this->assertFalse( current_user_can( 'bp_docs_dissociate_from_group', $g ) );
+
+		$this->set_current_user( $old_current_user );
+	}
+
+	/**
+	 * @group map_meta_cap
+	 * @group dissociate_from_group
+	 */
+	public function test_user_can_dissociate_from_group_group_member() {
+		$g = $this->factory->group->create();
+		$old_current_user = get_current_user_id();
+		$u1 = $this->factory->user->create();
+		$this->add_user_to_group( $u1, $g );
+
+		$this->set_current_user( $u1 );
+		$this->assertFalse( current_user_can( 'bp_docs_dissociate_from_group', $g ) );
+
+		$this->set_current_user( $old_current_user );
+	}
+
+	/**
+	 * @group map_meta_cap
+	 * @group dissociate_from_group
+	 */
+	public function test_user_can_dissociate_from_group_group_mod() {
+		$g = $this->factory->group->create();
+		$old_current_user = get_current_user_id();
+		$u1 = $this->factory->user->create();
+		$this->add_user_to_group( $u1, $g );
+		$gm1 = new BP_Groups_Member( $u1, $g );
+		$gm1->promote( 'mod' );
+
+		$this->set_current_user( $u1 );
+		$this->assertTrue( current_user_can( 'bp_docs_dissociate_from_group', $g ) );
+
+		$this->set_current_user( $old_current_user );
+	}
+
+	/**
+	 * @group map_meta_cap
+	 * @group dissociate_from_group
+	 */
+	public function test_user_can_dissociate_from_group_group_admin() {
+		$g = $this->factory->group->create();
+		$old_current_user = get_current_user_id();
+		$u1 = $this->factory->user->create();
+		$this->add_user_to_group( $u1, $g );
+		$gm1 = new BP_Groups_Member( $u1, $g );
+		$gm1->promote( 'admin' );
+
+		$this->set_current_user( $u1 );
+		$this->assertTrue( current_user_can( 'bp_docs_dissociate_from_group', $g ) );
+
+		$this->set_current_user( $old_current_user );
+	}
+
+	/**
+	 * @group map_meta_cap
+	 * @group dissociate_from_group
+	 */
+	public function test_user_can_dissociate_from_group_site_admin() {
+		$g = $this->factory->group->create();
+		$old_current_user = get_current_user_id();
+		$u1 = $this->factory->user->create();
+		$u_site_admin = new WP_user( $u1 );
+		$u_site_admin->add_role( 'administrator' );
+
+		$this->set_current_user( $u1 );
+		$this->assertTrue( current_user_can( 'bp_docs_dissociate_from_group', $g ) );
+
+		$this->set_current_user( $old_current_user );
+	}
+
+	/**
+	 * @group map_meta_cap
+	 * @group dissociate_from_group
+	 */
+	public function test_user_can_dissociate_from_group_no_group_specified() {
+		$old_current_user = get_current_user_id();
+		$u1 = $this->factory->user->create();
+
+		$this->set_current_user( $u1 );
+		$this->assertFalse( current_user_can( 'bp_docs_dissociate_from_group' ) );
+
+		$this->set_current_user( $old_current_user );
+	}
+
+	/**
+	 * @group map_meta_cap
+	 * @group dissociate_from_group
+	 */
+	public function test_user_can_dissociate_from_group_within_group_logged_in() {
+		$g = $this->factory->group->create();
+		$old_current_user = get_current_user_id();
+		$u1 = $this->factory->user->create();
+
+		$this->set_current_user( $u1 );
+		$this->go_to( bp_get_group_permalink( groups_get_group( array( 'group_id' => $g ) ) ) );
+		// $this->go_to( bp_docs_get_doc_link( $post_id ) );
+		$this->assertFalse( current_user_can( 'bp_docs_dissociate_from_group' ) );
+	}
+
+	/**
+	 * @group map_meta_cap
+	 * @group dissociate_from_group
+	 */
+	public function test_user_can_dissociate_from_group_within_group_mod() {
+		$g = $this->factory->group->create();
+		$old_current_user = get_current_user_id();
+		$u1 = $this->factory->user->create();
+		$gm1 = new BP_Groups_Member( $u1, $g );
+		$gm1->promote( 'admin' );
+
+		$this->set_current_user( $u1 );
+		$this->go_to( bp_get_group_permalink( groups_get_group( array( 'group_id' => $g ) ) ) );
+		// $this->go_to( bp_docs_get_doc_link( $post_id ) );
+		$this->assertTrue( current_user_can( 'bp_docs_dissociate_from_group' ) );
 	}
 }

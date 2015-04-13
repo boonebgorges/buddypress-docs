@@ -216,6 +216,10 @@ class BP_Docs {
 		if ( !defined( 'BP_DOCS_UNTRASH_SLUG' ) )
 			define( 'BP_DOCS_UNTRASH_SLUG', 'untrash' );
 
+		// The slug used when removing a doc from a group
+		if ( ! defined( 'BP_DOCS_UNLINK_FROM_GROUP_SLUG' ) )
+			define( 'BP_DOCS_UNLINK_FROM_GROUP_SLUG', 'unlink-from-group' );
+
 		// The slug used for the Started section of My Docs
 		if ( !defined( 'BP_DOCS_STARTED_SLUG' ) )
 			define( 'BP_DOCS_STARTED_SLUG', 'started' );
@@ -368,6 +372,8 @@ class BP_Docs {
 		add_rewrite_tag( '%%' . BP_DOCS_UNTRASH_SLUG    . '%%', '([1]{1,})' );
 		add_rewrite_tag( '%%' . BP_DOCS_CREATE_SLUG    . '%%', '([1]{1,})' );
 		add_rewrite_tag( '%%' . BP_DOCS_MY_GROUPS_SLUG . '%%', '([1]{1,})' );
+		add_rewrite_tag( '%%' . BP_DOCS_UNLINK_FROM_GROUP_SLUG . '%%', '([1]{1,})' );
+
 	}
 
 	/**
@@ -408,6 +414,10 @@ class BP_Docs {
 			// Untrash
 			bp_docs_get_docs_slug() . '/([^/]+)/' . BP_DOCS_UNTRASH_SLUG . '/?$' =>
 				'index.php?post_type=' . $this->post_type_name . '&name=' . $wp_rewrite->preg_index( 1 ) . '&' . BP_DOCS_UNTRASH_SLUG . '=1',
+
+			// Unlink from group
+			bp_docs_get_docs_slug() . '/([^/]+)/' . BP_DOCS_UNLINK_FROM_GROUP_SLUG . '/?$' =>
+				'index.php?post_type=' . $this->post_type_name . '&name=' . $wp_rewrite->preg_index( 1 ) . '&' . BP_DOCS_UNLINK_FROM_GROUP_SLUG . '=1',
 
 		);
 

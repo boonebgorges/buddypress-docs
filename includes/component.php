@@ -92,6 +92,9 @@ class BP_Docs_Component extends BP_Component {
 		// Keep comment notifications from being sent
 		add_filter( 'comment_post', array( $this, 'check_comment_type' ) );
 
+		// Force comments_open to obey Doc-specific settings.
+		add_filter( 'comments_open', array( $this, 'comments_open' ), 10, 2 );
+
 		// Add the Search filter markup
 		add_filter( 'bp_docs_filter_types', array( $this, 'filter_type' ) );
 		add_filter( 'bp_docs_filter_sections', array( $this, 'filter_markup' ) );
@@ -524,6 +527,25 @@ class BP_Docs_Component extends BP_Component {
 			bp_core_redirect( bp_docs_get_doc_link( $untrash_doc_id ) );
 			die();
 		}
+
+		if ( bp_docs_is_doc_read() && ! empty( $_GET[ BP_DOCS_UNLINK_FROM_GROUP_SLUG ] ) && ! empty( $_GET['doc_id'] ) && ! empty( $_GET['group_id'] ) ) {
+			check_admin_referer( 'bp_docs_unlink_from_group' );
+
+			$unlink_doc_id = absint( $_GET['doc_id'] );
+			$unlink_group_id = absint( $_GET['group_id'] );
+
+			if ( current_user_can( 'bp_docs_dissociate_from_group', $unlink_group_id ) ) {
+				if ( bp_docs_unlink_from_group( $unlink_doc_id, $unlink_group_id ) ) {
+					bp_core_add_message( __( 'Doc successfully removed from the group', 'bp-docs' ) );
+				} else {
+					bp_core_add_message( __( 'Could not remove Doc from the group.', 'bp-docs' ) );
+				}
+			} else {
+				bp_core_add_message( __( 'You do not have permission to remove that Doc from this group.', 'bp-docs' ), 'error' );
+			}
+			bp_core_redirect( bp_get_group_permalink( groups_get_group( array( 'group_id' => $unlink_group_id ) ) ) . $bp->bp_docs->slug . '/' );
+			die();
+		}
 	}
 
 	/**
@@ -642,6 +664,24 @@ class BP_Docs_Component extends BP_Component {
 		if ( $bp->bp_docs->post_type_name == $post->post_type ) {
 			add_filter( 'pre_option_comments_notify', create_function( false, 'return 0;' ) );
 		}
+	}
+
+	/**
+	 * Force comments_open status to obey Doc-specific settings.
+	 *
+	 * @since 1.8.6
+	 *
+	 * @param bool $open    Whether the current post is open for comments.
+	 * @param int  $post_id ID of the post.
+	 * @return bool
+	 */
+	public function comments_open( $open, $post_id ) {
+		$post = get_post( $post_id );
+		if ( ! ( $post instanceof WP_Post ) || bp_docs_get_post_type_name() !== $post->post_type ) {
+			return $open;
+		}
+
+		return current_user_can( 'bp_docs_post_comments', $post_id );
 	}
 
 	/**

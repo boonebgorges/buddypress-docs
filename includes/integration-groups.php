@@ -67,6 +67,9 @@ class BP_Docs_Groups_Integration {
 		add_filter( 'bp_docs_loop_additional_th',       array( $this, 'groups_th' ), 5 );
 		add_filter( 'bp_docs_loop_additional_td',       array( $this, 'groups_td' ), 5 );
 
+		// On group Doc directories, add the "Unlink from Group" action link
+		add_filter( 'bp_docs_doc_action_links', 		array( $this, 'add_doc_action_unlink_from_group_link' ), 10, 2 );
+
 		// Update group last active metadata when a doc is created, updated, or saved
 		add_filter( 'bp_docs_after_save',               array( $this, 'update_group_last_active' )  );
 		add_filter( 'bp_docs_before_doc_delete',        array( $this, 'update_group_last_active' ) );
@@ -775,6 +778,23 @@ class BP_Docs_Groups_Integration {
 	}
 
 	/**
+	 * On group Doc directories, add the "Unlink from Group" action link
+	 *
+	 * @package BuddyPress_Docs
+	 * @subpackage Groups
+	 * @since 1.9.0
+	 */
+	function add_doc_action_unlink_from_group_link( $links, $doc_id ) {
+		// Only add this link to the in-group doc directory
+		if ( $group_id = bp_get_current_group_id() ) {
+			if ( current_user_can( 'bp_docs_dissociate_from_group', $group_id ) ) {
+				$links[] = '<a href="' . bp_docs_get_unlink_from_group_link( $doc_id, $group_id ) . '" class="unlink-from-group confirm">' . __( 'Unlink from Group', 'bp-docs' ) . '</a>';
+			}
+		}
+		return $links;
+	}
+
+	/**
 	 * Update the current group's last_activity metadata
 	 *
 	 * @package BuddyPress Docs
@@ -1215,8 +1235,10 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	 *
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta
+	 *
+	 * @param int $group_id ID of the current group. Available only in BP 2.2+.
 	 */
-	function display() {
+	function display( $group_id = null ) {
 		global $bp;
 
 		// Docs are stored on the root blog
@@ -1486,6 +1508,72 @@ function bp_docs_set_associated_group_id( $doc_id, $group_id = 0 ) {
 
 	wp_set_post_terms( $doc_id, $term, bp_docs_get_associated_item_tax_name(), false );
 }
+/**
+ * Process group-doc unlinking requests.
+ * Allows group mods & admins to remove docs from groups they moderate.
+ *
+ * @package BuddyPress Docs
+ * @since 1.9.0
+ *
+ * @param int $doc_id ID of the doc to remove from the group
+ * @param int $group_id ID of the group the doc should be removed from
+ * @return bool true if the term is removed
+ */
+function bp_docs_unlink_from_group( $doc_id, $group_id = 0 ) {
+	if ( $group_id ) {
+		$term = bp_docs_get_group_term( $group_id );
+	}
+
+	if ( empty( $doc_id ) || empty( $term ) ) {
+		return false;
+	}
+
+	$removed = wp_remove_object_terms( $doc_id, $term, bp_docs_get_associated_item_tax_name() );
+	// wp_remove_object_terms returns true on success, false or WP_Error on failure.
+	$retval = ( $removed == true ) ? true : false;
+
+	// If the doc is no longer associated with any group, make sure it doesn't become public.
+	$assoc_group_id = bp_docs_get_associated_group_id( $doc_id );
+	if ( empty( $assoc_group_id ) ) {
+		bp_docs_remove_group_related_doc_access_settings( $doc_id );
+	}
+
+	// Recalculate the number of docs in the affected group.
+	if ( $retval ) {
+		bp_docs_update_doc_count( $group_id, 'group' );
+	}
+
+	return $retval;
+}
+
+/**
+ * Echo the URL for removing a Doc from a group.
+ *
+ * @since 1.9.0
+ */
+function bp_docs_unlink_from_group_link( $doc_id = false ) {
+	echo bp_docs_get_unlink_from_group_link( $doc_id, $group_id );
+}
+	/**
+	 * Get the URL for removing a Doc from a group.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param 	int 	$doc_id ID of the Doc.
+	 * @param 	int 	$group_id ID of the group to unlink from.
+	 * @return 	string 	URL for Doc unlinking.
+	 */
+	function bp_docs_get_unlink_from_group_link( $doc_id = 0, $group_id = 0 ) {
+		$doc_permalink = bp_docs_get_doc_link( $doc_id );
+
+		$unlink_link = wp_nonce_url( add_query_arg( array(
+			BP_DOCS_UNLINK_FROM_GROUP_SLUG => '1',
+			'doc_id' => intval( $doc_id ),
+			'group_id' => intval( $group_id ),
+		), $doc_permalink ), 'bp_docs_unlink_from_group' );
+
+		return apply_filters( 'bp_docs_get_unlink_from_group_link', $unlink_link, $doc_permalink, $doc_id, $group_id );
+	}
 
 function bp_docs_get_group_term( $group_id ) {
 	$group = groups_get_group( 'group_id=' . intval( $group_id ) );
@@ -1653,6 +1741,34 @@ function bp_docs_groups_map_meta_caps( $caps, $cap, $user_id, $args ) {
 					}
 
 					break;
+			}
+
+			break;
+
+		case 'bp_docs_dissociate_from_group' :
+			if ( isset( $args[0] ) ) {
+				$group_id = intval( $args[0] );
+			} elseif ( bp_is_group() ) {
+				$group_id = bp_get_current_group_id();
+			} else {
+				$group_id = bp_docs_get_associated_group_id( get_the_ID() );
+			}
+
+			if ( empty( $group_id ) ) {
+				break;
+			}
+
+			if ( user_can( $user_id, 'bp_moderate' ) ) {
+				return array( 'exist' );
+			}
+
+			$caps = array();
+
+			// Group admins or mods should able to remove docs from groups
+			if ( groups_is_user_mod( $user_id, $group_id ) || groups_is_user_admin( $user_id, $group_id ) ) {
+				$caps[] = 'exist';
+			} else {
+				$caps[] = 'do_not_allow';
 			}
 
 			break;

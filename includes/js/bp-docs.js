@@ -274,7 +274,7 @@ function bp_docs_load_idle() {
 }
 
 function bp_docs_kitchen_sink(ed) {
-	var adv_button = jQuery('#' + ed.editorContainer).find('a.mce_wp_adv');
+	var adv_button = jQuery(ed.editorContainer).find('a.mce_wp_adv');
 	if ( 0 != adv_button.length ) {
 		jQuery(adv_button).on('click',function(e){
 			var sec_rows = jQuery(adv_button).closest('table.mceToolbar').siblings('table.mceToolbar');

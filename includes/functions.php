@@ -589,6 +589,43 @@ function bp_docs_save_doc_access_settings( $doc_id ) {
 }
 
 /**
+ * Reset group-related doc access settings to "creator"
+ *
+ * @since 1.9.0
+ * @param int $doc_id The numeric ID of the doc
+ * @return void
+ */
+function bp_docs_remove_group_related_doc_access_settings( $doc_id ) {
+	if ( empty( $doc_id ) ) {
+		return;
+	}
+
+	// When a doc's privacy relies on group association, and that doc loses that group association, we need to make sure that it doesn't become public.
+	$settings = bp_docs_get_doc_settings( $doc_id );
+	$group_settings = array( 'admins-mods','group-members' );
+	$settings_modified = false;
+
+	foreach ( $settings as $capability => $audience ) {
+		if ( in_array( $audience, $group_settings ) ) {
+			$new_settings[ $capability ] = 'creator';
+			$settings_modified = true;
+		} else {
+			$new_settings[ $capability ] = $audience;
+		}
+	}
+
+	if ( $settings_modified ) {
+		update_post_meta( $doc_id, 'bp_docs_settings', $new_settings );
+	}
+
+	// The 'read' setting must also be saved to a taxonomy, for
+	// easier directory queries. Update if modified.
+	if ( $settings['read'] != $new_settings['read'] ) {
+		bp_docs_update_doc_access( $doc_id, $new_settings['read'] );
+	}
+}
+
+/**
  * Verifies the settings associated with a given Doc
  *
  * @since 1.2

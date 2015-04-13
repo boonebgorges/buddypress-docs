@@ -3,7 +3,7 @@ Contributors: boonebgorges, cuny-academic-commons
 Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.3, BuddyPress 1.5
-Tested up to: WordPress 4.0, BuddyPress 2.1.1
+Tested up to: WordPress 4.2, BuddyPress 2.2.2.1
 Stable tag: 1.8.5
 
 Adds collaborative Docs to BuddyPress.
@@ -32,6 +32,13 @@ This plugin is in active development. For feature requests and bug reports, visi
 1. Sit back and watch the jack roll in
 
 == Changelog ==
+
+= 1.8.6 =
+* Improved compatibility with BuddyPress 2.2+
+* New feature: unlink from group button
+* Extracted away from WordPress's general discussion settings
+* Fixed bug that could cause attachment corruption on download
+* Fixed JS error when editing/creating Doc
 
 = 1.8.5 =
 * Fixed permalinks for child Docs
