@@ -86,6 +86,7 @@ class BP_Docs_Attachments {
 			}
 
 			readfile( $filepath );
+			exit();
 		}
 	}
 
