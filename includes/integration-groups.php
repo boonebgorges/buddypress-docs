@@ -1533,7 +1533,8 @@ function bp_docs_unlink_from_group( $doc_id, $group_id = 0 ) {
 	$retval = ( $removed == true ) ? true : false;
 
 	// If the doc is no longer associated with any group, make sure it doesn't become public.
-	if ( empty( bp_docs_get_associated_group_id( $doc_id ) ) ) {
+	$assoc_group_id = bp_docs_get_associated_group_id( $doc_id );
+	if ( empty( $assoc_group_id ) ) {
 		bp_docs_remove_group_related_doc_access_settings( $doc_id );
 	}
 
