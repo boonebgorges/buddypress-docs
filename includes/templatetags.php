@@ -80,7 +80,6 @@ function bp_docs_has_docs( $args = array() ) {
 		$d_paged = 1;
 		if ( ! empty( $_GET['paged'] ) ) {
 			$d_paged = absint( $_GET['paged'] );
-			// Warn WP that we're using
 		} else if ( bp_docs_is_global_directory() && is_a( $wp_query, 'WP_Query' ) && 1 < $wp_query->get( 'paged' ) ) {
 			$d_paged = absint( $wp_query->get( 'paged' ) );
 		}
