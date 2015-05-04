@@ -959,6 +959,8 @@ function bp_docs_doc_action_links() {
 		$links[] = '<a href="' . bp_docs_get_remove_from_trash_link( get_the_ID() ) . '" class="delete confirm">' . __( 'Untrash', 'bp-docs' ) . '</a>';
 	}
 
+	$links = apply_filters( 'bp_docs_doc_action_links', $links, get_the_ID() );
+
 	echo implode( ' &#124; ', $links );
 }
 
@@ -1063,7 +1065,7 @@ function bp_docs_delete_doc_button( $doc_id = false ) {
  * @since 1.0-beta-2
  */
 function bp_docs_paginate_links() {
-	global $bp, $wp_query;
+	global $bp, $wp_query, $wp_rewrite;
 
 	$cur_page = 1;
 	if ( isset( $_GET['paged'] ) ) {
@@ -1074,14 +1076,20 @@ function bp_docs_paginate_links() {
 
         $page_links_total = $bp->bp_docs->doc_query->max_num_pages;
 
-        $page_links = paginate_links( array(
+	$pagination_args = array(
 		'base' 		=> add_query_arg( 'paged', '%#%' ),
 		'format' 	=> '',
 		'prev_text' 	=> __('&laquo;'),
 		'next_text' 	=> __('&raquo;'),
 		'total' 	=> $page_links_total,
-		'current' 	=> $cur_page
-        ));
+		'current' 	=> $cur_page,
+	);
+
+	if ( $wp_rewrite->using_permalinks() ) {
+		$pagination_args['base'] = user_trailingslashit( trailingslashit( bp_docs_get_archive_link() ) . $wp_rewrite->pagination_base . '/%#%/', 'bp-docs-directory' );
+	}
+
+        $page_links = paginate_links( $pagination_args );
 
         echo apply_filters( 'bp_docs_paginate_links', $page_links );
 }

@@ -269,6 +269,57 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 
 		$this->assertEquals( 1, $comment->comment_approved );
 	}
+	/**
+	 * @group bp_docs_unlink_from_group
+	 */
+	function test_bp_docs_unlink_from_group() {
+		$group = $this->factory->group->create();
+		$doc_id = $this->factory->doc->create( array(
+			'group' => $group,
+		) );
+
+		bp_docs_unlink_from_group( $doc_id, $group );
+
+		$maybe_group_id = bp_docs_get_associated_group_id( $doc_id );
+
+		$this->assertFalse( (bool) $maybe_group_id );
+	}
+	/**
+	 * @group bp_docs_unlink_from_group
+	 */
+	function test_bp_docs_remove_group_related_doc_access_settings() {
+		$group = $this->factory->group->create();
+		$doc_id = $this->factory->doc->create( array(
+			'group' => $group,
+		) );
+		$settings = bp_docs_get_doc_settings( $doc_id );
+		// These are doc default settings:
+		// $default_settings = array(
+		// 	'read'          => 'anyone',
+		// 	'edit'          => 'loggedin',
+		// 	'read_comments' => 'anyone',
+		// 	'post_comments' => 'anyone',
+		// 	'view_history'  => 'anyone',
+		// 	'manage'        => 'creator',
+		// );
+		$settings['edit'] = 'group-members';
+		$settings['post_comments'] = 'admins-mods';
+		update_post_meta( $doc_id, 'bp_docs_settings', $settings );
+
+		bp_docs_remove_group_related_doc_access_settings( $doc_id );
+
+		$expected_settings = array(
+			'read'          => 'anyone',
+			'edit'          => 'creator',
+			'read_comments' => 'anyone',
+			'post_comments' => 'creator',
+			'view_history'  => 'anyone',
+			'manage'        => 'creator',
+		);
+		$modified_settings = bp_docs_get_doc_settings( $doc_id );
+
+		$this->assertEqualSetsWithIndex( $expected_settings, $modified_settings );
+	}
 }
 
 
