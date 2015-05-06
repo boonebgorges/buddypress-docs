@@ -379,8 +379,7 @@ class BP_Docs_Component extends BP_Component {
 
 			check_admin_referer( 'bp_docs_save' );
 
-			$this_doc = new BP_Docs_Query;
-			$result = $this_doc->save();
+			$result = bp_docs_save_doc_via_post();
 
 			bp_core_add_message( $result['message'], $result['message_type'] );
 			bp_core_redirect( trailingslashit( $result['redirect_url'] ) );
