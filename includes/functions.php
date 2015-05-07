@@ -835,15 +835,21 @@ function bp_docs_revisions_to_keep( $num, $post ) {
 add_filter( 'wp_revisions_to_keep', 'bp_docs_revisions_to_keep', 10, 2 );
 
 /**
- * Wrapper to the BP_Docs_Query->save() method for docs saved via the create/edit screens.
- * Creates an args array from $_POST in the format that BP_Docs_Query->save() expects.
+ * Wrapper to the BP_Docs_Query->save() method for docs saved via the
+ * create/edit screens. Creates an args array from $_POST in the format that
+ * BP_Docs_Query->save() expects.
  *
  * @since 1.9
  *
- * @return boolean (success)
+ * @return array created in BP_Docs_Query->save() {
+ *		  @type string $message_type Type of message, success or error.
+ *		  @type string $message Text of message to display to user.
+ *		  @type string $redirect_url URL to use for redirect after save.
+ *		  @type int    $doc_id ID of the updated doc, if applicable.
+ *        }
  */
 function bp_docs_save_doc_via_post() {
-	// Defaults for the args that the save() method is expecting:
+	// Defaults for the array of args that the save() method is expecting:
 	$args = array(
 		'doc_id'      => 0,
 		'title'       => '',

@@ -403,11 +403,40 @@ class BP_Docs_Query {
 	/**
 	 * Saves a doc.
 	 *
-	 * This method handles saving for both new and existing docs. It detects the difference by
-	 * looking for the presence of $this->doc_slug
+	 * This method handles saving for both new and existing docs. It detects the
+	 * difference by looking for the presence of $this->doc_slug
 	 *
 	 * @package BuddyPress Docs
 	 * @since 1.0-beta
+	 *
+	 * @param array $passed_args {
+	 *	      @type int    $doc_id ID of the doc, if it already exists.
+	 *	      @type string $title Doc title.
+	 *	      @type string $content Doc content.
+	 *	      @type string $permalink Optional. Permalink will be calculated if
+	 *                     if not specified.
+	 *	      @type int    $author_id ID of the user submitting the changes.
+	 *	      @type int    $group_id ID of the associated group, if any.
+	 *                     Special cases: Passing "null" leaves current group
+	 *                     associations intact. Passing 0 will unset existing
+	 *                     group associations.
+	 *	      @type bool   $is_auto Is this an autodraft?
+	 *	      @type array  $taxonomies Taxonomy terms to apply to the doc.
+	 *                     Use the form: array( $tax_name => (array) $terms ).
+	 *	      @type array  $settings Doc access settings. Of the form:
+	 *                     array( 'read' => 'group-members',
+	 *                            'edit' => 'admins-mods',
+	 *                            'read_comments' => 'group-members',
+	 *                            'post_comments' => 'group-members',
+	 *                            'view_history' => 'creator' )
+	 *	      @type int   $parent_id The ID of the parent doc, if applicable.
+	 *        }
+	 * @return array {
+	 *		  @type string $message_type Type of message, success or error.
+	 *		  @type string $message Text of message to display to user.
+	 *		  @type string $redirect_url URL to use for redirect after save.
+	 *		  @type int    $doc_id ID of the updated doc, if applicable.
+	 *        }
 	 */
 	function save( $passed_args = false ) {
 		$bp = buddypress();
@@ -419,9 +448,9 @@ class BP_Docs_Query {
 			'content' 		=> '',
 			'permalink'		=> '',
 			'author_id'		=> bp_loggedin_user_id(),
-			'group_id'		=> null, // Value of null does nothing; 0 will unset existing group association.
+			'group_id'		=> null,
 			'is_auto'		=> 0,
-			'taxonomies'	=> array(), // expecting the form: array( $tax_name => (array) $terms )
+			'taxonomies'	=> array(),
 			'settings'		=> array(),
 			'parent_id'		=> 0,
 			);
