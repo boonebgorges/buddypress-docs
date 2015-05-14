@@ -1769,7 +1769,8 @@ function bp_docs_create_new_folder_markup( $args = array() ) {
  */
 function bp_docs_folders_meta_box() {
 
-	$associated_group_id = bp_docs_get_associated_group_id( get_the_ID() );
+	$doc_id = get_the_ID();
+	$associated_group_id = bp_docs_get_associated_group_id( $doc_id );
 
 	if ( ! $associated_group_id && isset( $_GET['group'] ) ) {
 		$group_id = BP_Groups_Group::get_id_from_slug( urldecode( $_GET['group'] ) );
@@ -1781,6 +1782,8 @@ function bp_docs_folders_meta_box() {
 	// On the Create screen, respect the 'folder' $_GET param
 	if ( bp_docs_is_doc_create() ) {
 		$folder_id = bp_docs_get_current_folder_id();
+	} else {
+		$folder_id = bp_docs_get_doc_folder( $doc_id );
 	}
 
 	?>
