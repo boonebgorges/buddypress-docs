@@ -6,26 +6,28 @@
 	<?php bp_locate_template( 'docs/manage-folders.php', true ) ?>
 <?php else : ?>
 
-<h2 class="directory-title">
-	<?php bp_docs_directory_breadcrumb() ?>
-</h2>
-<div class="docs-info-header">
-	<?php bp_docs_info_header() ?>
-</div>
+	<h2 class="directory-title">
+		<?php bp_docs_directory_breadcrumb() ?>
+	</h2>
 
-
-<div class="folder-action-links">
-	<?php if ( current_user_can( 'bp_docs_manage_folders' ) ) : ?>
-		<div class="manage-folders-link">
-			<a href="<?php bp_docs_manage_folders_url() ?>"><?php _e( 'Manage Folders', 'bp-docs' ) ?></a>
-		</div>
-	<?php endif ?>
-
-	<div class="toggle-folders-link hide-if-no-js">
-		<a href="#" class="toggle-folders" id="toggle-folders-hide"><?php _e( 'Hide Folders', 'bp-docs' ) ?></a>
-		<a href="#" class="toggle-folders" id="toggle-folders-show"><?php _e( 'Show Folders', 'bp-docs' ) ?></a>
+	<div class="docs-info-header">
+		<?php bp_docs_info_header() ?>
 	</div>
-</div>
+
+	<?php if ( bp_docs_enable_folders() ) : ?>
+		<div class="folder-action-links">
+			<?php if ( current_user_can( 'bp_docs_manage_folders' ) ) : ?>
+				<div class="manage-folders-link">
+					<a href="<?php bp_docs_manage_folders_url() ?>"><?php _e( 'Manage Folders', 'bp-docs' ) ?></a>
+				</div>
+			<?php endif ?>
+
+			<div class="toggle-folders-link hide-if-no-js">
+				<a href="#" class="toggle-folders" id="toggle-folders-hide"><?php _e( 'Hide Folders', 'bp-docs' ) ?></a>
+				<a href="#" class="toggle-folders" id="toggle-folders-show"><?php _e( 'Show Folders', 'bp-docs' ) ?></a>
+			</div>
+		</div>
+	<?php endif; ?>
 
 	<table class="doctable">
 
@@ -59,24 +61,9 @@
 
         <tbody>
 
-	<?php /* The '..' row */ ?>
-	<?php if ( ! empty( $_GET['folder'] ) ) : ?>
-		<tr class="folder-row">
-			<?php /* Just to keep things even */ ?>
-			<?php if ( bp_docs_enable_attachments() ) : ?>
-				<td class="attachment-clip-cell">
-					<?php bp_docs_attachment_icon() ?>
-				</td>
-			<?php endif ?>
-
-			<td colspan=10>
-				<i class="genericon genericon-category"></i><a href="<?php echo esc_url( bp_docs_get_parent_folder_url() ) ?>"><?php _ex( '..', 'up one folder', 'bp-docs' ) ?></a>
-			</td>
-		</tr>
-	<?php endif ?>
-
-	<?php if ( ! isset( $_GET['bpd_tag'] ) ) : ?>
-		<?php foreach ( bp_docs_get_folders() as $folder ) : ?>
+	<?php if ( bp_docs_enable_folders() ) : ?>
+		<?php /* The '..' row */ ?>
+		<?php if ( ! empty( $_GET['folder'] ) ) : ?>
 			<tr class="folder-row">
 				<?php /* Just to keep things even */ ?>
 				<?php if ( bp_docs_enable_attachments() ) : ?>
@@ -86,11 +73,28 @@
 				<?php endif ?>
 
 				<td colspan=10>
-					<i class="genericon genericon-category"></i><a href="<?php echo esc_url( bp_docs_get_folder_url( $folder->ID ) ) ?>"><?php echo esc_html( $folder->post_title ) ?></a>
+					<i class="genericon genericon-category"></i><a href="<?php echo esc_url( bp_docs_get_parent_folder_url() ) ?>"><?php _ex( '..', 'up one folder', 'bp-docs' ) ?></a>
 				</td>
 			</tr>
-		<?php endforeach ?>
-	<?php endif; ?>
+		<?php endif ?>
+
+		<?php if ( ! isset( $_GET['bpd_tag'] ) ) : ?>
+			<?php foreach ( bp_docs_get_folders() as $folder ) : ?>
+				<tr class="folder-row">
+					<?php /* Just to keep things even */ ?>
+					<?php if ( bp_docs_enable_attachments() ) : ?>
+						<td class="attachment-clip-cell">
+							<?php bp_docs_attachment_icon() ?>
+						</td>
+					<?php endif ?>
+
+					<td colspan=10>
+						<i class="genericon genericon-category"></i><a href="<?php echo esc_url( bp_docs_get_folder_url( $folder->ID ) ) ?>"><?php echo esc_html( $folder->post_title ) ?></a>
+					</td>
+				</tr>
+			<?php endforeach ?>
+		<?php endif; ?>
+	<?php endif; /* bp_docs_enable_folders() */ ?>
 
 	<?php $has_docs = false ?>
 	<?php if ( bp_docs_has_docs() ) : ?>

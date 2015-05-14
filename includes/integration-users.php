@@ -298,7 +298,7 @@ function bp_docs_user_single_breadcrumb( $crumbs, $doc = null ) {
 		$doc_id = get_queried_object_id();
 	}
 
-	if ( ! empty( $doc_id ) ) {
+	if ( bp_docs_enable_folders() && ! empty( $doc_id ) ) {
 		$folder_id = bp_docs_get_doc_folder( $doc_id );
 
 		if ( $folder_id ) {
