@@ -497,10 +497,6 @@ class BP_Docs_Query {
 				bp_docs_set_associated_group_id( $post_id, $args['group_id'] );
 			}
 
-			// Make sure the current user is added as one of the authors
-			// @TODO: Is this still used?
-			wp_set_post_terms( $post_id, $this->user_term_id, $this->associated_item_tax_name, true );
-
 			// Save the last editor id. We'll use this to create an activity item
 			update_post_meta( $this->doc_id, 'bp_docs_last_editor', $args['author_id'] );
 
