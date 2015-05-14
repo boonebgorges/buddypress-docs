@@ -874,9 +874,9 @@ function bp_docs_save_doc_via_post() {
 	// Using WP editor necessitated the change to $_POST['doc_content'].
 	// Maintain backward compatibility by checking $_POST['doc']['content'] too.
 	if ( isset( $_POST['doc_content'] ) ) {
-		$args['content'] = $_POST['doc_content'];
+		$args['content'] = sanitize_post_field( 'post_content', $_POST['doc_content'], 0, 'db' );
 	} else if ( isset( $_POST['doc']['content'] ) ) {
-		$args['content'] = $_POST['doc']['content'];
+		$args['content'] = sanitize_post_field( 'post_content', $_POST['doc']['content'], 0, 'db' );
 	}
 
 	$args['permalink'] = isset( $_POST['doc']['permalink'] ) ? sanitize_title( $_POST['doc']['permalink'] ) : sanitize_title( $_POST['doc']['title'] );

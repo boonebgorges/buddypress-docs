@@ -501,7 +501,7 @@ class BP_Docs_Query {
 				'post_type'    => $this->post_type_name,
 				'post_title'   => $args['title'],
 				'post_name'    => $args['permalink'],
-				'post_content' => sanitize_post_field( 'post_content', $args['content'], 0, 'db' ),
+				'post_content' => $args['content'],
 				'post_status'  => 'publish',
 				'post_parent'  => $args['parent_id']
 			);
