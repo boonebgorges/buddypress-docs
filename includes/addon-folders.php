@@ -92,29 +92,12 @@ class BP_Docs_Folders {
 		// Validate folder selection when saving a Doc.
 		add_filter( 'bp_docs_before_save_folder_selection', 'bp_docs_validate_group_folder_selection_on_doc_save', 10, 2 );
 
-		// Breadcrumbs.
-		add_filter( 'bp_docs_directory_breadcrumb', 'bp_docs_folders_directory_breadcrumb', 6 );
+		// Single Doc breadcrumbs.
 		add_action( 'bp_docs_doc_breadcrumbs', 'bp_docs_folder_single_breadcrumb', 10, 2 );
-
-		// Add folder info to directory filter message.
-		add_filter( 'bp_docs_get_current_filters', 'bp_docs_folder_current_filters' );
-
-		// Ensure folder filters are maintained during directory filters.
-		add_action( 'bp_docs_directory_filter_attachments_form', 'bp_docs_folders_directory_filter_form_argument' );
-		add_action( 'bp_docs_directory_filter_search_form', 'bp_docs_folders_directory_filter_form_argument' );
 
 		// Show folder info on a single Doc.
 		add_action( 'bp_docs_single_doc_meta', 'bp_docs_display_folder_meta' );
 
-		// Add current folder info to info message.
-		add_filter( 'bp_docs_info_header_message', 'bp_docs_folder_info_header_message', 10, 2 );
-
-		// Set up conditional filtering of tag links.
-		add_action( 'bp_docs_directory_filter_taxonomy_before', 'bp_docs_folders_directory_filter_taxonomy_hooker' );
-		add_action( 'bp_docs_directory_filter_taxonomy_after', 'bp_docs_folders_directory_filter_taxonomy_unhooker' );
-
-		// Modify Create links to be folder-sensitive.
-		add_filter( 'bp_docs_get_create_link', 'bp_docs_folders_create_link' );
 
 		// Add Folders meta box to Edit screen.
 		add_action( 'bp_docs_before_tags_meta_box', 'bp_docs_folders_meta_box' );
@@ -133,6 +116,32 @@ class BP_Docs_Folders {
 		add_action( 'wp_ajax_bp_docs_update_folder_type', 'bp_docs_update_folder_type_cb' );
 		add_action( 'wp_ajax_bp_docs_update_folder_type_for_group', 'bp_docs_update_folder_type_for_group_cb' );
 		add_action( 'wp_ajax_bp_docs_process_folder_drop', 'bp_docs_process_folder_drop_cb' );
+
+		// Folders UI is limited to the Group context for now. Change at your own risk.
+		$enable_for_current_context = function_exists( 'bp_is_group' ) && bp_is_group();
+		if ( ! apply_filters( 'bp_docs_enable_folders_for_current_context', $enable_for_current_context ) ) {
+			return;
+		}
+
+		// Directory breadcrumbs.
+		add_filter( 'bp_docs_directory_breadcrumb', 'bp_docs_folders_directory_breadcrumb', 6 );
+
+		// Add folder info to directory filter message.
+		add_filter( 'bp_docs_get_current_filters', 'bp_docs_folder_current_filters' );
+
+		// Ensure folder filters are maintained during directory filters.
+		add_action( 'bp_docs_directory_filter_attachments_form', 'bp_docs_folders_directory_filter_form_argument' );
+		add_action( 'bp_docs_directory_filter_search_form', 'bp_docs_folders_directory_filter_form_argument' );
+
+		// Add current folder info to info message.
+		add_filter( 'bp_docs_info_header_message', 'bp_docs_folder_info_header_message', 10, 2 );
+
+		// Set up conditional filtering of tag links.
+		add_action( 'bp_docs_directory_filter_taxonomy_before', 'bp_docs_folders_directory_filter_taxonomy_hooker' );
+		add_action( 'bp_docs_directory_filter_taxonomy_after', 'bp_docs_folders_directory_filter_taxonomy_unhooker' );
+
+		// Modify Create links to be folder-sensitive.
+		add_filter( 'bp_docs_get_create_link', 'bp_docs_folders_create_link' );
 	}
 
 	/**
