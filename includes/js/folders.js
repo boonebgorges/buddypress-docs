@@ -17,11 +17,15 @@
 			update_create_new_folder_details_visibility( $( this ) );
 		} );
 
+		// Initialize whether the Folders section should be displayed.
+		update_folder_metabox_display();
+
 		// Change associated group, change available folders
 		$associated_group_selector = $( '#associated_group_id' );
 		update_new_folder_selectors_for_group( $associated_group_selector.val() );
 		update_folder_tab_title();
 		$associated_group_selector.on( 'change', function() {
+			update_folder_metabox_display();
 			update_folder_selector( $( this ).val() );
 			update_new_folder_selectors_for_group( $( this ).val() );
 
@@ -64,6 +68,14 @@
 
 		init_doc_drag();
 	} );
+
+	function update_folder_metabox_display() {
+		if ( $( '#associated_group_id' ).val().length ) {
+			$( '#doc-folders' ).show();
+		} else {
+			$( '#doc-folders' ).hide();
+		}
+	}
 
 	/**
 	 * Toggle the visibility of the new folder details fields based on radio button selection.

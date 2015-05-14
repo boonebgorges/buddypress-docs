@@ -14,7 +14,7 @@
 		<?php bp_docs_info_header() ?>
 	</div>
 
-	<?php if ( bp_docs_enable_folders() ) : ?>
+	<?php if ( bp_docs_enable_folders() && function_exists( 'bp_is_group' ) && bp_is_group() ) : ?>
 		<div class="folder-action-links">
 			<?php if ( current_user_can( 'bp_docs_manage_folders' ) ) : ?>
 				<div class="manage-folders-link">
