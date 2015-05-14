@@ -5,18 +5,11 @@ class BP_Docs_Query {
 	var $associated_item_tax_name;
 
 	var $item_type;
-	var $item_id;
-	var $item_name;
-	var $item_slug;
 
 	var $doc_id;
 	var $doc_slug;
 
 	var $current_view;
-
-	var $term_id;
-	var $item_type_term_id;
-	var $user_term_id;
 
 	var $is_new_doc;
 
@@ -91,72 +84,6 @@ class BP_Docs_Query {
 	}
 
 	/**
-	 * Gets the item id of the item (eg group, user) associated with the page you're on.
-	 *
-	 * @package BuddyPress Docs
-	 * @since 1.0-beta
-	 *
-	 * @return str $view The current item type
-	 */
-	function setup_item() {
-		global $bp;
-
-		if ( empty( $this->item_type ) )
-			return false;
-
-		$id = '';
-		$name = '';
-		$slug = '';
-
-		switch ( $this->item_type ) {
-			case 'group' :
-				if ( bp_is_group() ) {
-					$group = groups_get_current_group();
-					$id    = $group->id;
-					$name  = $group->name;
-					$slug  = $group->slug;
-				}
-				break;
-			case 'user' :
-				if ( bp_is_user() ) {
-					$id   = bp_displayed_user_id();
-					$name = bp_get_displayed_user_fullname();
-					$slug = bp_get_displayed_user_username();
-				}
-				break;
-		}
-
-		// Todo: abstract into groups. Will be a pain
-		$this->item_id 		= apply_filters( 'bp_docs_get_item_id', $id );
-		$this->item_name 	= apply_filters( 'bp_docs_get_item_name', $name );
-		$this->item_slug 	= apply_filters( 'bp_docs_get_item_slug', $slug );
-
-		// Put some stuff in $bp
-		$bp->bp_docs->current_item	= $this->item_id;
-	}
-
-	/**
-	 * Gets the id of the taxonomy term associated with the item
-	 *
-	 * @package BuddyPress Docs
-	 * @since 1.0-beta
-	 *
-	 * @return str $view The current item type
-	 */
-	function setup_terms() {
-		global $bp;
-
-		$this->term_id = bp_docs_get_item_term_id( $this->item_id, $this->item_type, $this->item_name );
-
-		if ( bp_is_user() ) {
-			// If this is a User Doc, then the user_term_id is the same as the term_id
-			$this->user_term_id = $this->term_id;
-		} else {
-			$this->user_term_id = bp_docs_get_item_term_id( $this->item_id, 'user',  bp_get_loggedin_user_fullname() );
-		}
-	}
-
-	/**
 	 * Gets the current view, based on the page you're looking at.
 	 *
 	 * Filter 'bp_docs_get_current_view' to extend to different components.
@@ -187,9 +114,6 @@ class BP_Docs_Query {
 		} else if ( $doc_slug = $this->query_args['doc_slug'] ) {
 			$wp_query_args['name'] = $doc_slug;
 		} else {
-
-			// Only call this here to reduce database calls on other pages
-			$this->setup_terms();
 
 			// 'orderby' generally passes through, except for in 'most_active' queries
 			if ( 'most_active' == $this->query_args['orderby'] ) {
@@ -459,10 +383,6 @@ class BP_Docs_Query {
 
 		// bbPress plays naughty with revision saving
 		add_action( 'pre_post_update', 'wp_save_post_revision' );
-
-		// Get the required taxonomy items associated with the group. We only run this
-		// on a save because it requires extra database hits.
-		$this->setup_terms(); // @TODO: Not sure what this is doing
 
 		// Set up the default value for the result message
 		$results = array(
