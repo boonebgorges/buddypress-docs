@@ -950,7 +950,7 @@ function bp_docs_doc_action_links() {
 	$links[] = '<a href="' . bp_docs_get_doc_link() . '">' . __( 'Read', 'bp-docs' ) . '</a>';
 
 	if ( current_user_can( 'bp_docs_edit', get_the_ID() ) ) {
-		$links[] = '<a href="' . bp_docs_get_doc_link() . BP_DOCS_EDIT_SLUG . '">' . __( 'Edit', 'bp-docs' ) . '</a>';
+		$links[] = '<a href="' . bp_docs_get_doc_edit_link() . '">' . __( 'Edit', 'bp-docs' ) . '</a>';
 	}
 
 	if ( current_user_can( 'bp_docs_view_history', get_the_ID() ) && defined( 'WP_POST_REVISIONS' ) && WP_POST_REVISIONS ) {
