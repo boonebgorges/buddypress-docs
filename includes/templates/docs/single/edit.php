@@ -71,6 +71,8 @@
 		<?php endif ?>
 
 		<div id="doc-meta">
+			<?php do_action( 'bp_docs_doc_edit_metabox_beginning', get_the_ID() ); ?>
+
 			<?php if ( bp_is_active( 'groups' ) && current_user_can( 'bp_docs_manage' ) && apply_filters( 'bp_docs_allow_associated_group', true ) ) : ?>
 				<div id="doc-associated-group" class="doc-meta-box">
 					<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class() ?>">
@@ -135,6 +137,8 @@
 
 			<?php do_action( 'bp_docs_before_parent_meta_box' ) ?>
 
+			<?php do_action( 'bp_docs_doc_edit_metabox_after_tags', get_the_ID() ); ?>
+
 			<div id="doc-parent" class="doc-meta-box">
 				<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class() ?>">
 					<p class="toggle-switch" id="parent-toggle">
@@ -161,6 +165,7 @@
 			</div>
 
 			<?php do_action( 'bp_docs_after_parent_meta_box' ) ?>
+			<?php do_action( 'bp_docs_doc_edit_metabox_end', get_the_ID() ); ?>
 		</div>
 
 		<div style="clear: both"> </div>

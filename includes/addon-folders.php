@@ -13,11 +13,17 @@ class BP_Docs_Folders {
 	 * @since 1.9
 	 */
 	public function __construct() {
+		if ( ! bp_docs_enable_folders() ) {
+			return;
+		}
+
 		$this->register_post_type();
 		$this->register_taxonomies();
 
 		add_action( 'bp_docs_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		add_action( 'bp_docs_enqueue_scripts_edit', array( $this, 'enqueue_assets' ) );
+
+		$this->setup_hooks();
 	}
 
 	/**
@@ -72,6 +78,73 @@ class BP_Docs_Folders {
 	}
 
 	/**
+	 * Hook the Folders functionality into Docs.
+	 *
+	 * @since 1.9
+	 */
+	public function setup_hooks() {
+		// Generate tax_query syntax for folder queries.
+		add_filter( 'bp_docs_tax_query', 'bp_docs_folder_tax_query', 10, 2 );
+
+		// Filter capabilities for folders.
+		add_filter( 'bp_docs_map_meta_caps', 'bp_docs_folders_map_meta_caps', 10, 4 );
+
+		// Validate folder selection when saving a Doc.
+		add_filter( 'bp_docs_before_save_folder_selection', 'bp_docs_validate_group_folder_selection_on_doc_save', 10, 2 );
+
+		// Single Doc breadcrumbs.
+		add_action( 'bp_docs_doc_breadcrumbs', 'bp_docs_folder_single_breadcrumb', 10, 2 );
+
+		// Show folder info on a single Doc.
+		add_action( 'bp_docs_single_doc_meta', 'bp_docs_display_folder_meta' );
+
+
+		// Add Folders meta box to Edit screen.
+		add_action( 'bp_docs_before_tags_meta_box', 'bp_docs_folders_meta_box' );
+
+		// Process new folder selections after save.
+		add_action( 'bp_docs_after_save', 'bp_docs_save_folder_selection' );
+
+		// Screen controllers.
+		add_action( 'bp_actions', 'bp_docs_process_folder_edit_cb' );
+		add_action( 'bp_actions', 'bp_docs_process_folder_create_cb' );
+		add_action( 'bp_actions', 'bp_docs_process_folder_delete_cb' );
+
+		// AJAX callbacks.
+		add_action( 'wp_ajax_bp_docs_update_folders', 'bp_docs_update_folders_cb' );
+		add_action( 'wp_ajax_bp_docs_update_parent_folders', 'bp_docs_update_parent_folders_cb' );
+		add_action( 'wp_ajax_bp_docs_update_folder_type', 'bp_docs_update_folder_type_cb' );
+		add_action( 'wp_ajax_bp_docs_update_folder_type_for_group', 'bp_docs_update_folder_type_for_group_cb' );
+		add_action( 'wp_ajax_bp_docs_process_folder_drop', 'bp_docs_process_folder_drop_cb' );
+
+		// Folders UI is limited to the Group context for now. Change at your own risk.
+		$enable_for_current_context = function_exists( 'bp_is_group' ) && bp_is_group();
+		if ( ! apply_filters( 'bp_docs_enable_folders_for_current_context', $enable_for_current_context ) ) {
+			return;
+		}
+
+		// Directory breadcrumbs.
+		add_filter( 'bp_docs_directory_breadcrumb', 'bp_docs_folders_directory_breadcrumb', 6 );
+
+		// Add folder info to directory filter message.
+		add_filter( 'bp_docs_get_current_filters', 'bp_docs_folder_current_filters' );
+
+		// Ensure folder filters are maintained during directory filters.
+		add_action( 'bp_docs_directory_filter_attachments_form', 'bp_docs_folders_directory_filter_form_argument' );
+		add_action( 'bp_docs_directory_filter_search_form', 'bp_docs_folders_directory_filter_form_argument' );
+
+		// Add current folder info to info message.
+		add_filter( 'bp_docs_info_header_message', 'bp_docs_folder_info_header_message', 10, 2 );
+
+		// Set up conditional filtering of tag links.
+		add_action( 'bp_docs_directory_filter_taxonomy_before', 'bp_docs_folders_directory_filter_taxonomy_hooker' );
+		add_action( 'bp_docs_directory_filter_taxonomy_after', 'bp_docs_folders_directory_filter_taxonomy_unhooker' );
+
+		// Modify Create links to be folder-sensitive.
+		add_filter( 'bp_docs_get_create_link', 'bp_docs_folders_create_link' );
+	}
+
+	/**
 	 * Enqueue CSS and JS assets.
 	 *
 	 * @since 1.9
@@ -99,6 +172,19 @@ class BP_Docs_Folders {
 }
 
 /** Utility functions ********************************************************/
+
+/**
+ * Is the folders function enabled?
+ *
+ * Use this toggle to disable folders.
+ *
+ * @since 1.9
+ *
+ * @return bool
+ */
+function bp_docs_enable_folders() {
+	return apply_filters( 'bp_docs_enable_folders', true );
+}
 
 /**
  * Concatenate a slug for bp_docs_doc_in_folder terms, based on folder ID.
@@ -772,7 +858,6 @@ function bp_docs_folder_tax_query( $tax_query, $bp_docs_query ) {
 
 	return $tax_query;
 }
-add_filter( 'bp_docs_tax_query', 'bp_docs_folder_tax_query', 10, 2 );
 
 /**
  * Folder-specific meta cap mapping.
@@ -848,7 +933,6 @@ function bp_docs_folders_map_meta_caps( $caps, $cap, $user_id, $args ) {
 
 	return $caps;
 }
-add_filter( 'bp_docs_map_meta_caps', 'bp_docs_folders_map_meta_caps', 10, 4 );
 
 /** "Action" functions *******************************************************/
 
@@ -925,7 +1009,6 @@ function bp_docs_save_folder_selection( $doc_id ) {
 
 	return $retval;
 }
-add_action( 'bp_docs_after_save', 'bp_docs_save_folder_selection' );
 
 /**
  * Validate group-folder selection when saving a Doc.
@@ -951,7 +1034,6 @@ function bp_docs_validate_group_folder_selection_on_doc_save( $check, $doc_id ) 
 
 	return $check;
 }
-add_filter( 'bp_docs_before_save_folder_selection', 'bp_docs_validate_group_folder_selection_on_doc_save', 10, 2 );
 
 /**
  * Process folder edits.
@@ -1010,7 +1092,6 @@ function bp_docs_process_folder_edit_cb() {
 	bp_core_redirect( $redirect_url );
 	die();
 }
-add_action( 'bp_actions', 'bp_docs_process_folder_edit_cb' );
 
 /**
  * Process folder creation from manage-folders.
@@ -1081,7 +1162,6 @@ function bp_docs_process_folder_create_cb() {
 	bp_core_redirect( $redirect_url );
 	die();
 }
-add_action( 'bp_actions', 'bp_docs_process_folder_create_cb' );
 
 /**
  * Catch a request to delete a folder.
@@ -1133,7 +1213,6 @@ function bp_docs_process_folder_delete_cb() {
 	bp_core_redirect( remove_query_arg( 'delete-folder', bp_get_requested_url() ) );
 	die();
 }
-add_action( 'bp_actions', 'bp_docs_process_folder_delete_cb' );
 
 /** AJAX Handlers ************************************************************/
 
@@ -1158,7 +1237,6 @@ function bp_docs_update_folders_cb() {
 	die();
 
 }
-add_action( 'wp_ajax_bp_docs_update_folders', 'bp_docs_update_folders_cb' );
 
 /**
  * Update parent folder selector based on folder type.
@@ -1192,7 +1270,6 @@ function bp_docs_update_parent_folders_cb() {
 	die();
 
 }
-add_action( 'wp_ajax_bp_docs_update_parent_folders', 'bp_docs_update_parent_folders_cb' );
 
 /**
  * Update folder type selector based on value of parent selector.
@@ -1263,7 +1340,6 @@ function bp_docs_update_folder_type_cb() {
 
 	die();
 }
-add_action( 'wp_ajax_bp_docs_update_folder_type', 'bp_docs_update_folder_type_cb' );
 
 /**
  * Update available folder types when the group is changed.
@@ -1285,7 +1361,6 @@ function bp_docs_update_folder_type_for_group_cb() {
 
 	die();
 }
-add_action( 'wp_ajax_bp_docs_update_folder_type_for_group', 'bp_docs_update_folder_type_for_group_cb' );
 
 /**
  * Process folder drops.
@@ -1325,7 +1400,6 @@ function bp_docs_process_folder_drop_cb() {
 		die( '-1' );
 	}
 }
-add_action( 'wp_ajax_bp_docs_process_folder_drop', 'bp_docs_process_folder_drop_cb' );
 
 /** Template functions *******************************************************/
 
@@ -1575,7 +1649,6 @@ function bp_docs_folder_single_breadcrumb( $crumbs, $doc ) {
 	$folder_crumbs = bp_docs_get_folder_breadcrumbs( $doc );
 	return array_merge( $folder_crumbs, $crumbs );
 }
-add_action( 'bp_docs_doc_breadcrumbs', 'bp_docs_folder_single_breadcrumb', 10, 2 );
 
 /**
  * Add folder information to directory breadcrumbs.
@@ -1586,7 +1659,6 @@ function bp_docs_folders_directory_breadcrumb( $crumbs ) {
 	$folder_crumbs = bp_docs_get_folder_breadcrumbs();
 	return array_merge( $crumbs, $folder_crumbs );
 }
-add_filter( 'bp_docs_directory_breadcrumb', 'bp_docs_folders_directory_breadcrumb', 6 );
 
 /**
  * Generate folder breadcrumbs for the current item.
@@ -1697,7 +1769,8 @@ function bp_docs_create_new_folder_markup( $args = array() ) {
  */
 function bp_docs_folders_meta_box() {
 
-	$associated_group_id = bp_docs_get_associated_group_id( get_the_ID() );
+	$doc_id = get_the_ID();
+	$associated_group_id = bp_docs_get_associated_group_id( $doc_id );
 
 	if ( ! $associated_group_id && isset( $_GET['group'] ) ) {
 		$group_id = BP_Groups_Group::get_id_from_slug( urldecode( $_GET['group'] ) );
@@ -1709,6 +1782,8 @@ function bp_docs_folders_meta_box() {
 	// On the Create screen, respect the 'folder' $_GET param
 	if ( bp_docs_is_doc_create() ) {
 		$folder_id = bp_docs_get_current_folder_id();
+	} else {
+		$folder_id = bp_docs_get_doc_folder( $doc_id );
 	}
 
 	?>
@@ -1761,7 +1836,6 @@ function bp_docs_folders_meta_box() {
 
 	<?php
 }
-add_action( 'bp_docs_before_tags_meta_box', 'bp_docs_folders_meta_box' );
 
 /**
  * Show Folder info on a single Doc.
@@ -1789,7 +1863,6 @@ function bp_docs_display_folder_meta() {
 		esc_attr( $folder->post_title )
 	);
 }
-add_action( 'bp_docs_single_doc_meta', 'bp_docs_display_folder_meta' );
 
 /**
  * Get the URL for a folder view.
@@ -1894,7 +1967,6 @@ function bp_docs_folder_current_filters( $filters ) {
 
 	return $filters;
 }
-add_filter( 'bp_docs_get_current_filters', 'bp_docs_folder_current_filters' );
 
 /**
  * Add folder filter info to the directory header message.
@@ -1930,7 +2002,6 @@ function bp_docs_folder_info_header_message( $message, $filters ) {
 
 	return $message;
 }
-add_filter( 'bp_docs_info_header_message', 'bp_docs_folder_info_header_message', 10, 2 );
 
 /**
  * Add a hidden 'folder' param to directory filter forms.
@@ -1948,8 +2019,6 @@ function bp_docs_folders_directory_filter_form_argument() {
 		);
 	}
 }
-add_action( 'bp_docs_directory_filter_attachments_form', 'bp_docs_folders_directory_filter_form_argument' );
-add_action( 'bp_docs_directory_filter_search_form', 'bp_docs_folders_directory_filter_form_argument' );
 
 /**
  * Add the 'folder' param to Doc tag URLs when in a directory.
@@ -1974,7 +2043,6 @@ function bp_docs_folders_directory_tag_link_argument( $link ) {
 function bp_docs_folders_directory_filter_taxonomy_hooker() {
 	add_filter( 'bp_docs_get_tag_link_url', 'bp_docs_folders_directory_tag_link_argument' );
 }
-add_action( 'bp_docs_directory_filter_taxonomy_before', 'bp_docs_folders_directory_filter_taxonomy_hooker' );
 
 /**
  * Callback for hooking bp_docs_folders_directory_tag_link_argument().
@@ -1986,7 +2054,6 @@ add_action( 'bp_docs_directory_filter_taxonomy_before', 'bp_docs_folders_directo
 function bp_docs_folders_directory_filter_taxonomy_unhooker() {
 	remove_filter( 'bp_docs_get_tag_link_url', 'bp_docs_folders_directory_tag_link_argument' );
 }
-add_action( 'bp_docs_directory_filter_taxonomy_after', 'bp_docs_folders_directory_filter_taxonomy_unhooker' );
 
 /**
  * Make the Create Doc link sensitive to the current folder.
@@ -2005,7 +2072,6 @@ function bp_docs_folders_create_link( $link ) {
 
 	return $link;
 }
-add_filter( 'bp_docs_get_create_link', 'bp_docs_folders_create_link' );
 
 /**
  * Create dropdown <option> values for BP Docs Folders.
