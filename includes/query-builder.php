@@ -395,7 +395,7 @@ class BP_Docs_Query {
 		if ( bp_is_active( 'groups' ) ) {
 			// Check whether the user can associate the doc with the group.
 			// $args['group_id'] could be null (untouched) or 0, which unsets existing association
-			if ( ! empty( $args['group_id'] ) && ! current_user_can( 'bp_docs_associate_with_group', $args['group_id'], $args['author_id'] ) ) {
+			if ( ! empty( $args['group_id'] ) && ! user_can( $args['author_id'], 'bp_docs_associate_with_group', $args['group_id'] ) ) {
 				$retval = array(
 					'message_type' => 'error',
 					'message' => __( 'You are not allowed to associate a Doc with that group.', 'bp-docs' ),
