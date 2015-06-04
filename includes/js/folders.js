@@ -69,8 +69,12 @@
 		init_doc_drag();
 	} );
 
+	/**
+	 * Folder functionality only applies to groups, so only display meta box
+	 * if a group is selected.
+	 */
 	function update_folder_metabox_display() {
-		if ( $( '#associated_group_id' ).val().length ) {
+		if ( $( '#associated_group_id' ).length && $( '#associated_group_id' ).val().length ) {
 			$( '#doc-folders' ).show();
 		} else {
 			$( '#doc-folders' ).hide();
