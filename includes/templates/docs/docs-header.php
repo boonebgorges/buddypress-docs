@@ -1,8 +1,10 @@
 <?php do_action( 'bp_docs_before_doc_header' ) ?>
 
 <?php /* Subnavigation on user pages is handled by BP's core functions */ ?>
-<?php if ( ! bp_is_user() && current_user_can( 'bp_docs_create' ) ) : ?>
-	<?php bp_docs_create_button() ?>
+<?php if ( ! bp_is_user() ): ?>
+	<div class="item-list-tabs no-ajax" id="subnav" role="navigation">
+		<?php bp_docs_tabs( current_user_can( 'bp_docs_create' ) ); ?>
+	</div><!-- .item-list-tabs -->
 <?php endif ?>
 
 <?php do_action( 'bp_docs_before_doc_header_content' ) ?>
