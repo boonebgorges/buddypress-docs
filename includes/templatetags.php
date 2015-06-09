@@ -93,7 +93,9 @@ function bp_docs_has_docs( $args = array() ) {
 			$d_paged = absint( $wp_query->get( 'paged' ) );
 		}
 
-		$d_posts_per_page = !empty( $_GET['posts_per_page'] ) ? absint( $_GET['posts_per_page'] ) : 10;
+		// Use the calculated posts_per_page number from $wp_query->query_vars.
+		// If that value isn't set, we assume 10 posts per page.
+		$d_posts_per_page = absint( $wp_query->get( 'posts_per_page', 10 ) );
 
 		// doc_slug
 		$d_doc_slug = !empty( $bp->bp_docs->query->doc_slug ) ? $bp->bp_docs->query->doc_slug : '';
