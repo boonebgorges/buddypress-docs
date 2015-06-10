@@ -14,7 +14,7 @@
 		<?php bp_docs_info_header() ?>
 	</div>
 
-	<?php if ( bp_docs_enable_folders() && function_exists( 'bp_is_group' ) && bp_is_group() ) : ?>
+	<?php if ( bp_docs_enable_folders_for_current_context() ) : ?>
 		<div class="folder-action-links">
 			<?php if ( current_user_can( 'bp_docs_manage_folders' ) ) : ?>
 				<div class="manage-folders-link">
@@ -61,7 +61,7 @@
 
         <tbody>
 
-	<?php if ( bp_docs_enable_folders() ) : ?>
+	<?php if ( bp_docs_enable_folders_for_current_context() ) : ?>
 		<?php /* The '..' row */ ?>
 		<?php if ( ! empty( $_GET['folder'] ) ) : ?>
 			<tr class="folder-row">
@@ -94,7 +94,7 @@
 				</tr>
 			<?php endforeach ?>
 		<?php endif; ?>
-	<?php endif; /* bp_docs_enable_folders() */ ?>
+	<?php endif; /* bp_docs_enable_folders_for_current_context() */ ?>
 
 	<?php $has_docs = false ?>
 	<?php if ( bp_docs_has_docs() ) : ?>
