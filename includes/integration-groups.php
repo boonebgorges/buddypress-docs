@@ -70,6 +70,9 @@ class BP_Docs_Groups_Integration {
 		// On group Doc directories, add the "Unlink from Group" action link
 		add_filter( 'bp_docs_doc_action_links', 		array( $this, 'add_doc_action_unlink_from_group_link' ), 10, 2 );
 
+		// On group Doc directories, modify the pagination base so that pagination works within the directory.
+		add_filter( 'bp_docs_page_links_base_url', 		array( $this, 'filter_bp_docs_page_links_base_url' ), 10, 2 );
+
 		// Update group last active metadata when a doc is created, updated, or saved
 		add_filter( 'bp_docs_after_save',               array( $this, 'update_group_last_active' )  );
 		add_filter( 'bp_docs_before_doc_delete',        array( $this, 'update_group_last_active' ) );
@@ -142,11 +145,13 @@ class BP_Docs_Groups_Integration {
 	 * @since 1.0-beta
 	 */
 	function get_current_view( $view, $item_type ) {
-		global $bp;
+		global $bp, $wp_rewrite;
 
 		if ( $item_type == 'group' ) {
-			if ( empty( $bp->action_variables[0] ) ) {
-				// An empty $bp->action_variables[0] means that you're looking at a list
+			if ( empty( $bp->action_variables[0] )
+				|| ( $wp_rewrite->using_permalinks() && $wp_rewrite->pagination_base == $bp->action_variables[0] ) ) {
+				// An empty $bp->action_variables[0] means that you're looking at a list.
+				// A url like group-slug/docs/page/3 also means you're looking at a list.
 				$view = 'list';
 			} else if ( $bp->action_variables[0] == BP_DOCS_CATEGORY_SLUG ) {
 				// Category view
@@ -792,6 +797,21 @@ class BP_Docs_Groups_Integration {
 			}
 		}
 		return $links;
+	}
+
+	/**
+	 * On group Doc directories, modify the pagination base so that pagination
+	 * works within the directory.
+	 *
+	 * @package BuddyPress_Docs
+	 * @subpackage Groups
+	 * @since 1.9.0
+	 */
+	public function filter_bp_docs_page_links_base_url( $base_url, $wp_rewrite_pag_base  ) {
+		if ( bp_is_group() ) {
+			$base_url = user_trailingslashit( trailingslashit( bp_get_group_permalink() . bp_docs_get_docs_slug() ) . $wp_rewrite_pag_base . '/%#%/' );
+		}
+		return $base_url;
 	}
 
 	/**
