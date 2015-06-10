@@ -55,15 +55,16 @@ class BP_Docs_Users_Integration {
 		global $wp_rewrite;
 
 		if ( $item_type == 'user' ) {
-			if ( empty( bp_current_action() )
-				|| in_array( bp_current_action(), array( BP_DOCS_STARTED_SLUG , BP_DOCS_EDITED_SLUG ) ) ) {
+			$current_action = bp_current_action();
+			if ( empty( $current_action )
+				|| in_array( $current_action, array( BP_DOCS_STARTED_SLUG, BP_DOCS_EDITED_SLUG ) ) ) {
 				// An empty $bp->action_variables[0] means that you're looking at a list.
 				// A url like members/terry/docs/started/page/3 also means you're looking at a list.
 				$view = 'list';
-			} else if ( bp_is_current_action( BP_DOCS_CATEGORY_SLUG ) ) {
+			} else if ( $current_action == BP_DOCS_CATEGORY_SLUG ) {
 				// Category view
 				$view = 'category';
-			} else if ( bp_is_current_action( BP_DOCS_CREATE_SLUG ) ) {
+			} else if ( $current_action == BP_DOCS_CREATE_SLUG ) {
 				// Create new doc
 				$view = 'create';
 			} else if ( !bp_action_variable( 0 ) ) {
