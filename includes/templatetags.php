@@ -2206,15 +2206,15 @@ function bp_docs_doc_attachment_drawer() {
  *
  * @since 1.5.5
  */
-function bp_docs_doc_row_classes() {
-	$classes = array();
+function bp_docs_doc_row_classes( $doc_id ) {
+	$classes = array( 'bp-doc', 'bp-doc-' . intval( $doc_id ) );
 
-	if ( get_post_status( get_the_ID() ) == 'trash' ) {
+	if ( get_post_status( $doc_id ) == 'trash' ) {
 		$classes[] = 'bp-doc-trashed-doc';
 	}
 
 	// Pass the classes out as an array for easy unsetting or adding new elements
-	$classes = apply_filters( 'bp_docs_doc_row_classes', $classes );
+	$classes = apply_filters( 'bp_docs_doc_row_classes', $classes, $doc_id );
 
 	if ( ! empty( $classes ) ) {
 		$classes = implode( ' ', $classes );

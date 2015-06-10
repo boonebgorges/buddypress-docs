@@ -29,7 +29,37 @@
 		</div>
 	<?php endif; ?>
 
-	<div class="docs-list">
+	<table class="doctable">
+
+	<thead>
+		<tr valign="bottom">
+			<?php if ( bp_docs_enable_attachments() ) : ?>
+				<th scope="column" class="attachment-clip-cell"> </th>
+			<?php endif ?>
+
+			<th scope="column" class="title-cell<?php bp_docs_is_current_orderby_class( 'title' ) ?>">
+				<a href="<?php bp_docs_order_by_link( 'title' ) ?>"><?php _e( 'Title', 'bp-docs' ); ?></a>
+			</th>
+
+			<?php if ( ! bp_docs_is_started_by() ) : ?>
+				<th scope="column" class="author-cell<?php bp_docs_is_current_orderby_class( 'author' ) ?>">
+					<a href="<?php bp_docs_order_by_link( 'author' ) ?>"><?php _e( 'Author', 'bp-docs' ); ?></a>
+				</th>
+			<?php endif; ?>
+
+			<th scope="column" class="created-date-cell<?php bp_docs_is_current_orderby_class( 'created' ) ?>">
+				<a href="<?php bp_docs_order_by_link( 'created' ) ?>"><?php _e( 'Created', 'bp-docs' ); ?></a>
+			</th>
+
+			<th scope="column" class="edited-date-cell<?php bp_docs_is_current_orderby_class( 'modified' ) ?>">
+				<a href="<?php bp_docs_order_by_link( 'modified' ) ?>"><?php _e( 'Last Edited', 'bp-docs' ); ?></a>
+			</th>
+
+			<?php do_action( 'bp_docs_loop_additional_th' ) ?>
+		</tr>
+        </thead>
+
+        <tbody>
 
 	<?php if ( bp_docs_enable_folders_for_current_context() ) : ?>
 		<?php /* The '..' row */ ?>
@@ -70,59 +100,53 @@
 	<?php if ( bp_docs_has_docs() ) : ?>
 		<?php $has_docs = true ?>
 		<?php while ( bp_docs_has_docs() ) : bp_docs_the_doc() ?>
-			<div <?php bp_docs_doc_row_classes( get_the_ID() ); ?>>
+			<tr<?php bp_docs_doc_row_classes(); ?>>
 				<?php if ( bp_docs_enable_attachments() ) : ?>
-					<div class="attachment-clip-cell">
+					<td class="attachment-clip-cell">
 						<?php bp_docs_attachment_icon() ?>
-					</div>
+					</td>
 				<?php endif ?>
 
-				<h3 class="doc-title">
+				<td class="title-cell">
 					<i class="genericon genericon-document"></i><a href="<?php bp_docs_doc_link() ?>"><?php the_title() ?></a> <?php bp_docs_doc_trash_notice(); ?>
-				</h3>
 
-				<?php if ( bp_docs_get_excerpt_length() ) : ?>
-					<div class="doc-excerpt">
-						<?php the_excerpt() ?>
+					<?php if ( bp_docs_get_excerpt_length() ) : ?>
+						<div class="doc-excerpt">
+							<?php the_excerpt() ?>
+						</div>
+					<?php endif ?>
+
+					<?php do_action( 'bp_docs_loop_after_doc_excerpt' ) ?>
+
+					<div class="row-actions">
+						<?php bp_docs_doc_action_links() ?>
 					</div>
-				<?php endif ?>
 
-				<?php do_action( 'bp_docs_loop_after_doc_excerpt' ) ?>
-
-				<div class="doc-created-meta">
-					<?php $author_id = get_the_author_meta( 'ID' );
-					      printf(
-					          __( 'Created %s by %s', 'bp-docs' ),
-						  get_the_date(),
-						  sprintf( '<a href="%s" title="%s">%s</a>', esc_url( bp_core_get_user_domain( $author_id ) ), esc_html( bp_core_get_user_displayname( $author_id ) ), esc_html( bp_core_get_user_displayname( $author_id ) ) )
-					      ); ?>
-				</div>
-
-				<?php $modified_id = get_post_meta( get_the_ID(), 'bp_docs_last_editor', true ) ?>
-				<?php if ( $modified_id && get_the_date( 'U' ) !== get_the_modified_date( 'U' ) ) : ?>
-					<div class="doc-modified-meta">
-						<?php printf(
-							  __( 'Last edited %s by %s', 'bp-docs' ),
-							  get_the_modified_date(),
-							  sprintf( '<a href="%s" title="%s">%s</a>', esc_url( bp_core_get_user_domain( $modified_id ) ), esc_html( bp_core_get_user_displayname( $modified_id ) ), esc_html( bp_core_get_user_displayname( $modified_id ) ) )
-						      ); ?>
+					<div class="bp-docs-attachment-drawer" id="bp-docs-attachment-drawer-<?php echo get_the_ID() ?>">
+						<?php bp_docs_doc_attachment_drawer() ?>
 					</div>
+				</td>
+
+				<?php if ( ! bp_docs_is_started_by() ) : ?>
+					<td class="author-cell">
+						<a href="<?php echo bp_core_get_user_domain( get_the_author_meta( 'ID' ) ) ?>" title="<?php echo bp_core_get_user_displayname( get_the_author_meta( 'ID' ) ) ?>"><?php echo bp_core_get_user_displayname( get_the_author_meta( 'ID' ) ) ?></a>
+					</td>
 				<?php endif; ?>
 
-				<?php do_action( 'bp_docs_loop_after_doc_meta' ) ?>
+				<td class="date-cell created-date-cell">
+					<?php echo get_the_date() ?>
+				</td>
 
-				<div class="row-actions">
-					<?php bp_docs_doc_action_links() ?>
-				</div>
+				<td class="date-cell edited-date-cell">
+					<?php echo get_the_modified_date() ?>
+				</td>
 
-				<div class="bp-docs-attachment-drawer" id="bp-docs-attachment-drawer-<?php echo get_the_ID() ?>">
-					<?php bp_docs_doc_attachment_drawer() ?>
-				</div>
-			</div>
+				<?php do_action( 'bp_docs_loop_additional_td' ) ?>
+			</tr>
 		<?php endwhile ?>
 	<?php endif ?>
-
-	</div><!-- #docs-list -->
+	</tbody>
+	</table>
 
 	<?php if ( $has_docs ) : ?>
 		<div id="bp-docs-pagination">

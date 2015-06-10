@@ -207,8 +207,10 @@ body.mobile .row-actions {
 	width: 200px;
 }
 
-.doc-excerpt {
-	margin-left: 16px;
+table.doctable {
+	.doc-excerpt {
+		margin-left: 16px;
+	}
 }
 
 .list-item-breadcrumb {
@@ -800,6 +802,24 @@ h2.directory-title {
 	.breadcrumb-current {
 		font-weight: bold;
 	}
+}
+
+h3.doc-title {
+	font-size: 1.3em;
+	font-weight: normal;
+	margin-bottom: 0;
+
+	i {
+		margin-right: 6px;
+	}
+}
+
+.doc-excerpt p {
+	margin-bottom: .5em;
+}
+
+.doc-created-meta, .doc-edited-meta {
+	font-size: .9em;
 }
 
 .directory-breadcrumb-separator {

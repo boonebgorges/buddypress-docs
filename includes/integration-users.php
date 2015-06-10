@@ -365,4 +365,4 @@ function bp_docs_user_breadcrumbs_in_doc_list() {
 		) ) ?>
 	</div><?php
 }
-add_action( 'bp_docs_loop_after_doc_excerpt', 'bp_docs_user_breadcrumbs_in_doc_list' );
+add_action( 'bp_docs_loop_after_doc_meta', 'bp_docs_user_breadcrumbs_in_doc_list' );

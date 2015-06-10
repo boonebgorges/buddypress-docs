@@ -347,7 +347,12 @@ class BP_Docs_Component extends BP_Component {
 	 * @since 1.2
 	 */
 	function select_template() {
-		$template = 'docs-loop.php';
+		if ( apply_filters( 'bp_docs_use_legacy_directory_template', false ) ) {
+			$template = 'legacy/docs-loop.php';
+		} else {
+			$template = 'docs-loop.php';
+		}
+
 		include bp_docs_locate_template( apply_filters( 'bp_docs_select_template', $template ) );
 	}
 
