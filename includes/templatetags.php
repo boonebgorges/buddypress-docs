@@ -567,6 +567,44 @@ function bp_docs_mydocs_edited_link() {
 	}
 
 /**
+ * Echoes the output of bp_docs_get_displayed_user_docs_started_link()
+ *
+ * @package BuddyPress_Docs
+ * @since 1.9
+ */
+function bp_docs_displayed_user_docs_started_link() {
+        echo bp_docs_get_displayed_user_docs_started_link();
+}
+	/**
+     * Get the link to the Started By tab of the displayed user
+     *
+     * @package BuddyPress_Docs
+     * @since 1.9
+     */
+	function bp_docs_get_displayed_user_docs_started_link() {
+		return apply_filters( 'bp_docs_get_displayed_user_docs_started_link', user_trailingslashit( trailingslashit( bp_displayed_user_domain() . bp_docs_get_docs_slug() ) . BP_DOCS_STARTED_SLUG ) );
+	}
+
+/**
+ * Echoes the output of bp_docs_get_displayed_user_docs_edited_link()
+ *
+ * @package BuddyPress_Docs
+ * @since 1.9
+ */
+function bp_docs_displayed_user_docs_edited_link() {
+        echo bp_docs_get_displayed_user_docs_edited_link();
+}
+	/**
+     * Get the link to the Edited By tab of the displayed user
+     *
+     * @package BuddyPress_Docs
+     * @since 1.9
+     */
+	function bp_docs_get_displayed_user_docs_edited_link() {
+		return apply_filters( 'bp_docs_get_displayed_user_docs_edited_link', user_trailingslashit( trailingslashit( bp_displayed_user_domain() . bp_docs_get_docs_slug() ) . BP_DOCS_EDITED_SLUG ) );
+	}
+
+/**
  * Echoes the output of bp_docs_get_create_link()
  *
  * @package BuddyPress_Docs
