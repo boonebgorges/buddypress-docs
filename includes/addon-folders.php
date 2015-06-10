@@ -118,8 +118,7 @@ class BP_Docs_Folders {
 		add_action( 'wp_ajax_bp_docs_process_folder_drop', 'bp_docs_process_folder_drop_cb' );
 
 		// Folders UI is limited to the Group context for now. Change at your own risk.
-		$enable_for_current_context = function_exists( 'bp_is_group' ) && bp_is_group();
-		if ( ! apply_filters( 'bp_docs_enable_folders_for_current_context', $enable_for_current_context ) ) {
+		if ( ! bp_docs_enable_folders_for_current_context() ) {
 			return;
 		}
 
@@ -184,6 +183,21 @@ class BP_Docs_Folders {
  */
 function bp_docs_enable_folders() {
 	return apply_filters( 'bp_docs_enable_folders', true );
+}
+
+/**
+ * Is the folders function enabled for the current context?
+ *
+ * Use this toggle to filter whether folders should be enabled in the current interface.
+ *
+ * @since 1.9
+ *
+ * @return bool
+ */
+function bp_docs_enable_folders_for_current_context() {
+	// Enabled only in groups by default. Enable elsewhere only at your own risk.
+	$enable = function_exists( 'bp_is_group' ) && bp_is_group();
+	return apply_filters( 'bp_docs_enable_folders_for_current_context', (bool) $enable );
 }
 
 /**
