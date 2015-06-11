@@ -187,11 +187,14 @@ body.mobile .row-actions {
 		color: #f00;
 	}
 
-
-
-
 #docs-filter-submit {
 	margin: 10px 4px;
+}
+
+table.doctable {
+	.doc-excerpt {
+		margin-left: 16px;
+	}
 }
 
 .author-cell, .created-date-cell, .edited-date-cell {
@@ -205,12 +208,6 @@ body.mobile .row-actions {
 
 .tags-cell {
 	width: 200px;
-}
-
-table.doctable {
-	.doc-excerpt {
-		margin-left: 16px;
-	}
 }
 
 .list-item-breadcrumb {
@@ -793,6 +790,21 @@ a.nonexistent-doc {
 	color: #f33;
 }
 
+/* Minimal directory */
+.docs-list {
+	.bp-doc:hover {
+		background: $grey;
+		.row-actions {
+			visibility: visible;
+		}
+	}
+}
+
+.bp-doc {
+	margin-top: 1em;
+	padding: 8px 8px 8px 29px;
+}
+
 h2.doc-title,
 h2.directory-title {
 	display: inline-block;
@@ -807,7 +819,7 @@ h2.directory-title {
 h3.doc-title {
 	font-size: 1.3em;
 	font-weight: normal;
-	margin-bottom: 0;
+	margin: 0 0 0 -21px;
 
 	i {
 		margin-right: 6px;
@@ -818,8 +830,9 @@ h3.doc-title {
 	margin-bottom: .5em;
 }
 
-.doc-created-meta, .doc-edited-meta {
+.doc-created-meta, .doc-modified-meta, .doc-tags {
 	font-size: .9em;
+	color: $grey_text;
 }
 
 .directory-breadcrumb-separator {

@@ -55,6 +55,9 @@ class BP_Docs_Taxonomy {
 		add_filter( 'bp_docs_loop_additional_th', array( $this, 'tags_th' ) );
 		add_filter( 'bp_docs_loop_additional_td', array( $this, 'tags_td' ) );
 
+		// Display tags in minimal directory.
+		add_action( 'bp_docs_loop_after_doc_meta', array( $this, 'display_loop_tags' ) );
+
 		// Filter the message in the docs info header
 		add_filter( 'bp_docs_info_header_message', array( $this, 'info_header_message' ), 10, 2 );
 
@@ -293,6 +296,35 @@ class BP_Docs_Taxonomy {
 		<td class="tags-cell">
 			<?php echo implode( ', ', $tagtext ) ?>
 		</td>
+
+		<?php
+	}
+
+	/**
+	 * Display tag info in the Docs loop.
+	 *
+	 * @since 1.9
+	 *
+	 * @param int $doc_id ID of the Doc.
+	 */
+	public function display_loop_tags( $doc_id ) {
+		$tags = get_the_terms( $doc_id, $this->docs_tag_tax_name );
+		if ( empty( $tags ) ) {
+			return '';
+		}
+
+		$tagtext = array();
+		foreach ( (array) $tags as $tag ) {
+			if ( ! empty( $tag->name ) ) {
+				$tagtext[] = bp_docs_get_tag_link( array( 'tag' => $tag->name ) );
+			}
+		}
+
+		?>
+
+		<div class="doc-tags">
+			<?php printf( __( 'Tags: %s', 'bp-docs' ), implode( ', ', $tagtext ) ) ?>
+		</div>
 
 		<?php
 	}

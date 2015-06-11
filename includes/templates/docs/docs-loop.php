@@ -6,9 +6,12 @@
 	<?php bp_locate_template( 'docs/manage-folders.php', true ) ?>
 <?php else : ?>
 
-	<h2 class="directory-title">
-		<?php bp_docs_directory_breadcrumb() ?>
-	</h2>
+	<?php $breadcrumb_markup = bp_docs_get_directory_breadcrumb() ?>
+	<?php if ( strip_tags( $breadcrumb_markup ) ) : ?>
+		<h2 class="directory-title">
+			<?php echo $breadcrumb_markup ?>
+		</h2>
+	<?php endif; ?>
 
 	<div class="docs-info-header">
 		<?php bp_docs_info_header() ?>
@@ -89,27 +92,29 @@
 
 				<?php do_action( 'bp_docs_loop_after_doc_excerpt' ) ?>
 
-				<div class="doc-created-meta">
-					<?php $author_id = get_the_author_meta( 'ID' );
-					      printf(
-					          __( 'Created %s by %s', 'bp-docs' ),
-						  get_the_date(),
-						  sprintf( '<a href="%s" title="%s">%s</a>', esc_url( bp_core_get_user_domain( $author_id ) ), esc_html( bp_core_get_user_displayname( $author_id ) ), esc_html( bp_core_get_user_displayname( $author_id ) ) )
-					      ); ?>
-				</div>
-
-				<?php $modified_id = get_post_meta( get_the_ID(), 'bp_docs_last_editor', true ) ?>
-				<?php if ( $modified_id && get_the_date( 'U' ) !== get_the_modified_date( 'U' ) ) : ?>
-					<div class="doc-modified-meta">
-						<?php printf(
-							  __( 'Last edited %s by %s', 'bp-docs' ),
-							  get_the_modified_date(),
-							  sprintf( '<a href="%s" title="%s">%s</a>', esc_url( bp_core_get_user_domain( $modified_id ) ), esc_html( bp_core_get_user_displayname( $modified_id ) ), esc_html( bp_core_get_user_displayname( $modified_id ) ) )
+				<div class="doc-author-meta">
+					<span class="doc-created-meta">
+						<?php $author_id = get_the_author_meta( 'ID' );
+						      printf(
+							  __( 'Created %s by %s', 'bp-docs' ),
+							  get_the_date(),
+							  sprintf( '<a href="%s" title="%s">%s</a>', esc_url( bp_core_get_user_domain( $author_id ) ), esc_html( bp_core_get_user_displayname( $author_id ) ), esc_html( bp_core_get_user_displayname( $author_id ) ) )
 						      ); ?>
-					</div>
-				<?php endif; ?>
+					</span>
 
-				<?php do_action( 'bp_docs_loop_after_doc_meta' ) ?>
+					<?php $modified_id = get_post_meta( get_the_ID(), 'bp_docs_last_editor', true ) ?>
+					<?php if ( $modified_id && get_the_date( 'U' ) !== get_the_modified_date( 'U' ) ) : ?>
+						<span class="doc-modified-meta">
+							<?php printf(
+								  ' &middot; ' . __( 'Edited %s by %s', 'bp-docs' ),
+								  get_the_modified_date(),
+								  sprintf( '<a href="%s" title="%s">%s</a>', esc_url( bp_core_get_user_domain( $modified_id ) ), esc_html( bp_core_get_user_displayname( $modified_id ) ), esc_html( bp_core_get_user_displayname( $modified_id ) ) )
+							      ); ?>
+						</span>
+					<?php endif; ?>
+				</div><!-- .doc-author-meta -->
+
+				<?php do_action( 'bp_docs_loop_after_doc_meta', get_the_ID() ) ?>
 
 				<div class="row-actions">
 					<?php bp_docs_doc_action_links() ?>
