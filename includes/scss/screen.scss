@@ -792,6 +792,19 @@ a.nonexistent-doc {
 
 /* Minimal directory */
 .docs-list {
+	.docs-list-section-header {
+		display: inline-block;
+		padding-right: 12px;
+	}
+
+	.folder-row {
+		padding: 4px 8px;
+	}
+
+	.folder-row:hover {
+		background: $grey;
+	}
+
 	.bp-doc:hover {
 		background: $grey;
 		.row-actions {
@@ -950,6 +963,10 @@ body.js {
 	li.folder-open {
 		opacity: 1;
 	}
+}
+
+div.folder-action-links {
+	overflow: hidden;
 }
 
 div.manage-folders-link,

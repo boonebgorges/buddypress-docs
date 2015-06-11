@@ -314,16 +314,20 @@
 
 	function toggle_folder_list() {
 		$doctable = $( 'table.doctable' );
-		if ( ! $doctable ) {
+		if ( ! $doctable.length ) {
+			$doctable = $( 'div.docs-list' );
+		}
+
+		if ( ! $doctable.length ) {
 			return;
 		}
 
 		if ( $( '#toggle-folders-hide' ).is( ':visible' ) ) {
-			$doctable.find( 'tr.folder-row' ).hide();
+			$doctable.find( '.folder-row' ).hide();
 			$( '#toggle-folders-hide' ).hide();
 			$( '#toggle-folders-show' ).show();
 		} else {
-			$doctable.find( 'tr.folder-row' ).show();
+			$doctable.find( '.folder-row' ).show();
 			$( '#toggle-folders-hide' ).show();
 			$( '#toggle-folders-show' ).hide();
 		}
