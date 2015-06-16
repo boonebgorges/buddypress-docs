@@ -1548,9 +1548,15 @@ function bp_docs_unlink_from_group( $doc_id, $group_id = 0 ) {
 		return false;
 	}
 
+	do_action( 'bp_docs_before_doc_unlink_from_group', $doc_id, $group_id, $term );
+
 	$removed = wp_remove_object_terms( $doc_id, $term, bp_docs_get_associated_item_tax_name() );
 	// wp_remove_object_terms returns true on success, false or WP_Error on failure.
 	$retval = ( $removed == true ) ? true : false;
+
+	if ( $removed ) {
+		do_action( 'bp_docs_doc_unlinked_from_group', $doc_id, $group_id, $term );
+	}
 
 	// If the doc is no longer associated with any group, make sure it doesn't become public.
 	$assoc_group_id = bp_docs_get_associated_group_id( $doc_id );
