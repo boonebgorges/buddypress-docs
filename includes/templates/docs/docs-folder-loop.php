@@ -15,8 +15,11 @@
 
 				<td colspan=10>
 					<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class() ?>">
-						<span class="hide-if-js toggle-link-no-js"><i class="genericon genericon-category"></i><a href="<?php echo $folder_url; ?>"><?php echo $folder_title; ?></a></span>
-						<a class="hide-if-no-js toggle-folder" id="expand-folder-<?php echo $folder_id; ?>" data-folder-id="<?php echo $folder_id; ?>" href="#"><i class="genericon genericon-expand"></i><i class="genericon genericon-category"></i><?php echo $folder_title; ?></a>
+						<span class="hide-if-js toggle-link-no-js"><?php bp_docs_genericon( 'category', $folder_id ); ?><a href="<?php echo $folder_url; ?>"><?php echo $folder_title; ?></a></span>
+						<a class="hide-if-no-js toggle-folder" id="expand-folder-<?php echo $folder_id; ?>" data-folder-id="<?php echo $folder_id; ?>" href="#"><?php
+									bp_docs_genericon( 'expand', $folder->ID );
+									bp_docs_genericon( 'category', $folder->ID );
+									?><?php echo $folder_title; ?></a>
 
 						<div class="toggle-content folder-loop"></div>
 					</div>
@@ -37,7 +40,7 @@
 			<?php endif ?>
 
 			<td class="title-cell">
-				<i class="genericon genericon-document"></i><a href="<?php bp_docs_doc_link() ?>"><?php the_title() ?></a> <?php bp_docs_doc_trash_notice(); ?>
+				<?php bp_docs_genericon( 'document', get_the_ID() ); ?><a href="<?php bp_docs_doc_link() ?>"><?php the_title() ?></a> <?php bp_docs_doc_trash_notice(); ?>
 
 				<?php if ( bp_docs_get_excerpt_length() ) : ?>
 					<div class="doc-excerpt">

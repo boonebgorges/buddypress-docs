@@ -317,7 +317,8 @@ function bp_docs_the_breadcrumb( $args = array() ) {
 
 		if ( $r['include_doc'] ) {
 			$crumbs[] = sprintf(
-				'<span class="breadcrumb-current"><i class="genericon genericon-document"></i>%s</span>',
+				'<span class="breadcrumb-current">%s%s</span>',
+				bp_docs_get_genericon( 'document', $r['doc_id'] ),
 				$doc->post_title
 			);
 		}
@@ -2204,7 +2205,7 @@ function bp_docs_attachment_icon() {
 
 	// $pc = plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/images/paperclip.png' );
 
-	$html = '<a class="bp-docs-attachment-clip paperclip-jaunty" id="bp-docs-attachment-clip-' . get_the_ID() . '"></a>';
+	$html = '<a class="bp-docs-attachment-clip" id="bp-docs-attachment-clip-' . get_the_ID() . '">' . bp_docs_get_genericon( 'attachment', get_the_ID() ) . '</a>';
 
 	echo $html;
 }
@@ -2389,3 +2390,27 @@ function bp_docs_is_directory_view_filtered( $exclude = array() ) {
 	 */
 	return apply_filters( 'bp_docs_is_directory_view_filtered', false, $exclude );
 }
+
+/**
+ * Output a genericon-compatible <i> element for displaying icons.
+ *
+ * @since 1.9
+ *
+ * @param string $glyph_name The genericon id of the icon.
+ * @param string $object_id The ID of the object we're genericoning.
+ *
+ * @return string HTML representing icon element.
+ */
+function bp_docs_genericon( $glyph_name, $object_id ) {
+	echo bp_docs_get_genericon( $glyph_name, $object_id );
+}
+	function bp_docs_get_genericon( $glyph_name, $object_id ) {
+		if ( empty( $glyph_name ) ) {
+			$glyph_name = 'document';
+		}
+		if ( empty( $object_id ) ) {
+			$object_id = get_the_ID();
+		}
+		$icon_markup = '<i class="genericon genericon-' . $glyph_name . '"></i>';
+		return apply_filters( 'bp_docs_get_genericon', $icon_markup, $glyph_name, $object_id );
+	}

@@ -74,7 +74,9 @@
 				<?php endif ?>
 
 				<td class="folder-row-name" colspan=10>
-					<i class="genericon genericon-category"></i><a href="<?php echo esc_url( bp_docs_get_parent_folder_url() ) ?>"><?php _ex( '..', 'up one folder', 'bp-docs' ) ?></a>
+					<?php
+					// @TODO: Need bp_get_parent_folder_id() for this one.
+					bp_docs_genericon( 'category', 0 ); ?><a href="<?php echo esc_url( bp_docs_get_parent_folder_url() ) ?>"><?php _ex( '..', 'up one folder', 'bp-docs' ) ?></a>
 				</td>
 			</tr>
 		<?php endif ?>
@@ -91,8 +93,11 @@
 
 					<td class="folder-row-name" colspan=10>
 						<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class(); ?>">
-								<span class="hide-if-js toggle-link-no-js"><i class="genericon genericon-category"></i><a href="<?php echo esc_url( bp_docs_get_folder_url( $folder->ID ) ) ?>"><?php echo esc_html( $folder->post_title ) ?></a></span>
-								<a class="hide-if-no-js toggle-folder" id="expand-folder-<?php echo $folder->ID; ?>" data-folder-id="<?php echo $folder->ID; ?>" href="#"><i class="genericon genericon-expand"></i><i class="genericon genericon-category"></i><?php echo esc_html( $folder->post_title ) ?></a>
+								<span class="hide-if-js toggle-link-no-js"><?php bp_docs_genericon( 'category', $folder->ID ); ?><a href="<?php echo esc_url( bp_docs_get_folder_url( $folder->ID ) ) ?>"><?php echo esc_html( $folder->post_title ) ?></a></span>
+								<a class="hide-if-no-js toggle-folder" id="expand-folder-<?php echo $folder->ID; ?>" data-folder-id="<?php echo $folder->ID; ?>" href="#"><?php
+									bp_docs_genericon( 'expand', $folder->ID );
+									bp_docs_genericon( 'category', $folder->ID );
+									?><?php echo esc_html( $folder->post_title ) ?></a>
 							<div class="toggle-content folder-loop">
 							</div>
 						</div>
@@ -114,7 +119,7 @@
 				<?php endif ?>
 
 				<td class="title-cell">
-					<i class="genericon genericon-document"></i><a href="<?php bp_docs_doc_link() ?>"><?php the_title() ?></a> <?php bp_docs_doc_trash_notice(); ?>
+					<?php bp_docs_genericon( 'document' ); ?><a href="<?php bp_docs_doc_link() ?>"><?php the_title() ?></a> <?php bp_docs_doc_trash_notice(); ?>
 
 					<?php if ( bp_docs_get_excerpt_length() ) : ?>
 						<div class="doc-excerpt">

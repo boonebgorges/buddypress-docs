@@ -1750,8 +1750,9 @@ function bp_docs_get_folder_breadcrumbs( $doc = null ) {
 	$breadcrumb_items = array();
 	foreach ( $descendants as $d ) {
 		$breadcrumb_items[] = sprintf(
-			'<span class="bp-docs-folder-breadcrumb" id="bp-docs-folder-breadcrumb-%s"><i class="genericon genericon-category"></i><a href="%s">%s</a></span>',
+			'<span class="bp-docs-folder-breadcrumb" id="bp-docs-folder-breadcrumb-%s">%s<a href="%s">%s</a></span>',
 			$d['id'],
+			bp_docs_get_genericon( 'category', $d['id'] ),
 			esc_url( bp_docs_get_folder_url( $d['id'] ) ),
 			esc_html( $d['name'] )
 		);
@@ -1908,8 +1909,9 @@ function bp_docs_display_folder_meta() {
 	}
 
 	echo sprintf(
-		'<p class="folder-meta" data-folder-id="%d"><i class="genericon genericon-category"></i><a href="%s">%s</a>',
+		'<p class="folder-meta" data-folder-id="%d">%s<a href="%s">%s</a>',
 		esc_attr( $folder_id ),
+		bp_docs_get_genericon( 'category', $folder_id ),
 		esc_url( bp_docs_get_folder_url( $folder_id ) ),
 		esc_attr( $folder->post_title )
 	);
@@ -2364,8 +2366,9 @@ class BP_Docs_Folder_Walker extends Walker {
 	 */
 	public function start_el( &$output, $page, $depth = 0, $args = array(), $current_page = 0 ) {
 		$output .= sprintf(
-			'<li class="folder folder-closed" data-folder-id="%d"><i class="genericon genericon-category"></i><span class="folder-name">%s</span>',
+			'<li class="folder folder-closed" data-folder-id="%d">%s<span class="folder-name">%s</span>',
 			esc_attr( $page->ID ),
+			bp_docs_get_genericon( 'category', $page->ID ),
 			esc_html( $page->post_title )
 		);
 	}
@@ -2391,9 +2394,10 @@ class BP_Docs_Folder_Walker extends Walker {
 		$output .= '<li class="folder-empty">' . __( 'This folder contains no Docs.', 'bp-docs' ) . '</li>';
 		foreach ( $folder_docs as $folder_doc ) {
 			$output .= sprintf(
-				'<li class="doc-in-folder" id="doc-in-folder-%d" data-doc-id="%d"><i class="genericon genericon-document"></i><a href="%s">%s</a>%s</li>',
+				'<li class="doc-in-folder" id="doc-in-folder-%d" data-doc-id="%d">%s<a href="%s">%s</a>%s</li>',
 				$folder_doc->ID,
 				$folder_doc->ID,
+				bp_docs_get_genericon( 'document', $folder_doc->ID ),
 				get_permalink( $folder_doc ),
 				esc_html( $folder_doc->post_title ),
 				wp_nonce_field( 'bp-docs-folder-drop-' . $folder_doc->ID, 'bp-docs-folder-drop-nonce-' . $folder_doc->ID, false, false )
