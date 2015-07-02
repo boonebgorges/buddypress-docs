@@ -422,6 +422,9 @@ function bp_docs_is_docs_component() {
 	} else if ( bp_is_current_component( bp_docs_get_docs_slug() ) ) {
 		// This covers cases where we're looking at the Docs component of a user
 		$retval = true;
+	} else if ( bp_is_current_action( bp_docs_get_docs_slug() ) ) {
+		// This covers cases where we're looking at the Docs library of a group.
+		$retval = true;
 	}
 
 	return $retval;
