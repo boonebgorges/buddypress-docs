@@ -31,13 +31,13 @@
 	    </div>
 	    <div class="doc-content-wrapper">
 		<div id="doc-content-title">
-			<label for="doc-title"><?php _e( 'Title', 'bp-docs' ) ?></label>
+			<label for="doc[title]"><?php _e( 'Title', 'bp-docs' ) ?></label>
 			<input type="text" id="doc-title" name="doc[title]" class="long" value="<?php bp_docs_edit_doc_title() ?>" />
 		</div>
 
 		<?php if ( bp_docs_is_existing_doc() ) : ?>
 			<div id="doc-content-permalink">
-				<label for="doc-permalink"><?php _e( 'Permalink', 'bp-docs' ) ?></label>
+				<label for="doc[permalink]"><?php _e( 'Permalink', 'bp-docs' ) ?></label>
 				<code><?php echo trailingslashit( bp_get_root_domain() ) . bp_docs_get_docs_slug() . '/' ?></code><input type="text" id="doc-permalink" name="doc[permalink]" class="long" value="<?php bp_docs_edit_doc_slug() ?>" />
 			</div>
 		<?php endif ?>
@@ -118,7 +118,7 @@
 						<table class="toggle-table" id="toggle-table-tags">
 							<tr>
 								<td class="desc-column">
-									<label for="tax-input-bp_docs_tag"><?php _e( 'Tags are words or phrases that help to describe and organize your Docs.', 'bp-docs' ) ?></label>
+									<label for="bp_docs_tag"><?php _e( 'Tags are words or phrases that help to describe and organize your Docs.', 'bp-docs' ) ?></label>
 									<span class="description"><?php _e( 'Separate tags with commas (for example: <em>orchestra, snare drum, piccolo, Brahms</em>)', 'bp-docs' ) ?></span>
 								</td>
 

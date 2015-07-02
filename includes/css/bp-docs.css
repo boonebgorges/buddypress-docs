@@ -714,12 +714,3 @@ table.diff {
 table#post-revisions {
 	margin-top: 20px;
 }
-
-/* Text meant only for screen readers */
-.screen-reader-text {
-	clip: rect(1px, 1px, 1px, 1px);
-	height: 1px;
-	overflow: hidden;
-	position: absolute !important;
-	width: 1px;
-}

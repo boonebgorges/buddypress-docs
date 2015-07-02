@@ -581,7 +581,7 @@ class BP_Docs_Attachments {
 
 		<div id="docs-filter-section-attachments" class="docs-filter-section<?php if ( $has_attachment ) : ?> docs-filter-section-open<?php endif ?>">
 			<form method="get" action="<?php echo $form_action ?>">
-				<label for="has-attachment"><?php _e( 'Has attachment?', 'bp-docs' ) ?></label>
+				<label for="docs-attachment-filter"><?php _e( 'Has attachment?', 'bp-docs' ) ?></label>
 				<select id="has-attachment" name="has-attachment">
 					<option value="yes"<?php selected( $has_attachment, 'yes' ) ?>><?php _e( 'Yes', 'bp-docs' ) ?></option>
 					<option value="no"<?php selected( $has_attachment, 'no' ) ?>><?php _e( 'No', 'bp-docs' ) ?></option>
