@@ -1201,11 +1201,11 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 			<table class="group-docs-options">
 				<tr>
 					<td class="label">
-						<label for="bp-docs[can-create-admins]"><?php _e( 'Minimum role to associate Docs with this group:', 'bp-docs' ) ?></label>
+						<label for="bp-docs-can-create"><?php _e( 'Minimum role to associate Docs with this group:', 'bp-docs' ) ?></label>
 					</td>
 
 					<td>
-						<select name="bp-docs[can-create]">
+						<select name="bp-docs[can-create]" id="bp-docs-can-create">
 							<option value="admin" <?php selected( $can_create, 'admin' ) ?> /><?php _e( 'Group admin', 'bp-docs' ) ?></option>
 							<option value="mod" <?php selected( $can_create, 'mod' ) ?> /><?php _e( 'Group moderator', 'bp-docs' ) ?></option>
 							<option value="member" <?php selected( $can_create, 'member' ) ?> /><?php _e( 'Group member', 'bp-docs' ) ?></option>
