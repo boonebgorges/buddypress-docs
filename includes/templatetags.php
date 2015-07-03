@@ -1136,7 +1136,7 @@ function bp_docs_access_options_helper( $settings_field, $doc_id = 0, $group_id 
 		</td>
 
 		<td class="content-column">
-			<select name="settings-<?php echo esc_attr( $settings_field['name'] ) ?>" id="settings-<?php echo esc_attr( $settings_field['name'] ) ?>">
+			<select name="settings[<?php echo esc_attr( $settings_field['name'] ) ?>]" id="settings-<?php echo esc_attr( $settings_field['name'] ) ?>">
 				<?php $access_options = bp_docs_get_access_options( $settings_field['name'], $doc_id, $group_id ) ?>
 				<?php foreach ( $access_options as $key => $option ) : ?>
 					<?php
