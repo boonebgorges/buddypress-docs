@@ -301,7 +301,7 @@ class BP_Docs_Attachments {
 
 					$this->doc_id = (int) $_REQUEST['query']['auto_draft_id'];
 
-				} else if ( isset( $_REQUEST['action'] ) && 'upload-attachment' == $_REQUEST['action'] ) {
+				} else if ( isset( $_REQUEST['action'] ) && 'upload-attachment' == $_REQUEST['action'] && isset( $_REQUEST['post_id'] ) ) {
 
 					$maybe_doc = get_post( $_REQUEST['post_id'] );
 					if ( bp_docs_get_post_type_name() == $maybe_doc->post_type ) {
