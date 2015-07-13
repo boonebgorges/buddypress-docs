@@ -1440,7 +1440,8 @@ function bp_docs_is_existing_doc() {
 
 	$is_existing_doc = false;
 
-	if ( isset( $wp_query ) && is_a( $wp_query, 'WP_Query' ) && is_singular( bp_docs_get_post_type_name() ) ) {
+	$post_obj = get_queried_object();
+	if ( isset( $wp_query ) && is_a( $wp_query, 'WP_Query' ) && isset( $post_obj->post_type ) && is_singular( bp_docs_get_post_type_name() ) ) {
 		$is_existing_doc = true;
 	}
 
