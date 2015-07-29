@@ -244,7 +244,7 @@ function bp_docs_filter_titles() {
 		$current = isset( $_GET[ $filter_type['query_arg'] ] ) ? ' current' : '';
 		$links[] = sprintf(
 			'<a href="#" class="docs-filter-title%s" id="docs-filter-title-%s">%s</a>',
-			$current,
+			apply_filters( 'bp_docs_filter_title_class', $current, $filter_type ),
 			$filter_type['slug'],
 			$filter_type['title']
 		);
