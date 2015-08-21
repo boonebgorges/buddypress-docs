@@ -70,6 +70,9 @@ class BP_Docs_Groups_Integration {
 		// On group Doc directories, add the "Unlink from Group" action link
 		add_filter( 'bp_docs_doc_action_links', 		array( $this, 'add_doc_action_unlink_from_group_link' ), 10, 2 );
 
+		// On group Doc directories, modify the pagination base so that pagination works within the directory.
+		add_filter( 'bp_docs_page_links_base_url', 		array( $this, 'filter_bp_docs_page_links_base_url' ), 10, 2 );
+
 		// Update group last active metadata when a doc is created, updated, or saved
 		add_filter( 'bp_docs_after_save',               array( $this, 'update_group_last_active' )  );
 		add_filter( 'bp_docs_before_doc_delete',        array( $this, 'update_group_last_active' ) );
@@ -142,11 +145,13 @@ class BP_Docs_Groups_Integration {
 	 * @since 1.0-beta
 	 */
 	function get_current_view( $view, $item_type ) {
-		global $bp;
+		global $bp, $wp_rewrite;
 
 		if ( $item_type == 'group' ) {
-			if ( empty( $bp->action_variables[0] ) ) {
-				// An empty $bp->action_variables[0] means that you're looking at a list
+			if ( empty( $bp->action_variables[0] )
+				|| ( $wp_rewrite->using_permalinks() && $wp_rewrite->pagination_base == $bp->action_variables[0] ) ) {
+				// An empty $bp->action_variables[0] means that you're looking at a list.
+				// A url like group-slug/docs/page/3 also means you're looking at a list.
 				$view = 'list';
 			} else if ( $bp->action_variables[0] == BP_DOCS_CATEGORY_SLUG ) {
 				// Category view
@@ -795,6 +800,21 @@ class BP_Docs_Groups_Integration {
 	}
 
 	/**
+	 * On group Doc directories, modify the pagination base so that pagination
+	 * works within the directory.
+	 *
+	 * @package BuddyPress_Docs
+	 * @subpackage Groups
+	 * @since 1.9.0
+	 */
+	public function filter_bp_docs_page_links_base_url( $base_url, $wp_rewrite_pag_base  ) {
+		if ( bp_is_group() ) {
+			$base_url = user_trailingslashit( trailingslashit( bp_get_group_permalink() . bp_docs_get_docs_slug() ) . $wp_rewrite_pag_base . '/%#%/' );
+		}
+		return $base_url;
+	}
+
+	/**
 	 * Update the current group's last_activity metadata
 	 *
 	 * @package BuddyPress Docs
@@ -1181,11 +1201,11 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 			<table class="group-docs-options">
 				<tr>
 					<td class="label">
-						<label for="bp-docs[can-create-admins]"><?php _e( 'Minimum role to associate Docs with this group:', 'bp-docs' ) ?></label>
+						<label for="bp-docs-can-create"><?php _e( 'Minimum role to associate Docs with this group:', 'bp-docs' ) ?></label>
 					</td>
 
 					<td>
-						<select name="bp-docs[can-create]">
+						<select name="bp-docs[can-create]" id="bp-docs-can-create">
 							<option value="admin" <?php selected( $can_create, 'admin' ) ?> /><?php _e( 'Group admin', 'bp-docs' ) ?></option>
 							<option value="mod" <?php selected( $can_create, 'mod' ) ?> /><?php _e( 'Group moderator', 'bp-docs' ) ?></option>
 							<option value="member" <?php selected( $can_create, 'member' ) ?> /><?php _e( 'Group member', 'bp-docs' ) ?></option>
@@ -1528,9 +1548,15 @@ function bp_docs_unlink_from_group( $doc_id, $group_id = 0 ) {
 		return false;
 	}
 
+	do_action( 'bp_docs_before_doc_unlink_from_group', $doc_id, $group_id, $term );
+
 	$removed = wp_remove_object_terms( $doc_id, $term, bp_docs_get_associated_item_tax_name() );
 	// wp_remove_object_terms returns true on success, false or WP_Error on failure.
 	$retval = ( $removed == true ) ? true : false;
+
+	if ( $removed ) {
+		do_action( 'bp_docs_doc_unlinked_from_group', $doc_id, $group_id, $term );
+	}
 
 	// If the doc is no longer associated with any group, make sure it doesn't become public.
 	$assoc_group_id = bp_docs_get_associated_group_id( $doc_id );

@@ -113,7 +113,7 @@ class BP_Docs_Access_Query {
 		if ( empty( $tax_query ) ) {
 			$forbidden_fruit_ids = array();
 		} else {
-			$forbidden_fruit = get_posts( array(
+			$forbidden_fruit = new WP_Query( array(
 				'post_type' => bp_docs_get_post_type_name(),
 				'posts_per_page' => -1,
 				'nopaging' => true,
@@ -121,9 +121,9 @@ class BP_Docs_Access_Query {
 				'update_post_term_cache' => false,
 				'update_post_meta_cache' => false,
 				'no_found_rows' => 1,
+				'fields' => 'ids',
 			) );
-
-			$forbidden_fruit_ids = wp_list_pluck( $forbidden_fruit, 'ID' );
+			$forbidden_fruit_ids = $forbidden_fruit->posts;
 		}
 
 		add_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
