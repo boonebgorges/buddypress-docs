@@ -1236,9 +1236,11 @@ function bp_docs_is_existing_doc() {
 
 	$is_existing_doc = false;
 
-	$post_obj = get_queried_object();
-	if ( isset( $wp_query ) && is_a( $wp_query, 'WP_Query' ) && isset( $post_obj->post_type ) && is_singular( bp_docs_get_post_type_name() ) ) {
-		$is_existing_doc = true;
+	if ( isset( $wp_query ) && is_a( $wp_query, 'WP_Query' ) ) {
+		$post_obj = get_queried_object();
+		if ( isset( $post_obj->post_type ) && is_singular( bp_docs_get_post_type_name() ) ) {
+			$is_existing_doc = true;
+		}
 	}
 
 	return apply_filters( 'bp_docs_is_existing_doc', $is_existing_doc );
