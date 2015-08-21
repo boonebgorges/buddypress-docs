@@ -76,6 +76,9 @@ class BP_Docs_Attachments {
 				wp_die( __( 'File not found.', 'bp-docs' ) );
 			}
 
+			error_reporting( 0 );
+			ob_end_clean();
+
 			$headers = $this->generate_headers( $filepath );
 
 			// @todo Support xsendfile?
