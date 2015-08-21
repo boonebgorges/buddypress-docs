@@ -1,9 +1,9 @@
 === BuddyPress Docs  ===
-Contributors: boonebgorges, cuny-academic-commons
+Contributors: boonebgorges, dcavins, cuny-academic-commons
 Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.3, BuddyPress 1.5
-Tested up to: WordPress 4.2, BuddyPress 2.2.2.1
+Tested up to: WordPress 4.3, BuddyPress 2.2.2.1
 Stable tag: 1.8.5
 
 Adds collaborative Docs to BuddyPress.
@@ -32,6 +32,14 @@ This plugin is in active development. For feature requests and bug reports, visi
 1. Sit back and watch the jack roll in
 
 == Changelog ==
+
+= 1.8.7 =
+* Fixed pagination bugs within group and user Doc directories
+* Improved accessibility throughout frontend and backend screens.
+* Added new action hooks to Doc edit meta area.
+* Fixed bug that caused "View All Docs" link to be broken when plugins add filters to Doc directories.
+* Added miscellaneous filters for plugin developers.
+* Improved performance of access protection functions.
 
 = 1.8.6 =
 * Improved compatibility with BuddyPress 2.2+
