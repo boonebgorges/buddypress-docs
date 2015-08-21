@@ -82,6 +82,8 @@ function bp_docs_has_docs( $args = array() ) {
 			$d_paged = absint( $_GET['paged'] );
 		} else if ( bp_docs_is_global_directory() && is_a( $wp_query, 'WP_Query' ) && 1 < $wp_query->get( 'paged' ) ) {
 			$d_paged = absint( $wp_query->get( 'paged' ) );
+		} else {
+			$d_paged = absint( $wp_query->get( 'paged', 1 ) );
 		}
 
 		// Use the calculated posts_per_page number from $wp_query->query_vars.
@@ -206,7 +208,12 @@ function bp_docs_info_header() {
 			$message = implode( "\n", $message );
 
 			// We are viewing a subset of docs, so we'll add a link to clear filters
-			$message .= ' - ' . sprintf( __( '<strong><a href="%s" title="View All Docs">View All Docs</a></strong>', 'bp-docs' ), remove_query_arg( array( 'bpd_tag', 's', 'search_submit' ) ) );
+			// Figure out what the possible filter query args are.
+			$filter_args = apply_filters( 'bp_docs_filter_types', array() );
+			$filter_args = wp_list_pluck( $filter_args, 'query_arg' );
+			$filter_args = array_merge( $filter_args, array( 'search_submit', 'folder' ) );
+
+			$message .= ' - ' . sprintf( __( '<strong><a href="%s" title="View All Docs">View All Docs</a></strong>', 'bp-docs' ), remove_query_arg( $filter_args ) );
 		}
 
 		?>
@@ -242,7 +249,7 @@ function bp_docs_filter_titles() {
 		$current = isset( $_GET[ $filter_type['query_arg'] ] ) ? ' current' : '';
 		$links[] = sprintf(
 			'<a href="#" class="docs-filter-title%s" id="docs-filter-title-%s">%s</a>',
-			$current,
+			apply_filters( 'bp_docs_filter_title_class', $current, $filter_type ),
 			$filter_type['slug'],
 			$filter_type['title']
 		);
@@ -474,6 +481,44 @@ function bp_docs_mydocs_edited_link() {
          */
 	function bp_docs_get_mydocs_edited_link() {
 		return apply_filters( 'bp_docs_get_mydocs_edited_link', trailingslashit( bp_docs_get_mydocs_link() . BP_DOCS_EDITED_SLUG ) );
+	}
+
+/**
+ * Echoes the output of bp_docs_get_displayed_user_docs_started_link()
+ *
+ * @package BuddyPress_Docs
+ * @since 1.9
+ */
+function bp_docs_displayed_user_docs_started_link() {
+        echo bp_docs_get_displayed_user_docs_started_link();
+}
+	/**
+     * Get the link to the Started By tab of the displayed user
+     *
+     * @package BuddyPress_Docs
+     * @since 1.9
+     */
+	function bp_docs_get_displayed_user_docs_started_link() {
+		return apply_filters( 'bp_docs_get_displayed_user_docs_started_link', user_trailingslashit( trailingslashit( bp_displayed_user_domain() . bp_docs_get_docs_slug() ) . BP_DOCS_STARTED_SLUG ) );
+	}
+
+/**
+ * Echoes the output of bp_docs_get_displayed_user_docs_edited_link()
+ *
+ * @package BuddyPress_Docs
+ * @since 1.9
+ */
+function bp_docs_displayed_user_docs_edited_link() {
+        echo bp_docs_get_displayed_user_docs_edited_link();
+}
+	/**
+     * Get the link to the Edited By tab of the displayed user
+     *
+     * @package BuddyPress_Docs
+     * @since 1.9
+     */
+	function bp_docs_get_displayed_user_docs_edited_link() {
+		return apply_filters( 'bp_docs_get_displayed_user_docs_edited_link', user_trailingslashit( trailingslashit( bp_displayed_user_domain() . bp_docs_get_docs_slug() ) . BP_DOCS_EDITED_SLUG ) );
 	}
 
 /**
@@ -917,11 +962,11 @@ function bp_docs_access_options_helper( $settings_field, $doc_id = 0, $group_id 
 	?>
 	<tr class="bp-docs-access-row bp-docs-access-row-<?php echo esc_attr( $settings_field['name'] ) ?>">
 		<td class="desc-column">
-			<label for="settings[<?php echo esc_attr( $settings_field['name'] ) ?>]"><?php echo esc_html( $settings_field['label'] ) ?></label>
+			<label for="settings-<?php echo esc_attr( $settings_field['name'] ) ?>"><?php echo esc_html( $settings_field['label'] ) ?></label>
 		</td>
 
 		<td class="content-column">
-			<select name="settings[<?php echo esc_attr( $settings_field['name'] ) ?>]">
+			<select name="settings[<?php echo esc_attr( $settings_field['name'] ) ?>]" id="settings-<?php echo esc_attr( $settings_field['name'] ) ?>">
 				<?php $access_options = bp_docs_get_access_options( $settings_field['name'], $doc_id, $group_id ) ?>
 				<?php foreach ( $access_options as $key => $option ) : ?>
 					<?php
@@ -950,7 +995,7 @@ function bp_docs_doc_action_links() {
 	$links[] = '<a href="' . bp_docs_get_doc_link() . '">' . __( 'Read', 'bp-docs' ) . '</a>';
 
 	if ( current_user_can( 'bp_docs_edit', get_the_ID() ) ) {
-		$links[] = '<a href="' . bp_docs_get_doc_link() . BP_DOCS_EDIT_SLUG . '">' . __( 'Edit', 'bp-docs' ) . '</a>';
+		$links[] = '<a href="' . bp_docs_get_doc_edit_link() . '">' . __( 'Edit', 'bp-docs' ) . '</a>';
 	}
 
 	if ( current_user_can( 'bp_docs_view_history', get_the_ID() ) && defined( 'WP_POST_REVISIONS' ) && WP_POST_REVISIONS ) {
@@ -1069,14 +1114,7 @@ function bp_docs_delete_doc_button( $doc_id = false ) {
 function bp_docs_paginate_links() {
 	global $bp, $wp_query, $wp_rewrite;
 
-	$cur_page = 1;
-	if ( isset( $_GET['paged'] ) ) {
-		$cur_page = absint( $_GET['paged'] );
-	} else if ( bp_docs_is_global_directory() && is_a( $wp_query, 'WP_Query' ) && 1 < $wp_query->get( 'paged' ) ) {
-		$cur_page = (int) $wp_query->get( 'paged' );
-	}
-
-        $page_links_total = $bp->bp_docs->doc_query->max_num_pages;
+    $page_links_total = $bp->bp_docs->doc_query->max_num_pages;
 
 	$pagination_args = array(
 		'base' 		=> add_query_arg( 'paged', '%#%' ),
@@ -1084,16 +1122,16 @@ function bp_docs_paginate_links() {
 		'prev_text' 	=> __('&laquo;'),
 		'next_text' 	=> __('&raquo;'),
 		'total' 	=> $page_links_total,
-		'current' 	=> $cur_page,
+		'end_size'  => 2,
 	);
 
 	if ( $wp_rewrite->using_permalinks() ) {
-		$pagination_args['base'] = user_trailingslashit( trailingslashit( bp_docs_get_archive_link() ) . $wp_rewrite->pagination_base . '/%#%/', 'bp-docs-directory' );
+		$pagination_args['base'] = apply_filters( 'bp_docs_page_links_base_url', user_trailingslashit( trailingslashit( bp_docs_get_archive_link() ) . $wp_rewrite->pagination_base . '/%#%/', 'bp-docs-directory' ), $wp_rewrite->pagination_base );
 	}
 
-        $page_links = paginate_links( $pagination_args );
+    $page_links = paginate_links( $pagination_args );
 
-        echo apply_filters( 'bp_docs_paginate_links', $page_links );
+    echo apply_filters( 'bp_docs_paginate_links', $page_links );
 }
 
 /**
@@ -1198,8 +1236,11 @@ function bp_docs_is_existing_doc() {
 
 	$is_existing_doc = false;
 
-	if ( isset( $wp_query ) && is_a( $wp_query, 'WP_Query' ) && is_singular( bp_docs_get_post_type_name() ) ) {
-		$is_existing_doc = true;
+	if ( isset( $wp_query ) && is_a( $wp_query, 'WP_Query' ) ) {
+		$post_obj = get_queried_object();
+		if ( isset( $post_obj->post_type ) && is_singular( bp_docs_get_post_type_name() ) ) {
+			$is_existing_doc = true;
+		}
 	}
 
 	return apply_filters( 'bp_docs_is_existing_doc', $is_existing_doc );

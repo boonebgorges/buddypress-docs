@@ -24,6 +24,9 @@ class BP_Docs_Users_Integration {
 
 		// Taxonomy helpers
 		add_filter( 'bp_docs_taxonomy_get_item_terms', 	array( &$this, 'get_user_terms' ) );
+
+		// On user Doc directories, modify the pagination base so that pagination works within the directory.
+		add_filter( 'bp_docs_page_links_base_url', 		array( $this, 'filter_bp_docs_page_links_base_url' ), 10, 2 );
 	}
 
 	/**
@@ -49,14 +52,19 @@ class BP_Docs_Users_Integration {
 	 * @since 1.2
 	 */
 	function get_current_view( $view, $item_type ) {
+		global $wp_rewrite;
+
 		if ( $item_type == 'user' ) {
-			if ( !bp_current_action() ) {
-				// An empty $bp->action_variables[0] means that you're looking at a list
+			$current_action = bp_current_action();
+			if ( empty( $current_action )
+				|| in_array( $current_action, array( BP_DOCS_STARTED_SLUG, BP_DOCS_EDITED_SLUG ) ) ) {
+				// An empty $bp->action_variables[0] means that you're looking at a list.
+				// A url like members/terry/docs/started/page/3 also means you're looking at a list.
 				$view = 'list';
-			} else if ( bp_is_current_action( BP_DOCS_CATEGORY_SLUG ) ) {
+			} else if ( $current_action == BP_DOCS_CATEGORY_SLUG ) {
 				// Category view
 				$view = 'category';
-			} else if ( bp_is_current_action( BP_DOCS_CREATE_SLUG ) ) {
+			} else if ( $current_action == BP_DOCS_CREATE_SLUG ) {
 				// Create new doc
 				$view = 'create';
 			} else if ( !bp_action_variable( 0 ) ) {
@@ -218,6 +226,26 @@ class BP_Docs_Users_Integration {
 	 * @param array $terms The terms to be saved to usermeta
 	 */
 	function save_user_terms( $terms ) {}
+
+	/**
+	 * On user Doc directories, modify the pagination base so that pagination
+	 * works within the directory.
+	 *
+	 * @package BuddyPress_Docs
+	 * @subpackage Users
+	 * @since 1.9.0
+	 */
+	public function filter_bp_docs_page_links_base_url( $base_url, $wp_rewrite_pag_base  ) {
+		if ( bp_is_user() ) {
+			$current_action = bp_current_action();
+			if ( $current_action == BP_DOCS_STARTED_SLUG ) {
+				$base_url = user_trailingslashit( bp_docs_get_displayed_user_docs_started_link() . $wp_rewrite_pag_base . '/%#%/' );
+			} elseif ( $current_action == BP_DOCS_EDITED_SLUG ) {
+				$base_url = user_trailingslashit( bp_docs_get_displayed_user_docs_edited_link()  . $wp_rewrite_pag_base . '/%#%/' );
+			}
+		}
+		return $base_url;
+	}
 
 }
 
