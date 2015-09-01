@@ -225,7 +225,12 @@ function bp_docs_info_header() {
 			$message = implode( "<br />", $message );
 
 			// We are viewing a subset of docs, so we'll add a link to clear filters
-			$message .= ' - ' . sprintf( __( '<strong><a href="%s" title="View All Docs">View All Docs</a></strong>', 'bp-docs' ), remove_query_arg( array( 'bpd_tag', 's', 'search_submit', 'folder' ) ) );
+			// Figure out what the possible filter query args are.
+			$filter_args = apply_filters( 'bp_docs_filter_types', array() );
+			$filter_args = wp_list_pluck( $filter_args, 'query_arg' );
+			$filter_args = array_merge( $filter_args, array( 'search_submit', 'folder' ) );
+
+			$message .= ' - ' . sprintf( __( '<strong><a href="%s" title="View All Docs">View All Docs</a></strong>', 'bp-docs' ), remove_query_arg( $filter_args ) );
 		}
 
 		?>
@@ -260,7 +265,7 @@ function bp_docs_filter_titles() {
 		$current = isset( $_GET[ $filter_type['query_arg'] ] ) ? ' current' : '';
 		$links[] = sprintf(
 			'<a href="#" class="docs-filter-title%s" id="docs-filter-title-%s">%s</a>',
-			$current,
+			apply_filters( 'bp_docs_filter_title_class', $current, $filter_type ),
 			$filter_type['slug'],
 			$filter_type['title']
 		);
