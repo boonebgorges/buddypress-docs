@@ -468,6 +468,8 @@ function bp_docs_get_doc_settings( $doc_id = 0, $type = 'default' ) {
 		$saved_settings = array_filter( $saved_settings );
 
 		$doc_settings = wp_parse_args( $saved_settings, $default_settings );
+	} else {
+		$doc_settings = $saved_settings;
 	}
 
 	return apply_filters( 'bp_docs_get_doc_settings', $doc_settings, $doc_id, $default_settings );
