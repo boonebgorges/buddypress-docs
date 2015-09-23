@@ -74,7 +74,7 @@
 		<div id="doc-meta">
 			<?php do_action( 'bp_docs_doc_edit_metabox_beginning', get_the_ID() ); ?>
 
-			<?php if ( bp_is_active( 'groups' ) && current_user_can( 'bp_docs_manage' ) && apply_filters( 'bp_docs_allow_associated_group', true ) ) : ?>
+			<?php if ( bp_is_active( 'groups' ) && current_user_can( 'bp_docs_manage', get_the_ID() ) && apply_filters( 'bp_docs_allow_associated_group', true ) ) : ?>
 				<?php do_action( 'bp_docs_before_assoc_groups_meta_box', $doc_id ); ?>
 
 				<div id="doc-associated-group" class="doc-meta-box">
@@ -95,7 +95,7 @@
 				<?php do_action( 'bp_docs_after_assoc_groups_meta_box', $doc_id ); ?>
 			<?php endif ?>
 
-			<?php if ( current_user_can( 'bp_docs_manage' ) && apply_filters( 'bp_docs_allow_access_settings', true ) ) : ?>
+			<?php if ( current_user_can( 'bp_docs_manage', get_the_ID() ) && apply_filters( 'bp_docs_allow_access_settings', true ) ) : ?>
 				<?php do_action( 'bp_docs_before_access_settings_meta_box', $doc_id ) ?>
 
 				<div id="doc-settings" class="doc-meta-box">
