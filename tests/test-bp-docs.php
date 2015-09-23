@@ -146,9 +146,9 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 		$q = new BP_Docs_Query();
 
 		// Remove access protection for the moment because I'm lazy
-		remove_action( 'pre_get_posts', 'bp_docs_general_access_protection' );
+		remove_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
 		$wp_query = $q->get_wp_query();
-		add_action( 'pre_get_posts', 'bp_docs_general_access_protection' );
+		add_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
 
 		$found = wp_list_pluck( $wp_query->posts, 'ID' );
 		sort( $found );
@@ -171,9 +171,9 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 		) );
 
 		// Remove access protection for the moment because I'm lazy
-		remove_action( 'pre_get_posts', 'bp_docs_general_access_protection' );
+		remove_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
 		$wp_query = $q->get_wp_query();
-		add_action( 'pre_get_posts', 'bp_docs_general_access_protection' );
+		add_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
 
 		$found = wp_list_pluck( $wp_query->posts, 'ID' );
 
