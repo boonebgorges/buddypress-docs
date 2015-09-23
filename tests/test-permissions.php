@@ -405,6 +405,20 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 
 	/**
 	 * @group map_meta_cap
+	 * @group manage
+	 * @ticket 485
+	 */
+	public function test_anyone_can_manage_doc_with_ID_0() {
+		$this->set_current_user( 0 );
+		$this->assertFalse( current_user_can( 'bp_docs_manage', 0 ) );
+
+		$u = $this->factory->user->create();
+		$this->set_current_user( $u );
+		$this->assertTrue( current_user_can( 'bp_docs_manage', 0 ) );
+	}
+
+	/**
+	 * @group map_meta_cap
 	 * @group view_history
 	 */
 	public function test_user_can_view_history_anyone() {
