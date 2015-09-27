@@ -564,6 +564,39 @@ function bp_docs_get_access_options( $settings_field, $doc_id = 0, $group_id = 0
 
 	return $options;
 }
+
+/**
+ * Builds the default access options for a doc.
+ *
+ * @since 1.8.8
+ * @param int $doc_id ID of the doc.
+ * @param int $group_id ID of the group that this doc is associated with.
+ *
+ * @return array Associative array of settings_field => default_option.
+ */
+function bp_docs_get_default_access_options( $doc_id = 0, $group_id = 0 ) {
+	// We may be able to get the associated group from the doc_id.
+	if ( empty( $group_id ) && ! empty( $doc_id ) ) {
+		$group_id = bp_docs_get_associated_group_id( $doc_id );
+	}
+
+	$defaults = array();
+	$settings_fields = array( 'read', 'edit', 'read_comments', 'post_comments', 'view_history', 'manage' );
+
+	foreach ( $settings_fields as $settings_field ) {
+		$access_options = bp_docs_get_access_options( $settings_field, $doc_id, $group_id );
+
+		foreach ( $access_options as $key => $access_option ) {
+			if ( ! empty( $access_option['default'] ) ) {
+				$defaults[$settings_field] = $access_option['name'];
+				break;
+			}
+		}
+	}
+
+	return apply_filters( 'bp_docs_get_default_access_options', $defaults, $doc_id, $group_id );
+}
+
 /**
  * Saves the settings associated with a given Doc
  *
