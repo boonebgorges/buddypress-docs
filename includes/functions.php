@@ -548,8 +548,16 @@ function bp_docs_get_access_options( $settings_field, $doc_id = 0, $group_id = 0
 		),
 	);
 
+	// Default to manage => creator.
+	if ( 'manage' == $settings_field ) {
+		// Unset the default of loggedin.
+		$options[20]['default'] = 0;
+
+		$options[90]['default'] = 1;
+	}
+
 	// Allow anonymous reading
-	if ( in_array( $settings_field, array( 'read', 'read_comments', 'view_history' ) ) ) {
+	if ( in_array( $settings_field, array( 'read', 'read_comments', 'post_comments', 'view_history' ) ) ) {
 		$options[10] = array(
 			'name'  => 'anyone',
 			'label' => __( 'Anyone', 'bp-docs' ),
