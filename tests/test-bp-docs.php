@@ -320,6 +320,88 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 
 		$this->assertEqualSetsWithIndex( $expected_settings, $modified_settings );
 	}
+	/**
+	 * @group bp_docs_get_access_options
+	 */
+	function test_bp_docs_get_access_options_no_group_assoc() {
+		$default_settings = bp_docs_get_default_access_options();
+		// These are doc default settings:
+		$expected_settings = array(
+			'read'          => 'anyone',
+			'edit'          => 'loggedin',
+			'read_comments' => 'anyone',
+			'post_comments' => 'anyone',
+			'view_history'  => 'anyone',
+			'manage'        => 'creator'
+		);
+
+		$this->assertEqualSetsWithIndex( $expected_settings, $default_settings );
+	}
+	/**
+	 * @group bp_docs_get_access_options
+	 */
+	function test_bp_docs_get_access_options_group_assoc_public() {
+		$u1 = $this->factory->user->create();
+		$this->set_current_user( $u1 );
+
+		$g = $this->factory->group->create( array(
+			'status' => 'public',
+			'creator_id' => $u1
+		) );
+		// Make sure BP-Docs is enabled for this group and this user can associate with this group.
+		$settings = array(
+			'group-enable'	=> 1,
+			'can-create' 	=> 'member'
+		);
+
+		groups_update_groupmeta( $g, 'bp-docs', $settings );
+
+		$default_settings = bp_docs_get_default_access_options( 0, $g);
+		// These are doc default settings:
+		$expected_settings = array(
+			'read'          => 'anyone',
+			'edit'          => 'group-members',
+			'read_comments' => 'anyone',
+			'post_comments' => 'group-members',
+			'view_history'  => 'anyone',
+			'manage'        => 'creator'
+		);
+
+		$this->assertEqualSetsWithIndex( $expected_settings, $default_settings );
+	}
+	/**
+	 * @group bp_docs_get_access_options
+	 */
+	function test_bp_docs_get_access_options_group_assoc_private() {
+		$u1 = $this->factory->user->create();
+		$this->set_current_user( $u1 );
+
+		$g = $this->factory->group->create( array(
+			'status' => 'private',
+			'creator_id' => $u1
+		) );
+
+		// Make sure BP-Docs is enabled for this group and this user can associate with this group.
+		$settings = array(
+			'group-enable'	=> 1,
+			'can-create' 	=> 'member'
+		);
+
+		groups_update_groupmeta( $g, 'bp-docs', $settings );
+
+		$default_settings = bp_docs_get_default_access_options( 0, $g );
+		// These are doc default settings:
+		$expected_settings = array(
+			'read'          => 'group-members',
+			'edit'          => 'group-members',
+			'read_comments' => 'group-members',
+			'post_comments' => 'group-members',
+			'view_history'  => 'group-members',
+			'manage'        => 'group-members'
+		);
+
+		$this->assertEqualSetsWithIndex( $expected_settings, $default_settings );
+	}
 }
 
 
