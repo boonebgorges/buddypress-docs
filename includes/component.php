@@ -834,6 +834,10 @@ class BP_Docs_Component extends BP_Component {
 			$classes[] = 'bp-docs-edit';
 		}
 
+		if ( bp_docs_is_doc_create() ) {
+			$classes[] = 'bp-docs-create';
+		}
+
 		return array_unique( $classes );
 	}
 
