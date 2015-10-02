@@ -1039,7 +1039,13 @@ function bp_docs_associated_group_summary( $group_id = 0 ) {
 				'width' => '40',
 				'height' => '40',
 			) );
-			$group_member_count = sprintf( 1 == groups_get_groupmeta( $group_id, $meta_key = 'total_member_count') ? __( '%s member', 'bp-docs' ) : __( '%s members', 'bp-docs' ), intval( groups_get_groupmeta( $group_id, $meta_key = 'total_member_count') ) );
+			$_count = (int) groups_get_groupmeta( $group_id, 'total_member_count' );
+			if ( 1 === $_count ) {
+				// Using sprintf() to avoid creating another string.
+				$group_member_count = sprintf( __( '%s member', 'bp-docs', $_count ), number_format_i18n( $_count ) );
+			} else {
+				$group_member_count = sprintf( _n( '%s member', '%s members', $_count, 'bp-docs' ), number_format_i18n( $_count ) );
+			}
 
 			switch ( $group->status ) {
 				case 'public' :
