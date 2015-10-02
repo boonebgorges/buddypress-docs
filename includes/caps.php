@@ -59,9 +59,8 @@ function bp_docs_map_meta_caps( $caps, $cap, $user_id, $args ) {
 			$caps = array();
 
 			$doc = bp_docs_get_doc_for_caps( $args );
-
-			if ( empty( $doc ) ) {
-				break;
+			if ( empty( $doc ) || ( $doc instanceof WP_Post && 0 === $doc->ID && bp_docs_get_post_type_name() === $doc->post_type ) ) {
+				return array( 'read' );
 			}
 
 			// Special case: view_history requires post revisions

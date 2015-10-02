@@ -910,7 +910,7 @@ function bp_docs_doc_settings_markup( $doc_id = 0, $group_id = 0 ) {
 		$doc_id = is_singular() ? get_the_ID() : 0;
 	}
 
-	$doc_settings = bp_docs_get_doc_settings( $doc_id );
+	$doc_settings = bp_docs_get_doc_settings( $doc_id, 'default', $group_id );
 
 	$settings_fields = array(
 		'read' => array(
@@ -950,7 +950,7 @@ function bp_docs_access_options_helper( $settings_field, $doc_id = 0, $group_id 
 		$settings_type = 'default';
 	}
 
-	$doc_settings = bp_docs_get_doc_settings( $doc_id, $settings_type );
+	$doc_settings = bp_docs_get_doc_settings( $doc_id, $settings_type, $group_id );
 
 	// If this is a failed form submission, check the submitted values first
 	if ( ! empty( buddypress()->bp_docs->submitted_data->settings->{$settings_field['name']} ) ) {

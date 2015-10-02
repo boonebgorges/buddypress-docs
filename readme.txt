@@ -3,8 +3,8 @@ Contributors: boonebgorges, dcavins, cuny-academic-commons
 Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.3, BuddyPress 1.5
-Tested up to: WordPress 4.3, BuddyPress 2.2.2.1
-Stable tag: 1.8.7
+Tested up to: WordPress 4.3.1, BuddyPress 2.3.4
+Stable tag: 1.8.8
 
 Adds collaborative Docs to BuddyPress.
 
@@ -32,6 +32,11 @@ This plugin is in active development. For feature requests and bug reports, visi
 1. Sit back and watch the jack roll in
 
 == Changelog ==
+
+= 1.8.8 =
+* Fixed bug that prevented certain users from having access to the "associated group" panel in edit mode.
+* Fixed bug where Doc access settings might not be correct by default.
+* Fixed bug where suggested Doc access settings may override values set by the user.
 
 = 1.8.7 =
 * Fixed pagination bugs within group and user Doc directories
