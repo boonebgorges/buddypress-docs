@@ -864,7 +864,7 @@ function bp_docs_associated_group_summary( $group_id = 0 ) {
 				'width' => '40',
 				'height' => '40',
 			) );
-			$group_member_count = sprintf( 1 == $group->total_member_count ? __( '%s member', 'bp-docs' ) : __( '%s members', 'bp-docs' ), intval( $group->total_member_count ) );
+			$group_member_count = sprintf( 1 == groups_get_groupmeta( $group_id, $meta_key = 'total_member_count') ? __( '%s member', 'bp-docs' ) : __( '%s members', 'bp-docs' ), intval( groups_get_groupmeta( $group_id, $meta_key = 'total_member_count') ) );
 
 			switch ( $group->status ) {
 				case 'public' :
