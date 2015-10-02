@@ -33,6 +33,10 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.8.9 =
+* Fixed bug that caused incorrect "x members" count in Associated Group metabox in some situations.
+* Improved localization for "x members" string in Associated Group metabox.
+
 = 1.8.8 =
 * Fixed bug that prevented certain users from having access to the "associated group" panel in edit mode.
 * Fixed bug where Doc access settings might not be correct by default.
