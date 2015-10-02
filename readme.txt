@@ -33,6 +33,11 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.8.8 =
+* Fixed bug that prevented certain users from having access to the "associated group" panel in edit mode.
+* Fixed bug where Doc access settings might not be correct by default.
+* Fixed bug where suggested Doc access settings may override values set by the user.
+
 = 1.8.7 =
 * Fixed pagination bugs within group and user Doc directories
 * Improved accessibility throughout frontend and backend screens.
