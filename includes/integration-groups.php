@@ -1461,8 +1461,9 @@ function bp_docs_is_docs_enabled_for_group( $group_id = false ) {
 	if ( $group_id ) {
 		$group_settings = bp_docs_get_group_settings( $group_id );
 
-		if ( isset( $group_settings['group-enable'] ) )
+		if ( ! empty( $group_settings['group-enable'] ) ) {
 			$docs_is_enabled = true;
+		}
 	}
 
 	return apply_filters( 'bp_docs_is_docs_enabled_for_group', $docs_is_enabled, $group_id );
