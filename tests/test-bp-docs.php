@@ -451,6 +451,29 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 	}
 
 	/**
+	 * @see issue #492
+	 */
+	public function test_bp_docs_is_docs_enabled_for_group_should_work_after_toggled_off() {
+		$group = $this->factory->group->create();
+		$doc_id = $this->factory->doc->create( array( 'group' => $group ) );
+
+		$settings = array(
+			'group-enable' => 1,
+			'can-create' => 'member',
+		);
+		groups_update_groupmeta( $group, 'bp-docs', $settings );
+
+		$this->assertTrue( bp_docs_is_docs_enabled_for_group( $group ) );
+
+		$settings = array(
+			'group-enable' => 0,
+		);
+		groups_update_groupmeta( $group, 'bp-docs', $settings );
+
+		$this->assertFalse( bp_docs_is_docs_enabled_for_group( $group ) );
+	}
+
+	/**
 	 * @group bp_docs_trash_doc
 	 */
 	function test_bp_docs_move_to_trash() {
