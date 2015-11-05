@@ -37,6 +37,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Fixed bug that caused incorrect "x members" count in Associated Group metabox in some situations.
 * Improved localization for "x members" string in Associated Group metabox.
 * Fixed bug that caused Docs to show as enabled for a group after being toggled from on to off.
+* Fixed invalid markup on group settings panel.
 
 = 1.8.8 =
 * Fixed bug that prevented certain users from having access to the "associated group" panel in edit mode.
