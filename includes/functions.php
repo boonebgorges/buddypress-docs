@@ -422,6 +422,9 @@ function bp_docs_is_docs_component() {
 	} else if ( bp_is_current_component( bp_docs_get_docs_slug() ) ) {
 		// This covers cases where we're looking at the Docs component of a user
 		$retval = true;
+	} else if ( bp_is_current_action( bp_docs_get_docs_slug() ) ) {
+		// This covers cases where we're looking at the Docs library of a group.
+		$retval = true;
 	}
 
 	return $retval;
@@ -438,7 +441,7 @@ function bp_docs_is_docs_component() {
  *        keys have values. 'raw' returns results as stored in the database.
  * @return array
  */
-function bp_docs_get_doc_settings( $doc_id = 0, $type = 'default' ) {
+function bp_docs_get_doc_settings( $doc_id = 0, $type = 'default', $group_id = 0 ) {
 	$doc_settings = array();
 
 	$q = get_queried_object();
@@ -451,23 +454,18 @@ function bp_docs_get_doc_settings( $doc_id = 0, $type = 'default' ) {
 		$saved_settings = array();
 	}
 
-	$default_settings = array(
-		'read'          => 'anyone',
-		'edit'          => 'loggedin',
-		'read_comments' => 'anyone',
-		'post_comments' => 'anyone',
-		'view_history'  => 'anyone',
-		'manage'        => 'creator',
-	);
+	$default_settings = bp_docs_get_default_access_options( $doc_id, $group_id );
 
 	if ( 'raw' !== $type ) {
 		// Empty string settings can slip through sometimes
 		$saved_settings = array_filter( $saved_settings );
 
 		$doc_settings = wp_parse_args( $saved_settings, $default_settings );
+	} else {
+		$doc_settings = $saved_settings;
 	}
 
-	return apply_filters( 'bp_docs_get_doc_settings', $doc_settings, $doc_id, $default_settings );
+	return apply_filters( 'bp_docs_get_doc_settings', $doc_settings, $doc_id, $default_settings, $saved_settings, $group_id );
 }
 
 function bp_docs_define_tiny_mce() {
@@ -543,8 +541,16 @@ function bp_docs_get_access_options( $settings_field, $doc_id = 0, $group_id = 0
 		),
 	);
 
+	// Default to manage => creator.
+	if ( 'manage' == $settings_field ) {
+		// Unset the default of loggedin.
+		$options[20]['default'] = 0;
+
+		$options[90]['default'] = 1;
+	}
+
 	// Allow anonymous reading
-	if ( in_array( $settings_field, array( 'read', 'read_comments', 'view_history' ) ) ) {
+	if ( in_array( $settings_field, array( 'read', 'read_comments', 'post_comments', 'view_history' ) ) ) {
 		$options[10] = array(
 			'name'  => 'anyone',
 			'label' => __( 'Anyone', 'bp-docs' ),
@@ -562,6 +568,39 @@ function bp_docs_get_access_options( $settings_field, $doc_id = 0, $group_id = 0
 
 	return $options;
 }
+
+/**
+ * Builds the default access options for a doc.
+ *
+ * @since 1.8.8
+ * @param int $doc_id ID of the doc.
+ * @param int $group_id ID of the group that this doc is associated with.
+ *
+ * @return array Associative array of settings_field => default_option.
+ */
+function bp_docs_get_default_access_options( $doc_id = 0, $group_id = 0 ) {
+	// We may be able to get the associated group from the doc_id.
+	if ( empty( $group_id ) && ! empty( $doc_id ) ) {
+		$group_id = bp_docs_get_associated_group_id( $doc_id );
+	}
+
+	$defaults = array();
+	$settings_fields = array( 'read', 'edit', 'read_comments', 'post_comments', 'view_history', 'manage' );
+
+	foreach ( $settings_fields as $settings_field ) {
+		$access_options = bp_docs_get_access_options( $settings_field, $doc_id, $group_id );
+
+		foreach ( $access_options as $key => $access_option ) {
+			if ( ! empty( $access_option['default'] ) ) {
+				$defaults[$settings_field] = $access_option['name'];
+				break;
+			}
+		}
+	}
+
+	return apply_filters( 'bp_docs_get_default_access_options', $defaults, $doc_id, $group_id );
+}
+
 /**
  * Saves the settings associated with a given Doc
  *
@@ -596,6 +635,43 @@ function bp_docs_save_doc_access_settings( $doc_id ) {
 	} else {
 		// Do nothing.
 		// Leave the access settings intact.
+	}
+}
+
+/**
+ * Reset group-related doc access settings to "creator"
+ *
+ * @since 1.9.0
+ * @param int $doc_id The numeric ID of the doc
+ * @return void
+ */
+function bp_docs_remove_group_related_doc_access_settings( $doc_id ) {
+	if ( empty( $doc_id ) ) {
+		return;
+	}
+
+	// When a doc's privacy relies on group association, and that doc loses that group association, we need to make sure that it doesn't become public.
+	$settings = bp_docs_get_doc_settings( $doc_id );
+	$group_settings = array( 'admins-mods','group-members' );
+	$settings_modified = false;
+
+	foreach ( $settings as $capability => $audience ) {
+		if ( in_array( $audience, $group_settings ) ) {
+			$new_settings[ $capability ] = 'creator';
+			$settings_modified = true;
+		} else {
+			$new_settings[ $capability ] = $audience;
+		}
+	}
+
+	if ( $settings_modified ) {
+		update_post_meta( $doc_id, 'bp_docs_settings', $new_settings );
+	}
+
+	// The 'read' setting must also be saved to a taxonomy, for
+	// easier directory queries. Update if modified.
+	if ( $settings['read'] != $new_settings['read'] ) {
+		bp_docs_update_doc_access( $doc_id, $new_settings['read'] );
 	}
 }
 

@@ -1,4 +1,5 @@
 <div id="buddypress">
+	<?php $doc_id = get_the_ID(); ?>
 
 	<?php include( bp_docs_locate_template( 'single/sidebar.php' ) ) ?>
 
@@ -26,23 +27,23 @@
 	<form action="" method="post" class="standard-form" id="doc-form">
 	    <div class="doc-header">
 		<?php if ( bp_docs_is_existing_doc() ) : ?>
-			<input type="hidden" id="existing-doc-id" value="<?php the_ID() ?>" />
+			<input type="hidden" id="existing-doc-id" value="<?php echo $doc_id; ?>" />
 		<?php endif ?>
 	    </div>
 	    <div class="doc-content-wrapper">
 		<div id="doc-content-title">
-			<label for="doc[title]"><?php _e( 'Title', 'bp-docs' ) ?></label>
+			<label for="doc-title"><?php _e( 'Title', 'bp-docs' ) ?></label>
 			<input type="text" id="doc-title" name="doc[title]" class="long" value="<?php bp_docs_edit_doc_title() ?>" />
 		</div>
 
 		<?php if ( bp_docs_is_existing_doc() ) : ?>
 			<div id="doc-content-permalink">
-				<label for="doc[permalink]"><?php _e( 'Permalink', 'bp-docs' ) ?></label>
+				<label for="doc-permalink"><?php _e( 'Permalink', 'bp-docs' ) ?></label>
 				<code><?php echo trailingslashit( bp_get_root_domain() ) . bp_docs_get_docs_slug() . '/' ?></code><input type="text" id="doc-permalink" name="doc[permalink]" class="long" value="<?php bp_docs_edit_doc_slug() ?>" />
 			</div>
 		<?php endif ?>
 
-		<?php do_action( 'bp_docs_before_doc_edit_content' ) ?>
+		<?php do_action( 'bp_docs_before_doc_edit_content', $doc_id ) ?>
 
 		<div id="doc-content-textarea">
 			<label id="content-label" for="doc_content"><?php _e( 'Content', 'bp-docs' ) ?></label>
@@ -61,7 +62,7 @@
 			</div>
 		</div>
 
-		<?php do_action( 'bp_docs_after_doc_edit_content' ) ?>
+		<?php do_action( 'bp_docs_after_doc_edit_content', $doc_id ) ?>
 
 		<?php if ( bp_docs_enable_attachments() ) : ?>
 			<div id="doc-attachments">
@@ -71,7 +72,11 @@
 		<?php endif ?>
 
 		<div id="doc-meta">
-			<?php if ( bp_is_active( 'groups' ) && current_user_can( 'bp_docs_manage' ) && apply_filters( 'bp_docs_allow_associated_group', true ) ) : ?>
+			<?php do_action( 'bp_docs_doc_edit_metabox_beginning', get_the_ID() ); ?>
+
+			<?php if ( bp_is_active( 'groups' ) && current_user_can( 'bp_docs_manage', get_the_ID() ) && apply_filters( 'bp_docs_allow_associated_group', true ) ) : ?>
+				<?php do_action( 'bp_docs_before_assoc_groups_meta_box', $doc_id ); ?>
+
 				<div id="doc-associated-group" class="doc-meta-box">
 					<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class() ?>">
 						<p class="toggle-switch" id="associated-group-toggle">
@@ -86,9 +91,13 @@
 						</div>
 					</div>
 				</div>
+
+				<?php do_action( 'bp_docs_after_assoc_groups_meta_box', $doc_id ); ?>
 			<?php endif ?>
 
-			<?php if ( current_user_can( 'bp_docs_manage' ) && apply_filters( 'bp_docs_allow_access_settings', true ) ) : ?>
+			<?php if ( current_user_can( 'bp_docs_manage', get_the_ID() ) && apply_filters( 'bp_docs_allow_access_settings', true ) ) : ?>
+				<?php do_action( 'bp_docs_before_access_settings_meta_box', $doc_id ) ?>
+
 				<div id="doc-settings" class="doc-meta-box">
 					<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class() ?>">
 						<p class="toggle-switch" id="settings-toggle">
@@ -103,9 +112,11 @@
 						</div>
 					</div>
 				</div>
+
+				<?php do_action( 'bp_docs_after_access_settings_meta_box', $doc_id ) ?>
 			<?php endif ?>
 
-			<?php do_action( 'bp_docs_before_tags_meta_box' ) ?>
+			<?php do_action( 'bp_docs_before_tags_meta_box', $doc_id ) ?>
 
 			<div id="doc-tax" class="doc-meta-box">
 				<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class() ?>">
@@ -131,9 +142,9 @@
 				</div>
 			</div>
 
-			<?php do_action( 'bp_docs_after_tags_meta_box' ) ?>
+			<?php do_action( 'bp_docs_after_tags_meta_box', $doc_id ) ?>
 
-			<?php do_action( 'bp_docs_before_parent_meta_box' ) ?>
+			<?php do_action( 'bp_docs_before_parent_meta_box', $doc_id ) ?>
 
 			<div id="doc-parent" class="doc-meta-box">
 				<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class() ?>">
@@ -160,7 +171,8 @@
 				</div>
 			</div>
 
-			<?php do_action( 'bp_docs_after_parent_meta_box' ) ?>
+			<?php do_action( 'bp_docs_after_parent_meta_box', $doc_id ) ?>
+			<?php do_action( 'bp_docs_closing_meta_box', $doc_id ) ?>
 		</div>
 
 		<div style="clear: both"> </div>
@@ -169,7 +181,6 @@
 
 			<?php wp_nonce_field( 'bp_docs_save' ) ?>
 
-			<?php $doc_id = bp_docs_is_existing_doc() ? get_queried_object_id() : 0 ?>
 			<input type="hidden" id="doc_id" name="doc_id" value="<?php echo $doc_id ?>" />
 			<input type="submit" name="doc-edit-submit" id="doc-edit-submit" value="<?php _e( 'Save', 'bp-docs' ) ?>"> <a href="<?php bp_docs_cancel_edit_link() ?>" class="action safe"><?php _e( 'Cancel', 'bp-docs' ); ?></a>
 

@@ -202,7 +202,7 @@ class BP_Docs_Theme_Compat {
 			'post_author'    => 0,
 			'post_date'      => 0,
 			'post_content'   => '',
-			'post_type'      => 'bp_docs',
+			'post_type'      => bp_docs_get_post_type_name(),
 			'post_status'    => 'publish',
 			'is_archive'     => true,
 			'comment_status' => 'closed'
@@ -257,10 +257,10 @@ class BP_Docs_Theme_Compat {
 		bp_theme_compat_reset_post( array(
 			'ID'             => 0,
 			'post_title'     => __( 'Create a Doc', 'bp-docs' ),
-			'post_author'    => 0,
+			'post_author'    => get_current_user_id(),
 			'post_date'      => 0,
 			'post_content'   => '',
-			'post_type'      => 'bp_docs',
+			'post_type'      => bp_docs_get_post_type_name(),
 			'post_status'    => 'publish',
 			'is_archive'     => true,
 			'comment_status' => 'closed'

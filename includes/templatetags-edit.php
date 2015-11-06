@@ -198,7 +198,7 @@ function bp_docs_add_idle_function_to_tinymce( $initArray ) {
 					bp_docs_load_idle();
 
 					/* Hide rows 3+ */
-					var rows = jQuery(\'#\' + ed.editorContainer).find(\'table.mceToolbar\');
+					var rows = jQuery(ed.editorContainer).find(\'table.mceToolbar\');
 					jQuery(rows).each(function(k,row){
 						if ( !jQuery(row).hasClass(\'mceToolbarRow2\') && !jQuery(row).hasClass(\'mceToolbarRow1\' ) ) {
 							jQuery(row).toggle();

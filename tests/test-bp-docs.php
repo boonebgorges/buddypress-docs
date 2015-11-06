@@ -316,6 +316,162 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 
 		$this->assertEquals( 1, $comment->comment_approved );
 	}
+	/**
+	 * @group bp_docs_unlink_from_group
+	 */
+	function test_bp_docs_unlink_from_group() {
+		$group = $this->factory->group->create();
+		$doc_id = $this->factory->doc->create( array(
+			'group' => $group,
+		) );
+
+		bp_docs_unlink_from_group( $doc_id, $group );
+
+		$maybe_group_id = bp_docs_get_associated_group_id( $doc_id );
+
+		$this->assertFalse( (bool) $maybe_group_id );
+	}
+	/**
+	 * @group bp_docs_unlink_from_group
+	 */
+	function test_bp_docs_remove_group_related_doc_access_settings() {
+		$group = $this->factory->group->create();
+		$doc_id = $this->factory->doc->create( array(
+			'group' => $group,
+		) );
+		$settings = bp_docs_get_doc_settings( $doc_id );
+		// These are doc default settings:
+		// $default_settings = array(
+		// 	'read'          => 'anyone',
+		// 	'edit'          => 'loggedin',
+		// 	'read_comments' => 'anyone',
+		// 	'post_comments' => 'anyone',
+		// 	'view_history'  => 'anyone',
+		// 	'manage'        => 'creator',
+		// );
+		$settings['edit'] = 'group-members';
+		$settings['post_comments'] = 'admins-mods';
+		update_post_meta( $doc_id, 'bp_docs_settings', $settings );
+
+		bp_docs_remove_group_related_doc_access_settings( $doc_id );
+
+		$expected_settings = array(
+			'read'          => 'anyone',
+			'edit'          => 'creator',
+			'read_comments' => 'anyone',
+			'post_comments' => 'creator',
+			'view_history'  => 'anyone',
+			'manage'        => 'creator',
+		);
+		$modified_settings = bp_docs_get_doc_settings( $doc_id );
+
+		$this->assertEqualSetsWithIndex( $expected_settings, $modified_settings );
+	}
+	/**
+	 * @group bp_docs_get_access_options
+	 */
+	function test_bp_docs_get_access_options_no_group_assoc() {
+		$default_settings = bp_docs_get_default_access_options();
+		// These are doc default settings:
+		$expected_settings = array(
+			'read'          => 'anyone',
+			'edit'          => 'loggedin',
+			'read_comments' => 'anyone',
+			'post_comments' => 'anyone',
+			'view_history'  => 'anyone',
+			'manage'        => 'creator'
+		);
+
+		$this->assertEqualSetsWithIndex( $expected_settings, $default_settings );
+	}
+	/**
+	 * @group bp_docs_get_access_options
+	 */
+	function test_bp_docs_get_access_options_group_assoc_public() {
+		$u1 = $this->factory->user->create();
+		$this->set_current_user( $u1 );
+
+		$g = $this->factory->group->create( array(
+			'status' => 'public',
+			'creator_id' => $u1
+		) );
+		// Make sure BP-Docs is enabled for this group and this user can associate with this group.
+		$settings = array(
+			'group-enable'	=> 1,
+			'can-create' 	=> 'member'
+		);
+
+		groups_update_groupmeta( $g, 'bp-docs', $settings );
+
+		$default_settings = bp_docs_get_default_access_options( 0, $g);
+		// These are doc default settings:
+		$expected_settings = array(
+			'read'          => 'anyone',
+			'edit'          => 'group-members',
+			'read_comments' => 'anyone',
+			'post_comments' => 'group-members',
+			'view_history'  => 'anyone',
+			'manage'        => 'creator'
+		);
+
+		$this->assertEqualSetsWithIndex( $expected_settings, $default_settings );
+	}
+	/**
+	 * @group bp_docs_get_access_options
+	 */
+	function test_bp_docs_get_access_options_group_assoc_private() {
+		$u1 = $this->factory->user->create();
+		$this->set_current_user( $u1 );
+
+		$g = $this->factory->group->create( array(
+			'status' => 'private',
+			'creator_id' => $u1
+		) );
+
+		// Make sure BP-Docs is enabled for this group and this user can associate with this group.
+		$settings = array(
+			'group-enable'	=> 1,
+			'can-create' 	=> 'member'
+		);
+
+		groups_update_groupmeta( $g, 'bp-docs', $settings );
+
+		$default_settings = bp_docs_get_default_access_options( 0, $g );
+		// These are doc default settings:
+		$expected_settings = array(
+			'read'          => 'group-members',
+			'edit'          => 'group-members',
+			'read_comments' => 'group-members',
+			'post_comments' => 'group-members',
+			'view_history'  => 'group-members',
+			'manage'        => 'group-members'
+		);
+
+		$this->assertEqualSetsWithIndex( $expected_settings, $default_settings );
+	}
+
+	/**
+	 * @see issue #492
+	 */
+	public function test_bp_docs_is_docs_enabled_for_group_should_work_after_toggled_off() {
+		$group = $this->factory->group->create();
+		$doc_id = $this->factory->doc->create( array( 'group' => $group ) );
+
+		$settings = array(
+			'group-enable' => 1,
+			'can-create' => 'member',
+		);
+		groups_update_groupmeta( $group, 'bp-docs', $settings );
+
+		$this->assertTrue( bp_docs_is_docs_enabled_for_group( $group ) );
+
+		$settings = array(
+			'group-enable' => 0,
+		);
+		groups_update_groupmeta( $group, 'bp-docs', $settings );
+
+		$this->assertFalse( bp_docs_is_docs_enabled_for_group( $group ) );
+	}
 }
 
 

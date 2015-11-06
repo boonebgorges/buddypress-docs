@@ -1,10 +1,10 @@
 === BuddyPress Docs  ===
-Contributors: boonebgorges, cuny-academic-commons
+Contributors: boonebgorges, dcavins, cuny-academic-commons
 Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.3, BuddyPress 1.5
-Tested up to: WordPress 4.0, BuddyPress 2.1.1
-Stable tag: 1.8.5
+Tested up to: WordPress 4.3.1, BuddyPress 2.3.4
+Stable tag: 1.8.8
 
 Adds collaborative Docs to BuddyPress.
 
@@ -32,6 +32,31 @@ This plugin is in active development. For feature requests and bug reports, visi
 1. Sit back and watch the jack roll in
 
 == Changelog ==
+
+= 1.8.9 =
+* Fixed bug that caused incorrect "x members" count in Associated Group metabox in some situations.
+* Improved localization for "x members" string in Associated Group metabox.
+* Fixed bug that caused Docs to show as enabled for a group after being toggled from on to off.
+
+= 1.8.8 =
+* Fixed bug that prevented certain users from having access to the "associated group" panel in edit mode.
+* Fixed bug where Doc access settings might not be correct by default.
+* Fixed bug where suggested Doc access settings may override values set by the user.
+
+= 1.8.7 =
+* Fixed pagination bugs within group and user Doc directories
+* Improved accessibility throughout frontend and backend screens.
+* Added new action hooks to Doc edit meta area.
+* Fixed bug that caused "View All Docs" link to be broken when plugins add filters to Doc directories.
+* Added miscellaneous filters for plugin developers.
+* Improved performance of access protection functions.
+
+= 1.8.6 =
+* Improved compatibility with BuddyPress 2.2+
+* New feature: unlink from group button
+* Extracted away from WordPress's general discussion settings
+* Fixed bug that could cause attachment corruption on download
+* Fixed JS error when editing/creating Doc
 
 = 1.8.5 =
 * Fixed permalinks for child Docs
