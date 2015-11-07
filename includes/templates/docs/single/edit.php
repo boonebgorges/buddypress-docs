@@ -144,34 +144,36 @@
 
 			<?php do_action( 'bp_docs_after_tags_meta_box', $doc_id ) ?>
 
-			<?php do_action( 'bp_docs_before_parent_meta_box', $doc_id ) ?>
+			<?php if ( apply_filters( 'bp_docs_allow_parent_doc_setting', true, $doc_id ) ) : ?>
+				<?php do_action( 'bp_docs_before_parent_meta_box', $doc_id ) ?>
 
-			<div id="doc-parent" class="doc-meta-box">
-				<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class() ?>">
-					<p class="toggle-switch" id="parent-toggle">
-						<span class="hide-if-js toggle-link-no-js"><?php _e( 'Parent', 'bp-docs' ) ?></span>
-						<a class="hide-if-no-js toggle-link" id="parent-toggle-link" href="#"><span class="show-pane plus-or-minus"></span><?php _e( 'Parent', 'bp-docs' ) ?></a>
-					</p>
+				<div id="doc-parent" class="doc-meta-box">
+					<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class() ?>">
+						<p class="toggle-switch" id="parent-toggle">
+							<span class="hide-if-js toggle-link-no-js"><?php _e( 'Parent', 'bp-docs' ) ?></span>
+							<a class="hide-if-no-js toggle-link" id="parent-toggle-link" href="#"><span class="show-pane plus-or-minus"></span><?php _e( 'Parent', 'bp-docs' ) ?></a>
+						</p>
 
-					<div class="toggle-content">
-						<table class="toggle-table" id="toggle-table-parent">
-							<tr>
-								<td class="desc-column">
-									<label for="parent_id"><?php _e( 'Select a parent for this Doc.', 'bp-docs' ) ?></label>
+						<div class="toggle-content">
+							<table class="toggle-table" id="toggle-table-parent">
+								<tr>
+									<td class="desc-column">
+										<label for="parent_id"><?php _e( 'Select a parent for this Doc.', 'bp-docs' ) ?></label>
 
-									<span class="description"><?php _e( '(Optional) Assigning a parent Doc means that a link to the parent will appear at the bottom of this Doc, and a link to this Doc will appear at the bottom of the parent.', 'bp-docs' ) ?></span>
-								</td>
+										<span class="description"><?php _e( '(Optional) Assigning a parent Doc means that a link to the parent will appear at the bottom of this Doc, and a link to this Doc will appear at the bottom of the parent.', 'bp-docs' ) ?></span>
+									</td>
 
-								<td class="content-column">
-									<?php bp_docs_edit_parent_dropdown() ?>
-								</td>
-							</tr>
-						</table>
+									<td class="content-column">
+										<?php bp_docs_edit_parent_dropdown() ?>
+									</td>
+								</tr>
+							</table>
+						</div>
 					</div>
 				</div>
-			</div>
+				<?php do_action( 'bp_docs_after_parent_meta_box', $doc_id ) ?>
+			<?php endif; ?>
 
-			<?php do_action( 'bp_docs_after_parent_meta_box', $doc_id ) ?>
 			<?php do_action( 'bp_docs_closing_meta_box', $doc_id ) ?>
 		</div>
 
