@@ -364,11 +364,6 @@ class BP_Docs_Groups_Integration {
 			case 'associate_with_group' :
 				$group_settings = bp_docs_get_group_settings( $group_id );
 
-				// Provide a default value for legacy backpat
-				if ( empty( $group_settings['can-create'] ) ) {
-					$group_settings['can-create'] = 'member';
-				}
-
 				if ( !empty( $group_settings['can-create'] ) ) {
 					switch ( $group_settings['can-create'] ) {
 						case 'admin' :
@@ -538,14 +533,12 @@ class BP_Docs_Groups_Integration {
 			return false;
 		}
 
-		// Check against group settings. Default to 'member'
-		// @todo Abstract default settings out better
+		// Check against group settings.
 		$group_settings = bp_docs_get_group_settings( $group_id );
-		$can_create = isset( $group_settings['can-create'] ) ? $group_settings['can-create'] : 'member';
 
-		if ( 'admin' == $can_create ) {
+		if ( 'admin' == $group_settings['can-create'] ) {
 			return (bool) groups_is_user_admin( $user_id, $group_id );
-		} else if ( 'mod' == $can_create ) {
+		} else if ( 'mod' == $group_settings['can-create'] ) {
 			return groups_is_user_admin( $user_id, $group_id ) || groups_is_user_mod( $user_id, $group_id );
 		}
 
@@ -1649,7 +1642,7 @@ function bp_docs_get_group_settings( $group_id ) {
 	}
 
 	$parsed_settings = wp_parse_args( $settings, array(
-		'group-enable'	=> 1,
+		'group-enable'	=> 0,
 		'can-create' 	=> 'member',
 	) );
 
