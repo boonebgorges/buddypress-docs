@@ -91,6 +91,9 @@ class BP_Docs_Groups_Integration {
 
 		// When object terms are set, delete the transient
 		add_action( 'set_object_terms', array( &$this, 'delete_transient' ), 10, 4 );
+
+		// Set the "last directory viewed" cookie when viewing a group docs directory.
+		add_action( 'bp_actions', array( $this, 'set_directory_cookie' ) );
 	}
 
 	/**
@@ -975,6 +978,17 @@ class BP_Docs_Groups_Integration {
 	function delete_transient( $object_id, $terms, $tt_ids, $taxonomy ) {
 		if ( bp_docs_get_associated_item_tax_name() == $taxonomy ) {
 			delete_transient( 'associated_groups-' . $object_id );
+		}
+	}
+
+	/**
+	 * Renew the last directory cookie if the user is viewing a group's docs library.
+	 *
+	 * @since 1.9.0
+	 */
+	public function	set_directory_cookie() {
+		if ( bp_docs_is_group_docs() ) {
+			@setcookie( 'bp-docs-last-docs-directory', home_url( $_SERVER['REQUEST_URI'] ), 0, '/' );
 		}
 	}
 }
