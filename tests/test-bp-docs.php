@@ -320,6 +320,27 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 
 		$this->assertEqualSetsWithIndex( $expected_settings, $modified_settings );
 	}
+
+	/**
+	 * @see issue #460
+	 */
+	public function test_bp_docs_is_docs_enabled_for_group_should_not_assume_enabled() {
+		$group = $this->factory->group->create();
+		$doc_id = $this->factory->doc->create( array( 'group' => $group ) );
+
+		$settings = array(
+			'group-enable' => 1,
+			'can-create' => 'member',
+		);
+		groups_update_groupmeta( $group, 'bp-docs', $settings );
+
+		$this->assertTrue( bp_docs_is_docs_enabled_for_group( $group ) );
+
+		// What happens when no group meta is saved for this group?
+		groups_delete_groupmeta( $group, 'bp-docs', $settings );
+
+		$this->assertFalse( bp_docs_is_docs_enabled_for_group( $group ) );
+	}
 }
 
 
