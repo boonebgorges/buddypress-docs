@@ -27,6 +27,9 @@ class BP_Docs_Users_Integration {
 
 		// On user Doc directories, modify the pagination base so that pagination works within the directory.
 		add_filter( 'bp_docs_page_links_base_url', 		array( $this, 'filter_bp_docs_page_links_base_url' ), 10, 2 );
+
+		// Set the "last directory viewed" cookie when a user is viewing her docs directory.
+		add_action( 'bp_actions', array( $this, 'set_directory_cookie' ) );
 	}
 
 	/**
@@ -245,6 +248,17 @@ class BP_Docs_Users_Integration {
 			}
 		}
 		return $base_url;
+	}
+
+	/**
+	 * Renew the last directory cookie if the user is viewing her docs library.
+	 *
+	 * @since 1.9.0
+	 */
+	public function	set_directory_cookie() {
+		if ( bp_docs_is_user_docs() ) {
+			@setcookie( 'bp-docs-last-docs-directory', home_url( $_SERVER['REQUEST_URI'] ), 0, '/' );
+		}
 	}
 
 }

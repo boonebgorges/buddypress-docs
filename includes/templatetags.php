@@ -1765,6 +1765,22 @@ function bp_docs_is_global_directory() {
 }
 
 /**
+ * Is this a single group's Docs tab?
+ *
+ * @since 1.9
+ * @return bool
+ */
+function bp_docs_is_group_docs() {
+	$is_directory = false;
+
+	if ( bp_is_active( 'groups' ) && bp_is_group() && bp_docs_is_docs_component() ) {
+		$is_directory = true;
+	}
+
+	return apply_filters( 'bp_docs_is_group_docs', $is_directory );
+}
+
+/**
  * Is this the My Groups directory?
  *
  * @since 1.5

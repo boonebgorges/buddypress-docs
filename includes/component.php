@@ -118,6 +118,8 @@ class BP_Docs_Component extends BP_Component {
 		add_action( 'wp_enqueue_scripts',       array( $this, 'enqueue_scripts' 	) );
 		add_action( 'wp_print_styles',          array( $this, 'enqueue_styles' 		) );
 
+		// Set the "last directory viewed" cookie when viewing the main docs directory.
+		add_action( 'bp_actions', array( $this, 'set_directory_cookie' ) );
 	}
 
 	/**
@@ -505,7 +507,14 @@ class BP_Docs_Component extends BP_Component {
 				bp_core_add_message( __( 'You do not have permission to delete that doc.', 'bp-docs' ), 'error' );
 			}
 
-			bp_core_redirect( home_url( bp_docs_get_docs_slug() ) );
+			// Send the user back to the most recently viewed directory if possible.
+			if ( isset( $_COOKIE[ 'bp-docs-last-docs-directory' ] ) && filter_var( $_COOKIE[ 'bp-docs-last-docs-directory' ], FILTER_VALIDATE_URL) ) {
+				$delete_redirect = $_COOKIE[ 'bp-docs-last-docs-directory' ];
+			} else {
+				$delete_redirect = home_url( bp_docs_get_docs_slug() );
+			}
+
+			bp_core_redirect( $delete_redirect );
 			die();
 		}
 
@@ -972,6 +981,17 @@ class BP_Docs_Component extends BP_Component {
 		if ( bp_docs_is_doc_edit() || bp_docs_is_doc_create() ) {
 			wp_enqueue_style( 'bp-docs-edit-css', $this->includes_url . 'css/edit.css' );
 			wp_enqueue_style( 'thickbox' );
+		}
+	}
+
+	/**
+	 * Renew the last directory cookie if the user is viewing the main docs library.
+	 *
+	 * @since 1.9.0
+	 */
+	public function	set_directory_cookie() {
+		if ( bp_docs_is_global_directory() ) {
+			@setcookie( 'bp-docs-last-docs-directory', home_url( $_SERVER['REQUEST_URI'] ), 0, '/' );
 		}
 	}
 
