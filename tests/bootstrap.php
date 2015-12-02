@@ -6,7 +6,13 @@ if ( ! defined( 'BP_TESTS_DIR' ) ) {
 
 if ( file_exists( BP_TESTS_DIR . '/bootstrap.php' ) ) :
 
-	require_once getenv( 'WP_DEVELOP_DIR' ) . '/tests/phpunit/includes/functions.php';
+	require_once( BP_TESTS_DIR . '/includes/define-constants.php' );
+
+	if ( ! file_exists( WP_TESTS_DIR . '/includes/functions.php' ) ) {
+		die( "The WordPress PHPUnit test suite could not be found.\n" );
+	}
+
+	require_once WP_TESTS_DIR . '/includes/functions.php';
 
 	function _bootstrap_bpdocs() {
 		// Make sure BP is installed and loaded first
@@ -29,9 +35,9 @@ if ( file_exists( BP_TESTS_DIR . '/bootstrap.php' ) ) :
 	}
 	tests_add_filter( 'init', '_flush', 1000 );
 
-	require getenv( 'WP_DEVELOP_DIR' ) . '/tests/phpunit/includes/bootstrap.php';
+	require WP_TESTS_DIR . '/includes/bootstrap.php';
 
-	// Load the BP test files
+	// Load the BP-specific testing tools
 	require BP_TESTS_DIR . '/includes/testcase.php';
 
 	// include our testcase
