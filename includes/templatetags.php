@@ -38,7 +38,7 @@ function bp_docs_has_docs( $args = array() ) {
 		// Build some intelligent defaults
 
 		// Default to current group id, if available
-		if ( bp_is_group() ) {
+		if ( bp_is_active( 'groups' ) && bp_is_group() ) {
 			$d_group_id = bp_get_current_group_id();
 		} else if ( bp_docs_is_mygroups_directory() ) {
 			$my_groups = groups_get_user_groups( bp_loggedin_user_id() );
@@ -1272,7 +1272,7 @@ function bp_docs_current_view() {
  * Todo: Make less hackish
  */
 function bp_docs_doc_permalink() {
-	if ( bp_is_group() ) {
+	if ( bp_is_active( 'groups' ) && bp_is_group() ) {
 		bp_docs_group_doc_permalink();
 	} else {
 		the_permalink();

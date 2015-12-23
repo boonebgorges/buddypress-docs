@@ -110,7 +110,7 @@ class BP_Docs_Query {
 
 		switch ( $this->item_type ) {
 			case 'group' :
-				if ( bp_is_group() ) {
+				if ( bp_is_active( 'groups' ) && bp_is_group() ) {
 					$group = groups_get_current_group();
 					$id    = $group->id;
 					$name  = $group->name;
