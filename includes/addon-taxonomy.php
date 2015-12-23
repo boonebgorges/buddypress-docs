@@ -442,7 +442,7 @@ function bp_docs_get_tag_link( $args = array() ) {
 		} elseif ( BP_DOCS_EDITED_SLUG == $current_action ) {
 			$item_docs_url = bp_docs_get_displayed_user_docs_edited_link();
 		}
-	} elseif ( bp_is_group() ){
+	} elseif ( bp_is_active( 'groups' ) && bp_is_group() ){
 		$item_docs_url = trailingslashit( bp_get_group_permalink() . bp_docs_get_docs_slug() );
 	} else {
 		$item_docs_url = bp_docs_get_archive_link();
