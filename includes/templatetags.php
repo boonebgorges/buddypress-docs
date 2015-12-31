@@ -1214,8 +1214,8 @@ function bp_docs_current_group_is_public() {
  * @package BuddyPress Docs
  * @since 1.0.1
  */
-function bp_docs_delete_doc_link() {
-	echo bp_docs_get_delete_doc_link();
+function bp_docs_delete_doc_link( $force_delete = false ) {
+	echo bp_docs_get_delete_doc_link( $force_delete );
 }
 	/**
 	 * Get the URL to delete the current doc
@@ -1223,12 +1223,19 @@ function bp_docs_delete_doc_link() {
 	 * @package BuddyPress Docs
 	 * @since 1.0.1
 	 *
+	 * @param bool force_delete Whether to add the force_delete query arg.
+	 *
 	 * @return string $delete_link href for the delete doc link
 	 */
-	function bp_docs_get_delete_doc_link() {
+	function bp_docs_get_delete_doc_link( $force_delete = false ) {
 		$doc_permalink = bp_docs_get_doc_link();
+		$query_args = array( BP_DOCS_DELETE_SLUG => 1 );
 
-		$delete_link = wp_nonce_url( add_query_arg( BP_DOCS_DELETE_SLUG, '1', $doc_permalink ), 'bp_docs_delete' );
+		if ( $force_delete ) {
+			$query_args['force_delete'] = 1;
+		}
+
+		$delete_link = wp_nonce_url( add_query_arg( $query_args, $doc_permalink ), 'bp_docs_delete' );
 
 		return apply_filters( 'bp_docs_get_delete_doc_link', $delete_link, $doc_permalink );
 	}
@@ -1290,7 +1297,10 @@ function bp_docs_delete_doc_button( $doc_id = false ) {
 			// and a button to permanently delete the doc.
 			$button .= '<a class="delete-doc-button confirm" href="' . bp_docs_get_delete_doc_link() . '">' . __( 'Permanently Delete', 'bp-docs' ) . '</a>';
 		} else {
+			// A button to move the doc to the trash...
 			$button = '<a class="delete-doc-button confirm" href="' . bp_docs_get_delete_doc_link() . '">' . __( 'Move to Trash', 'bp-docs' ) . '</a>';
+			// and a button to permanently delete the doc.
+			$button .= '<a class="delete-doc-button confirm" href="' . bp_docs_get_delete_doc_link( true ) . '">' . __( 'Permanently Delete', 'bp-docs' ) . '</a>';
 		}
 
 		return $button;

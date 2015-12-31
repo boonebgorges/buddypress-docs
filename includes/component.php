@@ -501,9 +501,14 @@ class BP_Docs_Component extends BP_Component {
 			check_admin_referer( 'bp_docs_delete' );
 
 			if ( current_user_can( 'bp_docs_manage' ) ) {
+				$force_delete = false;
+				if ( ! empty( $_GET['force_delete'] ) ) {
+					$force_delete = true;
+				}
+
 				$delete_doc_id = get_queried_object_id();
 
-				if ( bp_docs_trash_doc( $delete_doc_id ) ) {
+				if ( bp_docs_trash_doc( $delete_doc_id, $force_delete ) ) {
 					bp_core_add_message( __( 'Doc successfully deleted!', 'bp-docs' ) );
 				} else {
 					bp_core_add_message( __( 'Could not delete doc.', 'bp-docs' ) );

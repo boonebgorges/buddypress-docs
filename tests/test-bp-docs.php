@@ -476,4 +476,16 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 
 		$this->assertNull( get_post( $doc_id ) );
 	}
+
+	/**
+	 * @group bp_docs_trash_doc
+	 */
+	function test_bp_docs_delete_force_delete() {
+		$doc_id = $this->factory->doc->create();
+
+		// Force-deleting a doc deletes it permanently.
+		bp_docs_trash_doc( $doc_id, true );
+
+		$this->assertNull( get_post( $doc_id ) );
+	}
 }

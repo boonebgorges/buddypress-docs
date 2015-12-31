@@ -476,10 +476,11 @@ function bp_docs_define_tiny_mce() {
  * Send a Doc to the trash
  *
  * @since 1.3
- * @param int $doc_id
+ * @param int  $doc_id       ID of the doc to be trashed.
+ * @param bool $force_delete Whether to bypass the trash and delete permanently.
  * @return bool
  */
-function bp_docs_trash_doc( $doc_id = 0 ) {
+function bp_docs_trash_doc( $doc_id = 0, $force_delete = false ) {
 	do_action( 'bp_docs_before_doc_delete', $doc_id );
 	$deleted = false;
 	$delete_args = array(
@@ -488,10 +489,13 @@ function bp_docs_trash_doc( $doc_id = 0 ) {
 	);
 
 	/*
+	 * If the $force_delete option is true, we bypass the trash and permanently delete the doc.
 	 * If the post is already in the trash, we permanently delete it.
 	 * If the post is not in the trash, we put it in the trash.
 	 */
-	if ( 'trash' == get_post_status( $doc_id ) ) {
+	if ( $force_delete ) {
+		$deleted = wp_delete_post( $doc_id, true );
+	} elseif ( 'trash' == get_post_status( $doc_id ) ) {
 		$deleted = wp_delete_post( $doc_id );
 	} else {
 		$deleted = wp_update_post( $delete_args );
