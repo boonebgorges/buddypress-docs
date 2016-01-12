@@ -34,9 +34,28 @@ This plugin is in active development. For feature requests and bug reports, visi
 == Changelog ==
 
 = 1.9 =
-
 * Docs can now be sorted into folders
 * New breadcrumb navigation in individual Docs as well as in folder view
+
+= 1.8.9 =
+* Fixed bug that caused incorrect "x members" count in Associated Group metabox in some situations.
+* Improved localization for "x members" string in Associated Group metabox.
+* Fixed bug that caused Docs to show as enabled for a group after being toggled from on to off.
+* Fixed invalid markup on group settings panel.
+* Improved permissions checks for certain actions.
+
+= 1.8.8 =
+* Fixed bug that prevented certain users from having access to the "associated group" panel in edit mode.
+* Fixed bug where Doc access settings might not be correct by default.
+* Fixed bug where suggested Doc access settings may override values set by the user.
+
+= 1.8.7 =
+* Fixed pagination bugs within group and user Doc directories
+* Improved accessibility throughout frontend and backend screens.
+* Added new action hooks to Doc edit meta area.
+* Fixed bug that caused "View All Docs" link to be broken when plugins add filters to Doc directories.
+* Added miscellaneous filters for plugin developers.
+* Improved performance of access protection functions.
 
 = 1.8.6 =
 * Improved compatibility with BuddyPress 2.2+
