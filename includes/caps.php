@@ -49,12 +49,19 @@ function bp_docs_map_meta_caps( $caps, $cap, $user_id, $args ) {
 
 			break;
 
-		case 'bp_docs_read' :
+		// Special cases: logged-in users only.
 		case 'bp_docs_edit' :
-		case 'bp_docs_view_history' :
 		case 'bp_docs_manage' :
-		case 'bp_docs_read_comments' :
 		case 'bp_docs_post_comments' :
+			if ( ! $user_id ) {
+				return array( 'do_not_allow' );
+			}
+
+			// Fall through.
+
+		case 'bp_docs_read' :
+		case 'bp_docs_view_history' :
+		case 'bp_docs_read_comments' :
 			// Reset all caps. We bake from scratch
 			$caps = array();
 

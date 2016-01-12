@@ -174,7 +174,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		update_post_meta( $d, 'bp_docs_settings', $doc_settings );
 
 		$this->set_current_user( 0 );
-		$this->assertTrue( current_user_can( 'bp_docs_edit', $d ) );
+		$this->assertFalse( current_user_can( 'bp_docs_edit', $d ) );
 
 		$u = $this->factory->user->create();
 		$this->set_current_user( $u );
@@ -294,7 +294,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		update_post_meta( $d, 'bp_docs_settings', $doc_settings );
 
 		$this->set_current_user( 0 );
-		$this->assertTrue( current_user_can( 'bp_docs_manage', $d ) );
+		$this->assertFalse( current_user_can( 'bp_docs_manage', $d ) );
 
 		$u = $this->factory->user->create();
 		$this->set_current_user( $u );
@@ -668,7 +668,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		update_post_meta( $d, 'bp_docs_settings', $doc_settings );
 
 		$this->set_current_user( 0 );
-		$this->assertTrue( current_user_can( 'bp_docs_post_comments', $d ) );
+		$this->assertFalse( current_user_can( 'bp_docs_post_comments', $d ) );
 
 		$u = $this->factory->user->create();
 		$this->set_current_user( $u );
