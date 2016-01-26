@@ -112,7 +112,7 @@ function bp_docs_edit_doc_content() {
 function bp_docs_edit_parent_dropdown() {
 	global $bp;
 
-	$include = array();
+	$include = array( 0 );
 
 	$query_args = apply_filters( 'bp_docs_parent_dropdown_query_args', array(
 		'doc_slug' => false,
