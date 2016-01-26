@@ -110,7 +110,7 @@ function bp_docs_edit_doc_content() {
  * @since 1.0-beta
  */
 function bp_docs_edit_parent_dropdown() {
-	global $bp;
+	$bp = buddypress();
 
 	$include = array( 0 );
 
@@ -132,22 +132,22 @@ function bp_docs_edit_parent_dropdown() {
 	$exclude = $parent = false;
 
 	// If this is a failed submission, use the value from the POST cookie
-	if ( ! empty( buddypress()->bp_docs->submitted_data->parent_id ) ) {
-		$parent = intval( buddypress()->bp_docs->submitted_data->parent_id );
-	} else if ( isset( $current_doc->post_type ) && bp_docs_get_post_type_name() === $current_doc->post_type ) {
+	if ( ! empty( $bp->bp_docs->submitted_data->parent_id ) ) {
+		$parent = intval( $bp->bp_docs->submitted_data->parent_id );
+	} else if ( isset( $current_doc->post_type ) && $bp->bp_docs->post_type_name === $current_doc->post_type ) {
 		$exclude = array( $current_doc->ID );
 		$parent = $current_doc->post_parent;
 	}
 
 	$pages = wp_dropdown_pages( array(
-		'post_type' 	=> $bp->bp_docs->post_type_name,
-		'exclude' 	=> $exclude,
-		'include'	=> $include,
-		'selected' 	=> $parent,
-		'name' 		=> 'parent_id',
+		'post_type'        => $bp->bp_docs->post_type_name,
+		'exclude'          => $exclude,
+		'include'          => $include,
+		'selected'         => $parent,
+		'name'             => 'parent_id',
 		'show_option_none' => __( '(no parent)', 'bp-docs' ),
-		'sort_column'	=> 'menu_order, post_title',
-		'echo' 		=> 0 )
+		'sort_column'      => 'menu_order, post_title',
+		'echo'             => 0 )
 	);
 
 	echo $pages;
