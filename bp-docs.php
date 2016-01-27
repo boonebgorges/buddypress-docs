@@ -121,6 +121,9 @@ class BP_Docs {
 		// formatting.php contains filters and functions used to modify appearance only
 		require( BP_DOCS_INCLUDES_PATH . 'formatting.php' );
 
+		// class-wp-widget-recent-docs.php adds a widget to show recently created docs.
+		require( BP_DOCS_INCLUDES_PATH . 'class-wp-widget-recent-docs.php' );
+
 		// Dashboard-specific functions
 		if ( is_admin() ) {
 			require( BP_DOCS_INCLUDES_PATH . 'admin.php' );
