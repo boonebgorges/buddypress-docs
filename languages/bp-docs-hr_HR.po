@@ -8,13 +8,13 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2016-01-28 10:38+0100\n"
+"PO-Revision-Date: 2016-02-03 11:23+0100\n"
 "Language-Team: KRAFTBIT <info@kraftbit.com>\n"
 "X-Generator: Poedit 1.8.6\n"
 "Last-Translator: Mijo Dzalto <mijo@kraftbit.com>\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"Language: hr_HR\n"
+"Language: hr\n"
 
 #: bp-docs.php:267
 msgctxt "post type general name"
@@ -543,7 +543,7 @@ msgstr "Pretraga"
 
 #: includes/component.php:946
 msgid "Still working?"
-msgstr "Još obrađuje?"
+msgstr "Još obrađujete?"
 
 #: includes/component.php:947
 msgid "and %d more"
@@ -858,7 +858,7 @@ msgid ""
 "and 'New' columns, and clicking 'Compare Revisions'."
 msgstr ""
 "Alternativno, možete usporediti dvije revizije odabirajući ih u 'Staro' i "
-"'Novo' kolumnama, i klikanjem na 'Usporedite revizije'."
+"'Novo' kolumnama, te klikom na 'Usporedite revizije'."
 
 #: includes/templates/docs/single/history.php:22
 msgid "Older: %s"
@@ -1035,7 +1035,7 @@ msgstr "Samo ja"
 
 #: includes/templatetags.php:1435
 msgid "Members of: %s"
-msgstr "Djelatnici iz: %s"
+msgstr "Članovi iz: %s"
 
 #: includes/templatetags.php:1436
 msgid "Admins and mods of the group %s"
