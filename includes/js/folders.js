@@ -22,7 +22,13 @@
 
 		// Change associated group, change available folders
 		$associated_group_selector = $( '#associated_group_id' );
-		update_new_folder_selectors_for_group( $associated_group_selector.val() );
+		/*
+		 * Refresh the type selector only when $associated_group_selector.val() is defined.
+		 * This prevents the refresh from running and failing on the "manage folders" screen.
+		 */
+		if ( typeof $associated_group_selector.val() !== 'undefined' && $associated_group_selector.val().length ) {
+			update_new_folder_selectors_for_group( $associated_group_selector.val() );
+		}
 		update_folder_tab_title();
 		$associated_group_selector.on( 'change', function() {
 			update_folder_metabox_display();
