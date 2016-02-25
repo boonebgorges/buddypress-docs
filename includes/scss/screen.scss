@@ -164,10 +164,6 @@ body.bp-docs div.page ul {
 			&:nth-child(even) {
 				background-color: $grey;
 			}
-
-			th {
-				background-color: $grey;
-			}
 		}
 	}
 }
@@ -189,9 +185,6 @@ body.mobile .row-actions {
 		color: #f00;
 	}
 
-
-
-
 #docs-filter-submit {
 	margin: 10px 4px;
 }
@@ -203,10 +196,6 @@ body.mobile .row-actions {
 
 .title-cell {
 	min-width: 150px;
-}
-
-.tags-cell {
-	width: 200px;
 }
 
 .doc-excerpt {
