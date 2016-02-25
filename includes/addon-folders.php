@@ -116,6 +116,10 @@ class BP_Docs_Folders {
 		add_action( 'wp_ajax_bp_docs_update_folder_type', 'bp_docs_update_folder_type_cb' );
 		add_action( 'wp_ajax_bp_docs_update_folder_type_for_group', 'bp_docs_update_folder_type_for_group_cb' );
 		add_action( 'wp_ajax_bp_docs_process_folder_drop', 'bp_docs_process_folder_drop_cb' );
+		// AJAX template calls
+		add_action( 'wp_ajax_bp_docs_get_folder_content', 'bp_docs_get_folder_content_cb' );
+		add_action( 'wp_ajax_nopriv_bp_docs_get_folder_content', 'bp_docs_get_folder_content_cb' );
+
 
 		// Folders UI is limited to the Group context for now. Change at your own risk.
 		if ( ! bp_docs_enable_folders_for_current_context() ) {
@@ -1413,6 +1417,18 @@ function bp_docs_process_folder_drop_cb() {
 	} else {
 		die( '-1' );
 	}
+}
+
+
+/**
+ * Handle AJAX requests for the contents of folders.
+ *
+ * @since 1.9
+ */
+function bp_docs_get_folder_content_cb() {
+	// @TODO: Need to filter this.
+    include_once( 'templates/docs/docs-folder-loop.php' );
+	exit;
 }
 
 /** Template functions *******************************************************/

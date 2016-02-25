@@ -40,6 +40,9 @@ function bp_docs_has_docs( $args = array() ) {
 		// Default to current group id, if available
 		if ( bp_is_active( 'groups' ) && bp_is_group() ) {
 			$d_group_id = bp_get_current_group_id();
+		} else if ( ! empty( $_REQUEST['group_id'] ) ) {
+			// This is useful for the AJAX request for folder contents.
+			$d_group_id = $_REQUEST['group_id'];
 		} else if ( bp_docs_is_mygroups_directory() ) {
 			$my_groups = groups_get_user_groups( bp_loggedin_user_id() );
 			$d_group_id = ! empty( $my_groups['total'] ) ? $my_groups['groups'] : array( 0 );
@@ -2292,4 +2295,28 @@ function bp_docs_toggleable_open_or_closed_class() {
 	} else {
 		echo 'toggle-closed';
 	}
+}
+
+/**
+ * Output data for JS access on directories.
+ *
+ * @since 1.9
+ */
+function bp_docs_ajax_value_inputs() {
+	// Store the group ID in a hidden input.
+	if ( bp_docs_is_group_docs() ) {
+		$group_id = bp_get_current_group_id();
+	} else {
+		// Having the value always set makes JS easier.
+		$group_id = 0;
+	}
+	?>
+	<input type="hidden" id="directory-group-id" value="<?php echo $group_id; ?>">
+	<?php
+	// Store the user ID in a hidden input.
+	?>
+	<input type="hidden" id="directory-user-id" value="<?php echo bp_displayed_user_id(); ?>">
+	<?php
+	// Allow other plugins to add inputs.
+	do_action( 'bp_docs_ajax_value_inputs', $group_id, $user_id );
 }

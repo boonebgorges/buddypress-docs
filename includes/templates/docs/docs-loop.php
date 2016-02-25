@@ -89,7 +89,12 @@
 					<?php endif ?>
 
 					<td class="folder-row-name" colspan=10>
-						<i class="genericon genericon-category"></i><a href="<?php echo esc_url( bp_docs_get_folder_url( $folder->ID ) ) ?>"><?php echo esc_html( $folder->post_title ) ?></a>
+						<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class(); ?>">
+								<span class="hide-if-js toggle-link-no-js"><i class="genericon genericon-category"></i><a href="<?php echo esc_url( bp_docs_get_folder_url( $folder->ID ) ) ?>"><?php echo esc_html( $folder->post_title ) ?></a></span>
+								<a class="hide-if-no-js toggle-folder" id="expand-folder-<?php echo $folder->ID; ?>" data-folder-id="<?php echo $folder->ID; ?>" href="#"><i class="genericon genericon-expand"></i><i class="genericon genericon-category"></i><?php echo esc_html( $folder->post_title ) ?></a>
+							<div class="toggle-content folder-loop">
+							</div>
+						</div>
 					</td>
 				</tr>
 			<?php endforeach ?>
@@ -160,4 +165,5 @@
 		</div>
 	<?php endif; ?>
 <?php endif; ?>
+<?php bp_docs_ajax_value_inputs(); ?>
 </div><!-- /#buddypress -->

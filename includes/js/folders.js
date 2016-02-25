@@ -9,7 +9,8 @@
 		$doctable,
 		$editing_folder,
 		$folder_rows,
-		$hover_element;
+		$hover_element,
+		fetching_folder_contents = false;
 
 	$( document ).ready( function() {
 		// Show/hide new folder details
@@ -83,6 +84,28 @@
 				set_folder_name_colspan();
 			} );
 		}
+
+		/*
+		 * Expand folders to show contents on click.
+		 * Contents are fetched via an AJAX request.
+		 */
+		$( '.doctable' ).on( 'click', '.toggle-folder', function( e ) {
+			e.preventDefault();
+			maybe_populate_folder_contents( $( this ) );
+
+			// Closely duplicate the normal bp-docs toggle-link behavior.
+			var $toggleable = $( this ).closest( '.toggleable' ),
+				$state_icon = $( this ).children('.genericon-collapse, .genericon-expand').first();
+
+			if ( $toggleable.hasClass( 'toggle-open' ) ) {
+				$toggleable.removeClass( 'toggle-open' ).addClass( 'toggle-closed' );
+				$state_icon.removeClass( 'genericon-collapse' ).addClass( 'genericon-expand' );
+			} else {
+				$toggleable.removeClass( 'toggle-closed' ).addClass( 'toggle-open' );
+				$state_icon.removeClass( 'genericon-expand' ).addClass( 'genericon-collapse' );
+			}
+
+		} );
 	} );
 
 	/**
@@ -383,5 +406,42 @@
 		} );
 
 		$folder_rows.attr( 'colspan', colcount );
+	}
+
+	/**
+	 * Fetch the first set of results in a folder,
+	 * if the folder isn't already populated.
+	 */
+	function maybe_populate_folder_contents( anchor ) {
+		var container = $( anchor ).siblings( ".toggle-content.folder-loop" );
+
+		// If the folder content has already been populated, do nothing.
+		if ( $.trim( container.text() ).length ) {
+			return;
+		}
+
+		// Do not continue if we are currently fetching a set of results.
+		if ( fetching_folder_contents !== false ) {
+			return;
+		}
+		fetching_folder_contents = true;
+
+		// Make the AJAX request and populate the list.
+		$.ajax( {
+			url: ajaxurl,
+			type: 'GET',
+			data: {
+				folder: $( anchor ).data( 'folder-id' ),
+				group_id: $( '#directory-group-id' ).val(),
+				user_id: $( '#directory-user-id' ).val(),
+				action: 'bp_docs_get_folder_content',
+			},
+			success: function( response ) {
+				$( container ).html( response );
+				fetching_folder_contents = false;
+			}
+
+		} );
+
 	}
 } )( jQuery )
