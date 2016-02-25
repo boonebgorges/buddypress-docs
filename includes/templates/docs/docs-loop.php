@@ -72,7 +72,7 @@
 					</td>
 				<?php endif ?>
 
-				<td colspan=10>
+				<td class="folder-row-name" colspan=10>
 					<i class="genericon genericon-category"></i><a href="<?php echo esc_url( bp_docs_get_parent_folder_url() ) ?>"><?php _ex( '..', 'up one folder', 'bp-docs' ) ?></a>
 				</td>
 			</tr>
@@ -88,7 +88,7 @@
 						</td>
 					<?php endif ?>
 
-					<td colspan=10>
+					<td class="folder-row-name" colspan=10>
 						<i class="genericon genericon-category"></i><a href="<?php echo esc_url( bp_docs_get_folder_url( $folder->ID ) ) ?>"><?php echo esc_html( $folder->post_title ) ?></a>
 					</td>
 				</tr>

@@ -8,6 +8,7 @@
 		$doc_clone,
 		$doctable,
 		$editing_folder,
+		$folder_rows,
 		$hover_element;
 
 	$( document ).ready( function() {
@@ -67,12 +68,21 @@
 		} );
 
 		// Hide folders on list view.
+		$doctable = $( 'table.doctable' );
 		$( '.toggle-folders' ).on( 'click', function( e ) {
 			e.preventDefault();
 			toggle_folder_list();
 		} );
 
 		init_doc_drag();
+
+		$folder_rows = $( '.folder-row-name' );
+		if ( $folder_rows.length > 0 ) {
+			set_folder_name_colspan();
+			$( window ).resize( function() {
+				set_folder_name_colspan();
+			} );
+		}
 	} );
 
 	/**
@@ -319,7 +329,6 @@
 	}
 
 	function toggle_folder_list() {
-		$doctable = $( 'table.doctable' );
 		if ( ! $doctable ) {
 			return;
 		}
@@ -358,5 +367,21 @@
 
 		// Reinit draggables
 		init_doc_drag();
+	}
+
+	/**
+	 * Set the folder name colspan to the number of available visible rows.
+	 */
+	function set_folder_name_colspan() {
+		var colcount = 0;
+
+		$doctable.find( 'tr > th' ).each( function( k, v ) {
+			var $v = $( v );
+			if ( ! $v.hasClass( 'attachment-clip-cell' ) && $v.is( ':visible' ) ) {
+				colcount++;
+			}
+		} );
+
+		$folder_rows.attr( 'colspan', colcount );
 	}
 } )( jQuery )
