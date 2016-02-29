@@ -79,7 +79,7 @@
 			</tr>
 		<?php endif ?>
 
-		<?php if ( ! isset( $_GET['bpd_tag'] ) ) : ?>
+		<?php if ( bp_docs_include_folders_in_loop_view() ) : ?>
 			<?php foreach ( bp_docs_get_folders() as $folder ) : ?>
 				<tr class="folder-row">
 					<?php /* Just to keep things even */ ?>

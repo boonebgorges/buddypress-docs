@@ -99,6 +99,9 @@ class BP_Docs_Component extends BP_Component {
 		add_filter( 'bp_docs_filter_types', array( $this, 'filter_type' ) );
 		add_filter( 'bp_docs_filter_sections', array( $this, 'filter_markup' ) );
 
+		// Determine whether the directory view is filtered by a keyword search.
+		add_filter( 'bp_docs_is_directory_view_filtered', array( $this, 'is_directory_view_filtered' ), 10, 2 );
+
 		/**
 		 * MISC
 		 */
@@ -905,6 +908,28 @@ class BP_Docs_Component extends BP_Component {
 			</form>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Determine whether the directory view is filtered by a keyword search.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param bool  $is_filtered Is the current directory view filtered?
+ 	 * @param array $exclude Array of filter types to ignore.
+	 *
+	 * @return bool $is_filtered
+	 */
+	public function is_directory_view_filtered( $is_filtered, $exclude ) {
+		// If this filter is excluded, stop now.
+		if ( in_array( 's', $exclude ) ) {
+			return $is_filtered;
+		}
+
+		if ( ! empty( $_GET['s'] ) ) {
+			$is_filtered = true;
+		}
+	    return $is_filtered;
 	}
 
 	/**

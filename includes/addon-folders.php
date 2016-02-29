@@ -145,6 +145,9 @@ class BP_Docs_Folders {
 
 		// Modify Create links to be folder-sensitive.
 		add_filter( 'bp_docs_get_create_link', 'bp_docs_folders_create_link' );
+
+		// Determine whether the directory view is filtered by a folder request.
+		add_filter( 'bp_docs_is_directory_view_filtered', 'bp_docs_is_directory_view_filtered_by_folder', 10, 2 );
 	}
 
 	/**
@@ -202,6 +205,24 @@ function bp_docs_enable_folders_for_current_context() {
 	// Enabled only in groups by default. Enable elsewhere only at your own risk.
 	$enable = function_exists( 'bp_is_group' ) && bp_is_group();
 	return apply_filters( 'bp_docs_enable_folders_for_current_context', (bool) $enable );
+}
+
+/**
+ * Should folders be included in the view of the loop?
+ * If a filter is selected, we don't show the folders, for instance.
+ *
+ * @since 1.9.0
+ *
+ * @return bool
+ */
+function bp_docs_include_folders_in_loop_view() {
+	$enable = true;
+	// If any non-folder filters are set, we don't include folders.
+	if ( bp_docs_is_directory_view_filtered( array( 'folder' ) ) ) {
+		$enable = false;
+	}
+
+	return apply_filters( 'bp_docs_include_folders_in_loop_view', (bool) $enable );
 }
 
 /**
@@ -844,7 +865,7 @@ function bp_docs_get_folders( $args = array() ) {
  */
 function bp_docs_folder_tax_query( $tax_query, $bp_docs_query ) {
 	// Folder 0 means: find Docs not in a folder
-	if ( 0 === $bp_docs_query->query_args['folder_id'] ) {
+	if ( 0 === $bp_docs_query->query_args['folder_id'] && ! bp_docs_is_directory_view_filtered() ) {
 		// Get all folders
 		// @todo Is there a better way? Not in WP_Query I don't think
 		$folder_terms = get_terms( 'bp_docs_doc_in_folder', array(
@@ -859,7 +880,7 @@ function bp_docs_folder_tax_query( $tax_query, $bp_docs_query ) {
 		);
 
 	// Find Docs in the following folders
-	} else if ( ! is_null( $bp_docs_query->query_args['folder_id'] ) ) {
+	} else if ( ! empty( $bp_docs_query->query_args['folder_id'] ) ) {
 		$folder_ids = wp_parse_id_list( $bp_docs_query->query_args['folder_id'] );
 
 		$folder_terms = array();
@@ -2101,6 +2122,28 @@ function bp_docs_folders_create_link( $link ) {
 	}
 
 	return $link;
+}
+
+/**
+ * Determine whether the directory view is filtered by a folder request.
+ *
+ * @since 1.9.0
+ *
+ * @param bool  $is_filtered Is the current directory view filtered?
+ * @param array $exclude Array of filter types to ignore.
+ *
+ * @return bool $is_filtered
+ */
+function bp_docs_is_directory_view_filtered_by_folder( $is_filtered, $exclude ) {
+	// If this filter is excluded, stop now.
+	if ( in_array( 'folder', $exclude ) ) {
+		return $is_filtered;
+	}
+
+	if ( ! empty( $_GET['folder'] ) ) {
+		$is_filtered = true;
+	}
+    return $is_filtered;
 }
 
 /**

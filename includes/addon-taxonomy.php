@@ -62,6 +62,9 @@ class BP_Docs_Taxonomy {
 		add_filter( 'bp_docs_filter_types', array( $this, 'filter_type' ) );
 		add_filter( 'bp_docs_filter_sections', array( $this, 'filter_markup' ) );
 
+		// Determine whether the directory view is filtered by bpd_tag.
+		add_filter( 'bp_docs_is_directory_view_filtered', array( $this, 'is_directory_view_filtered' ), 10, 2 );
+
 		// Adds filter arguments to a URL
 		add_filter( 'bp_docs_handle_filters',	array( $this, 'handle_filters' ) );
 	}
@@ -382,6 +385,28 @@ class BP_Docs_Taxonomy {
 		<?php
 
 		do_action( 'bp_docs_directory_filter_taxonomy_after' );
+	}
+
+	/**
+	 * Determine whether the directory view is filtered by bpd_tag.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param bool  $is_filtered Is the current directory view filtered?
+	 * @param array $exclude Array of filter types to ignore.
+	 *
+	 * @return bool $is_filtered
+	 */
+	public function is_directory_view_filtered( $is_filtered, $exclude ) {
+		// If this filter is excluded, stop now.
+		if ( in_array( 'bpd_tag', $exclude ) ) {
+			return $is_filtered;
+		}
+
+		if ( ! empty( $_GET['bpd_tag'] ) ) {
+			$is_filtered = true;
+		}
+	    return $is_filtered;
 	}
 
 	/**

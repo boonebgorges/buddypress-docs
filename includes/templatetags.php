@@ -2359,3 +2359,33 @@ function bp_docs_ajax_value_inputs() {
 	// Allow other plugins to add inputs.
 	do_action( 'bp_docs_ajax_value_inputs', $group_id, $user_id );
 }
+
+/**
+ * Is the current directory view filtered?
+ *
+ * @since 1.9.0
+ *
+ * @param array $exclude Filter types to ignore.
+ *
+ * @return bool
+ */
+function bp_docs_is_directory_view_filtered( $exclude = array() ) {
+	/*
+	 * If a string has been passed instead of an array, use it to create an array.
+	 */
+	if ( ! is_array( $exclude ) ) {
+		$exclude = preg_split( '#\s+#', $exclude );
+	}
+
+	/**
+	 * Other BP Docs components and plugins can hook in here to
+	 * declare whether the current view is filtered.
+	 * See BP_Docs_Taxonomy::is_directory_view_filtered for example usage.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param bool  $is_filtered Is the current view filtered?
+	 * @param array $exclude Array of filter types to ignore.
+	 */
+	return apply_filters( 'bp_docs_is_directory_view_filtered', false, $exclude );
+}

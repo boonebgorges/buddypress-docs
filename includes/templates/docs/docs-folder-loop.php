@@ -1,5 +1,5 @@
 <?php if ( bp_docs_enable_folders_for_current_context() ) : ?>
-	<?php if ( ! isset( $_GET['bpd_tag'] ) ) : ?>
+	<?php if ( bp_docs_include_folders_in_loop_view() ) : ?>
 		<?php foreach ( bp_docs_get_folders() as $folder ) :
 			$folder_title = esc_html( $folder->post_title );
 			$folder_id    = $folder->ID;
