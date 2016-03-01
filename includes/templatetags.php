@@ -2354,8 +2354,9 @@ function bp_docs_ajax_value_inputs() {
 	<input type="hidden" id="directory-group-id" value="<?php echo $group_id; ?>">
 	<?php
 	// Store the user ID in a hidden input.
+	$user_id = bp_displayed_user_id();
 	?>
-	<input type="hidden" id="directory-user-id" value="<?php echo bp_displayed_user_id(); ?>">
+	<input type="hidden" id="directory-user-id" value="<?php echo $user_id; ?>">
 	<?php
 	// Allow other plugins to add inputs.
 	do_action( 'bp_docs_ajax_value_inputs', $group_id, $user_id );
