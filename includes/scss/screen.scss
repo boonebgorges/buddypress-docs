@@ -120,7 +120,7 @@ body.bp-docs div.page ul {
 		margin: 0;
 	}
 
-	tr:hover .row-actions {
+	tr:hover > .title-cell .row-actions {
 		visibility: visible;
 	}
 
@@ -131,11 +131,6 @@ body.bp-docs div.page ul {
 	.bp-doc-trashed-doc .attachment-clip-cell {
 		border-left: 4px solid red;
 	}
-}
-
-.attachment-clip-cell {
-	max-width: 30px;
-	width: 30px;
 }
 
 .bp-docs-trashed-doc-notice {
@@ -274,6 +269,9 @@ div.docs-info-header {
 	cursor: pointer;
 	display: block;
 	margin-top: 10px;
+	.genericon {
+		font-size: 1.4em;
+	}
 }
 
 .doc-attachment-mime-icon {
@@ -404,6 +402,7 @@ body.js .bp-docs-attachment-drawer {
 .bp-docs-attachment-drawer {
 	h4 {
 		margin: .5em 0;
+		font-size: 1em;
 	}
 
 	& > ul {
@@ -877,6 +876,46 @@ table.diff {
 
 table#post-revisions {
 	margin-top: 20px;
+}
+
+// Folder styling in doctable.
+.folder-row .toggle-content {
+	background-color: white;
+	&.loading {
+   		background:url(../images/loading.gif) no-repeat center center;
+   		height: 40px;
+	}
+}
+.folder-toggle-link {
+    background-color: darken( $grey, 2% );
+    display: block;
+    padding: .2em;
+    border: 1px solid $dark_grey;
+}
+.folder-meta-info {
+    background-color: darken( $grey, 2% );
+    font-size: .9em;
+    td {
+    	border-top: 1px solid lighten( $dark_grey, 7% );
+    }
+}
+// Theme-specific styles
+.bp-docs-theme-twentythirteen {
+	.doctable th a {
+		color: white;
+	}
+}
+.bp-docs-theme-twentyfourteen {
+}
+.bp-docs-theme-twentyfifteen {
+	.doctable th a {
+		color: white;
+	}
+}
+.bp-docs-theme-twentysixteen {
+	.doctable th a {
+		color: white;
+	}
 }
 
 ul.docs-folder-tree {

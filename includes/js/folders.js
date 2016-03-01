@@ -413,7 +413,7 @@
 	 * if the folder isn't already populated.
 	 */
 	function maybe_populate_folder_contents( anchor ) {
-		var container = $( anchor ).siblings( ".toggle-content.folder-loop" );
+		var container = $( anchor ).closest( '.toggleable' ).children( '.toggle-content.folder-loop' );
 
 		// If the folder content has already been populated, do nothing.
 		if ( $.trim( container.text() ).length ) {
@@ -425,6 +425,7 @@
 			return;
 		}
 		fetching_folder_contents = true;
+		container.addClass( 'loading' );
 
 		// Make the AJAX request and populate the list.
 		$.ajax( {
@@ -439,6 +440,7 @@
 			success: function( response ) {
 				$( container ).html( response );
 				fetching_folder_contents = false;
+				container.removeClass( 'loading' );
 			}
 
 		} );
