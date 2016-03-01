@@ -2233,6 +2233,45 @@ function bp_docs_doc_attachment_drawer() {
 }
 
 /**
+ * Echo the classes for the bp-docs container element.
+ *
+ * All Docs content appears in a div.bp-docs. Classes are also included for current theme/parent theme, eg
+ * 'bp-docs-theme-twentytwelve'.
+ *
+ * @since 1.9.0
+ */
+function bp_docs_container_class() {
+	echo esc_attr( bp_docs_get_container_class() );
+}
+
+/**
+ * Generate the classes for the bp-docs container element.
+ *
+ * All Docs content appears in a div.bp-docs. Classes are also included for current theme/parent theme, eg
+ * 'bp-docs-theme-twentytwelve'.
+ *
+ * @since 1.9.0
+ */
+function bp_docs_get_container_class() {
+	$classes = array();
+
+	$classes[] = 'bp-docs';
+	$classes[] = 'bp-docs-theme-' . get_stylesheet();
+	$classes[] = 'bp-docs-theme-' . get_template();
+
+	/**
+	 * Filter the classes for the bp-docs container element.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param array $classes Array of classes.
+	 */
+	$classes = apply_filters( 'bp_docs_get_container_classes', $classes );
+
+	return implode( ' ', array_unique( $classes ) );
+}
+
+/**
  * Add classes to a row in the document list table.
  *
  * Currently supports: bp-doc-trashed-doc

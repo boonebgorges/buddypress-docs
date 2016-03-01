@@ -1,4 +1,5 @@
 <div id="buddypress">
+<div class="<?php bp_docs_container_class(); ?>">
 	<?php $doc_id = get_the_ID(); ?>
 
 	<?php include( bp_docs_locate_template( 'single/sidebar.php' ) ) ?>
@@ -225,4 +226,5 @@
 	</div>
 	</div>
 
+</div><!-- .bp-docs -->
 </div><!-- /#buddypress -->

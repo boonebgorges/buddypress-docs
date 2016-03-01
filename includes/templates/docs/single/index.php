@@ -1,4 +1,5 @@
 <div id="buddypress">
+<div class="<?php bp_docs_container_class(); ?>">
 	<?php if ( ! did_action( 'template_notices' ) ) : ?>
 		<?php do_action( 'template_notices' ) ?>
 	<?php endif ?>
@@ -42,5 +43,5 @@
 	<?php if ( apply_filters( 'bp_docs_allow_comment_section', true ) ) : ?>
 		<?php comments_template( '/docs/single/comments.php' ) ?>
 	<?php endif ?>
-</div>
-
+</div><!-- .bp-docs -->
+</div><!-- #buddypress -->
