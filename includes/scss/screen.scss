@@ -25,6 +25,41 @@ body.js .hide-if-js {
 	display: none !important;
 }
 
+/* Minimal Theme */
+/* single doc entry */
+.bp-docs-doc-minimal {
+        margin: 25px 0;
+        line-height: 1.4em;
+	p { 
+		margin: 5px 0;
+	} 
+	p.bp-docs-title { 
+		font-size: 160%; 
+		line-height: 1.2em; 
+		:before { 
+			font-weight: normal;
+			font-family: "iconsweetsRegular";
+			color: #333;
+			font-size: 130%;
+			position: relative;
+			top: 2px;
+			left: -3px; 
+			text-transform: none;
+			content: "C"; 
+			display: inline-block; /* gets text-decoration to stick */ 
+			text-decoration: none; 
+		} 
+
+	}
+	.bp-docs-excerpt { 
+		background-color: #eee; 
+	} 
+} 
+
+.hide-if-no-js {
+	display: none;
+}
+
 .description {
 	font-weight: normal;
 	font-style: italic;
@@ -411,6 +446,9 @@ body.js .bp-docs-attachment-drawer {
 	}
 }
 
+.single-bp_doc #comments .comments-closed { 
+	margin-left: 0; 
+} 	
 /* TOGGLES */
 
 .toggleable.toggle-closed .toggle-content {
@@ -422,7 +460,7 @@ body.js .bp-docs-attachment-drawer {
 	display: block;
 	float: left;
 	margin-left: 10px;
-	margin-top: 5px;
+	margin-top: 3px;
 }
 
 .toggleable.toggle-closed {
@@ -777,7 +815,6 @@ a.nonexistent-doc {
 
 h2.doc-title {
 	display: inline-block;
-	width: 50%;
 }
 
 /* Comment section */
@@ -906,3 +943,4 @@ table#post-revisions {
 		display: none;
 	}
 }
+

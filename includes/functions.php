@@ -865,3 +865,9 @@ function bp_docs_revisions_to_keep( $num, $post ) {
 	return intval( $num );
 }
 add_filter( 'wp_revisions_to_keep', 'bp_docs_revisions_to_keep', 10, 2 );
+
+/* What's the current Buddypress Docs theme? */ 
+function bp_docs_get_theme() { 
+	$theme = get_option( 'bp-docs-theme', 'default' );
+	return apply_filters( 'bp_docs_theme', $theme );
+} 

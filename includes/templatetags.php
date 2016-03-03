@@ -1306,6 +1306,22 @@ function bp_docs_get_docs_slug() {
 	return apply_filters( 'bp_docs_get_docs_slug', $slug );
 }
 
+/* 
+ * Gets the setting "Enable Comments" 
+ */ 
+function bp_docs_get_setting_comments_enabled() {
+	global $bp;
+
+	$enable_comments = get_option( 'bp-docs-enable-comments' );
+
+	// Default is enabled. 
+	if ( ! isset( $enable_comments ) ) {
+		$enable_comments = 1;
+	}
+
+	return apply_filters( 'bp_docs_get_setting_comments_enabled', $enable_comments );
+}
+
 /**
  * Outputs the tabs at the top of the Docs view (All Docs, New Doc, etc)
  *

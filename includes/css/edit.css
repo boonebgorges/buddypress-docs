@@ -27,7 +27,7 @@ a.delete-doc-button {
 }
 
 form.standard-form input[type="text"]#doc-title {
-	width: 98%;
+	width: 100%;
 }
 
 #buddypress .standard-form label#content-label,
