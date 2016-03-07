@@ -95,7 +95,7 @@
 
 			// Closely duplicate the normal bp-docs toggle-link behavior.
 			var $toggleable = $( this ).closest( '.toggleable' ),
-				$state_icon = $( this ).children('.genericon-collapse, .genericon-expand').first();
+				$state_icon = $( this ).find('.genericon-collapse, .genericon-expand').first();
 
 			if ( $toggleable.hasClass( 'toggle-open' ) ) {
 				$toggleable.removeClass( 'toggle-open' ).addClass( 'toggle-closed' );
