@@ -2080,7 +2080,7 @@ function bp_docs_folders_directory_filter_form_argument() {
  */
 function bp_docs_folders_directory_tag_link_argument( $link ) {
 	if ( ! empty( $_GET['folder'] ) ) {
-		add_query_arg( 'folder', intval( $_GET['folder'] ), $link );
+		$link = add_query_arg( 'folder', intval( $_GET['folder'] ), $link );
 	}
 
 	return $link;
