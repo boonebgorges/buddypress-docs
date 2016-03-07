@@ -1447,8 +1447,7 @@ function bp_docs_process_folder_drop_cb() {
  * @since 1.9
  */
 function bp_docs_get_folder_content_cb() {
-	// @TODO: Need to filter this.
-    include_once( 'templates/docs/docs-folder-loop.php' );
+	bp_docs_locate_template( 'docs-folder-loop.php', true, true );
 	exit;
 }
 
