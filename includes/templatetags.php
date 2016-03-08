@@ -2405,10 +2405,10 @@ function bp_docs_is_directory_view_filtered( $exclude = array() ) {
  *
  * @return string HTML representing icon element.
  */
-function bp_docs_genericon( $glyph_name, $object_id ) {
+function bp_docs_genericon( $glyph_name, $object_id = null ) {
 	echo bp_docs_get_genericon( $glyph_name, $object_id );
 }
-	function bp_docs_get_genericon( $glyph_name, $object_id ) {
+	function bp_docs_get_genericon( $glyph_name, $object_id = null ) {
 		if ( empty( $glyph_name ) ) {
 			$glyph_name = 'document';
 		}
