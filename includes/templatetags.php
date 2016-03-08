@@ -2260,6 +2260,7 @@ function bp_docs_get_container_class() {
 	$classes = array();
 
 	$classes[] = 'bp-docs';
+	$classes[] = 'bp-docs-container';
 	$classes[] = 'bp-docs-theme-' . get_stylesheet();
 	$classes[] = 'bp-docs-theme-' . get_template();
 

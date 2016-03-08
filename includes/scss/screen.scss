@@ -25,15 +25,15 @@ body.js .hide-if-js {
 	display: none !important;
 }
 
-.description {
+.bp-docs-container .description {
 	font-weight: normal;
 	font-style: italic;
-}
-	.description code {
+	code {
 		font-style: normal;
 		background: #eee;
 		padding: 2px 4px;
 	}
+}
 
 #bp-create-doc-button {
 	float: right;
