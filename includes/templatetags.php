@@ -1336,7 +1336,7 @@ function bp_docs_get_directory_url( $item_type = 'global', $item_id = 0 ) {
 function bp_docs_paginate_links() {
 	global $bp, $wp_query, $wp_rewrite;
 
-    $page_links_total = $bp->bp_docs->doc_query->max_num_pages;
+	$page_links_total = $bp->bp_docs->doc_query->max_num_pages;
 
 	$pagination_args = array(
 		'base' 		=> add_query_arg( 'paged', '%#%' ),
@@ -1351,9 +1351,9 @@ function bp_docs_paginate_links() {
 		$pagination_args['base'] = apply_filters( 'bp_docs_page_links_base_url', user_trailingslashit( trailingslashit( bp_docs_get_archive_link() ) . $wp_rewrite->pagination_base . '/%#%/', 'bp-docs-directory' ), $wp_rewrite->pagination_base );
 	}
 
-    $page_links = paginate_links( $pagination_args );
+	$page_links = paginate_links( $pagination_args );
 
-    echo apply_filters( 'bp_docs_paginate_links', $page_links );
+	echo apply_filters( 'bp_docs_paginate_links', $page_links );
 }
 
 /**
