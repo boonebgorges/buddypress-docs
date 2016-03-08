@@ -879,11 +879,17 @@ table#post-revisions {
 }
 
 // Folder styling in doctable.
-.folder-row .toggle-content {
-	background-color: white;
-	&.loading {
-   		background:url(../images/loading.gif) no-repeat center center;
-   		height: 40px;
+.folder-row {
+	.toggle-content {
+		background-color: white;
+		&.loading {
+	   		background:url(../images/loading.gif) no-repeat center center;
+	   		height: 40px;
+		}
+	}
+	.up-one-folder {
+		width: 100%;
+		display: inline-block;
 	}
 }
 .folder-toggle-link {
@@ -899,6 +905,18 @@ table#post-revisions {
     	border-top: 1px solid lighten( $dark_grey, 7% );
     }
 }
+
+// Accessibility
+.bp-docs .screen-reader-text {
+	clip: rect(1px, 1px, 1px, 1px);
+	height: 1px;
+	overflow: hidden;
+	position: absolute !important;
+	width: 1px;
+	/* many screen reader and browser combinations announce broken words as they would appear visually */
+	word-wrap: normal !important;
+}
+
 // Theme-specific styles
 .bp-docs-theme-twentythirteen {
 	.doctable th a {

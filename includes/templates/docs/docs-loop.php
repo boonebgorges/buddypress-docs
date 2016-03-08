@@ -74,9 +74,7 @@
 				<?php endif ?>
 
 				<td class="folder-row-name" colspan=10>
-					<?php
-					// @TODO: Need bp_get_parent_folder_id() for this one.
-					bp_docs_genericon( 'category', 0 ); ?><a href="<?php echo esc_url( bp_docs_get_parent_folder_url() ) ?>"><?php _ex( '..', 'up one folder', 'bp-docs' ) ?></a>
+					<a href="<?php echo esc_url( bp_docs_get_parent_folder_url() ) ?>" class="up-one-folder"><?php bp_docs_genericon( 'category', 0 ); ?><span class="screen-reader-text"><?php _e( 'Go up one folder', 'bp-docs' ) ?></span><?php _ex( '..', 'up one folder', 'bp-docs' ) ?></a>
 				</td>
 			</tr>
 		<?php endif ?>
