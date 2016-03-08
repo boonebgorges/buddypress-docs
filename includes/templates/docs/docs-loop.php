@@ -1,4 +1,9 @@
+<?php
+$bp_docs_do_theme_compat = bp_docs_do_theme_compat( 'docs-loop.php' );
+if ( ! $bp_docs_do_theme_compat ) : ?>
 <div id="buddypress">
+<?php endif; ?>
+
 <div class="<?php bp_docs_container_class(); ?>">
 
 <?php include( apply_filters( 'bp_docs_header_template', bp_docs_locate_template( 'docs-header.php' ) ) ) ?>
@@ -172,4 +177,7 @@
 <?php endif; ?>
 <?php bp_docs_ajax_value_inputs(); ?>
 </div><!-- /.bp-docs -->
+
+<?php if ( ! $bp_docs_do_theme_compat ) : ?>
 </div><!-- /#buddypress -->
+<?php endif; ?>

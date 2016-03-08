@@ -1,4 +1,9 @@
+<?php
+$bp_docs_do_theme_compat = bp_docs_do_theme_compat( 'single/index.php' );
+if ( ! $bp_docs_do_theme_compat ) : ?>
 <div id="buddypress">
+<?php endif; ?>
+
 <div class="<?php bp_docs_container_class(); ?>">
 	<?php if ( ! did_action( 'template_notices' ) ) : ?>
 		<?php do_action( 'template_notices' ) ?>
@@ -44,4 +49,7 @@
 		<?php comments_template( '/docs/single/comments.php' ) ?>
 	<?php endif ?>
 </div><!-- .bp-docs -->
-</div><!-- #buddypress -->
+
+<?php if ( ! $bp_docs_do_theme_compat ) : ?>
+</div><!-- /#buddypress -->
+<?php endif; ?>

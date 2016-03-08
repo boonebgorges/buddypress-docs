@@ -1,4 +1,9 @@
+<?php
+$bp_docs_do_theme_compat = bp_docs_do_theme_compat( 'single/edit.php' );
+if ( ! $bp_docs_do_theme_compat ) : ?>
 <div id="buddypress">
+<?php endif; ?>
+
 <div class="<?php bp_docs_container_class(); ?>">
 	<?php $doc_id = get_the_ID(); ?>
 
@@ -227,4 +232,7 @@
 	</div>
 
 </div><!-- .bp-docs -->
+
+<?php if ( ! $bp_docs_do_theme_compat ) : ?>
 </div><!-- /#buddypress -->
+<?php endif; ?>
