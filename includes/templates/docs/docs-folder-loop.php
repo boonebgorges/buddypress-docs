@@ -1,3 +1,5 @@
+<table class="doctable">
+<tbody>
 <?php if ( bp_docs_enable_folders_for_current_context() ) : ?>
 	<?php if ( bp_docs_include_folders_in_loop_view() ) : ?>
 		<?php foreach ( bp_docs_get_folders() as $folder ) :
@@ -25,7 +27,6 @@
 <?php endif; /* bp_docs_enable_folders_for_current_context() */ ?>
 
 <?php if ( bp_docs_has_docs() ) : ?>
-	<?php $has_docs = true ?>
 	<?php while ( bp_docs_has_docs() ) : bp_docs_the_doc() ?>
 		<tr<?php bp_docs_doc_row_classes(); ?>>
 			<?php if ( bp_docs_enable_attachments() ) : ?>
@@ -72,8 +73,7 @@
 		</tr>
 	<?php endwhile ?>
 
-	<?php if ( $has_docs ) : ?>
-		<tr class="folder-meta-info">
+	<tr class="folder-meta-info">
 			<?php if ( bp_docs_enable_attachments() ) : ?>
 				<td class="attachment-clip-cell">
 					<?php bp_docs_attachment_icon() ?>
@@ -84,6 +84,8 @@
 				<a href="<?php echo esc_url( bp_docs_get_folder_url( $_GET['folder'] ) ); ?>"><?php printf( __( 'View all docs in <strong>%s</strong>.', 'bp-docs' ), get_the_title( $_GET['folder'] ) ); ?></a>
 			</td>
 		</tr>
-	<?php endif; ?>
-
-<?php endif ?>
+<?php else: ?>
+	<tr><td><p class="no-docs"><?php _e( 'There are no docs for this view.', 'bp-docs' ); ?></p></td></tr>
+<?php endif; ?>
+</tbody>
+</table>

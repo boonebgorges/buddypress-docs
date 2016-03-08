@@ -413,7 +413,7 @@
 	 * if the folder isn't already populated.
 	 */
 	function maybe_populate_folder_contents( anchor ) {
-		var container = $( anchor ).closest( '.toggleable' ).children( '.toggle-content.folder-loop' );
+		var container = $( anchor ).closest( '.toggleable' ).find( '.toggle-content.folder-loop' ).first();
 
 		// If the folder content has already been populated, do nothing.
 		if ( $.trim( container.text() ).length ) {

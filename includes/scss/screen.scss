@@ -3,19 +3,7 @@
  * Import this file using the following HTML or equivalent:
  * <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" /> */
 
-$grey: #f3f3f3;
-$dark_grey: #ccc;
-$grey_text: #757575;
-$toggle_radius: 2px;
-
-@mixin multi-columns($columns, $column_gap) {
-  -moz-column-count: $columns;
-  -moz-column-gap: $column_gap;
-  -webkit-column-count: $columns;
-  -webkit-column-gap: $column_gap;
-  column-count: $columns;
-  column-gap: $column_gap;
-}
+@import 'mixins';
 
 body.no-js .hide-if-no-js {
 	display: none !important;
@@ -114,6 +102,7 @@ body.bp-docs div.page ul {
 	border-collapse: separate;
 	border-spacing: 0;
 	word-wrap: normal;
+	width: 100%;
 
 	p {
 		padding: 0;
@@ -131,6 +120,14 @@ body.bp-docs div.page ul {
 	.bp-doc-trashed-doc .attachment-clip-cell {
 		border-left: 4px solid red;
 	}
+	td {
+		// width: 25%;
+	}
+}
+
+.attachment-clip-cell {
+	max-width: 12px;
+	width: 8px;
 }
 
 .bp-docs-trashed-doc-notice {
@@ -878,34 +875,6 @@ table#post-revisions {
 	margin-top: 20px;
 }
 
-// Folder styling in doctable.
-.folder-row {
-	.toggle-content {
-		background-color: white;
-		&.loading {
-	   		background:url(../images/loading.gif) no-repeat center center;
-	   		height: 40px;
-		}
-	}
-	.up-one-folder {
-		width: 100%;
-		display: inline-block;
-	}
-}
-.folder-toggle-link {
-    background-color: darken( $grey, 2% );
-    display: block;
-    padding: .2em;
-    border: 1px solid $dark_grey;
-}
-.folder-meta-info {
-    background-color: darken( $grey, 2% );
-    font-size: .9em;
-    td {
-    	border-top: 1px solid lighten( $dark_grey, 7% );
-    }
-}
-
 // Accessibility
 .bp-docs .screen-reader-text {
 	clip: rect(1px, 1px, 1px, 1px);
@@ -915,65 +884,6 @@ table#post-revisions {
 	width: 1px;
 	/* many screen reader and browser combinations announce broken words as they would appear visually */
 	word-wrap: normal !important;
-}
-
-// Theme-specific styles
-.bp-docs-theme-twentythirteen {
-	.doctable th a {
-		color: white;
-	}
-}
-.bp-docs-theme-twentyfourteen {
-}
-.bp-docs-theme-twentyfifteen {
-	.doctable th a {
-		color: white;
-	}
-}
-.bp-docs-theme-twentysixteen {
-	.doctable th a {
-		color: white;
-	}
-}
-
-ul.docs-folder-tree {
-	list-style-type: none;
-	font-weight: bold;
-
-	ul {
-		list-style-type: none;
-
-		&.docs-in-folder {
-			font-weight: normal;
-
-			li > a {
-				opacity: 1;
-			}
-		}
-	}
-}
-
-// JS-specific folder tree styling
-body.js {
-	li.folder-closed {
-		opacity: .5;
-
-		& > ul {
-			display: none;
-		}
-	}
-
-	li.folder-open {
-		opacity: 1;
-	}
-}
-
-div.manage-folders-link,
-div.toggle-folders-link {
-	float: left;
-	width: 100px;
-	font-size: .8em;
-	margin-bottom: 1em;
 }
 
 //Media query for most screens, unseen by IE 7 or 8
