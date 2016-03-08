@@ -83,8 +83,11 @@ function bp_docs_has_docs( $args = array() ) {
 		$d_folder_id = null;
 		if ( ! empty( $_GET['folder'] ) ) {
 			$d_folder_id = intval( $_GET['folder'] );
-		} else if ( ! bp_docs_is_started_by() && ! bp_docs_is_edited_by() ) {
-			// On Started and Edited pages, we're folder-agnostic
+		} else if ( bp_docs_enable_folders_for_current_context() ) {
+			/*
+			 * 0 means we exclude docs that are in a folder.
+			 * So we only want this to be set in folder-friendly contexts.
+			 */
 			$d_folder_id = 0;
 		}
 
