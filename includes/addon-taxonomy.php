@@ -462,6 +462,7 @@ function bp_docs_get_tag_link( $args = array() ) {
 
 	if ( bp_is_user() ) {
 		$current_action = bp_current_action();
+		$item_docs_url = bp_displayed_user_domain() . bp_docs_get_docs_slug() . '/';
 		if ( empty( $current_action ) || BP_DOCS_STARTED_SLUG == $current_action ) {
 			$item_docs_url = bp_docs_get_displayed_user_docs_started_link();
 		} elseif ( BP_DOCS_EDITED_SLUG == $current_action ) {
