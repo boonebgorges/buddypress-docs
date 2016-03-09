@@ -1285,9 +1285,12 @@ function bp_docs_delete_doc_button( $doc_id = false ) {
 		}
 
 		if ( bp_docs_is_doc_trashed( $doc_id ) ) {
-			$button = '<a class="delete-doc-button untrash-doc-button confirm" href="' . bp_docs_get_remove_from_trash_link( $doc_id ) . '">' . __( 'Remove from Trash', 'bp-docs' ) . '</a>';
+			// A button to remove the doc from the trash...
+			$button = ' <a class="delete-doc-button untrash-doc-button confirm" href="' . bp_docs_get_remove_from_trash_link( $doc_id ) . '">' . __( 'Remove from Trash', 'bp-docs' ) . '</a>';
+			// and a button to permanently delete the doc.
+			$button .= '<a class="delete-doc-button confirm" href="' . bp_docs_get_delete_doc_link() . '">' . __( 'Permanently Delete', 'bp-docs' ) . '</a>';
 		} else {
-			$button = '<a class="delete-doc-button confirm" href="' . bp_docs_get_delete_doc_link() . '">' . __( 'Delete', 'bp-docs' ) . '</a>';
+			$button = '<a class="delete-doc-button confirm" href="' . bp_docs_get_delete_doc_link() . '">' . __( 'Move to Trash', 'bp-docs' ) . '</a>';
 		}
 
 		return $button;

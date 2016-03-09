@@ -449,6 +449,31 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 
 		$this->assertEqualSetsWithIndex( $expected_settings, $default_settings );
 	}
+
+	/**
+	 * @group bp_docs_trash_doc
+	 */
+	function test_bp_docs_move_to_trash() {
+		$doc_id = $this->factory->doc->create();
+
+		bp_docs_trash_doc( $doc_id );
+
+		$this->assertEquals( 'trash', get_post_status( $doc_id ) );
+	}
+
+	/**
+	 * @group bp_docs_trash_doc
+	 */
+	function test_bp_docs_delete_permanently() {
+		$doc_id = $this->factory->doc->create();
+
+		// Trashing a doc once puts it in the trash.
+		bp_docs_trash_doc( $doc_id );
+		$this->assertEquals( 'trash', get_post_status( $doc_id ) );
+
+		// Trashing a doc that's already in the trash deletes it permanently.
+		bp_docs_trash_doc( $doc_id );
+
+		$this->assertNull( get_post( $doc_id ) );
+	}
 }
-
-

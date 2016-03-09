@@ -481,13 +481,21 @@ function bp_docs_define_tiny_mce() {
  */
 function bp_docs_trash_doc( $doc_id = 0 ) {
 	do_action( 'bp_docs_before_doc_delete', $doc_id );
-
+	$deleted = false;
 	$delete_args = array(
 		'ID' => $doc_id,
 		'post_status' => 'trash'
 	);
 
-	$deleted = wp_update_post( $delete_args );
+	/*
+	 * If the post is already in the trash, we permanently delete it.
+	 * If the post is not in the trash, we put it in the trash.
+	 */
+	if ( 'trash' == get_post_status( $doc_id ) ) {
+		$deleted = wp_delete_post( $doc_id );
+	} else {
+		$deleted = wp_update_post( $delete_args );
+	}
 
 	if ( $deleted ) {
 		do_action( 'bp_docs_doc_deleted', $delete_args );

@@ -24,6 +24,7 @@ span.description {
 a.delete-doc-button {
 	float: right;
 	color: #f00;
+    margin-left: 1em;
 }
 
 form.standard-form input[type="text"]#doc-title {
