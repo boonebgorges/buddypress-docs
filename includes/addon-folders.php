@@ -397,7 +397,7 @@ function bp_docs_get_folder_group( $folder_id ) {
 function bp_docs_get_folder_user( $folder_id ) {
 	$user_id = false;
 
-	$folder_user_terms = wp_get_object_terms( $folder_id, 'bp_docs_folder_in_user' );
+	$folder_user_terms = get_the_terms( $folder_id, 'bp_docs_folder_in_user' );
 	if ( ! empty( $folder_user_terms ) ) {
 		$user_id = intval( substr( $folder_user_terms[0]->slug, 23 ) );
 	}
