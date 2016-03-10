@@ -888,6 +888,7 @@ function bp_docs_associated_group_dropdown( $args = array() ) {
 		'per_page' => false,
 		'populate_extras' => false,
 		'type' => 'alphabetical',
+		'update_meta_cache' => false,
 	);
 
 	if ( ! bp_current_user_can( 'bp_moderate' ) ) {
