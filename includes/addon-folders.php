@@ -164,7 +164,7 @@ class BP_Docs_Folders {
 			'jquery',
 			'bp-docs-chosen',
 			'jquery-ui-draggable',
-			'jquery-ui-widgets',
+			'jquery-ui-widget',
 			'jquery-ui-droppable',
 		);
 
