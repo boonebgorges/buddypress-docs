@@ -8,8 +8,7 @@
 		$doc_clone,
 		$doctable,
 		$editing_folder,
-		$folder_rows,
-		$hover_element,
+		hover_element,
 		fetching_folder_contents = false;
 
 	$( document ).ready( function() {
@@ -77,11 +76,10 @@
 
 		init_doc_drag();
 
-		$folder_rows = $( '.folder-row-name' );
-		if ( $folder_rows.length > 0 ) {
-			set_folder_name_colspan();
+		if ( $( '.folder-row-name' ).length > 0 ) {
+			set_folder_related_colspans();
 			$( window ).resize( function() {
-				set_folder_name_colspan();
+				set_folder_related_colspans();
 			} );
 		}
 
@@ -393,9 +391,9 @@
 	}
 
 	/**
-	 * Set the folder name colspan to the number of available visible rows.
+	 * Set the folder name and folder meta info colspans to the number of available visible cells.
 	 */
-	function set_folder_name_colspan() {
+	function set_folder_related_colspans() {
 		var colcount = 0;
 
 		$doctable.find( 'tr > th' ).each( function( k, v ) {
@@ -405,7 +403,8 @@
 			}
 		} );
 
-		$folder_rows.attr( 'colspan', colcount );
+		// Set the colspan of the toggle and of the folder meta footer.
+		$( '.folder-row-name, .folder-meta-info-statement' ).attr( 'colspan', colcount );
 	}
 
 	/**
@@ -439,6 +438,7 @@
 			},
 			success: function( response ) {
 				$( container ).html( response );
+				set_folder_related_colspans();
 				fetching_folder_contents = false;
 				container.removeClass( 'loading' );
 			}
