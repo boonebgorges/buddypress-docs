@@ -380,7 +380,7 @@ function bp_docs_get_doc_folder( $doc_id ) {
 function bp_docs_get_folder_group( $folder_id ) {
 	$group_id = false;
 
-	$folder_group_terms = wp_get_object_terms( $folder_id, 'bp_docs_folder_in_group' );
+	$folder_group_terms = get_the_terms( $folder_id, 'bp_docs_folder_in_group' );
 	if ( ! empty( $folder_group_terms ) ) {
 		$group_id = intval( substr( $folder_group_terms[0]->slug, 24 ) );
 	}

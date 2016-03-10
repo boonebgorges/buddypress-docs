@@ -592,6 +592,25 @@ class BP_Docs_Folders_Tests extends BP_Docs_TestCase {
 	}
 
 	/**
+	 * @group bp_docs_get_folder_group
+	 */
+	public function test_bp_docs_get_folder_group_should_hit_primed_cache() {
+		global $wpdb;
+
+		$g = $this->factory->group->create();
+		$f = bp_docs_create_folder( array(
+			'name' => 'foo',
+			'group_id' => $g,
+		) );
+
+		$this->assertSame( $g, bp_docs_get_folder_group( $f ) );
+
+		$num_queries = $wpdb->num_queries;
+		$this->assertSame( $g, bp_docs_get_folder_group( $f ) );
+		$this->assertSame( $num_queries, $wpdb->num_queries );
+	}
+
+	/**
 	 * @group bp_docs_get_folder_user
 	 */
 	public function test_bp_docs_get_folder_user() {
