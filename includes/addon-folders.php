@@ -24,7 +24,6 @@ class BP_Docs_Folders {
 		wp_cache_add_non_persistent_groups( array( 'bp_docs_folders' ) );
 
 		add_action( 'bp_docs_enqueue_scripts', array( $this, 'enqueue_assets' ) );
-		add_action( 'bp_docs_enqueue_scripts_edit', array( $this, 'enqueue_assets' ) );
 
 		$this->setup_hooks();
 	}
@@ -165,6 +164,7 @@ class BP_Docs_Folders {
 			'jquery',
 			'bp-docs-chosen',
 			'jquery-ui-draggable',
+			'jquery-ui-widgets',
 			'jquery-ui-droppable',
 		);
 
