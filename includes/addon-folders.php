@@ -367,7 +367,7 @@ function bp_docs_get_doc_folder( $doc_id ) {
 	) );
 
 	// Take the first one
-	if ( ! empty( $maybe_folders ) ) {
+	if ( ! empty( $maybe_folders ) && ! is_wp_error( $maybe_folders ) ) {
 		$folder_id = intval( substr( $maybe_folders[0]->slug, 22 ) );
 	}
 
