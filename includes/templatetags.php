@@ -2092,6 +2092,12 @@ function bp_docs_media_buttons( $editor_id ) {
  */
 function bp_docs_get_doc_attachments( $doc_id = null ) {
 
+	$cache_key = 'bp_docs_attachments:' . $doc_id;
+	$cached = wp_cache_get( $cache_key, 'bp_docs_nonpersistent' );
+	if ( false !== $cached ) {
+		return $cached;
+	}
+
 	if ( is_null( $doc_id ) ) {
 		$doc = get_post();
 		if ( ! empty( $doc->ID ) ) {
@@ -2112,8 +2118,11 @@ function bp_docs_get_doc_attachments( $doc_id = null ) {
 	), $doc_id );
 
 	$atts = get_posts( $atts_args );
+	$atts = apply_filters( 'bp_docs_get_doc_attachments', $atts, $doc_id );
 
-	return apply_filters( 'bp_docs_get_doc_attachments', $atts, $doc_id );
+	wp_cache_set( $cache_key, $atts, 'bp_docs_nonpersistent' );
+
+	return $atts;
 }
 
 /**
