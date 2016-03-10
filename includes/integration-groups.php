@@ -1537,15 +1537,17 @@ function bp_docs_get_associated_group_id( $doc_id, $doc = false, $single_array =
 		return false;
 	}
 
-	$post_terms = wp_get_post_terms( $doc_id, bp_docs_get_associated_item_tax_name() );
+	$post_terms = get_the_terms( $doc_id, bp_docs_get_associated_item_tax_name() );
 
 	$group_ids = array();
 
-	foreach( $post_terms as $post_term ) {
-		if ( 0 === strpos( $post_term->slug, 'bp_docs_associated_group_' ) ) {
-			$group_id = bp_docs_get_group_id_from_term_slug( $post_term->slug );
-			if ( $group_id ) {
-				$group_ids[] = $group_id;
+	if ( $post_terms ) {
+		foreach ( $post_terms as $post_term ) {
+			if ( 0 === strpos( $post_term->slug, 'bp_docs_associated_group_' ) ) {
+				$group_id = bp_docs_get_group_id_from_term_slug( $post_term->slug );
+				if ( $group_id ) {
+					$group_ids[] = $group_id;
+				}
 			}
 		}
 	}
