@@ -122,6 +122,7 @@ function bp_docs_has_docs( $args = array() ) {
 			'paged'	         => $d_paged,
 			'posts_per_page' => $d_posts_per_page,
 			'search_terms'   => $d_search_terms,
+			'update_attachment_cache' => false,
 		);
 
 		if ( function_exists( 'bp_parse_args' ) ) {
@@ -132,6 +133,26 @@ function bp_docs_has_docs( $args = array() ) {
 
 		$doc_query_builder      = new BP_Docs_Query( $r );
 		$bp->bp_docs->doc_query = $doc_query_builder->get_wp_query();
+
+		if ( $r['update_attachment_cache'] ) {
+			$doc_ids = wp_list_pluck( $bp->bp_docs->doc_query->posts, 'ID' );
+			$att_hash = array_fill_keys( $doc_ids, array() );
+			if ( $doc_ids ) {
+				$attachments = get_posts( array(
+					'post_type' => 'attachment',
+					'post_parent__in' => $doc_ids,
+					'update_post_term_cache' => false,
+				) );
+
+				foreach ( $attachments as $a ) {
+					$att_hash[ $a->post_parent ][] = $a;
+				}
+
+				foreach ( $att_hash as $doc_id => $doc_atts ) {
+					wp_cache_set( 'bp_docs_attachments:' . $doc_id, $doc_atts, 'bp_docs_nonpersistent' );
+				}
+			}
+		}
 	}
 
 	return $bp->bp_docs->doc_query->have_posts();

@@ -106,7 +106,7 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 	<?php endif; /* bp_docs_enable_folders_for_current_context() */ ?>
 
 	<?php $has_docs = false ?>
-	<?php if ( bp_docs_has_docs() ) : ?>
+	<?php if ( bp_docs_has_docs( array( 'update_attachment_cache' => true ) ) ) : ?>
 		<?php $has_docs = true ?>
 		<?php while ( bp_docs_has_docs() ) : bp_docs_the_doc() ?>
 			<tr<?php bp_docs_doc_row_classes(); ?>>
