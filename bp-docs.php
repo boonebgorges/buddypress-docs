@@ -25,6 +25,9 @@ class BP_Docs {
 		$this->associated_item_tax_name = apply_filters( 'bp_docs_associated_item_tax_name', 'bp_docs_associated_item' );
 		$this->access_tax_name          = apply_filters( 'bp_docs_access_tax_name', 'bp_docs_access' );
 
+		// :'(
+		wp_cache_add_non_persistent_groups( array( 'bp_docs_nonpersistent' ) );
+
 		// Let plugins know that BP Docs has started loading
 		add_action( 'plugins_loaded',   array( $this, 'load_hook' ), 20 );
 

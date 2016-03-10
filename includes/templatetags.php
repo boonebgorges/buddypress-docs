@@ -898,6 +898,14 @@ function bp_docs_associated_group_dropdown( $args = array() ) {
 		$groups_args['include'] = wp_parse_id_list( $r['include'] );
 	}
 
+	ksort( $groups_args );
+	ksort( $r );
+	$cache_key = 'bp_docs_associated_group_dropdown:' . md5( serialize( $groups_args ) . serialize( $r ) );
+	$cached = wp_cache_get( $cache_key, 'bp_docs_nonpersistent' );
+	if ( false !== $cached ) {
+		return $cached;
+	}
+
 	// Populate the $groups_template global, but stash the old one
 	// This ensures we don't mess anything up inside the group
 	global $groups_template;
@@ -945,6 +953,8 @@ function bp_docs_associated_group_dropdown( $args = array() ) {
 	}
 
 	$groups_template = $old_groups_template;
+
+	wp_cache_set( $cache_key, $html, 'bp_docs_nonpersistent' );
 
 	if ( false === $r['echo'] ) {
 		return $html;
