@@ -1,5 +1,5 @@
 <?php
-$bp_docs_do_theme_compat = bp_docs_do_theme_compat( 'docs-loop.php' );
+$bp_docs_do_theme_compat = is_buddypress() && bp_docs_do_theme_compat( 'docs-loop.php' );
 if ( ! $bp_docs_do_theme_compat ) : ?>
 <div id="buddypress">
 <?php endif; ?>
