@@ -52,6 +52,9 @@ class BP_Docs_Hierarchy {
 		}
 
 		$post_name = $q->get( 'name' );
+		if ( ! $post_name ) {
+			return;
+		}
 
 		// Bypass get_post_by_path().
 		global $wpdb;
