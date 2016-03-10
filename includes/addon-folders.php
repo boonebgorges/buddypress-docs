@@ -20,6 +20,9 @@ class BP_Docs_Folders {
 		$this->register_post_type();
 		$this->register_taxonomies();
 
+		// It is my hope and dream that this will one day be persistent.
+		wp_cache_add_non_persistent_groups( array( 'bp_docs_folders' ) );
+
 		add_action( 'bp_docs_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		add_action( 'bp_docs_enqueue_scripts_edit', array( $this, 'enqueue_assets' ) );
 
@@ -739,6 +742,19 @@ function bp_docs_get_folders( $args = array() ) {
 		$r = wp_parse_args( $args, $defaults );
 	}
 
+	$last_changed = wp_cache_get( 'last_changed', 'bp_docs_folders' );
+	if ( false === $last_changed ) {
+		$last_changed = microtime();
+		wp_cache_set( 'last_changed', $last_changed, 'bp_docs_folders' );
+	}
+
+	ksort( $r );
+	$cache_key = 'bp_docs_folders:' . md5( serialize( $r ) . $last_changed );
+	$cached = wp_cache_get( $cache_key, 'bp_docs_folders' );
+	if ( false !== $cached ) {
+		return $cached;
+	}
+
 	$post_args = array(
 		'post_type' => 'bp_docs_folder',
 		'orderby' => 'title',
@@ -850,6 +866,8 @@ function bp_docs_get_folders( $args = array() ) {
 
 		$folders = $tree;
 	}
+
+	wp_cache_set( $cache_key, $folders, 'bp_docs_folders' );
 
 	return $folders;
 }
@@ -2407,3 +2425,17 @@ class BP_Docs_Folder_Walker extends Walker {
 		$output .= '</li>';
 	}
 }
+
+/**
+ * Reset the 'last_changed' cache incrementor when posts are updated.
+ *
+ * Big hammer, small nail.
+ *
+ * @since 1.9.0
+ */
+function bp_docs_folders_invalidate_last_changed_incrementor() {
+	wp_cache_delete( 'last_changed', 'bp_docs_folders' );
+}
+add_action( 'save_post_bp_doc', 'bp_docs_folders_invalidate_last_changed_incrementor' );
+add_action( 'trashed_post', 'bp_docs_folders_invalidate_last_changed_incrementor' );
+add_action( 'set_object_terms', 'bp_docs_folders_invalidate_last_changed_incrementor' );
