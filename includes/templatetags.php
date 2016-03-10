@@ -2112,7 +2112,7 @@ function bp_docs_get_doc_attachments( $doc_id = null ) {
 	$atts_args = apply_filters( 'bp_docs_get_doc_attachments_args', array(
 		'post_type' => 'attachment',
 		'post_parent' => $doc_id,
-		'update_post_meta_cache' => false,
+		'update_post_meta_cache' => true,
 		'update_post_term_cache' => false,
 		'posts_per_page' => -1,
 	), $doc_id );
