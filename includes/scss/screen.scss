@@ -933,6 +933,69 @@ table#post-revisions {
 	}
 }
 
+// Theme-specific styles
+/*
+ * Twenty Twelve: Override BP theme-specific styling--we want all three
+ * directories to be styled similarly. The BP table styles focus on the user
+ * profile, so we essentially reset those styles to Twenty Twelve values.
+ */
+.bp-user #buddypress .bp-docs-theme-twentytwelve {
+	table {
+		font-size: 12px;
+		font-size: 0.85714285714286rem;
+		margin: 0 0 1.714285714rem;
+		tr {
+			th {
+				font-size: 11px;
+				font-size: 0.785714286rem;
+				color: #636363;
+				border-color: #b7b7b7;
+				background-color: #FFFFFF;
+				padding: 6px 10px 6px 0;
+			}
+			td {
+				padding: 6px 10px 6px 0;
+			}
+		}
+		p {
+			margin-bottom: 0;
+		}
+	}
+}
+
+@media screen and (min-width: 55em) {
+	.bp-user #buddypress .bp-docs-theme-twentytwelve table {
+		font-size: 12px;
+		font-size: 0.85714285714286rem;
+	}
+}
+@media screen and (min-width: 60em) {
+	.bp-user #buddypress .bp-docs-theme-twentytwelve table {
+		th,
+		td {
+			font-size: 12px;
+			font-size: 0.85714285714286rem;
+		}
+	}
+}
+
+
+.bp-docs-theme-twentythirteen {
+	.doctable th a {
+		color: white;
+	}
+}
+.bp-docs-theme-twentyfifteen {
+	.doctable th a {
+		color: white;
+	}
+}
+.bp-docs-theme-twentysixteen {
+	.doctable th a {
+		color: white;
+	}
+}
+
 // Genericons
 @font-face {
     font-family: 'Genericons';

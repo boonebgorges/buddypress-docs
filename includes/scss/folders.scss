@@ -250,9 +250,6 @@ div.toggle-folders-link {
 
 // Theme-specific styles
 .bp-docs-theme-twentythirteen {
-	.doctable th a {
-		color: white;
-	}
 }
 .bp-docs-theme-twentyfourteen {
 	.folder-loop table {
@@ -260,20 +257,6 @@ div.toggle-folders-link {
 	}
 }
 .bp-docs-theme-twentyfifteen {
-	.doctable th a {
-		color: white;
-	}
-	//@TODO: Serious problems here:
-	.folder-loop table {
-		width: 100%;
-	}
 }
 .bp-docs-theme-twentysixteen {
-	.doctable th a {
-		color: white;
-	}
-	//@TODO: Serious problems here:
-	.folder-loop table {
-		width: 100%;
-	}
 }
