@@ -939,15 +939,17 @@ table#post-revisions {
  * directories to be styled similarly. The BP table styles focus on the user
  * profile, so we essentially reset those styles to Twenty Twelve values.
  */
+ @mixin font-size-2012($font-size: 14) {
+	font-size: ($font-size) + px;
+	font-size: ($font-size / 14) + rem;
+}
 .bp-user #buddypress .bp-docs-theme-twentytwelve {
 	table {
-		font-size: 12px;
-		font-size: 0.85714285714286rem;
+		@include font-size-2012(12);
 		margin: 0 0 1.714285714rem;
 		tr {
 			th {
-				font-size: 11px;
-				font-size: 0.785714286rem;
+				@include font-size-2012(11);
 				color: #636363;
 				border-color: #b7b7b7;
 				background-color: #FFFFFF;
@@ -960,25 +962,17 @@ table#post-revisions {
 		p {
 			margin-bottom: 0;
 		}
-	}
-}
-
-@media screen and (min-width: 55em) {
-	.bp-user #buddypress .bp-docs-theme-twentytwelve table {
-		font-size: 12px;
-		font-size: 0.85714285714286rem;
-	}
-}
-@media screen and (min-width: 60em) {
-	.bp-user #buddypress .bp-docs-theme-twentytwelve table {
-		th,
-		td {
-			font-size: 12px;
-			font-size: 0.85714285714286rem;
+		@media screen and (min-width: 55em) {
+			@include font-size-2012(12);
+		}
+		@media screen and (min-width: 60em) {
+			th,
+			td {
+				@include font-size-2012(12);
+			}
 		}
 	}
 }
-
 
 .bp-docs-theme-twentythirteen {
 	.doctable th a {
