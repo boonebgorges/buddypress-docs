@@ -11,3 +11,13 @@ $toggle_radius: 2px;
   column-count: $columns;
   column-gap: $column_gap;
 }
+
+// Font size mixins for use in Twenty family theme styles.
+@mixin font-size-base14($font-size: 14) {
+	font-size: ($font-size) + px;
+	font-size: ($font-size / 14) + rem;
+}
+@mixin font-size-base16($font-size: 16) {
+	font-size: ($font-size) + px;
+	font-size: ($font-size / 16) + rem;
+}
