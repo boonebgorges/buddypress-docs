@@ -123,6 +123,9 @@ class BP_Docs_Component extends BP_Component {
 
 		// Set the "last directory viewed" cookie when viewing the main docs directory.
 		add_action( 'bp_actions', array( $this, 'set_directory_cookie' ) );
+
+		// Add the parent and child theme names to the body class when on a BP Docs page.
+		add_filter( 'body_class', array( $this, 'filter_body_class' ) );
 	}
 
 	/**
@@ -1030,4 +1033,18 @@ class BP_Docs_Component extends BP_Component {
 		}
 	}
 
+	/**
+	 * Add the parent and child theme names to the body class when on a BP Docs page.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param array $classes An array of body classes.
+	 */
+	public function filter_body_class( $classes ) {
+		if ( bp_docs_is_docs_component() ) {
+			$classes[] = 'bp-docs-body-theme-' . get_stylesheet();
+			$classes[] = 'bp-docs-body-theme-' . get_template();
+		}
+		return $classes;
+	}
 }
