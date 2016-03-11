@@ -1031,10 +1031,42 @@ table#post-revisions {
 		}
 	}
 }
-
+/*
+ * Twenty Sixteen: Override BP theme-specific styling--we want all three
+ * directories to be styled similarly. The BP table styles focus on the user
+ * profile, so we essentially reset those styles to Twenty Sixteen values.
+ */
 .bp-docs-theme-twentysixteen {
 	.doctable th a {
 		color: white;
+	}
+}
+.bp-user #buddypress .bp-docs-theme-twentysixteen {
+	table {
+		th,
+		td {
+			@include font-size-base16(14);
+
+			@media screen and (min-width: 55em) {
+				@include font-size-base16(16);
+			}
+			@media screen and (min-width: 61.5625em) {
+				@include font-size-base16(16);
+			}
+			@media screen and (min-width: 75em) {
+				@include font-size-base16(16);
+			}
+		}
+	}
+}
+// On the main docs directory, use the full available width.
+body.bp-docs-body-theme-twentysixteen article.type-bp_doc .entry-content {
+	@media screen and (min-width: 44.375em) {
+		margin-right: 7.6923%;
+	}
+	@media screen and (min-width: 61.5625em) {
+		float: none;
+		width: 100%;
 	}
 }
 
