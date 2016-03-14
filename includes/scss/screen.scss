@@ -979,6 +979,9 @@ table#post-revisions {
 	.doctable th a {
 		color: white;
 	}
+	.attachment-clip-cell {
+		min-width: 26px;
+	}
 }
 .bp-user #buddypress .bp-docs-theme-twentythirteen {
 	table {
@@ -1039,6 +1042,9 @@ table#post-revisions {
 .bp-docs-theme-twentysixteen {
 	.doctable th a {
 		color: white;
+	}
+	.attachment-clip-cell {
+		min-width: 36px;
 	}
 }
 .bp-user #buddypress .bp-docs-theme-twentysixteen {
