@@ -410,7 +410,7 @@ class BP_Docs_Query {
 	 * @since 1.0-beta
 	 */
 	function save( $args = false ) {
-		global $bp;
+		global $bp, $wp_rewrite;
 
 		// bbPress plays naughty with revision saving
 		add_action( 'pre_post_update', 'wp_save_post_revision' );
@@ -570,7 +570,12 @@ class BP_Docs_Query {
 			setcookie( 'bp-docs-submit-data', json_encode( $_POST ), time() + 30, '/' );
 		}
 
-		$redirect_url = apply_filters( 'bp_docs_post_save_redirect_base', trailingslashit( bp_get_root_domain() . '/' . bp_docs_get_docs_slug() ) );
+		$redirect_base = trailingslashit( bp_get_root_domain() );
+		if ( $wp_rewrite->using_index_permalinks() ) {
+			$redirect_base .= 'index.php/';
+		}
+
+		$redirect_url = apply_filters( 'bp_docs_post_save_redirect_base', trailingslashit( $redirect_base . bp_docs_get_docs_slug() ) );
 
 		if ( $result['redirect'] == 'single' ) {
 			$redirect_url .= $this->doc_slug;
