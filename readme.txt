@@ -39,6 +39,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Improved appearance in default WordPress themes.
 * Improved performance for Directory views.
 * Improved support for /index.php/ permalinks.
+* Allow users to trash and permanently delete docs.
+* Introduce "Recently Created Docs" widget.
+* Improved behavior when BuddyPress' groups component is not active.
 
 = 1.8.9 =
 * Fixed bug that caused incorrect "x members" count in Associated Group metabox in some situations.
