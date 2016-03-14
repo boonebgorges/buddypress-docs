@@ -51,7 +51,7 @@ function bp_docs_post_comment_activity( $comment_id ) {
 	}
 
 	// See if we're associated with a group
-	$group_id = bp_is_active( 'groups' ) ? bp_docs_get_associated_group_id( $doc_id ) : 0
+	$group_id = bp_is_active( 'groups' ) ? bp_docs_get_associated_group_id( $doc_id ) : 0;
 
 	if ( $group_id ) {
 		$component = 'groups';
