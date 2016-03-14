@@ -190,9 +190,20 @@ body.mobile .row-actions {
 .title-cell {
 	min-width: 150px;
 }
-
+// needs a little more selector juice
+.doctable .title-cell {
+	.genericon {
+		vertical-align: top;
+	}
+	> a {
+		width: 75%;
+		width: calc(100% - 24px);
+		display: inline-block;
+		line-height: 1.5;
+	}
+}
 .doc-excerpt {
-	margin-left: 16px;
+	margin-left: 24px;
 }
 
 .list-item-breadcrumb {
@@ -1096,26 +1107,30 @@ body.bp-docs-body-theme-twentysixteen article.type-bp_doc .entry-content {
  * All Genericons
  */
 
-.genericon {
+.bp-docs-container .genericon {
 	display: inline-block;
-	width: 16px;
-	height: 16px;
+	width: 24px;
+	height: 24px;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-	font-size: 16px;
+	font-size: 24px;
 	line-height: 1;
 	font-family: 'Genericons';
 	text-decoration: none;
 	font-weight: normal;
 	font-style: normal;
 	vertical-align: middle;
+	// font-size is selected by ::before in some themes.
+	&::before {
+		font-size: 24px;
+	}
 }
 
 /**
  * IE7 and IE6 hacks
  */
 
-.genericon {
+.bp-docs-container .genericon {
 	*overflow: auto;
 	*zoom: 1;
 	*display: inline;
