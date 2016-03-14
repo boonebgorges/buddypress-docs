@@ -595,6 +595,7 @@ class BP_Docs {
 
 		// Check to see whether our rules have been registered yet, by
 		// finding a Docs rule and then comparing it to the registered rules
+		$test_rewrite = null;
 		foreach ( $wp_rewrite->extra_rules_top as $rewrite => $rule ) {
 			if ( 0 === strpos( $rewrite, bp_docs_get_docs_slug() ) ) {
 				$test_rewrite = $rewrite;
@@ -604,7 +605,7 @@ class BP_Docs {
 		}
 		$registered_rules = get_option( 'rewrite_rules' );
 
-		if ( is_array( $registered_rules ) && ( ! isset( $registered_rules[ $test_rewrite ] ) || $test_rule !== $registered_rules[ $test_rewrite ] ) ) {
+		if ( $test_rewrite && is_array( $registered_rules ) && ( ! isset( $registered_rules[ $test_rewrite ] ) || $test_rule !== $registered_rules[ $test_rewrite ] ) ) {
 			flush_rewrite_rules();
 		}
 	}
