@@ -274,7 +274,7 @@ class BP_Docs {
 
 		// Define the labels to be used by the post type bp_doc
 		$post_type_labels = array(
-			'name' 		     => _x( 'BuddyPress Docs', 'post type general name', 'bp-docs' ),
+			'name' 		     => _x( 'Docs', 'post type general name', 'bp-docs' ),
 			'singular_name'      => _x( 'Doc', 'post type singular name', 'bp-docs' ),
 			'add_new' 	     => _x( 'Add New', 'add new', 'bp-docs' ),
 			'add_new_item' 	     => __( 'Add New Doc', 'bp-docs' ),
@@ -290,7 +290,7 @@ class BP_Docs {
 		// Set up the arguments to be used when the post type is registered
 		// Only filter this if you are hella smart and/or know what you're doing
 		$bp_docs_post_type_args = apply_filters( 'bp_docs_post_type_args', array(
-			'label'        => __( 'BuddyPress Docs', 'bp-docs' ),
+			'label'        => __( 'Docs', 'bp-docs' ),
 			'labels'       => $post_type_labels,
 			'public'       => true,
 			'show_ui'      => $this->show_cpt_ui(),
