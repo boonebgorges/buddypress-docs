@@ -3,8 +3,7 @@
  * BuddyPress Docs Recent Docs Widget
  * Based on WP's "Recent Posts" widget.
  *
- *
- * @package BuddyPress_Docs
+ * @package BuddyPressDocs
  * @since 1.9.0
  */
 

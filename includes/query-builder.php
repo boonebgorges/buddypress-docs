@@ -1,5 +1,11 @@
 <?php
+/**
+ * @package BuddyPressDocs
+ */
 
+/**
+ * Main BuddyPress Docs query class.
+ */
 class BP_Docs_Query {
 	var $post_type_name;
 	var $associated_item_tax_name;
@@ -26,7 +32,6 @@ class BP_Docs_Query {
 	/**
 	 * PHP 5 constructor
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function __construct( $args = array() ) {
@@ -63,7 +68,6 @@ class BP_Docs_Query {
 	/**
 	 * Gets the item type of the item you're looking at - e.g 'group', 'user'.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @return str $view The current item type
@@ -75,7 +79,6 @@ class BP_Docs_Query {
 	/**
 	 * Gets the doc slug as represented in the URL
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @return str $view The current doc slug
@@ -94,7 +97,6 @@ class BP_Docs_Query {
 	/**
 	 * Gets the item id of the item (eg group, user) associated with the page you're on.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @return str $view The current item type
@@ -139,7 +141,6 @@ class BP_Docs_Query {
 	/**
 	 * Gets the id of the taxonomy term associated with the item
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @return str $view The current item type
@@ -162,7 +163,6 @@ class BP_Docs_Query {
 	 *
 	 * Filter 'bp_docs_get_current_view' to extend to different components.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param str $item_type Defaults to the object's item type
@@ -305,7 +305,6 @@ class BP_Docs_Query {
 	 * Used to be use to build the query_posts() query. Now handled by get_wp_query() and
 	 * bp_docs_has_docs()
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 * @deprecated 1.2
 	 */
@@ -316,7 +315,6 @@ class BP_Docs_Query {
 	/**
 	 * Fires the WP query and loads the appropriate template
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function load_template() {
@@ -406,7 +404,6 @@ class BP_Docs_Query {
 	 * This method handles saving for both new and existing docs. It detects the difference by
 	 * looking for the presence of $this->doc_slug
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function save( $args = false ) {
@@ -597,7 +594,6 @@ class BP_Docs_Query {
 	 * In WP 3.3, wp_tiny_mce() was deprecated, with its JS loading handled by the_editor. So we just
 	 * provide a dummy function, for backward template support.
 	 *
-	 * @package BuddyPress_Docs
 	 * @since 1.1.19
 	 */
 	function define_wp_tiny_mce() {

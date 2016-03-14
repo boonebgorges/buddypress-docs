@@ -3,15 +3,13 @@
 /**
  * Miscellaneous utility functions
  *
- * @package BuddyPress_Docs
+ * @package BuddyPressDocs
  * @since 1.2
  */
-
 
 /**
  * Return the bp_doc post type name
  *
- * @package BuddyPress_Docs
  * @since 1.2
  *
  * @return str The name of the bp_doc post type
@@ -24,7 +22,6 @@ function bp_docs_get_post_type_name() {
 /**
  * Return the associated_item taxonomy name
  *
- * @package BuddyPress_Docs
  * @since 1.2
  */
 function bp_docs_get_associated_item_tax_name() {
@@ -35,7 +32,6 @@ function bp_docs_get_associated_item_tax_name() {
 /**
  * Return the access taxonomy name
  *
- * @package BuddyPress_Docs
  * @since 1.2
  */
 function bp_docs_get_access_tax_name() {
@@ -46,7 +42,6 @@ function bp_docs_get_access_tax_name() {
 /**
  * Utility function to get and cache the current doc
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  *
  * @return obj Current doc
@@ -175,7 +170,6 @@ function bp_docs_get_item_term_id( $item_id, $item_type, $item_name = '' ) {
  * paths, and bp_core_load_template() does not have an option that will let you locate but not load
  * the found template.
  *
- * @package BuddyPress Docs
  * @since 1.0.5
  *
  * @param str $template This string should be of the format 'edit-docs.php'. Ie, you need '.php',
@@ -221,7 +215,6 @@ function bp_docs_locate_template( $template = '', $load = false, $require_once =
 /**
  * Determine whether the current user can do something the current doc
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  * @deprecated 1.8
  *
@@ -239,7 +232,6 @@ function bp_docs_current_user_can( $action = 'edit', $doc_id = false ) {
 /**
  * Determine whether a given user can do something with a given doc
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  *
  * @param str $action Optional. The action being queried. Eg 'edit', 'read_comments', 'manage'

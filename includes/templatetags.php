@@ -6,7 +6,6 @@ if ( !function_exists( 'bp_is_root_blog' ) ) :
 	 *
 	 * Provides backward compatibility with pre-1.5 BP installs
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0.4
 	 *
 	 * @return bool $is_root_blog Returns true if this is BP_ROOT_BLOG. Always true on non-MS
@@ -172,7 +171,6 @@ function bp_docs_the_doc() {
 /**
  * Determine whether you are viewing a BuddyPress Docs page
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  *
  * @return bool
@@ -201,7 +199,6 @@ function bp_docs_is_bp_docs_page() {
 /**
  * Returns true if the current page is a BP Docs edit or create page (used to load JS)
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  *
  * @returns bool
@@ -219,7 +216,6 @@ function bp_docs_is_wiki_edit_page() {
 /**
  * Echoes the output of bp_docs_get_info_header()
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  */
 function bp_docs_info_header() {
@@ -230,7 +226,6 @@ function bp_docs_info_header() {
 	 *
 	 * Contains things like tag filters
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param int $doc_id optional The post_id of the doc
@@ -409,7 +404,6 @@ function bp_docs_directory_filter_form_action() {
 /**
  * Filters the output of the doc list header for search terms
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  *
  * @return array $filters
@@ -426,7 +420,6 @@ add_filter( 'bp_docs_info_header_message', 'bp_docs_search_term_filter_text', 10
 /**
  * Get the filters currently being applied to the doc list
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  *
  * @return array $filters
@@ -455,7 +448,6 @@ function bp_docs_get_current_filters() {
 /**
  * Echoes the output of bp_docs_get_doc_link()
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  */
 function bp_docs_doc_link( $doc_id = false ) {
@@ -464,7 +456,6 @@ function bp_docs_doc_link( $doc_id = false ) {
 	/**
 	 * Get the doc's permalink
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param int $doc_id
@@ -485,7 +476,6 @@ function bp_docs_doc_link( $doc_id = false ) {
 /**
  * Echoes the output of bp_docs_get_doc_edit_link()
  *
- * @package BuddyPress_Docs
  * @since 1.2
  */
 function bp_docs_doc_edit_link( $doc_id = false ) {
@@ -494,7 +484,6 @@ function bp_docs_doc_edit_link( $doc_id = false ) {
 	/**
 	 * Get the edit link for a doc
 	 *
-	 * @package BuddyPress_Docs
 	 * @since 1.2
 	 *
 	 * @param int $doc_id
@@ -507,7 +496,6 @@ function bp_docs_doc_edit_link( $doc_id = false ) {
 /**
  * Echoes the output of bp_docs_get_archive_link()
  *
- * @package BuddyPress_Docs
  * @since 1.2
  */
 function bp_docs_archive_link() {
@@ -516,7 +504,6 @@ function bp_docs_archive_link() {
 	/**
          * Get the link to the main site Docs archive
          *
-         * @package BuddyPress_Docs
          * @since 1.2
          */
 	function bp_docs_get_archive_link() {
@@ -526,7 +513,6 @@ function bp_docs_archive_link() {
 /**
  * Echoes the output of bp_docs_get_mygroups_link()
  *
- * @package BuddyPress_Docs
  * @since 1.2
  */
 function bp_docs_mygroups_link() {
@@ -535,7 +521,6 @@ function bp_docs_mygroups_link() {
 	/**
          * Get the link the My Groups tab of the Docs archive
          *
-         * @package BuddyPress_Docs
          * @since 1.2
          */
 	function bp_docs_get_mygroups_link() {
@@ -545,7 +530,6 @@ function bp_docs_mygroups_link() {
 /**
  * Echoes the output of bp_docs_get_mydocs_link()
  *
- * @package BuddyPress_Docs
  * @since 1.2
  */
 function bp_docs_mydocs_link() {
@@ -554,7 +538,6 @@ function bp_docs_mydocs_link() {
 	/**
          * Get the link to the My Docs tab of the logged in user
          *
-         * @package BuddyPress_Docs
          * @since 1.2
          */
 	function bp_docs_get_mydocs_link() {
@@ -564,7 +547,6 @@ function bp_docs_mydocs_link() {
 /**
  * Echoes the output of bp_docs_get_mydocs_started_link()
  *
- * @package BuddyPress_Docs
  * @since 1.2
  */
 function bp_docs_mydocs_started_link() {
@@ -573,7 +555,6 @@ function bp_docs_mydocs_started_link() {
 	/**
          * Get the link to the Started By Me tab of the logged in user
          *
-         * @package BuddyPress_Docs
          * @since 1.2
          */
 	function bp_docs_get_mydocs_started_link() {
@@ -583,7 +564,6 @@ function bp_docs_mydocs_started_link() {
 /**
  * Echoes the output of bp_docs_get_mydocs_edited_link()
  *
- * @package BuddyPress_Docs
  * @since 1.2
  */
 function bp_docs_mydocs_edited_link() {
@@ -592,7 +572,6 @@ function bp_docs_mydocs_edited_link() {
 	/**
          * Get the link to the Edited By Me tab of the logged in user
          *
-         * @package BuddyPress_Docs
          * @since 1.2
          */
 	function bp_docs_get_mydocs_edited_link() {
@@ -602,7 +581,6 @@ function bp_docs_mydocs_edited_link() {
 /**
  * Echoes the output of bp_docs_get_displayed_user_docs_started_link()
  *
- * @package BuddyPress_Docs
  * @since 1.9
  */
 function bp_docs_displayed_user_docs_started_link() {
@@ -611,7 +589,6 @@ function bp_docs_displayed_user_docs_started_link() {
 	/**
      * Get the link to the Started By tab of the displayed user
      *
-     * @package BuddyPress_Docs
      * @since 1.9
      */
 	function bp_docs_get_displayed_user_docs_started_link() {
@@ -621,7 +598,6 @@ function bp_docs_displayed_user_docs_started_link() {
 /**
  * Echoes the output of bp_docs_get_displayed_user_docs_edited_link()
  *
- * @package BuddyPress_Docs
  * @since 1.9
  */
 function bp_docs_displayed_user_docs_edited_link() {
@@ -630,7 +606,6 @@ function bp_docs_displayed_user_docs_edited_link() {
 	/**
      * Get the link to the Edited By tab of the displayed user
      *
-     * @package BuddyPress_Docs
      * @since 1.9
      */
 	function bp_docs_get_displayed_user_docs_edited_link() {
@@ -640,7 +615,6 @@ function bp_docs_displayed_user_docs_edited_link() {
 /**
  * Echoes the output of bp_docs_get_create_link()
  *
- * @package BuddyPress_Docs
  * @since 1.2
  */
 function bp_docs_create_link() {
@@ -649,7 +623,6 @@ function bp_docs_create_link() {
 	/**
          * Get the link to create a Doc
          *
-         * @package BuddyPress_Docs
          * @since 1.2
          */
 	function bp_docs_get_create_link() {
@@ -659,7 +632,6 @@ function bp_docs_create_link() {
 /**
  * Echoes the output of bp_docs_get_item_docs_link()
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  */
 function bp_docs_item_docs_link() {
@@ -668,7 +640,6 @@ function bp_docs_item_docs_link() {
 	/**
 	 * Get the link to the docs section of an item
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @return array $filters
@@ -758,7 +729,6 @@ function bp_docs_directory_breadcrumb() {
  *
  * Detects the current sort order and returns the opposite
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  *
  * @return str $new_order Either desc or asc
@@ -793,7 +763,6 @@ function bp_docs_get_sort_order( $orderby = 'modified' ) {
 /**
  * Echoes the output of bp_docs_get_order_by_link()
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  *
  * @param str $orderby The order_by item: title, author, created, edited, etc
@@ -804,7 +773,6 @@ function bp_docs_order_by_link( $orderby = 'modified' ) {
 	/**
 	 * Get the URL for the sortable column header links
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param str $orderby The order_by item: title, author, created, modified, etc
@@ -822,7 +790,6 @@ function bp_docs_order_by_link( $orderby = 'modified' ) {
 /**
  * Echoes current-orderby and order classes for the column currently being ordered by
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  *
  * @param str $orderby The order_by item: title, author, created, modified, etc
@@ -862,7 +829,6 @@ function bp_docs_is_current_orderby_class( $orderby = 'modified' ) {
  * content immediately on pageload means that I didn't want to wait for an external script to
  * load, much less for document.ready. Sorry.
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  */
 function bp_docs_inline_toggle_js() {
@@ -1123,7 +1089,6 @@ function bp_docs_associated_group_summary( $group_id = 0 ) {
 /**
  * A hook for intergration pieces to insert their settings markup
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  */
 function bp_docs_doc_settings_markup( $doc_id = 0, $group_id = 0 ) {
@@ -1210,7 +1175,6 @@ function bp_docs_access_options_helper( $settings_field, $doc_id = 0, $group_id 
 /**
  * Outputs the links that appear under each Doc in the Doc listing
  *
- * @package BuddyPress Docs
  */
 function bp_docs_doc_action_links() {
 	$links = array();
@@ -1246,7 +1210,6 @@ function bp_docs_current_group_is_public() {
 /**
  * Echoes the output of bp_docs_get_delete_doc_link()
  *
- * @package BuddyPress Docs
  * @since 1.0.1
  */
 function bp_docs_delete_doc_link( $force_delete = false ) {
@@ -1255,7 +1218,6 @@ function bp_docs_delete_doc_link( $force_delete = false ) {
 	/**
 	 * Get the URL to delete the current doc
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0.1
 	 *
 	 * @param bool force_delete Whether to add the force_delete query arg.
@@ -1378,7 +1340,6 @@ function bp_docs_get_directory_url( $item_type = 'global', $item_id = 0 ) {
 /**
  * Echo the pagination links for the doc list view
  *
- * @package BuddyPress Docs
  * @since 1.0-beta-2
  */
 function bp_docs_paginate_links() {
@@ -1410,7 +1371,6 @@ function bp_docs_paginate_links() {
  * Here's the math: Subtract one from the current page number; multiply times posts_per_page to get
  * the last post on the previous page; add one to get the start for this page.
  *
- * @package BuddyPress Docs
  * @since 1.0-beta-2
  *
  * @return int $start The start number
@@ -1433,7 +1393,6 @@ function bp_docs_get_current_docs_start() {
  * Here's the math: Multiply the posts_per_page by the current page number. If it's the last page
  * (ie if the result is greater than the total number of docs), just use the total doc count
  *
- * @package BuddyPress Docs
  * @since 1.0-beta-2
  *
  * @return int $end The start number
@@ -1456,7 +1415,6 @@ function bp_docs_get_current_docs_end() {
 /**
  * Get the total number of found docs out of $wp_query
  *
- * @package BuddyPress Docs
  * @since 1.0-beta-2
  *
  * @return int $total_doc_count The start number
@@ -1479,7 +1437,6 @@ function bp_docs_get_total_docs_num() {
  *
  * Filter bp_docs_list_comments_args to provide your own comment-formatting function.
  *
- * @package BuddyPress Docs
  * @since 1.0.5
  */
 function bp_docs_list_comments() {
@@ -1496,7 +1453,6 @@ function bp_docs_list_comments() {
 /**
  * Are we looking at an existing doc?
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  *
  * @return bool True if it's an existing doc
@@ -1519,7 +1475,6 @@ function bp_docs_is_existing_doc() {
 /**
  * What's the current view?
  *
- * @package BuddyPress Docs
  * @since 1.1
  *
  * @return str $current_view The current view

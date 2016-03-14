@@ -247,7 +247,6 @@ class BP_Docs_Component extends BP_Component {
 	/**
 	 * Gets the item type of the item you're looking at - e.g 'group', 'user'.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @return str $view The current item type
@@ -271,7 +270,6 @@ class BP_Docs_Component extends BP_Component {
 	 *
 	 * Filter 'bp_docs_get_current_view' to extend to different components.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param str $item_type Defaults to the object's item type
@@ -365,7 +363,6 @@ class BP_Docs_Component extends BP_Component {
 	 * We do this in order to have some of the info about the current doc throughout the
 	 * loading process
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 * @deprecated No longer used since 1.2
 	 */
@@ -376,7 +373,6 @@ class BP_Docs_Component extends BP_Component {
 	/**
 	 * Catches page loads, determines what to do, and sends users on their merry way
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 * @todo This needs a ton of cleanup
 	 */
@@ -601,7 +597,6 @@ class BP_Docs_Component extends BP_Component {
 	 * Filters the comment_post_direct URL so that the user gets sent back to the true
 	 * comment URL after posting
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param str $location The original location, created by WP
@@ -626,7 +621,6 @@ class BP_Docs_Component extends BP_Component {
 	/**
 	 * Posts an activity item when a comment is posted to a doc
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param obj $comment_id The id of the comment that's just been saved.
@@ -644,7 +638,6 @@ class BP_Docs_Component extends BP_Component {
 	 *
 	 * If you find this annoying, I have provided a filter for your convenience.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param str $path The path (STYLESHEETPATH . $file) from comments_template()
@@ -672,7 +665,6 @@ class BP_Docs_Component extends BP_Component {
 	 * for comments_notify and return 0 (rather than false, which would not stop the real
 	 * get_option operation from running).
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param int $comment_id ID number of the new comment being posted
@@ -709,7 +701,6 @@ class BP_Docs_Component extends BP_Component {
 	/**
 	 * Adds BP Docs options to activity filter dropdowns
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function activity_filter_options() {
@@ -719,7 +710,6 @@ class BP_Docs_Component extends BP_Component {
 	/**
 	 * Posts an activity item on doc save
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param obj $query The query object created in BP_Docs_Query and passed to the
@@ -759,7 +749,6 @@ class BP_Docs_Component extends BP_Component {
 	 * parent slugs never appear in the URL (as they do in the case of WP
 	 * pages). So we reconstruct the link completely.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.1.8
 	 *
 	 * @param str $link The permalink
@@ -791,7 +780,6 @@ class BP_Docs_Component extends BP_Component {
 	 * This function filters bp_activity_can_comment, which was introduced in BP 1.5. It is
 	 * therefore not backward compatible with BP < 1.5.
 	 *
-	 * @package BuddyPress_Docs
 	 * @since 1.1.17
 	 *
 	 * @param bool $can_comment Whether the current user can comment. Comes from
@@ -815,7 +803,6 @@ class BP_Docs_Component extends BP_Component {
 	/**
 	 * Handles doc filters from a form post and translates to $_GET arguments before redirect
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function handle_filters() {
@@ -827,7 +814,6 @@ class BP_Docs_Component extends BP_Component {
 	/**
 	 * Sets the includes URL for use when loading scripts and styles
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function set_includes_url() {
@@ -943,7 +929,6 @@ class BP_Docs_Component extends BP_Component {
 	/**
 	 * Loads JavaScript
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function enqueue_scripts() {
@@ -1005,7 +990,6 @@ class BP_Docs_Component extends BP_Component {
 	/**
 	 * Loads styles
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function enqueue_styles() {

@@ -3,7 +3,7 @@
 /**
  * Dashboard functions for BuddyPress Docs
  *
- * @package BuddyPress Docs
+ * @package BuddyPressDocs
  * @since 1.1.8
  */
 
@@ -11,7 +11,6 @@ class BP_Docs_Admin {
 	/**
 	 * Constructor
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.1.8
 	 */
 	function __construct() {
@@ -251,7 +250,6 @@ class BP_Docs_Admin {
 	/**
 	 * Replicates WP's native recent comments dashboard widget.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.1.8
 	 */
 	function wp_dashboard_recent_comments() {

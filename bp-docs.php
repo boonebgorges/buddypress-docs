@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Main plugin class.
+ *
+ * @package BuddyPressDocs
+ */
 class BP_Docs {
 	var $post_type_name;
 	var $associated_item_tax_name;
@@ -15,7 +20,6 @@ class BP_Docs {
 	/**
 	 * PHP 5 constructor
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function __construct() {
@@ -68,7 +72,6 @@ class BP_Docs {
 	/**
 	 * PHP 4 constructor
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function bp_docs() {
@@ -78,7 +81,6 @@ class BP_Docs {
 	/**
 	 * Loads the textdomain for the plugin
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0.2
 	 */
 	function load_plugin_textdomain() {
@@ -88,7 +90,6 @@ class BP_Docs {
 	/**
 	 * Includes files needed by BuddyPress Docs
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function includes() {
@@ -141,7 +142,6 @@ class BP_Docs {
 	 * BuddyPress Docs, as well as other dependent plugins, to hook into the loading process in
 	 * an orderly fashion.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.2
 	 */
 	function load_hook() {
@@ -155,7 +155,6 @@ class BP_Docs {
 	 * Docs, as well as other dependent plugins, to hook into the loading process in an
 	 * orderly fashion.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function init_hook() {
@@ -168,7 +167,6 @@ class BP_Docs {
 	 * This action tells BP Docs and other plugins that the main initialization process has
 	 * finished.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function loaded() {
@@ -180,7 +178,6 @@ class BP_Docs {
 	 *
 	 * These constants can be overridden in bp-custom.php or wp-config.php.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function load_constants() {
@@ -268,7 +265,6 @@ class BP_Docs {
 	 * needs to be associated with them. So a bp_doc post associated with group 6 will have
 	 * the taxonomy bp_docs_associated_item '6', where '6' is a sub-tax of 'groups'.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function register_post_type() {
@@ -348,7 +344,6 @@ class BP_Docs {
 	 * administrator. It is loaded before the bp_docs post type is registered so that we have
 	 * access to the 'taxonomy' argument of register_post_type.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function load_doc_extras() {
@@ -450,7 +445,6 @@ class BP_Docs {
 	 *
 	 * Defaults to is_super_admin(), but is filterable
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0.8
 	 *
 	 * @return bool $show_ui
@@ -613,7 +607,6 @@ class BP_Docs {
 	/**
 	 * Initiates the BP Component extension
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function do_integration() {

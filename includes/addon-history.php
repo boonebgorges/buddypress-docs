@@ -3,7 +3,7 @@
 /**
  * The History tab add-on for BuddyPress Docs
  *
- * @package BuddyPress Docs
+ * @package BuddyPressDocs
  * @subpackage History
  * @since 1.1
  */
@@ -24,7 +24,6 @@ class BP_Docs_History {
 	/**
 	 * PHP 5 constructor
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.1
 	 */
 	function __construct() {
@@ -41,7 +40,6 @@ class BP_Docs_History {
 	 *
 	 * Does some sanity checks along the way
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.1
 	 */
 	function setup_params() {
@@ -80,7 +78,6 @@ class BP_Docs_History {
 	 * This is cribbed nearly wholesale from wp-admin/revision.php. In the future I would like
 	 * to clean it up to be less WordPressy and more pluginish.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.1
 	 */
 	function setup_action() {
@@ -214,7 +211,6 @@ class BP_Docs_History {
 	 * This is cribbed nearly wholesale from wp-admin/revision.php. In the future I would like
 	 * to clean it up to be less WordPressy and more pluginish.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.1
 	 */
 	function setup_is_identical() {
@@ -238,7 +234,6 @@ class BP_Docs_History {
 /**
  * Returns the current revision action.
  *
- * @package BuddyPress Docs
  * @since 1.1
  *
  * @return str $action The current revision action ('view', 'diff', 'restore')
@@ -259,7 +254,6 @@ function bp_docs_history_action() {
  * overkill to me. I also added a default null $side, so that you can also use this function to
  * get the field of a single revision ($history->revision) instead of $history->left_revision, etc.
  *
- * @package BuddyPress Docs
  * @since 1.1
  *
  * @param str $side 'left', 'right', or false to show the main revision
@@ -282,7 +276,6 @@ function bp_docs_history_post_revision_field( $side = false, $field = 'post_titl
 /**
  * Returns whether the revisions are identical.
  *
- * @package BuddyPress Docs
  * @since 1.1
  *
  * @return bool True when left and right are the same
@@ -300,7 +293,6 @@ function bp_docs_history_revisions_are_identical() {
  * history selector. That's because I don't like WP's default behavior, which is to show the most
  * recent revision.
  *
- * @package BuddyPress Docs
  * @since 1.1
  *
  * @return bool True when the current revision is the latest revision
@@ -314,7 +306,6 @@ function bp_docs_history_is_latest() {
 /**
  * Display list of a Docs's revisions. Borrowed heavily from WP's wp_list_post_revisions()
  *
- * @package BuddyPress Docs
  * @since 1.1
  *
  * @uses wp_get_post_revisions()
@@ -449,7 +440,6 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
  * This is hooked to bp_docs_header_tabs, so that it only loads if the History addon is
  * enabled.
  *
- * @package BuddyPress Docs
  * @since 1.1.4
  */
 function bp_docs_history_tab() {

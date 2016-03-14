@@ -4,13 +4,12 @@
  * This file contains the functions used to enable tags and categories for docs.
  * Separated into this file so that the feature can be turned off.
  *
- * @package BuddyPress Docs
+ * @package BuddyPressDocs
  */
 
 /**
  * This class sets up the interface and back-end functions needed to use post tags with BP Docs.
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  */
 class BP_Docs_Taxonomy {
@@ -22,7 +21,6 @@ class BP_Docs_Taxonomy {
 	/**
 	 * PHP 4 constructor
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function bp_docs_query() {
@@ -32,7 +30,6 @@ class BP_Docs_Taxonomy {
 	/**
 	 * PHP 5 constructor
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function __construct() {
@@ -72,7 +69,6 @@ class BP_Docs_Taxonomy {
 	/**
 	 * Registers the custom taxonomy for BP doc tags
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 */
@@ -101,7 +97,6 @@ class BP_Docs_Taxonomy {
 	/**
 	 * Registers the post taxonomies with the bp_docs post type
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param array The $bp_docs_post_type_args array created in BP_Docs::register_post_type()
@@ -118,7 +113,6 @@ class BP_Docs_Taxonomy {
 	/**
 	 * Saves post taxonomy terms to a doc when saved from the front end
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param object $query The query object created by BP_Docs_Query
@@ -161,7 +155,6 @@ class BP_Docs_Taxonomy {
 	 *
 	 * No longer needed, because item taxonomies are generated dynamically
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param int $doc_id
@@ -173,7 +166,6 @@ class BP_Docs_Taxonomy {
 	/**
 	 * Shows a doc's taxonomy terms
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function show_terms() {
@@ -200,7 +192,6 @@ class BP_Docs_Taxonomy {
 	 * This is a dummy function that allows specific item types to hook in their own methods
 	 * for retrieving metadata (groups_update_groupmeta(), get_user_meta(), etc)
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @return array $terms The item's terms
@@ -216,7 +207,6 @@ class BP_Docs_Taxonomy {
 	 *
 	 * Just a dummy hook for the moment, for the integration modules to hook into
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @return array $terms The item's terms
@@ -228,7 +218,6 @@ class BP_Docs_Taxonomy {
 	/**
 	 * Modifies the tax_query on the doc loop to account for doc tags
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @return array $terms The item's terms
@@ -262,7 +251,6 @@ class BP_Docs_Taxonomy {
 	/**
 	 * Markup for the Tags <th> on the docs loop
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 
@@ -277,7 +265,6 @@ class BP_Docs_Taxonomy {
 	/**
 	 * Markup for the Tags <td> on the docs loop
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function tags_td() {
@@ -303,7 +290,6 @@ class BP_Docs_Taxonomy {
 	/**
 	 * Modifies the info header message to account for current tags
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param array $message An array of the messages explaining the current view
@@ -339,7 +325,6 @@ class BP_Docs_Taxonomy {
 	/**
 	 * Creates the markup for the tags filter checkboxes on the docs loop
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function filter_markup() {
@@ -412,7 +397,6 @@ class BP_Docs_Taxonomy {
 	/**
 	 * Handles doc filters from a form post and translates to $_GET arguments before redirect
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function handle_filters( $redirect_url ) {
@@ -443,7 +427,6 @@ class BP_Docs_Taxonomy {
  *  - 'tag' 	The tag linked to. This one is required
  *  - 'type' 	'html' returns a link; anything else returns a URL
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  *
  * @param array $args Optional arguments
@@ -487,7 +470,6 @@ function bp_docs_get_tag_link( $args = array() ) {
 /**
  * Display post tags form fields. Based on WP core's post_tags_meta_box()
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  *
  * @param object $post
