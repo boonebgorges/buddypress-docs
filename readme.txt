@@ -38,6 +38,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * New breadcrumb navigation in individual Docs as well as in folder view.
 * Improved appearance in default WordPress themes.
 * Improved performance for Directory views.
+* Improved support for /index.php/ permalinks.
 
 = 1.8.9 =
 * Fixed bug that caused incorrect "x members" count in Associated Group metabox in some situations.
