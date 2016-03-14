@@ -435,10 +435,9 @@ class BP_Docs_Query {
 
 		// Check group associations
 		// @todo Move into group integration piece
+		// This group id is only used to check whether the user can associate the doc with the group.
+		$associated_group_id = isset( $_POST['associated_group_id'] ) ? intval( $_POST['associated_group_id'] ) : null;
 		if ( bp_is_active( 'groups' ) ) {
-			// This group id is only used to check whether the user can associate the doc with the group.
-			$associated_group_id = isset( $_POST['associated_group_id'] ) ? intval( $_POST['associated_group_id'] ) : null;
-
 			if ( ! empty( $associated_group_id ) && ! current_user_can( 'bp_docs_associate_with_group', $associated_group_id ) ) {
 				$retval = array(
 					'message_type' => 'error',

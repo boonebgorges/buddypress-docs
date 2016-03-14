@@ -895,6 +895,9 @@ function bp_docs_inline_toggle_js() {
  * @since 1.8
  */
 function bp_docs_associated_group_dropdown( $args = array() ) {
+	if ( ! bp_is_active( 'groups' ) ) {
+		return;
+	}
 	$r = wp_parse_args( $args, array(
 		'name'         => 'associated_group_id',
 		'id'           => 'associated_group_id',

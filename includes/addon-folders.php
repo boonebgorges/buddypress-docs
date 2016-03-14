@@ -780,11 +780,12 @@ function bp_docs_get_folders( $args = array() ) {
 	// Must exclude all user and group folders
 	// @todo Find better way to do this
 	} else if ( empty( $r['force_all_folders'] ) ) {
+		$folder_taxonomies = array( 'bp_docs_folder_in_user' );
+		if ( bp_is_active( 'groups' ) ) {
+			$folder_taxonomies[] = 'bp_docs_folder_in_group';
+		}
 		$object_folders = get_terms(
-			array(
-				'bp_docs_folder_in_group',
-				'bp_docs_folder_in_user',
-			),
+			$folder_taxonomies,
 			array(
 				'hide_empty' => false,
 				'fields' => 'ids',
@@ -795,12 +796,14 @@ function bp_docs_get_folders( $args = array() ) {
 			$object_folders = array( 0 );
 		}
 
-		$post_args['tax_query'][] = array(
-			'taxonomy' => 'bp_docs_folder_in_group',
-			'terms' => wp_parse_id_list( $object_folders ),
-			'field' => 'term_id',
-			'operator' => 'NOT IN',
-		);
+		if ( bp_is_active( 'groups' ) ) {
+			$post_args['tax_query'][] = array(
+				'taxonomy' => 'bp_docs_folder_in_group',
+				'terms' => wp_parse_id_list( $object_folders ),
+				'field' => 'term_id',
+				'operator' => 'NOT IN',
+			);
+		}
 
 		$post_args['tax_query'][] = array(
 			'taxonomy' => 'bp_docs_folder_in_user',
