@@ -593,7 +593,7 @@ function bp_docs_get_access_options( $settings_field, $doc_id = 0, $group_id = 0
 function bp_docs_get_default_access_options( $doc_id = 0, $group_id = 0 ) {
 	// We may be able to get the associated group from the doc_id.
 	if ( empty( $group_id ) && ! empty( $doc_id ) ) {
-		$group_id = bp_docs_get_associated_group_id( $doc_id );
+		$group_id = bp_is_active( 'groups' ) ? bp_docs_get_associated_group_id( $doc_id ) : 0;
 	}
 
 	$defaults = array();

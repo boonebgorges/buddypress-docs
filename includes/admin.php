@@ -167,6 +167,9 @@ class BP_Docs_Admin {
 	}
 
 	public function group_tab_name_setting_markup() {
+		if ( ! bp_is_active( 'groups' ) ) {
+			return;
+		}
 		$name = bp_docs_get_group_tab_name();
 
 		?>

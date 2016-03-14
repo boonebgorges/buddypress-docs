@@ -1839,7 +1839,7 @@ function bp_docs_create_new_folder_markup( $args = array() ) {
 function bp_docs_folders_meta_box() {
 
 	$doc_id = get_the_ID();
-	$associated_group_id = bp_docs_get_associated_group_id( $doc_id );
+	$associated_group_id = bp_is_active( 'groups' ) ? bp_docs_get_associated_group_id( $doc_id ) : 0;
 
 	if ( ! $associated_group_id && isset( $_GET['group'] ) ) {
 		$group_id = BP_Groups_Group::get_id_from_slug( urldecode( $_GET['group'] ) );
