@@ -9,7 +9,7 @@
  *     (BP_Docs_Group_Extension)
  *   - template tags that are specific to the groups component
  *
- * @package BuddyPress Docs
+ * @package BuddyPressDocs
  * @since 1.0-beta
  */
 
@@ -20,14 +20,12 @@
  * providing values that are group-specific. Things have been done this way to allow for future
  * integration with different kinds of BP items, like users.
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  */
 class BP_Docs_Groups_Integration {
 	/**
 	 * Constructor
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function __construct() {
@@ -99,7 +97,6 @@ class BP_Docs_Groups_Integration {
 	/**
 	 * Check to see whether the query object's item type should be 'groups'
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param str $type
@@ -121,7 +118,6 @@ class BP_Docs_Groups_Integration {
 	/**
 	 * Set the doc slug when we are viewing a group doc
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function get_doc_slug( $slug ) {
@@ -144,7 +140,6 @@ class BP_Docs_Groups_Integration {
 	/**
 	 * Get the current view type when the item type is 'group'
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function get_current_view( $view, $item_type ) {
@@ -246,7 +241,6 @@ class BP_Docs_Groups_Integration {
 	 * At the moment, this method (and the next one) assumes that you want the terms of the
 	 * current group. At some point, that should be abstracted a bit.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @return array $terms
@@ -313,7 +307,6 @@ class BP_Docs_Groups_Integration {
 	 *
 	 * No longer used.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param array $terms The terms to be saved to groupmeta
@@ -323,7 +316,6 @@ class BP_Docs_Groups_Integration {
 	/**
 	 * Determine whether a user can edit the group doc in question
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param bool $user_can The default perms passed from bp_docs_user_can_edit()
@@ -467,7 +459,6 @@ class BP_Docs_Groups_Integration {
 	 *
 	 * In the future I'll try to get the markup out of here. Sorry, themers.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param array $doc_settings Passed along to reduce lookups
@@ -576,7 +567,6 @@ class BP_Docs_Groups_Integration {
 	/**
 	 * Filters the activity action of 'doc created/edited' activity to include the group name
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param str $action The original action text created in BP_Docs_BP_Integration::post_activity()
@@ -639,7 +629,6 @@ class BP_Docs_Groups_Integration {
 	/**
 	 * Filters the activity action of 'new doc comment' activity to include the group name
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param str $action The original action text created in BP_Docs_BP_Integration::post_activity()
@@ -670,7 +659,6 @@ class BP_Docs_Groups_Integration {
 	/**
 	 * Filter the hide_sitewide variable to ensure that hidden/private group activity is hidden
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0
 	 *
 	 * @param bool $hide_sitewide
@@ -705,7 +693,6 @@ class BP_Docs_Groups_Integration {
 	 * on each Doc save to get an accurate count. This adds some overhead, but Doc editing is
 	 * rare enough that it shouldn't be a huge issue.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0.8
 	 */
 	function update_doc_count() {
@@ -722,8 +709,6 @@ class BP_Docs_Groups_Integration {
 	/**
 	 * Markup for the Groups <th> on the docs loop
 	 *
-	 * @package BuddyPress_Docs
-	 * @subpackage Groups
 	 * @since 1.2
 	 */
 	function groups_th() {
@@ -749,8 +734,6 @@ class BP_Docs_Groups_Integration {
 	/**
 	 * Markup for the Groups <td> on the docs loop
 	 *
-	 * @package BuddyPress_Docs
-	 * @subpackage Groups
 	 * @since 1.2
 	 */
 	function groups_td() {
@@ -815,8 +798,6 @@ class BP_Docs_Groups_Integration {
 	/**
 	 * On group Doc directories, add the "Unlink from Group" action link
 	 *
-	 * @package BuddyPress_Docs
-	 * @subpackage Groups
 	 * @since 1.9.0
 	 */
 	function add_doc_action_unlink_from_group_link( $links, $doc_id ) {
@@ -833,8 +814,6 @@ class BP_Docs_Groups_Integration {
 	 * On group Doc directories, modify the pagination base so that pagination
 	 * works within the directory.
 	 *
-	 * @package BuddyPress_Docs
-	 * @subpackage Groups
 	 * @since 1.9.0
 	 */
 	public function filter_bp_docs_page_links_base_url( $base_url, $wp_rewrite_pag_base  ) {
@@ -847,7 +826,6 @@ class BP_Docs_Groups_Integration {
 	/**
 	 * Update the current group's last_activity metadata
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.1.8
 	 */
 	function update_group_last_active( $doc_id ) {
@@ -889,7 +867,6 @@ class BP_Docs_Groups_Integration {
 	 * NOTE: This function is currently disabled, because of changes in Docs 1.2+
 	 * @todo Fix
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0.8
 	 */
 	function show_doc_count_in_tab() {
@@ -922,7 +899,6 @@ class BP_Docs_Groups_Integration {
 	/**
 	 * Make the page title nice and pretty
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.1.4
 	 *
 	 * @param str The title string passed by bp_page_title
@@ -997,7 +973,6 @@ class BP_Docs_Groups_Integration {
 /**
  * Implementation of BP_Group_Extension
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  */
 if ( class_exists( 'BP_Group_Extension' ) ) :
@@ -1017,7 +992,6 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	/**
 	 * Constructor
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	public function __construct() {
@@ -1065,7 +1039,6 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	 * bp_docs_force_enable_at_group_creation is a more general filter. When true, the creation
 	 * step will be disabled AND Docs will be turned off on new group creation.
 	 *
-	 * @package BuddyPress_Docs
 	 * @since 1.1.18
 	 *
 	 * @return bool
@@ -1080,7 +1053,6 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	 *
 	 * This function is only called if you're forcing Docs enabling on group creation
 	 *
-	 * @package BuddyPress_Docs
 	 * @since 1.1.18
 	 */
 	function enable_at_group_creation( $group_id ) {
@@ -1095,7 +1067,6 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	/**
 	 * Determines what shows up on the BP Docs panel of the Create process
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function create_screen( $group_id = null ) {
@@ -1110,7 +1081,6 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	/**
 	 * Runs when the create screen is saved
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 
@@ -1125,7 +1095,6 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	/**
 	 * Determines what shows up on the BP Docs panel of the Group Admin
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function edit_screen( $group_id = null ) {
@@ -1147,7 +1116,6 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	/**
 	 * Runs when the admin panel is saved
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function edit_screen_save( $group_id = null ) {
@@ -1172,7 +1140,6 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	/**
 	 * Saves group settings. Called from edit_screen_save() and create_screen_save()
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function settings_save( $group_id = false ) {
@@ -1207,7 +1174,6 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	/**
 	 * Admin markup used on the edit and create admin panels
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function admin_markup() {
@@ -1263,7 +1229,6 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	/**
 	 * Determine whether the group nav item should show up for the current user
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function enable_nav_item() {
@@ -1294,7 +1259,6 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	/**
 	 * Loads the display template
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param int $group_id ID of the current group. Available only in BP 2.2+.
@@ -1399,7 +1363,6 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	/**
 	 * Dummy function that must be overridden by this extending class, as per API
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function widget_display() { }
@@ -1419,7 +1382,6 @@ endif; // if ( class_exists( 'BP_Group_Extension' )
  * has no native way to register subnav items on a group tab. Component subnavs (for user docs) will
  * be properly registered with bp_core_new_subnav_item()
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  *
  * @param obj $group optional The BP group object.
@@ -1450,7 +1412,6 @@ function bp_docs_group_tabs( $group = false ) {
 /**
  * Echoes the output of bp_docs_get_group_doc_permalink()
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  */
 function bp_docs_group_doc_permalink() {
@@ -1459,7 +1420,6 @@ function bp_docs_group_doc_permalink() {
 	/**
 	 * Returns a link to a specific document in a group
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param int $doc_id optional The post_id of the doc
@@ -1487,7 +1447,6 @@ function bp_docs_group_doc_permalink() {
 /**
  * Is Docs enabled for this group?
  *
- * @package BuddyPress Docs
  * @since 1.1.5
  *
  * @param int $group_id Optional. Defaults to current group, if there is one.
@@ -1519,7 +1478,6 @@ function bp_docs_is_docs_enabled_for_group( $group_id = false ) {
  * In order to be forward-compatible, this function will return an array when more than one group
  * is found.
  *
- * @package BuddyPress Docs
  * @since 1.1.8
  *
  * @param int $doc_id The id of the Doc
@@ -1576,7 +1534,6 @@ function bp_docs_set_associated_group_id( $doc_id, $group_id = 0 ) {
  * Process group-doc unlinking requests.
  * Allows group mods & admins to remove docs from groups they moderate.
  *
- * @package BuddyPress Docs
  * @since 1.9.0
  *
  * @param int $doc_id ID of the doc to remove from the group

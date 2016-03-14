@@ -9,7 +9,6 @@
 /**
  * Post an activity item when a comment is posted to a doc.
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  *
  * @param obj $comment_id The id of the comment that's just been saved
@@ -111,7 +110,6 @@ add_action( 'comment_post', 'bp_docs_post_comment_activity', 8 );
 /**
  * Post an activity item on doc save.
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  *
  * @param obj $query The query object created in BP_Docs_Query and passed to the
@@ -403,7 +401,6 @@ add_filter( 'bp_activity_prefetch_object_data', 'bp_docs_prefetch_activity_objec
 /**
  * Adds BP Docs options to activity filter dropdowns
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  */
 function bp_docs_activity_filter_options() {
