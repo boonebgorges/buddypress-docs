@@ -61,7 +61,7 @@ class BP_Docs_Attachments {
 	function catch_attachment_request() {
 		if ( ! empty( $_GET['bp-attachment'] ) ) {
 
-			$fn = $_GET['bp-attachment'];
+			$fn = basename( $_GET['bp-attachment'] );
 
 			// Sanity check - don't do anything if this is not a Doc
 			if ( ! bp_docs_is_existing_doc() ) {
