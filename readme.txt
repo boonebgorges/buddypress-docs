@@ -3,7 +3,7 @@ Contributors: boonebgorges, cuny-academic-commons, dcavins
 Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.3, BuddyPress 1.5
-Tested up to: WordPress 4.2, BuddyPress 2.2.2.1
+Tested up to: WordPress 4.4, BuddyPress 2.5
 Stable tag: 1.8.5
 
 Adds collaborative Docs to BuddyPress.
@@ -33,7 +33,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
-= 1.9 =
+= 1.9.0 =
 * Docs can now be sorted into folders.
 * New breadcrumb navigation in individual Docs as well as in folder view.
 * Improved appearance in default WordPress themes.
