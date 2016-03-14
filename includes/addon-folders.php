@@ -383,6 +383,10 @@ function bp_docs_get_doc_folder( $doc_id ) {
 function bp_docs_get_folder_group( $folder_id ) {
 	$group_id = false;
 
+	if ( ! bp_is_active( 'groups' ) ) {
+		return $group_id;
+	}
+
 	$folder_group_terms = get_the_terms( $folder_id, 'bp_docs_folder_in_group' );
 	if ( ! empty( $folder_group_terms ) ) {
 		$group_id = intval( substr( $folder_group_terms[0]->slug, 24 ) );
@@ -1949,7 +1953,7 @@ function bp_docs_get_folder_url( $folder_id ) {
 	$group_id = bp_docs_get_folder_group( $folder_id );
 	$user_id  = bp_docs_get_folder_user( $folder_id );
 
-	if ( $group_id && bp_is_active( 'groups' ) ) {
+	if ( $group_id ) {
 		$base_url = bp_docs_get_directory_url( 'group', $group_id );
 	} else if ( $user_id ) {
 		$base_url = bp_docs_get_directory_url( 'user', $user_id );
@@ -1990,7 +1994,7 @@ function bp_docs_get_parent_folder_url( $folder_id = null ) {
 		$group_id = bp_docs_get_folder_group( $folder_id );
 		$user_id  = bp_docs_get_folder_user( $folder_id );
 
-		if ( $group_id && bp_is_active( 'groups' ) ) {
+		if ( $group_id ) {
 			$parent_url = bp_docs_get_directory_url( 'group', $group_id );
 		} else if ( $user_id ) {
 			$parent_url = bp_docs_get_directory_url( 'user', $user_id );
