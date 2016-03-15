@@ -3,6 +3,7 @@
 *.sw*
 tests/wp-tests-config.php
 config.rb
+config.codekit
 .sass-cache
 
 node_modules
