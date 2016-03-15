@@ -22,7 +22,7 @@ foreach ( (array)$comments as $comment ) {
 ?>
 
 <?php if ( current_user_can( 'bp_docs_read_comments' ) ) : ?>
-	<div id="comments">
+	<div id="comments" class="comments-area">
 		<h3>
 			<?php printf( __( 'Discussion (%d)', 'bp-docs' ), $num_comments ) ?>
 		</h3>
@@ -51,6 +51,14 @@ foreach ( (array)$comments as $comment ) {
 
 		<?php endif ?>
 
+		<?php if ( current_user_can( 'bp_docs_post_comments' ) ) : ?>
+			<?php comment_form( array(), get_the_ID() ) ?>
+		<?php else : ?>
+			<p class="comments-closed comment-posting-disabled">
+				<?php _e( 'Comment posting has been disabled on this doc.', 'bp-docs' ) ?>
+			</p>
+		<?php endif; ?>
+
 	</div><!-- #comments -->
 
 <?php else : ?>
@@ -58,12 +66,4 @@ foreach ( (array)$comments as $comment ) {
 		<?php _e( 'Comment display has been disabled on this doc.', 'bp-docs' ) ?>
 	</p>
 
-<?php endif; ?>
-
-<?php if ( current_user_can( 'bp_docs_post_comments' ) ) : ?>
-	<?php comment_form( array(), get_the_ID() ) ?>
-<?php else : ?>
-	<p class="comments-closed comment-posting-disabled">
-		<?php _e( 'Comment posting has been disabled on this doc.', 'bp-docs' ) ?>
-	</p>
 <?php endif; ?>

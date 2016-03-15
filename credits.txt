@@ -2,6 +2,8 @@ BuddyPress Docs was developed for the CUNY Academic Commons http://commons.gc.cu
 
 The attachments feature was developed with the financial support of the Center for Applied Research and Environmental Systems program at the University of Missouri http://cares.missouri.edu, and with the technical, conceptual, and design support of David Cavins.
 
+Folder functionality was built with the financial and design support of the Shands Health System of the University of Florida.
+
 The original goal of BuddyPress Docs was to create "private wiki space" for BuddyPress. I'd planned to modify David Cartwright's BP Group Wiki plugin for that purpose (in fact, you can see that I committed the entire thing to the buddypress-docs git repo at the very beginning). In the end, I haven't used any code from David's plugin, but I would like to thank him for the original inspiration.
 
 == FILE AND LIBRARY CREDITS ==
@@ -16,7 +18,7 @@ Huge thanks go out to the individuals who donate their translations, making plug
 - Spanish: Selu Vega
 - Italian: Luca Camellini
 - German: Birgit, HansRuedi Keller
-- French: stbouvier, Xavier Jimenez  
+- French: stbouvier, Xavier Jimenez
 - Swedish: Thomas Schneider
 - Brazilian Portuguese: John Morgenthaler
 - European Portuguese: André Barriguinha

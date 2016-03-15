@@ -4,13 +4,12 @@
  * This file contains the functions used to enable tags and categories for docs.
  * Separated into this file so that the feature can be turned off.
  *
- * @package BuddyPress Docs
+ * @package BuddyPressDocs
  */
 
 /**
  * This class sets up the interface and back-end functions needed to use post tags with BP Docs.
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  */
 class BP_Docs_Taxonomy {
@@ -22,7 +21,6 @@ class BP_Docs_Taxonomy {
 	/**
 	 * PHP 4 constructor
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function bp_docs_query() {
@@ -32,7 +30,6 @@ class BP_Docs_Taxonomy {
 	/**
 	 * PHP 5 constructor
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function __construct() {
@@ -62,6 +59,9 @@ class BP_Docs_Taxonomy {
 		add_filter( 'bp_docs_filter_types', array( $this, 'filter_type' ) );
 		add_filter( 'bp_docs_filter_sections', array( $this, 'filter_markup' ) );
 
+		// Determine whether the directory view is filtered by bpd_tag.
+		add_filter( 'bp_docs_is_directory_view_filtered', array( $this, 'is_directory_view_filtered' ), 10, 2 );
+
 		// Adds filter arguments to a URL
 		add_filter( 'bp_docs_handle_filters',	array( $this, 'handle_filters' ) );
 	}
@@ -69,7 +69,6 @@ class BP_Docs_Taxonomy {
 	/**
 	 * Registers the custom taxonomy for BP doc tags
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 */
@@ -98,7 +97,6 @@ class BP_Docs_Taxonomy {
 	/**
 	 * Registers the post taxonomies with the bp_docs post type
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param array The $bp_docs_post_type_args array created in BP_Docs::register_post_type()
@@ -115,7 +113,6 @@ class BP_Docs_Taxonomy {
 	/**
 	 * Saves post taxonomy terms to a doc when saved from the front end
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param object $query The query object created by BP_Docs_Query
@@ -158,7 +155,6 @@ class BP_Docs_Taxonomy {
 	 *
 	 * No longer needed, because item taxonomies are generated dynamically
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param int $doc_id
@@ -170,7 +166,6 @@ class BP_Docs_Taxonomy {
 	/**
 	 * Shows a doc's taxonomy terms
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function show_terms() {
@@ -197,7 +192,6 @@ class BP_Docs_Taxonomy {
 	 * This is a dummy function that allows specific item types to hook in their own methods
 	 * for retrieving metadata (groups_update_groupmeta(), get_user_meta(), etc)
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @return array $terms The item's terms
@@ -213,7 +207,6 @@ class BP_Docs_Taxonomy {
 	 *
 	 * Just a dummy hook for the moment, for the integration modules to hook into
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @return array $terms The item's terms
@@ -225,7 +218,6 @@ class BP_Docs_Taxonomy {
 	/**
 	 * Modifies the tax_query on the doc loop to account for doc tags
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @return array $terms The item's terms
@@ -259,7 +251,6 @@ class BP_Docs_Taxonomy {
 	/**
 	 * Markup for the Tags <th> on the docs loop
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 
@@ -274,7 +265,6 @@ class BP_Docs_Taxonomy {
 	/**
 	 * Markup for the Tags <td> on the docs loop
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function tags_td() {
@@ -300,7 +290,6 @@ class BP_Docs_Taxonomy {
 	/**
 	 * Modifies the info header message to account for current tags
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param array $message An array of the messages explaining the current view
@@ -336,10 +325,11 @@ class BP_Docs_Taxonomy {
 	/**
 	 * Creates the markup for the tags filter checkboxes on the docs loop
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function filter_markup() {
+		do_action( 'bp_docs_directory_filter_taxonomy_before' );
+
 		$existing_terms = $this->get_item_terms();
 
 		$tag_filter = ! empty( $_GET['bpd_tag'] );
@@ -378,12 +368,35 @@ class BP_Docs_Taxonomy {
 		</div>
 
 		<?php
+
+		do_action( 'bp_docs_directory_filter_taxonomy_after' );
+	}
+
+	/**
+	 * Determine whether the directory view is filtered by bpd_tag.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param bool  $is_filtered Is the current directory view filtered?
+	 * @param array $exclude Array of filter types to ignore.
+	 *
+	 * @return bool $is_filtered
+	 */
+	public function is_directory_view_filtered( $is_filtered, $exclude ) {
+		// If this filter is excluded, stop now.
+		if ( in_array( 'bpd_tag', $exclude ) ) {
+			return $is_filtered;
+		}
+
+		if ( ! empty( $_GET['bpd_tag'] ) ) {
+			$is_filtered = true;
+		}
+	    return $is_filtered;
 	}
 
 	/**
 	 * Handles doc filters from a form post and translates to $_GET arguments before redirect
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function handle_filters( $redirect_url ) {
@@ -414,7 +427,6 @@ class BP_Docs_Taxonomy {
  *  - 'tag' 	The tag linked to. This one is required
  *  - 'type' 	'html' returns a link; anything else returns a URL
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  *
  * @param array $args Optional arguments
@@ -433,13 +445,18 @@ function bp_docs_get_tag_link( $args = array() ) {
 
 	if ( bp_is_user() ) {
 		$current_action = bp_current_action();
+		$item_docs_url = bp_displayed_user_domain() . bp_docs_get_docs_slug() . '/';
 		if ( empty( $current_action ) || BP_DOCS_STARTED_SLUG == $current_action ) {
 			$item_docs_url = bp_docs_get_displayed_user_docs_started_link();
 		} elseif ( BP_DOCS_EDITED_SLUG == $current_action ) {
 			$item_docs_url = bp_docs_get_displayed_user_docs_edited_link();
 		}
-	} elseif ( bp_is_group() ){
-		$item_docs_url = trailingslashit( bp_get_group_permalink() . bp_docs_get_docs_slug() );
+	} elseif ( bp_is_active( 'groups' ) && $current_group = groups_get_current_group() ) {
+		/*
+		 * Pass the group object to bp_get_group_permalink() so that it works
+		 * when $groups_template may not be set, like during AJAX requests.
+		 */
+		$item_docs_url = trailingslashit( bp_get_group_permalink( $current_group ) . bp_docs_get_docs_slug() );
 	} else {
 		$item_docs_url = bp_docs_get_archive_link();
 	}
@@ -457,7 +474,6 @@ function bp_docs_get_tag_link( $args = array() ) {
 /**
  * Display post tags form fields. Based on WP core's post_tags_meta_box()
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  *
  * @param object $post

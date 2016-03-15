@@ -1,0 +1,262 @@
+@import 'mixins';
+
+.existing-or-new-selector {
+	.selector-content {
+		padding-left: 30px;
+		margin: .5em 0 2em;
+	}
+
+	&#new-folder-block {
+		.selector-content {
+			label {
+				float: left;
+				width: 150px;
+				clear: left;
+			}
+
+			input, select {
+				margin: 15px 0 5px;
+				width: 300px;
+			}
+		}
+	}
+}
+
+#toggle-folders-show {
+	display: none;
+}
+
+#buddypress .standard-form .existing-or-new-selector label {
+	font-weight: normal;
+
+	&.radio-label {
+		padding-left: 5px;
+		display: inline;
+	}
+}
+
+.docs-folder-tree {
+	& > li.folder {
+		margin-left: 0;
+	}
+
+	li.folder {
+		position: relative;
+
+		&:hover > .folder-name, &.hover > .folder-name {
+			padding: 0px 9px;
+			border: 1px solid #666;
+		}
+
+		.folder-name {
+			cursor: pointer;
+			padding: 1px 10px;
+			display: inline-block;
+			width: 50%;
+		}
+
+		.docs-in-folder {
+			& > .folder-empty {
+				display: none;
+			}
+
+			&.empty > .folder-empty {
+				display: block;
+				opacity: .5;
+				font-style: italic;
+			}
+		}
+	}
+
+	.doc-in-folder {
+		& > a {
+			padding: 1px 10px;
+		}
+	}
+}
+
+.docs-folder-manage {
+	& > li.folder {
+		margin-left: 0;
+	}
+
+	li {
+		list-style-type: none;
+
+		&.folder-edit-closed {
+			& > .folder-info {
+				.folder-toggle-close {
+					display: none;
+				}
+
+				.folder-details {
+					display: none;
+				}
+			}
+		}
+
+		&.folder-edit-open {
+			& > .folder-info {
+				.folder-toggle-edit {
+					display: none;
+				}
+			}
+		}
+
+		.folder-info {
+			margin: .5em 0;
+			padding: .5em 1em;
+			border: 1px solid #eaeaea;
+
+			h4 {
+				margin: 0 0 .5em;
+
+				& > span > a {
+					font-size: .8em;
+					font-weight: normal;
+					padding-left: 8px;
+				}
+			}
+
+			label {
+				display: block;
+				float: left;
+				clear: left;
+				width: 100px;
+				margin-bottom: 1em;
+			}
+
+			a.folder-delete {
+				color: #f00;
+				font-size: .8em;
+			}
+		}
+	}
+}
+
+.create-new-folder {
+	label {
+		display: block;
+		float: left;
+		clear: left;
+		width: 170px;
+		margin-bottom: 1em;
+	}
+}
+
+.folder-type-selector-div.cannot-change {
+	display: none;
+}
+
+a#manage-folders-link {
+	float: right;
+	width: 200px;
+	text-align: right;
+	text-decoration: none;
+	font-weight: bold;
+	font-size: .9em;
+}
+
+body.no-js {
+	.docs-folder-manage h4 > span {
+		display: none;
+	}
+}
+
+body.js {
+	#new-folder-block .selector-content {
+		display: none;
+	}
+}
+
+// Folder expansion/toggling in doctable.
+.folder-row {
+	.toggle-content {
+		background-color: white;
+		&.loading {
+	   		background:url(../images/loading.gif) no-repeat center center;
+	   		height: 40px;
+		}
+	}
+	.up-one-folder {
+		width: 100%;
+		display: inline-block;
+	}
+}
+.folder-toggle-link {
+    background-color: darken( $grey, 2% );
+    display: block;
+    padding: .2em;
+    border: 1px solid $dark_grey;
+}
+.folder-meta-info {
+    background-color: darken( $grey, 2% );
+    font-size: .9em;
+    td {
+    	border-top: 1px solid lighten( $dark_grey, 7% );
+    }
+}
+.folder-loop {
+	margin-bottom: .5em;
+}
+
+// Folder tree styling
+ul.docs-folder-tree {
+	list-style-type: none;
+	font-weight: bold;
+
+	ul {
+		list-style-type: none;
+
+		&.docs-in-folder {
+			font-weight: normal;
+
+			li > a {
+				opacity: 1;
+			}
+		}
+	}
+}
+
+// JS-specific folder tree styling
+body.js {
+	li.folder-closed {
+		opacity: .5;
+
+		& > ul {
+			display: none;
+		}
+	}
+
+	li.folder-open {
+		opacity: 1;
+	}
+}
+
+div.manage-folders-link,
+div.toggle-folders-link {
+	float: left;
+	width: 100px;
+	font-size: .8em;
+	margin-bottom: 1em;
+}
+
+// BuddyPress stylesheet overrides
+// This rule only applies to the later-loaded folder contents table.
+#buddypress .folder-loop table {
+	margin: 0;
+}
+
+
+// Theme-specific styles
+.bp-docs-theme-twentythirteen {
+}
+.bp-docs-theme-twentyfourteen {
+	.folder-loop table {
+		border: 0;
+	}
+}
+.bp-docs-theme-twentyfifteen {
+}
+.bp-docs-theme-twentysixteen {
+}

@@ -27,6 +27,9 @@ class BP_Docs_Users_Integration {
 
 		// On user Doc directories, modify the pagination base so that pagination works within the directory.
 		add_filter( 'bp_docs_page_links_base_url', 		array( $this, 'filter_bp_docs_page_links_base_url' ), 10, 2 );
+
+		// Set the "last directory viewed" cookie when a user is viewing her docs directory.
+		add_action( 'bp_actions', array( $this, 'set_directory_cookie' ) );
 	}
 
 	/**
@@ -247,6 +250,17 @@ class BP_Docs_Users_Integration {
 		return $base_url;
 	}
 
+	/**
+	 * Renew the last directory cookie if the user is viewing her docs library.
+	 *
+	 * @since 1.9.0
+	 */
+	public function	set_directory_cookie() {
+		if ( bp_docs_is_user_docs() ) {
+			@setcookie( 'bp-docs-last-docs-directory', home_url( $_SERVER['REQUEST_URI'] ), 0, '/' );
+		}
+	}
+
 }
 
 /**
@@ -262,3 +276,107 @@ function bp_docs_get_user_tab_name() {
 	}
 	return apply_filters( 'bp_docs_get_user_tab_name', $name );
 }
+
+/**
+ * Add user information to directory breadcrumbs.
+ *
+ * @since 1.9.0
+ *
+ * @param array $crumbs
+ * @return array
+ */
+function bp_docs_user_directory_breadcrumb( $crumbs ) {
+	if ( bp_is_user() ) {
+		$user_crumbs = array(
+			sprintf(
+				'<a href="%s">%s</a>',
+				bp_displayed_user_domain() . bp_docs_get_slug() . '/',
+				sprintf( _x( '%s&#8217;s Docs', 'user Docs directory breadcrumb', 'bp-docs' ), esc_html( bp_get_displayed_user_fullname() ) )
+			),
+		);
+
+		switch ( bp_current_action() ) {
+			case 'started' :
+				$user_crumbs[] = sprintf(
+					'<a href="%s">%s</a>',
+					bp_docs_get_mydocs_started_link(),
+					__( 'Started By Me', 'bp-docs' )
+				);
+
+				break;
+
+			case 'edited' :
+				$user_crumbs[] = sprintf(
+					'<a href="%s">%s</a>',
+					bp_docs_get_mydocs_edited_link(),
+					__( 'Edited By Me', 'bp-docs' )
+				);
+
+				break;
+		}
+
+		$crumbs = array_merge( $user_crumbs, $crumbs );
+	}
+
+	return $crumbs;
+}
+add_filter( 'bp_docs_directory_breadcrumb', 'bp_docs_user_directory_breadcrumb', 2 );
+
+/**
+ * Add user information to individual Doc breadcrumbs.
+ *
+ * Hooked very late to ensure it's the first item on the list.
+ *
+ * @since 1.9.0
+ *
+ * @param array $crumbs
+ * @return array
+ */
+function bp_docs_user_single_breadcrumb( $crumbs, $doc = null ) {
+
+	if ( is_a( $doc, 'WP_Post' ) ) {
+		$doc_id = $doc->ID;
+	} else if ( bp_docs_is_existing_doc() ) {
+		$doc_id = get_queried_object_id();
+	}
+
+	if ( bp_docs_enable_folders() && ! empty( $doc_id ) ) {
+		$folder_id = bp_docs_get_doc_folder( $doc_id );
+
+		if ( $folder_id ) {
+			$user_id = bp_docs_get_folder_user( $folder_id );
+		}
+	}
+
+	if ( ! empty( $user_id ) ) {
+		$user_crumbs = array(
+			sprintf(
+				'<a href="%s">%s&#8217;s Docs</a>',
+				bp_core_get_user_domain( $user_id ) . bp_docs_get_slug() . '/',
+				bp_core_get_user_displayname( $user_id )
+			),
+		);
+
+		$crumbs = array_merge( $user_crumbs, $crumbs );
+	}
+
+	return $crumbs;
+}
+add_action( 'bp_docs_doc_breadcrumbs', 'bp_docs_user_single_breadcrumb', 99, 2 );
+
+/**
+ * Add breadcrumbs to Started and Edited screens.
+ */
+function bp_docs_user_breadcrumbs_in_doc_list() {
+	if ( ! bp_docs_is_started_by() && ! bp_docs_is_edited_by() ) {
+		return;
+	} ?>
+
+	<div class="list-item-breadcrumb">
+		<?php bp_docs_the_breadcrumb( array(
+			'include_doc' => false,
+			'doc_id'      => get_the_ID(),
+		) ) ?>
+	</div><?php
+}
+add_action( 'bp_docs_loop_after_doc_excerpt', 'bp_docs_user_breadcrumbs_in_doc_list' );

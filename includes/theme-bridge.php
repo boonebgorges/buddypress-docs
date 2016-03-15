@@ -112,9 +112,16 @@ class BP_Docs_Theme_Compat {
 	 */
 	public function is_docs() {
 
+		$is_docs = bp_docs_is_docs_component();
+
+		if ( bp_is_active( 'groups' ) && bp_is_group() && bp_is_current_action( buddypress()->bp_docs->slug ) ) {
+			$is_docs = true;
+		}
+
 		// Bail if not looking at the docs component
-		if ( ! bp_docs_is_docs_component() )
+		if ( ! $is_docs ) {
 			return;
+		}
 
 		add_filter( 'bp_get_template_stack', array( $this, 'add_plugin_templates_to_stack' ) );
 

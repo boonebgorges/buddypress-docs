@@ -1,13 +1,25 @@
 <?php
 
+/**
+ * Main plugin class.
+ *
+ * @package BuddyPressDocs
+ */
 class BP_Docs {
 	var $post_type_name;
 	var $associated_item_tax_name;
 
 	/**
+	 * Folders add-on.
+	 *
+	 * @var BP_Docs_Folders
+	 * @since 1.8
+	 */
+	var $folders;
+
+	/**
 	 * PHP 5 constructor
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function __construct() {
@@ -16,6 +28,9 @@ class BP_Docs {
 		$this->post_type_name 		= apply_filters( 'bp_docs_post_type_name', 'bp_doc' );
 		$this->associated_item_tax_name = apply_filters( 'bp_docs_associated_item_tax_name', 'bp_docs_associated_item' );
 		$this->access_tax_name          = apply_filters( 'bp_docs_access_tax_name', 'bp_docs_access' );
+
+		// :'(
+		wp_cache_add_non_persistent_groups( array( 'bp_docs_nonpersistent' ) );
 
 		// Let plugins know that BP Docs has started loading
 		add_action( 'plugins_loaded',   array( $this, 'load_hook' ), 20 );
@@ -57,7 +72,6 @@ class BP_Docs {
 	/**
 	 * PHP 4 constructor
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function bp_docs() {
@@ -67,7 +81,6 @@ class BP_Docs {
 	/**
 	 * Loads the textdomain for the plugin
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0.2
 	 */
 	function load_plugin_textdomain() {
@@ -77,7 +90,6 @@ class BP_Docs {
 	/**
 	 * Includes files needed by BuddyPress Docs
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function includes() {
@@ -113,6 +125,9 @@ class BP_Docs {
 		// formatting.php contains filters and functions used to modify appearance only
 		require( BP_DOCS_INCLUDES_PATH . 'formatting.php' );
 
+		// class-wp-widget-recent-docs.php adds a widget to show recently created docs.
+		require( BP_DOCS_INCLUDES_PATH . 'class-wp-widget-recent-docs.php' );
+
 		// Dashboard-specific functions
 		if ( is_admin() ) {
 			require( BP_DOCS_INCLUDES_PATH . 'admin.php' );
@@ -127,7 +142,6 @@ class BP_Docs {
 	 * BuddyPress Docs, as well as other dependent plugins, to hook into the loading process in
 	 * an orderly fashion.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.2
 	 */
 	function load_hook() {
@@ -141,7 +155,6 @@ class BP_Docs {
 	 * Docs, as well as other dependent plugins, to hook into the loading process in an
 	 * orderly fashion.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function init_hook() {
@@ -154,7 +167,6 @@ class BP_Docs {
 	 * This action tells BP Docs and other plugins that the main initialization process has
 	 * finished.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function loaded() {
@@ -166,7 +178,6 @@ class BP_Docs {
 	 *
 	 * These constants can be overridden in bp-custom.php or wp-config.php.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function load_constants() {
@@ -254,7 +265,6 @@ class BP_Docs {
 	 * needs to be associated with them. So a bp_doc post associated with group 6 will have
 	 * the taxonomy bp_docs_associated_item '6', where '6' is a sub-tax of 'groups'.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function register_post_type() {
@@ -264,7 +274,7 @@ class BP_Docs {
 
 		// Define the labels to be used by the post type bp_doc
 		$post_type_labels = array(
-			'name' 		     => _x( 'BuddyPress Docs', 'post type general name', 'bp-docs' ),
+			'name' 		     => _x( 'Docs', 'post type general name', 'bp-docs' ),
 			'singular_name'      => _x( 'Doc', 'post type singular name', 'bp-docs' ),
 			'add_new' 	     => _x( 'Add New', 'add new', 'bp-docs' ),
 			'add_new_item' 	     => __( 'Add New Doc', 'bp-docs' ),
@@ -280,7 +290,7 @@ class BP_Docs {
 		// Set up the arguments to be used when the post type is registered
 		// Only filter this if you are hella smart and/or know what you're doing
 		$bp_docs_post_type_args = apply_filters( 'bp_docs_post_type_args', array(
-			'label'        => __( 'BuddyPress Docs', 'bp-docs' ),
+			'label'        => __( 'Docs', 'bp-docs' ),
 			'labels'       => $post_type_labels,
 			'public'       => true,
 			'show_ui'      => $this->show_cpt_ui(),
@@ -334,7 +344,6 @@ class BP_Docs {
 	 * administrator. It is loaded before the bp_docs post type is registered so that we have
 	 * access to the 'taxonomy' argument of register_post_type.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function load_doc_extras() {
@@ -356,6 +365,10 @@ class BP_Docs {
 		// Load the wikitext addon
 		require_once( BP_DOCS_INCLUDES_PATH . 'addon-wikitext.php' );
 		$this->wikitext = new BP_Docs_Wikitext;
+
+		// Load the Folders addon
+		require_once( BP_DOCS_INCLUDES_PATH . 'addon-folders.php' );
+		$this->folders = new BP_Docs_Folders();
 
 		do_action( 'bp_docs_load_doc_extras' );
 	}
@@ -432,7 +445,6 @@ class BP_Docs {
 	 *
 	 * Defaults to is_super_admin(), but is filterable
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0.8
 	 *
 	 * @return bool $show_ui
@@ -577,6 +589,7 @@ class BP_Docs {
 
 		// Check to see whether our rules have been registered yet, by
 		// finding a Docs rule and then comparing it to the registered rules
+		$test_rewrite = null;
 		foreach ( $wp_rewrite->extra_rules_top as $rewrite => $rule ) {
 			if ( 0 === strpos( $rewrite, bp_docs_get_docs_slug() ) ) {
 				$test_rewrite = $rewrite;
@@ -586,7 +599,7 @@ class BP_Docs {
 		}
 		$registered_rules = get_option( 'rewrite_rules' );
 
-		if ( is_array( $registered_rules ) && ( ! isset( $registered_rules[ $test_rewrite ] ) || $test_rule !== $registered_rules[ $test_rewrite ] ) ) {
+		if ( $test_rewrite && is_array( $registered_rules ) && ( ! isset( $registered_rules[ $test_rewrite ] ) || $test_rule !== $registered_rules[ $test_rewrite ] ) ) {
 			flush_rewrite_rules();
 		}
 	}
@@ -594,7 +607,6 @@ class BP_Docs {
 	/**
 	 * Initiates the BP Component extension
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function do_integration() {

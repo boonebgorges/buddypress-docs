@@ -99,6 +99,9 @@ class BP_Docs_Component extends BP_Component {
 		add_filter( 'bp_docs_filter_types', array( $this, 'filter_type' ) );
 		add_filter( 'bp_docs_filter_sections', array( $this, 'filter_markup' ) );
 
+		// Determine whether the directory view is filtered by a keyword search.
+		add_filter( 'bp_docs_is_directory_view_filtered', array( $this, 'is_directory_view_filtered' ), 10, 2 );
+
 		/**
 		 * MISC
 		 */
@@ -118,6 +121,11 @@ class BP_Docs_Component extends BP_Component {
 		add_action( 'wp_enqueue_scripts',       array( $this, 'enqueue_scripts' 	) );
 		add_action( 'wp_print_styles',          array( $this, 'enqueue_styles' 		) );
 
+		// Set the "last directory viewed" cookie when viewing the main docs directory.
+		add_action( 'bp_actions', array( $this, 'set_directory_cookie' ) );
+
+		// Add the parent and child theme names to the body class when on a BP Docs page.
+		add_filter( 'body_class', array( $this, 'filter_body_class' ) );
 	}
 
 	/**
@@ -239,7 +247,6 @@ class BP_Docs_Component extends BP_Component {
 	/**
 	 * Gets the item type of the item you're looking at - e.g 'group', 'user'.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @return str $view The current item type
@@ -263,7 +270,6 @@ class BP_Docs_Component extends BP_Component {
 	 *
 	 * Filter 'bp_docs_get_current_view' to extend to different components.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param str $item_type Defaults to the object's item type
@@ -357,7 +363,6 @@ class BP_Docs_Component extends BP_Component {
 	 * We do this in order to have some of the info about the current doc throughout the
 	 * loading process
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 * @deprecated No longer used since 1.2
 	 */
@@ -368,7 +373,6 @@ class BP_Docs_Component extends BP_Component {
 	/**
 	 * Catches page loads, determines what to do, and sends users on their merry way
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 * @todo This needs a ton of cleanup
 	 */
@@ -401,14 +405,16 @@ class BP_Docs_Component extends BP_Component {
 				// the lock interval always returns as in process
 				add_filter( 'wp_check_post_lock_window', create_function( false, 'return time();' ) );
 
-				$lock = bp_docs_check_post_lock( $doc->ID );
+				if ( $doc ) {
+					$lock = bp_docs_check_post_lock( $doc->ID );
 
-				if ( $lock ) {
-					bp_core_add_message( sprintf( __( 'This doc is currently being edited by %s. To prevent overwrites, you cannot edit until that user has finished. Please try again in a few minutes.', 'bp-docs' ), bp_core_get_user_displayname( $lock ) ), 'error' );
+					if ( $lock ) {
+						bp_core_add_message( sprintf( __( 'This doc is currently being edited by %s. To prevent overwrites, you cannot edit until that user has finished. Please try again in a few minutes.', 'bp-docs' ), bp_core_get_user_displayname( $lock ) ), 'error' );
 
-					// Redirect back to the non-edit view of this document
-					bp_core_redirect( bp_docs_get_doc_link( $doc->ID ) );
-					die();
+						// Redirect back to the non-edit view of this document
+						bp_core_redirect( bp_docs_get_doc_link( $doc->ID ) );
+						bp_core_redirect( $group_permalink . $bp->bp_docs->slug . '/' . $doc_slug );
+					}
 				}
 			} else {
 				if ( function_exists( 'bp_core_no_access' ) && !is_user_logged_in() ) {
@@ -494,9 +500,14 @@ class BP_Docs_Component extends BP_Component {
 			check_admin_referer( 'bp_docs_delete' );
 
 			if ( current_user_can( 'bp_docs_manage' ) ) {
+				$force_delete = false;
+				if ( ! empty( $_GET['force_delete'] ) ) {
+					$force_delete = true;
+				}
+
 				$delete_doc_id = get_queried_object_id();
 
-				if ( bp_docs_trash_doc( $delete_doc_id ) ) {
+				if ( bp_docs_trash_doc( $delete_doc_id, $force_delete ) ) {
 					bp_core_add_message( __( 'Doc successfully deleted!', 'bp-docs' ) );
 				} else {
 					bp_core_add_message( __( 'Could not delete doc.', 'bp-docs' ) );
@@ -505,7 +516,14 @@ class BP_Docs_Component extends BP_Component {
 				bp_core_add_message( __( 'You do not have permission to delete that doc.', 'bp-docs' ), 'error' );
 			}
 
-			bp_core_redirect( home_url( bp_docs_get_docs_slug() ) );
+			// Send the user back to the most recently viewed directory if possible.
+			if ( isset( $_COOKIE[ 'bp-docs-last-docs-directory' ] ) && filter_var( $_COOKIE[ 'bp-docs-last-docs-directory' ], FILTER_VALIDATE_URL) ) {
+				$delete_redirect = $_COOKIE[ 'bp-docs-last-docs-directory' ];
+			} else {
+				$delete_redirect = home_url( bp_docs_get_docs_slug() );
+			}
+
+			bp_core_redirect( $delete_redirect );
 			die();
 		}
 
@@ -579,7 +597,6 @@ class BP_Docs_Component extends BP_Component {
 	 * Filters the comment_post_direct URL so that the user gets sent back to the true
 	 * comment URL after posting
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param str $location The original location, created by WP
@@ -604,7 +621,6 @@ class BP_Docs_Component extends BP_Component {
 	/**
 	 * Posts an activity item when a comment is posted to a doc
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param obj $comment_id The id of the comment that's just been saved.
@@ -622,7 +638,6 @@ class BP_Docs_Component extends BP_Component {
 	 *
 	 * If you find this annoying, I have provided a filter for your convenience.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param str $path The path (STYLESHEETPATH . $file) from comments_template()
@@ -650,7 +665,6 @@ class BP_Docs_Component extends BP_Component {
 	 * for comments_notify and return 0 (rather than false, which would not stop the real
 	 * get_option operation from running).
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param int $comment_id ID number of the new comment being posted
@@ -687,7 +701,6 @@ class BP_Docs_Component extends BP_Component {
 	/**
 	 * Adds BP Docs options to activity filter dropdowns
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function activity_filter_options() {
@@ -697,7 +710,6 @@ class BP_Docs_Component extends BP_Component {
 	/**
 	 * Posts an activity item on doc save
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param obj $query The query object created in BP_Docs_Query and passed to the
@@ -737,7 +749,6 @@ class BP_Docs_Component extends BP_Component {
 	 * parent slugs never appear in the URL (as they do in the case of WP
 	 * pages). So we reconstruct the link completely.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.1.8
 	 *
 	 * @param str $link The permalink
@@ -769,7 +780,6 @@ class BP_Docs_Component extends BP_Component {
 	 * This function filters bp_activity_can_comment, which was introduced in BP 1.5. It is
 	 * therefore not backward compatible with BP < 1.5.
 	 *
-	 * @package BuddyPress_Docs
 	 * @since 1.1.17
 	 *
 	 * @param bool $can_comment Whether the current user can comment. Comes from
@@ -793,7 +803,6 @@ class BP_Docs_Component extends BP_Component {
 	/**
 	 * Handles doc filters from a form post and translates to $_GET arguments before redirect
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function handle_filters() {
@@ -805,7 +814,6 @@ class BP_Docs_Component extends BP_Component {
 	/**
 	 * Sets the includes URL for use when loading scripts and styles
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function set_includes_url() {
@@ -890,15 +898,37 @@ class BP_Docs_Component extends BP_Component {
 			<form action="" method="get">
 				<input name="s" value="<?php the_search_query() ?>">
 				<input name="search_submit" type="submit" value="<?php _e( 'Search', 'bp-docs' ) ?>" />
+				<?php do_action( 'bp_docs_directory_filter_search_form' ) ?>
 			</form>
 		</div>
 		<?php
 	}
 
 	/**
+	 * Determine whether the directory view is filtered by a keyword search.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param bool  $is_filtered Is the current directory view filtered?
+ 	 * @param array $exclude Array of filter types to ignore.
+	 *
+	 * @return bool $is_filtered
+	 */
+	public function is_directory_view_filtered( $is_filtered, $exclude ) {
+		// If this filter is excluded, stop now.
+		if ( in_array( 's', $exclude ) ) {
+			return $is_filtered;
+		}
+
+		if ( ! empty( $_GET['s'] ) ) {
+			$is_filtered = true;
+		}
+	    return $is_filtered;
+	}
+
+	/**
 	 * Loads JavaScript
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function enqueue_scripts() {
@@ -952,13 +982,14 @@ class BP_Docs_Component extends BP_Component {
 				$strings['pulse'] = bp_docs_heartbeat_pulse();
 			}
 			wp_localize_script( 'bp-docs-js', 'bp_docs', $strings );
+
+			do_action( 'bp_docs_enqueue_scripts' );
 		}
 	}
 
 	/**
 	 * Loads styles
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function enqueue_styles() {
@@ -975,4 +1006,29 @@ class BP_Docs_Component extends BP_Component {
 		}
 	}
 
+	/**
+	 * Renew the last directory cookie if the user is viewing the main docs library.
+	 *
+	 * @since 1.9.0
+	 */
+	public function	set_directory_cookie() {
+		if ( bp_docs_is_global_directory() ) {
+			@setcookie( 'bp-docs-last-docs-directory', home_url( $_SERVER['REQUEST_URI'] ), 0, '/' );
+		}
+	}
+
+	/**
+	 * Add the parent and child theme names to the body class when on a BP Docs page.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param array $classes An array of body classes.
+	 */
+	public function filter_body_class( $classes ) {
+		if ( bp_docs_is_docs_component() ) {
+			$classes[] = 'bp-docs-body-theme-' . get_stylesheet();
+			$classes[] = 'bp-docs-body-theme-' . get_template();
+		}
+		return $classes;
+	}
 }

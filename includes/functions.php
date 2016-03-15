@@ -3,15 +3,13 @@
 /**
  * Miscellaneous utility functions
  *
- * @package BuddyPress_Docs
+ * @package BuddyPressDocs
  * @since 1.2
  */
-
 
 /**
  * Return the bp_doc post type name
  *
- * @package BuddyPress_Docs
  * @since 1.2
  *
  * @return str The name of the bp_doc post type
@@ -24,7 +22,6 @@ function bp_docs_get_post_type_name() {
 /**
  * Return the associated_item taxonomy name
  *
- * @package BuddyPress_Docs
  * @since 1.2
  */
 function bp_docs_get_associated_item_tax_name() {
@@ -35,7 +32,6 @@ function bp_docs_get_associated_item_tax_name() {
 /**
  * Return the access taxonomy name
  *
- * @package BuddyPress_Docs
  * @since 1.2
  */
 function bp_docs_get_access_tax_name() {
@@ -46,7 +42,6 @@ function bp_docs_get_access_tax_name() {
 /**
  * Utility function to get and cache the current doc
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  *
  * @return obj Current doc
@@ -175,7 +170,6 @@ function bp_docs_get_item_term_id( $item_id, $item_type, $item_name = '' ) {
  * paths, and bp_core_load_template() does not have an option that will let you locate but not load
  * the found template.
  *
- * @package BuddyPress Docs
  * @since 1.0.5
  *
  * @param str $template This string should be of the format 'edit-docs.php'. Ie, you need '.php',
@@ -221,7 +215,6 @@ function bp_docs_locate_template( $template = '', $load = false, $require_once =
 /**
  * Determine whether the current user can do something the current doc
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  * @deprecated 1.8
  *
@@ -239,7 +232,6 @@ function bp_docs_current_user_can( $action = 'edit', $doc_id = false ) {
 /**
  * Determine whether a given user can do something with a given doc
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  *
  * @param str $action Optional. The action being queried. Eg 'edit', 'read_comments', 'manage'
@@ -302,6 +294,17 @@ function bp_docs_user_can( $action = 'edit', $user_id = false, $doc_id = false )
 				$user_can = $doc->post_author == $user_id;
 				break;
 			// Do nothing with other settings - they are passed through
+		}
+	}
+
+	// Temp - this should be more organized
+	if ( 'manage_folders' === $action ) {
+		if ( bp_is_active( 'groups' ) && bp_is_group() ) {
+			$user_can = groups_is_user_admin( $user_id, bp_get_current_group_id() );
+		} else if ( bp_is_user() ) {
+			$user_can = bp_is_my_profile();
+		} else {
+			$user_can = current_user_can( 'bp_moderate' );
 		}
 	}
 
@@ -465,18 +468,30 @@ function bp_docs_define_tiny_mce() {
  * Send a Doc to the trash
  *
  * @since 1.3
- * @param int $doc_id
+ * @param int  $doc_id       ID of the doc to be trashed.
+ * @param bool $force_delete Whether to bypass the trash and delete permanently.
  * @return bool
  */
-function bp_docs_trash_doc( $doc_id = 0 ) {
+function bp_docs_trash_doc( $doc_id = 0, $force_delete = false ) {
 	do_action( 'bp_docs_before_doc_delete', $doc_id );
-
+	$deleted = false;
 	$delete_args = array(
 		'ID' => $doc_id,
 		'post_status' => 'trash'
 	);
 
-	$deleted = wp_update_post( $delete_args );
+	/*
+	 * If the $force_delete option is true, we bypass the trash and permanently delete the doc.
+	 * If the post is already in the trash, we permanently delete it.
+	 * If the post is not in the trash, we put it in the trash.
+	 */
+	if ( $force_delete ) {
+		$deleted = wp_delete_post( $doc_id, true );
+	} elseif ( 'trash' == get_post_status( $doc_id ) ) {
+		$deleted = wp_delete_post( $doc_id );
+	} else {
+		$deleted = wp_update_post( $delete_args );
+	}
 
 	if ( $deleted ) {
 		do_action( 'bp_docs_doc_deleted', $delete_args );
@@ -570,7 +585,7 @@ function bp_docs_get_access_options( $settings_field, $doc_id = 0, $group_id = 0
 function bp_docs_get_default_access_options( $doc_id = 0, $group_id = 0 ) {
 	// We may be able to get the associated group from the doc_id.
 	if ( empty( $group_id ) && ! empty( $doc_id ) ) {
-		$group_id = bp_docs_get_associated_group_id( $doc_id );
+		$group_id = bp_is_active( 'groups' ) ? bp_docs_get_associated_group_id( $doc_id ) : 0;
 	}
 
 	$defaults = array();
@@ -865,3 +880,34 @@ function bp_docs_revisions_to_keep( $num, $post ) {
 	return intval( $num );
 }
 add_filter( 'wp_revisions_to_keep', 'bp_docs_revisions_to_keep', 10, 2 );
+
+/**
+ * Remove the Docs component from the bp-active-components array.
+ *
+ * See https://buddypress.trac.wordpress.org/ticket/5552 for the disgusting
+ * details.
+ */
+function bp_docs_filter_active_components( $components ) {
+	unset( $components['bp_docs'] );
+	return $components;
+}
+
+/**
+ * Hook the bp_docs_filter_active_components() filter as close to options_nav rendering as possible.
+ *
+ * @since 1.9
+ */
+function bp_docs_filter_active_components_hook() {
+	add_filter( 'bp_active_components', 'bp_docs_filter_active_components' );
+}
+add_action( 'bp_before_member_plugin_template', 'bp_docs_filter_active_components_hook' );
+
+/**
+ * Unhook the bp_docs_filter_active_components() filter as soon as possible after rendering options_nav.
+ *
+ * @since 1.9
+ */
+function bp_docs_filter_active_components_unhook() {
+	remove_filter( 'bp_active_components', 'bp_docs_filter_active_components' );
+}
+add_action( 'bp_member_plugin_options_nav', 'bp_docs_filter_active_components_unhook' );

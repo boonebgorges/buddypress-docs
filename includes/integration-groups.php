@@ -9,7 +9,7 @@
  *     (BP_Docs_Group_Extension)
  *   - template tags that are specific to the groups component
  *
- * @package BuddyPress Docs
+ * @package BuddyPressDocs
  * @since 1.0-beta
  */
 
@@ -20,14 +20,12 @@
  * providing values that are group-specific. Things have been done this way to allow for future
  * integration with different kinds of BP items, like users.
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  */
 class BP_Docs_Groups_Integration {
 	/**
 	 * Constructor
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function __construct() {
@@ -91,12 +89,14 @@ class BP_Docs_Groups_Integration {
 
 		// When object terms are set, delete the transient
 		add_action( 'set_object_terms', array( &$this, 'delete_transient' ), 10, 4 );
+
+		// Set the "last directory viewed" cookie when viewing a group docs directory.
+		add_action( 'bp_actions', array( $this, 'set_directory_cookie' ) );
 	}
 
 	/**
 	 * Check to see whether the query object's item type should be 'groups'
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param str $type
@@ -118,7 +118,6 @@ class BP_Docs_Groups_Integration {
 	/**
 	 * Set the doc slug when we are viewing a group doc
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function get_doc_slug( $slug ) {
@@ -141,7 +140,6 @@ class BP_Docs_Groups_Integration {
 	/**
 	 * Get the current view type when the item type is 'group'
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function get_current_view( $view, $item_type ) {
@@ -184,7 +182,7 @@ class BP_Docs_Groups_Integration {
 	 * When looking at a group, this filters the group
 	 */
 	function pre_query_args( $query_args, $bp_docs_query ) {
-		if ( ! empty( $bp_docs_query->query_args['group_id'] ) ) {
+		if ( ! is_null( $bp_docs_query->query_args['group_id'] ) ) {
 			$query_args['tax_query'][] = self::tax_query_arg_for_groups( $bp_docs_query->query_args['group_id'] );
 		}
 		return $query_args;
@@ -201,20 +199,38 @@ class BP_Docs_Groups_Integration {
 	public static function tax_query_arg_for_groups( $group_ids ) {
 		$group_ids = wp_parse_id_list( $group_ids );
 
-		$terms = array();
-		foreach ( $group_ids as $gid ) {
-			$terms[] = bp_docs_get_term_slug_from_group_id( $gid );
-		}
+		if ( array() === $group_ids ) {
+			$group_terms = get_terms( bp_docs_get_associated_item_tax_name(), array(
+				'fields' => 'ids',
+				'update_term_meta_cache' => false,
+			) );
 
-		if ( empty( $terms ) ) {
-			$terms = array( 0 );
-		}
+			if ( ! empty( $group_terms ) ) {
+				$arg = array(
+					'taxonomy' => bp_docs_get_associated_item_tax_name(),
+					'field'    => 'id',
+					'operator' => 'NOT IN',
+					'terms'    => $group_terms,
+				);
+			} else {
+				$arg = array();
+			}
+		} else {
+			$terms = array();
+			foreach ( $group_ids as $gid ) {
+				$terms[] = bp_docs_get_term_slug_from_group_id( $gid );
+			}
 
-		$arg = array(
-			'taxonomy' => bp_docs_get_associated_item_tax_name(),
-			'field'    => 'slug',
-			'terms'    => $terms,
-		);
+			if ( empty( $terms ) ) {
+				$terms = array( 0 );
+			}
+
+			$arg = array(
+				'taxonomy' => bp_docs_get_associated_item_tax_name(),
+				'field'    => 'slug',
+				'terms'    => $terms,
+			);
+		}
 
 		return $arg;
 	}
@@ -225,7 +241,6 @@ class BP_Docs_Groups_Integration {
 	 * At the moment, this method (and the next one) assumes that you want the terms of the
 	 * current group. At some point, that should be abstracted a bit.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @return array $terms
@@ -292,7 +307,6 @@ class BP_Docs_Groups_Integration {
 	 *
 	 * No longer used.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param array $terms The terms to be saved to groupmeta
@@ -302,7 +316,6 @@ class BP_Docs_Groups_Integration {
 	/**
 	 * Determine whether a user can edit the group doc in question
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param bool $user_can The default perms passed from bp_docs_user_can_edit()
@@ -446,7 +459,6 @@ class BP_Docs_Groups_Integration {
 	 *
 	 * In the future I'll try to get the markup out of here. Sorry, themers.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param array $doc_settings Passed along to reduce lookups
@@ -555,7 +567,6 @@ class BP_Docs_Groups_Integration {
 	/**
 	 * Filters the activity action of 'doc created/edited' activity to include the group name
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param str $action The original action text created in BP_Docs_BP_Integration::post_activity()
@@ -618,7 +629,6 @@ class BP_Docs_Groups_Integration {
 	/**
 	 * Filters the activity action of 'new doc comment' activity to include the group name
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param str $action The original action text created in BP_Docs_BP_Integration::post_activity()
@@ -649,7 +659,6 @@ class BP_Docs_Groups_Integration {
 	/**
 	 * Filter the hide_sitewide variable to ensure that hidden/private group activity is hidden
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0
 	 *
 	 * @param bool $hide_sitewide
@@ -684,7 +693,6 @@ class BP_Docs_Groups_Integration {
 	 * on each Doc save to get an accurate count. This adds some overhead, but Doc editing is
 	 * rare enough that it shouldn't be a huge issue.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0.8
 	 */
 	function update_doc_count() {
@@ -701,14 +709,18 @@ class BP_Docs_Groups_Integration {
 	/**
 	 * Markup for the Groups <th> on the docs loop
 	 *
-	 * @package BuddyPress_Docs
-	 * @subpackage Groups
 	 * @since 1.2
 	 */
 	function groups_th() {
 		// Don't show on single group pages
 		// @todo - When multiple group associations are supported, this should be added
 		if ( bp_is_group() ) {
+			return;
+		}
+
+		// Don't show on Started or Edited panels, where the info is
+		// presented in the breadcrumb
+		if ( bp_docs_is_started_by() || bp_docs_is_edited_by() ) {
 			return;
 		}
 
@@ -722,8 +734,6 @@ class BP_Docs_Groups_Integration {
 	/**
 	 * Markup for the Groups <td> on the docs loop
 	 *
-	 * @package BuddyPress_Docs
-	 * @subpackage Groups
 	 * @since 1.2
 	 */
 	function groups_td() {
@@ -732,6 +742,12 @@ class BP_Docs_Groups_Integration {
 		// Don't show on single group pages
 		// @todo - When multiple group associations are supported, this should be added
 		if ( bp_is_group() ) {
+			return;
+		}
+
+		// Don't show on Started or Edited panels, where the info is
+		// presented in the breadcrumb
+		if ( bp_docs_is_started_by() || bp_docs_is_edited_by() ) {
 			return;
 		}
 
@@ -782,8 +798,6 @@ class BP_Docs_Groups_Integration {
 	/**
 	 * On group Doc directories, add the "Unlink from Group" action link
 	 *
-	 * @package BuddyPress_Docs
-	 * @subpackage Groups
 	 * @since 1.9.0
 	 */
 	function add_doc_action_unlink_from_group_link( $links, $doc_id ) {
@@ -800,8 +814,6 @@ class BP_Docs_Groups_Integration {
 	 * On group Doc directories, modify the pagination base so that pagination
 	 * works within the directory.
 	 *
-	 * @package BuddyPress_Docs
-	 * @subpackage Groups
 	 * @since 1.9.0
 	 */
 	public function filter_bp_docs_page_links_base_url( $base_url, $wp_rewrite_pag_base  ) {
@@ -814,7 +826,6 @@ class BP_Docs_Groups_Integration {
 	/**
 	 * Update the current group's last_activity metadata
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.1.8
 	 */
 	function update_group_last_active( $doc_id ) {
@@ -856,7 +867,6 @@ class BP_Docs_Groups_Integration {
 	 * NOTE: This function is currently disabled, because of changes in Docs 1.2+
 	 * @todo Fix
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0.8
 	 */
 	function show_doc_count_in_tab() {
@@ -889,7 +899,6 @@ class BP_Docs_Groups_Integration {
 	/**
 	 * Make the page title nice and pretty
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.1.4
 	 *
 	 * @param str The title string passed by bp_page_title
@@ -948,12 +957,22 @@ class BP_Docs_Groups_Integration {
 			delete_transient( 'associated_groups-' . $object_id );
 		}
 	}
+
+	/**
+	 * Renew the last directory cookie if the user is viewing a group's docs library.
+	 *
+	 * @since 1.9.0
+	 */
+	public function	set_directory_cookie() {
+		if ( bp_docs_is_group_docs() ) {
+			@setcookie( 'bp-docs-last-docs-directory', home_url( $_SERVER['REQUEST_URI'] ), 0, '/' );
+		}
+	}
 }
 
 /**
  * Implementation of BP_Group_Extension
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  */
 if ( class_exists( 'BP_Group_Extension' ) ) :
@@ -973,10 +992,9 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	/**
 	 * Constructor
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
-	function bp_docs_group_extension() {
+	public function __construct() {
 		global $bp;
 
 		$bp_docs_tab_name = bp_docs_get_group_tab_name();
@@ -1021,7 +1039,6 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	 * bp_docs_force_enable_at_group_creation is a more general filter. When true, the creation
 	 * step will be disabled AND Docs will be turned off on new group creation.
 	 *
-	 * @package BuddyPress_Docs
 	 * @since 1.1.18
 	 *
 	 * @return bool
@@ -1036,7 +1053,6 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	 *
 	 * This function is only called if you're forcing Docs enabling on group creation
 	 *
-	 * @package BuddyPress_Docs
 	 * @since 1.1.18
 	 */
 	function enable_at_group_creation( $group_id ) {
@@ -1051,7 +1067,6 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	/**
 	 * Determines what shows up on the BP Docs panel of the Create process
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function create_screen( $group_id = null ) {
@@ -1066,7 +1081,6 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	/**
 	 * Runs when the create screen is saved
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 
@@ -1081,7 +1095,6 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	/**
 	 * Determines what shows up on the BP Docs panel of the Group Admin
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function edit_screen( $group_id = null ) {
@@ -1103,7 +1116,6 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	/**
 	 * Runs when the admin panel is saved
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function edit_screen_save( $group_id = null ) {
@@ -1128,7 +1140,6 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	/**
 	 * Saves group settings. Called from edit_screen_save() and create_screen_save()
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function settings_save( $group_id = false ) {
@@ -1163,7 +1174,6 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	/**
 	 * Admin markup used on the edit and create admin panels
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function admin_markup() {
@@ -1184,12 +1194,12 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 
 		?>
 
-		<h2><?php _e( 'BuddyPress Docs', 'bp-docs' ) ?></h2>
+		<h2><?php _e( 'Docs', 'bp-docs' ) ?></h2>
 
-		<p><?php _e( 'BuddyPress Docs is a powerful tool for collaboration with members of your group. A cross between document editor and wiki, BuddyPress Docs allows you to co-author and co-edit documents with your fellow group members, which you can then sort and tag in a way that helps your group to get work done.', 'bp-docs' ) ?></p>
+		<p><?php _e( 'Docs is a powerful tool for collaboration with members of your group. A cross between document editor and wiki, Docs allows you to co-author and co-edit documents with your fellow group members, which you can then sort and tag in a way that helps your group to get work done.', 'bp-docs' ) ?></p>
 
 		<p>
-			 <label for="bp-docs[group-enable]"> <input type="checkbox" name="bp-docs[group-enable]" id="bp-docs-group-enable" value="1" <?php checked( $group_enable, true ) ?> /> <?php _e( 'Enable BuddyPress Docs for this group', 'bp-docs' ) ?></label>
+			 <label for="bp-docs[group-enable]"> <input type="checkbox" name="bp-docs[group-enable]" id="bp-docs-group-enable" value="1" <?php checked( $group_enable, true ) ?> /> <?php _e( 'Enable Docs for this group', 'bp-docs' ) ?></label>
 		</p>
 
 		<div id="group-doc-options" <?php if ( !$group_enable ) : ?>class="hidden"<?php endif ?>>
@@ -1203,9 +1213,9 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 
 					<td>
 						<select name="bp-docs[can-create]" id="bp-docs-can-create">
-							<option value="admin" <?php selected( $can_create, 'admin' ) ?> /><?php _e( 'Group admin', 'bp-docs' ) ?></option>
-							<option value="mod" <?php selected( $can_create, 'mod' ) ?> /><?php _e( 'Group moderator', 'bp-docs' ) ?></option>
-							<option value="member" <?php selected( $can_create, 'member' ) ?> /><?php _e( 'Group member', 'bp-docs' ) ?></option>
+							<option value="admin" <?php selected( $can_create, 'admin' ) ?>><?php _e( 'Group admin', 'bp-docs' ) ?></option>
+							<option value="mod" <?php selected( $can_create, 'mod' ) ?>><?php _e( 'Group moderator', 'bp-docs' ) ?></option>
+							<option value="member" <?php selected( $can_create, 'member' ) ?>><?php _e( 'Group member', 'bp-docs' ) ?></option>
 						</select>
 					</td>
 				</tr>
@@ -1219,7 +1229,6 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	/**
 	 * Determine whether the group nav item should show up for the current user
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function enable_nav_item() {
@@ -1250,7 +1259,6 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	/**
 	 * Loads the display template
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param int $group_id ID of the current group. Available only in BP 2.2+.
@@ -1355,7 +1363,6 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	/**
 	 * Dummy function that must be overridden by this extending class, as per API
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function widget_display() { }
@@ -1375,7 +1382,6 @@ endif; // if ( class_exists( 'BP_Group_Extension' )
  * has no native way to register subnav items on a group tab. Component subnavs (for user docs) will
  * be properly registered with bp_core_new_subnav_item()
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  *
  * @param obj $group optional The BP group object.
@@ -1406,7 +1412,6 @@ function bp_docs_group_tabs( $group = false ) {
 /**
  * Echoes the output of bp_docs_get_group_doc_permalink()
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  */
 function bp_docs_group_doc_permalink() {
@@ -1415,7 +1420,6 @@ function bp_docs_group_doc_permalink() {
 	/**
 	 * Returns a link to a specific document in a group
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param int $doc_id optional The post_id of the doc
@@ -1443,7 +1447,6 @@ function bp_docs_group_doc_permalink() {
 /**
  * Is Docs enabled for this group?
  *
- * @package BuddyPress Docs
  * @since 1.1.5
  *
  * @param int $group_id Optional. Defaults to current group, if there is one.
@@ -1461,8 +1464,9 @@ function bp_docs_is_docs_enabled_for_group( $group_id = false ) {
 	if ( $group_id ) {
 		$group_settings = bp_docs_get_group_settings( $group_id );
 
-		if ( isset( $group_settings['group-enable'] ) )
+		if ( ! empty( $group_settings['group-enable'] ) ) {
 			$docs_is_enabled = true;
+		}
 	}
 
 	return apply_filters( 'bp_docs_is_docs_enabled_for_group', $docs_is_enabled, $group_id );
@@ -1474,7 +1478,6 @@ function bp_docs_is_docs_enabled_for_group( $group_id = false ) {
  * In order to be forward-compatible, this function will return an array when more than one group
  * is found.
  *
- * @package BuddyPress Docs
  * @since 1.1.8
  *
  * @param int $doc_id The id of the Doc
@@ -1494,15 +1497,17 @@ function bp_docs_get_associated_group_id( $doc_id, $doc = false, $single_array =
 		return false;
 	}
 
-	$post_terms = wp_get_post_terms( $doc_id, bp_docs_get_associated_item_tax_name() );
+	$post_terms = get_the_terms( $doc_id, bp_docs_get_associated_item_tax_name() );
 
 	$group_ids = array();
 
-	foreach( $post_terms as $post_term ) {
-		if ( 0 === strpos( $post_term->slug, 'bp_docs_associated_group_' ) ) {
-			$group_id = bp_docs_get_group_id_from_term_slug( $post_term->slug );
-			if ( $group_id ) {
-				$group_ids[] = $group_id;
+	if ( $post_terms ) {
+		foreach ( $post_terms as $post_term ) {
+			if ( 0 === strpos( $post_term->slug, 'bp_docs_associated_group_' ) ) {
+				$group_id = bp_docs_get_group_id_from_term_slug( $post_term->slug );
+				if ( $group_id ) {
+					$group_ids[] = $group_id;
+				}
 			}
 		}
 	}
@@ -1529,7 +1534,6 @@ function bp_docs_set_associated_group_id( $doc_id, $group_id = 0 ) {
  * Process group-doc unlinking requests.
  * Allows group mods & admins to remove docs from groups they moderate.
  *
- * @package BuddyPress Docs
  * @since 1.9.0
  *
  * @param int $doc_id ID of the doc to remove from the group
@@ -1626,6 +1630,87 @@ function bp_docs_get_group_tab_name() {
 	}
 	return apply_filters( 'bp_docs_get_group_tab_name', $name );
 }
+
+/**
+ * Add group information to directory breadcrumbs.
+ *
+ * @since 1.9.0
+ *
+ * @param array $crumbs
+ * @return array
+ */
+function bp_docs_group_directory_breadcrumb( $crumbs ) {
+	if ( bp_is_group() ) {
+		$group_crumbs = array(
+			sprintf(
+				'<a href="%s">%s</a>',
+				bp_get_group_permalink( groups_get_current_group() ) . bp_docs_get_slug() . '/',
+				sprintf( _x( '%s&#8217;s Docs', 'group Docs directory breadcrumb', 'bp-docs' ), esc_html( bp_get_current_group_name() ) )
+			),
+		);
+
+		$crumbs = array_merge( $group_crumbs, $crumbs );
+	}
+
+	return $crumbs;
+}
+add_filter( 'bp_docs_directory_breadcrumb', 'bp_docs_group_directory_breadcrumb', 2 );
+
+/**
+ * Add group information to individual Doc breadcrumbs.
+ *
+ * Hooked very late to ensure it's the first item on the list.
+ *
+ * @since 1.9.0
+ *
+ * @param array $crumbs
+ * @return array
+ */
+function bp_docs_group_single_breadcrumb( $crumbs, $doc = null ) {
+	$group_id = null;
+	if ( is_a( $doc, 'WP_Post' ) ) {
+		$group_id = bp_docs_get_associated_group_id( $doc->ID );
+	} else if ( bp_docs_is_existing_doc() ) {
+		$group_id = bp_docs_get_associated_group_id( get_queried_object_id() );
+	}
+
+	if ( $group_id ) {
+		$group = groups_get_group( array(
+			'group_id' => $group_id,
+		) );
+	}
+
+	if ( empty( $group->name ) ) {
+		return $crumbs;
+	}
+
+	// Ensure that the user has access to the group before adding t othe
+	// breadcrumb
+	$user_has_access = true;
+	if ( 'public' !== $group->status ) {
+		$user_has_access = current_user_can( 'bp_moderate' ) || groups_is_user_member( bp_loggedin_user_id(), $group->id );
+	}
+
+	if ( $user_has_access ) {
+		$group_crumbs = array(
+			sprintf(
+				'<a href="%s">%s&#8217;s Docs</a>',
+				bp_get_group_permalink( $group ) . bp_docs_get_slug() . '/',
+				esc_html( $group->name )
+			),
+		);
+
+		$crumbs = array_merge( $group_crumbs, $crumbs );
+	} else {
+		// If the user doesn't have access to the associated group,
+		// don't show the group folder breadcrumb either
+		$doc_crumb = array_pop( $crumbs );
+		$crumbs    = array( $doc_crumb );
+	}
+
+	return $crumbs;
+}
+add_action( 'bp_docs_doc_breadcrumbs', 'bp_docs_group_single_breadcrumb', 99, 2 );
 
 /**
  * Get group's Docs settings.

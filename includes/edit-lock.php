@@ -136,7 +136,6 @@ function bp_docs_check_post_lock( $post_id ) {
  * The function first tries to get the lock status out of $bp. If it has to look it up, it
  * stores the data in $bp for future use.
  *
- * @package BuddyPress Docs
  * @since 1.0-beta-2
  *
  * @param int $doc_id Optional. Defaults to the doc currently being viewed
@@ -168,7 +167,6 @@ function bp_docs_is_doc_edit_locked( $doc_id = false ) {
 /**
  * Echoes the output of bp_docs_get_current_doc_locker_name()
  *
- * @package BuddyPress Docs
  * @since 1.0-beta-2
  */
 function bp_docs_current_doc_locker_name() {
@@ -177,7 +175,6 @@ function bp_docs_current_doc_locker_name() {
 	/**
 	 * Get the name of the user locking the current document, if any
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta-2
 	 *
 	 * @return string $locker_name The full name of the locking user
@@ -196,7 +193,6 @@ function bp_docs_current_doc_locker_name() {
 /**
  * Echoes the output of bp_docs_get_force_cancel_edit_lock_link()
  *
- * @package BuddyPress Docs
  * @since 1.0-beta-2
  */
 function bp_docs_force_cancel_edit_lock_link() {
@@ -205,7 +201,6 @@ function bp_docs_force_cancel_edit_lock_link() {
 	/**
 	 * Get the URL for canceling the edit lock on the current doc
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta-2
 	 *
 	 * @return string $cancel_link href for the cancel edit lock link
@@ -228,7 +223,6 @@ function bp_docs_force_cancel_edit_lock_link() {
 /**
  * Echoes the output of bp_docs_get_cancel_edit_link()
  *
- * @package BuddyPress Docs
  * @since 1.0-beta-2
  */
 function bp_docs_cancel_edit_link() {
@@ -240,7 +234,6 @@ function bp_docs_cancel_edit_link() {
 	 * This used to be a straight link back to non-edit mode, but something fancier is needed
 	 * in order to detect the Cancel and to remove the edit lock.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta-2
 	 *
 	 * @return string $cancel_link href for the cancel edit link
@@ -265,7 +258,6 @@ function bp_docs_cancel_edit_link() {
  *
  * This function is called when a user is editing a Doc and clicks a link to leave the page
  *
- * @package BuddyPress Docs
  * @since 1.1
  */
 function bp_docs_remove_edit_lock() {
