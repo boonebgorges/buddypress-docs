@@ -33,6 +33,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.9.1 =
+* Styling improvements
+
 = 1.9.0 =
 * Docs can now be sorted into folders inside of groups.
 * New breadcrumb navigation in individual Docs as well as in folder view.
