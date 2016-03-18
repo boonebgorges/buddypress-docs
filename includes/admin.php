@@ -3,7 +3,7 @@
 /**
  * Dashboard functions for BuddyPress Docs
  *
- * @package BuddyPress Docs
+ * @package BuddyPressDocs
  * @since 1.1.8
  */
 
@@ -11,7 +11,6 @@ class BP_Docs_Admin {
 	/**
 	 * Constructor
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.1.8
 	 */
 	function __construct() {
@@ -148,6 +147,7 @@ class BP_Docs_Admin {
 		$is_in_wp_config = 1 === $bp->bp_docs->slug_defined_in_wp_config['slug'];
 
 		?>
+		<label for="bp-docs-slug" class="screen-reader-text"><?php _e( "Change the slug used to build Docs URLs.", 'bp-docs' ) ?></label>
 		<input name="bp-docs-slug" id="bp-docs-slug" type="text" value="<?php echo esc_html( $slug ) ?>" <?php if ( $is_in_wp_config ) : ?>disabled="disabled" <?php endif ?>/>
 		<p class="description"><?php _e( "Change the slug used to build Docs URLs.", 'bp-docs' ) ?><?php if ( $is_in_wp_config ) : ?> <?php _e( 'You have already defined this value in <code>wp-config.php</code>, so it cannot be edited here.', 'bp-docs' ) ?><?php endif ?></p>
 
@@ -158,6 +158,7 @@ class BP_Docs_Admin {
 		$length = bp_docs_get_excerpt_length();
 
 		?>
+		<label for="bp-docs-excerpt-length" class="screen-reader-text"><?php _e( "Change the value for longer or shorter excerpts.", 'bp-docs' ) ?></label>
 		<input name="bp-docs-excerpt-length" id="bp-docs-excerpt-length" type="text" value="<?php echo esc_html( $length ) ?>" />
 		<p class="description"><?php _e( "Excerpts are shown on Docs directories, to provide better context. If your theme or language requires longer or shorter excerpts, change this value. Set to <code>0</code> to disable these excerpts.", 'bp-docs' ) ?></p>
 
@@ -165,9 +166,13 @@ class BP_Docs_Admin {
 	}
 
 	public function group_tab_name_setting_markup() {
+		if ( ! bp_is_active( 'groups' ) ) {
+			return;
+		}
 		$name = bp_docs_get_group_tab_name();
 
 		?>
+		<label for="bp-docs-tab-name" class="screen-reader-text"><?php _e( "Change the word on groups' Docs tab.", 'bp-docs' ) ?></label>
 		<input name="bp-docs-tab-name" id="bp-docs-tab-name" type="text" value="<?php echo esc_html( $name ) ?>" />
 		<p class="description"><?php _e( "Change the word on the BuddyPress group tab from 'Docs' to whatever you'd like. Keep in mind that this will not change the text anywhere else on the page. For a more thorough text change, create a <a href='http://codex.buddypress.org/extending-buddypress/customizing-labels-messages-and-urls/'>language file</a> for BuddyPress Docs.", 'bp-docs' ) ?></p>
 
@@ -178,6 +183,7 @@ class BP_Docs_Admin {
 		$name = bp_docs_get_user_tab_name();
 
 		?>
+		<label for="bp-docs-user-tab-name" class="screen-reader-text"><?php _e( "Change the word on users' Docs tab.", 'bp-docs' ) ?></label>
 		<input name="bp-docs-user-tab-name" id="bp-docs-user-tab-name" type="text" value="<?php echo esc_html( $name ) ?>" />
 		<p class="description"><?php _e( "Change the word on users' Docs tabs from 'Docs' to whatever you'd like. Keep in mind that this will not change the text anywhere else on the page. For a more thorough text change, create a <a href='http://codex.buddypress.org/extending-buddypress/customizing-labels-messages-and-urls/'>language file</a> for BuddyPress Docs.", 'bp-docs' ) ?></p>
 
@@ -188,6 +194,7 @@ class BP_Docs_Admin {
 		$enabled = bp_docs_enable_attachments();
 
 		?>
+		<label for="bp-docs-enable-attachments" class="screen-reader-text"><?php _e( "Allow users to add attachments.", 'bp-docs' ) ?></label>
 		<select name="bp-docs-enable-attachments" id="bp-docs-enable-attachments">
 			<option value="yes" <?php selected( $enabled, true ) ?>><?php _e( 'Enabled', 'bp-docs' ) ?></option>
 			<option value="no" <?php selected( $enabled, false ) ?>><?php _e( 'Disabled', 'bp-docs' ) ?></option>
@@ -243,7 +250,6 @@ class BP_Docs_Admin {
 	/**
 	 * Replicates WP's native recent comments dashboard widget.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.1.8
 	 */
 	function wp_dashboard_recent_comments() {

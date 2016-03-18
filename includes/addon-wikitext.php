@@ -5,7 +5,6 @@ class BP_Docs_Wikitext {
 	/**
 	 * PHP 5 constructor
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.2
 	 */
 	public function __construct() {
@@ -15,7 +14,6 @@ class BP_Docs_Wikitext {
 	/**
 	 * Detects wiki-style bracket linking
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.2
 	 */
 	function bracket_links( $content ) {
@@ -38,7 +36,6 @@ class BP_Docs_Wikitext {
 	 * If a page is found, a link to the page is produced. Otherwise a link to the create page
 	 * is produced, with the create_title flag.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.2
 	 *
 	 * @param array $match A single match passed from preg_replace_callback()

@@ -1,5 +1,11 @@
 <?php
+/**
+ * @package BuddyPressDocs
+ */
 
+/**
+ * Main BuddyPress Docs query class.
+ */
 class BP_Docs_Query {
 	var $post_type_name;
 	var $associated_item_tax_name;
@@ -26,7 +32,6 @@ class BP_Docs_Query {
 	/**
 	 * PHP 5 constructor
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function __construct( $args = array() ) {
@@ -41,9 +46,10 @@ class BP_Docs_Query {
 		$defaults = array(
 			'doc_id'	 => array(),     // Array or comma-separated string
 			'doc_slug'	 => $this->doc_slug, // String
-			'group_id'	 => array(),     // Array or comma-separated string
+			'group_id'	 => null,     // Array or comma-separated string
 			'parent_id'	 => 0,		 // int
 			'author_id'	 => array(),     // Array or comma-separated string
+			'folder_id'      => null,
 			'edited_by_id'   => array(),     // Array or comma-separated string
 			'tags'		 => array(),     // Array or comma-separated string
 			'order'		 => 'ASC',       // ASC or DESC
@@ -62,7 +68,6 @@ class BP_Docs_Query {
 	/**
 	 * Gets the item type of the item you're looking at - e.g 'group', 'user'.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @return str $view The current item type
@@ -74,7 +79,6 @@ class BP_Docs_Query {
 	/**
 	 * Gets the doc slug as represented in the URL
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @return str $view The current doc slug
@@ -93,7 +97,6 @@ class BP_Docs_Query {
 	/**
 	 * Gets the item id of the item (eg group, user) associated with the page you're on.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @return str $view The current item type
@@ -110,7 +113,7 @@ class BP_Docs_Query {
 
 		switch ( $this->item_type ) {
 			case 'group' :
-				if ( bp_is_group() ) {
+				if ( bp_is_active( 'groups' ) && bp_is_group() ) {
 					$group = groups_get_current_group();
 					$id    = $group->id;
 					$name  = $group->name;
@@ -138,7 +141,6 @@ class BP_Docs_Query {
 	/**
 	 * Gets the id of the taxonomy term associated with the item
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @return str $view The current item type
@@ -161,7 +163,6 @@ class BP_Docs_Query {
 	 *
 	 * Filter 'bp_docs_get_current_view' to extend to different components.
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param str $item_type Defaults to the object's item type
@@ -229,7 +230,7 @@ class BP_Docs_Query {
 			// Access queries are handled at pre_get_posts, using bp_docs_general_access_protection()
 
 			// Set the taxonomy query. Filtered so that plugins can alter the query
-			// Filtering by groups also happens in this way
+			// Filtering by groups and folders also happens in this way
 			$wp_query_args['tax_query'] = apply_filters( 'bp_docs_tax_query', $wp_query_args['tax_query'], $this );
 
 			if ( !empty( $this->query_args['parent_id'] ) ) {
@@ -244,7 +245,6 @@ class BP_Docs_Query {
 
 		$this->query = new WP_Query( $wp_query_args );
 
-		//echo $yes;var_dump( $wp_query_args ); die();
 		return $this->query;
 	}
 
@@ -305,7 +305,6 @@ class BP_Docs_Query {
 	 * Used to be use to build the query_posts() query. Now handled by get_wp_query() and
 	 * bp_docs_has_docs()
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 * @deprecated 1.2
 	 */
@@ -316,7 +315,6 @@ class BP_Docs_Query {
 	/**
 	 * Fires the WP query and loads the appropriate template
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function load_template() {
@@ -406,11 +404,10 @@ class BP_Docs_Query {
 	 * This method handles saving for both new and existing docs. It detects the difference by
 	 * looking for the presence of $this->doc_slug
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function save( $args = false ) {
-		global $bp;
+		global $bp, $wp_rewrite;
 
 		// bbPress plays naughty with revision saving
 		add_action( 'pre_post_update', 'wp_save_post_revision' );
@@ -435,10 +432,9 @@ class BP_Docs_Query {
 
 		// Check group associations
 		// @todo Move into group integration piece
+		// This group id is only used to check whether the user can associate the doc with the group.
+		$associated_group_id = isset( $_POST['associated_group_id'] ) ? intval( $_POST['associated_group_id'] ) : null;
 		if ( bp_is_active( 'groups' ) ) {
-			// This group id is only used to check whether the user can associate the doc with the group.
-			$associated_group_id = isset( $_POST['associated_group_id'] ) ? intval( $_POST['associated_group_id'] ) : null;
-
 			if ( ! empty( $associated_group_id ) && ! current_user_can( 'bp_docs_associate_with_group', $associated_group_id ) ) {
 				$retval = array(
 					'message_type' => 'error',
@@ -570,7 +566,12 @@ class BP_Docs_Query {
 			setcookie( 'bp-docs-submit-data', json_encode( $_POST ), time() + 30, '/' );
 		}
 
-		$redirect_url = apply_filters( 'bp_docs_post_save_redirect_base', trailingslashit( bp_get_root_domain() . '/' . bp_docs_get_docs_slug() ) );
+		$redirect_base = trailingslashit( bp_get_root_domain() );
+		if ( $wp_rewrite->using_index_permalinks() ) {
+			$redirect_base .= 'index.php/';
+		}
+
+		$redirect_url = apply_filters( 'bp_docs_post_save_redirect_base', trailingslashit( $redirect_base . bp_docs_get_docs_slug() ) );
 
 		if ( $result['redirect'] == 'single' ) {
 			$redirect_url .= $this->doc_slug;
@@ -593,7 +594,6 @@ class BP_Docs_Query {
 	 * In WP 3.3, wp_tiny_mce() was deprecated, with its JS loading handled by the_editor. So we just
 	 * provide a dummy function, for backward template support.
 	 *
-	 * @package BuddyPress_Docs
 	 * @since 1.1.19
 	 */
 	function define_wp_tiny_mce() {

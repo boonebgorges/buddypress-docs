@@ -4,7 +4,7 @@
  * This file contains the functions used to enable hierarchical docs.
  * Separated into this file so that the feature can be turned off.
  *
- * @package BuddyPress Docs
+ * @package BuddyPressDocs
  */
 
 class BP_Docs_Hierarchy {
@@ -14,7 +14,6 @@ class BP_Docs_Hierarchy {
 	/**
 	 * PHP 5 constructor
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function __construct() {
@@ -52,6 +51,9 @@ class BP_Docs_Hierarchy {
 		}
 
 		$post_name = $q->get( 'name' );
+		if ( ! $post_name ) {
+			return;
+		}
 
 		// Bypass get_post_by_path().
 		global $wpdb;
@@ -69,7 +71,6 @@ class BP_Docs_Hierarchy {
 	/**
 	 * Registers the post taxonomies with the bp_docs post type
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param array The $bp_docs_post_type_args array created in BP_Docs::register_post_type()
@@ -84,7 +85,6 @@ class BP_Docs_Hierarchy {
 	/**
 	 * Saves post parent to a doc when saved from the front end
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @param object $query The query object created by BP_Docs_Query
@@ -117,7 +117,6 @@ class BP_Docs_Hierarchy {
 	/**
 	 * Display a link to the doc's parent
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 */
 	function show_parent() {
@@ -142,7 +141,6 @@ class BP_Docs_Hierarchy {
 	/**
 	  * Display links to the doc's children
 	  *
-	  * @package BuddyPress Docs
 	  * @since 1.0
 	  */
 	function show_children() {

@@ -24,7 +24,7 @@ jQuery(document).ready(function($){
 		});
 	}
 
-	$('.bp-docs-attachment-clip').on('click', function(e) {
+	$( '.doctable' ).on('click', '.bp-docs-attachment-clip', function(e) {
 		var att_doc_id = $(e.target).closest('.bp-docs-attachment-clip').attr('id').split('-').pop();
 		var att_doc_drawer = $('#bp-docs-attachment-drawer-'+att_doc_id);
 		att_doc_drawer.slideToggle( 400 );

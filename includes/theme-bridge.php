@@ -112,9 +112,16 @@ class BP_Docs_Theme_Compat {
 	 */
 	public function is_docs() {
 
+		$is_docs = bp_docs_is_docs_component();
+
+		if ( bp_is_active( 'groups' ) && bp_is_group() && bp_is_current_action( buddypress()->bp_docs->slug ) ) {
+			$is_docs = true;
+		}
+
 		// Bail if not looking at the docs component
-		if ( ! bp_docs_is_docs_component() )
+		if ( ! $is_docs ) {
 			return;
+		}
 
 		add_filter( 'bp_get_template_stack', array( $this, 'add_plugin_templates_to_stack' ) );
 
@@ -195,7 +202,7 @@ class BP_Docs_Theme_Compat {
 			'post_author'    => 0,
 			'post_date'      => 0,
 			'post_content'   => '',
-			'post_type'      => 'bp_docs',
+			'post_type'      => bp_docs_get_post_type_name(),
 			'post_status'    => 'publish',
 			'is_archive'     => true,
 			'comment_status' => 'closed'
@@ -250,10 +257,10 @@ class BP_Docs_Theme_Compat {
 		bp_theme_compat_reset_post( array(
 			'ID'             => 0,
 			'post_title'     => __( 'Create a Doc', 'bp-docs' ),
-			'post_author'    => 0,
+			'post_author'    => get_current_user_id(),
 			'post_date'      => 0,
 			'post_content'   => '',
-			'post_type'      => 'bp_docs',
+			'post_type'      => bp_docs_get_post_type_name(),
 			'post_status'    => 'publish',
 			'is_archive'     => true,
 			'comment_status' => 'closed'

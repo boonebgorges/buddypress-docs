@@ -4,13 +4,12 @@
  * This file contains the template tags used on the Docs edit and create screens. They are
  * separated out so that they don't need to be loaded all the time.
  *
- * @package BuddyPress Docs
+ * @package BuddyPressDocs
  */
 
 /**
  * Echoes the output of bp_docs_get_edit_doc_title()
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  */
 function bp_docs_edit_doc_title() {
@@ -19,7 +18,6 @@ function bp_docs_edit_doc_title() {
 	/**
 	 * Returns the title of the doc currently being edited, when it exists
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @return string Doc title
@@ -46,7 +44,6 @@ function bp_docs_edit_doc_title() {
 /**
  * Echoes the output of bp_docs_get_edit_doc_slug()
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  */
 function bp_docs_edit_doc_slug() {
@@ -55,7 +52,6 @@ function bp_docs_edit_doc_slug() {
 	/**
 	 * Returns the slug of the doc currently being edited, when it exists
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @return string Doc slug
@@ -77,7 +73,6 @@ function bp_docs_edit_doc_slug() {
 /**
  * Echoes the output of bp_docs_get_edit_doc_content()
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  */
 function bp_docs_edit_doc_content() {
@@ -86,7 +81,6 @@ function bp_docs_edit_doc_content() {
 	/**
 	 * Returns the content of the doc currently being edited, when it exists
 	 *
-	 * @package BuddyPress Docs
 	 * @since 1.0-beta
 	 *
 	 * @return string Doc content
@@ -106,13 +100,12 @@ function bp_docs_edit_doc_content() {
 /**
  * Get a list of an item's docs for display in the parent dropdown
  *
- * @package BuddyPress Docs
  * @since 1.0-beta
  */
 function bp_docs_edit_parent_dropdown() {
-	global $bp;
+	$bp = buddypress();
 
-	$include = array();
+	$include = array( 0 );
 
 	$query_args = apply_filters( 'bp_docs_parent_dropdown_query_args', array(
 		'doc_slug' => false,
@@ -132,22 +125,22 @@ function bp_docs_edit_parent_dropdown() {
 	$exclude = $parent = false;
 
 	// If this is a failed submission, use the value from the POST cookie
-	if ( ! empty( buddypress()->bp_docs->submitted_data->parent_id ) ) {
-		$parent = intval( buddypress()->bp_docs->submitted_data->parent_id );
-	} else if ( isset( $current_doc->post_type ) && bp_docs_get_post_type_name() === $current_doc->post_type ) {
+	if ( ! empty( $bp->bp_docs->submitted_data->parent_id ) ) {
+		$parent = intval( $bp->bp_docs->submitted_data->parent_id );
+	} else if ( isset( $current_doc->post_type ) && $bp->bp_docs->post_type_name === $current_doc->post_type ) {
 		$exclude = array( $current_doc->ID );
 		$parent = $current_doc->post_parent;
 	}
 
 	$pages = wp_dropdown_pages( array(
-		'post_type' 	=> $bp->bp_docs->post_type_name,
-		'exclude' 	=> $exclude,
-		'include'	=> $include,
-		'selected' 	=> $parent,
-		'name' 		=> 'parent_id',
+		'post_type'        => $bp->bp_docs->post_type_name,
+		'exclude'          => $exclude,
+		'include'          => $include,
+		'selected'         => $parent,
+		'name'             => 'parent_id',
 		'show_option_none' => __( '(no parent)', 'bp-docs' ),
-		'sort_column'	=> 'menu_order, post_title',
-		'echo' 		=> 0 )
+		'sort_column'      => 'menu_order, post_title',
+		'echo'             => 0 )
 	);
 
 	echo $pages;
@@ -156,7 +149,6 @@ function bp_docs_edit_parent_dropdown() {
 /**
  * Removes the More button from the TinyMCE editor in the Docs context
  *
- * @package BuddyPress Docs
  * @since 1.0.3
  *
  * @param array $buttons The default TinyMCE buttons as set by WordPress
@@ -178,7 +170,6 @@ add_filter( 'mce_buttons', 'bp_docs_remove_tinymce_more_button' );
 /**
  * Hook our idle function to the TinyMCE.onInit event
  *
- * @package BuddyPress_Docs
  * @since 1.1.20
  */
 function bp_docs_add_idle_function_to_tinymce( $initArray ) {
@@ -229,7 +220,6 @@ add_filter( 'tiny_mce_before_init', 'bp_docs_add_idle_function_to_tinymce' );
  *   - table
  *   - tabindent
  *
- * @package BuddyPress Docs
  * @since 1.1.5
  *
  * @param array $plugins TinyMCE external plugins registered in WP
@@ -255,7 +245,6 @@ add_filter( 'mce_external_plugins', 'bp_docs_add_external_tinymce_plugins' );
  *   - tabindent
  *   - print
  *
- * @package BuddyPress Docs
  * @since 1.1.5
  *
  * @param array $buttons TinyMCE buttons
@@ -306,7 +295,6 @@ add_filter( 'mce_buttons', 'bp_docs_add_external_tinymce_buttons_row1' );
  * Includes:
  *   - tablecontrols
  *
- * @package BuddyPress Docs
  * @since 1.1.5
  *
  * @param array $buttons TinyMCE buttons

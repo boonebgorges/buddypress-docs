@@ -133,6 +133,53 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 		$this->assertFalse( (bool) $maybe_group_id );
 	}
 
+	/**
+	 * @group BP_Docs_Query
+	 */
+	function test_bp_docs_query_default_group() {
+		$g = $this->factory->group->create();
+		$d1 = $this->factory->doc->create( array(
+			'group' => $g,
+		) );
+		$d2 = $this->factory->doc->create();
+
+		$q = new BP_Docs_Query();
+
+		// Remove access protection for the moment because I'm lazy
+		remove_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
+		$wp_query = $q->get_wp_query();
+		add_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
+
+		$found = wp_list_pluck( $wp_query->posts, 'ID' );
+		sort( $found );
+
+		$this->assertSame( $found, array( $d1, $d2 ) );
+	}
+	/**
+	 * @group BP_Docs_Query
+	 */
+	function test_bp_docs_query_null_group() {
+		$g = $this->factory->group->create();
+
+		$d1 = $this->factory->doc->create( array(
+			'group' => $g,
+		) );
+		$d2 = $this->factory->doc->create();
+
+		$q = new BP_Docs_Query( array(
+			'group_id' => array(),
+		) );
+
+		// Remove access protection for the moment because I'm lazy
+		remove_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
+		$wp_query = $q->get_wp_query();
+		add_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
+
+		$found = wp_list_pluck( $wp_query->posts, 'ID' );
+
+		$this->assertSame( $found, array( $d2 ) );
+	}
+
 	function test_bp_docs_get_doc_link() {
 		// rewrite - @todo This stinks
 		global $wp_rewrite;
@@ -320,6 +367,148 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 
 		$this->assertEqualSetsWithIndex( $expected_settings, $modified_settings );
 	}
+	/**
+	 * @group bp_docs_get_access_options
+	 */
+	function test_bp_docs_get_access_options_no_group_assoc() {
+		$default_settings = bp_docs_get_default_access_options();
+		// These are doc default settings:
+		$expected_settings = array(
+			'read'          => 'anyone',
+			'edit'          => 'loggedin',
+			'read_comments' => 'anyone',
+			'post_comments' => 'anyone',
+			'view_history'  => 'anyone',
+			'manage'        => 'creator'
+		);
+
+		$this->assertEqualSetsWithIndex( $expected_settings, $default_settings );
+	}
+	/**
+	 * @group bp_docs_get_access_options
+	 */
+	function test_bp_docs_get_access_options_group_assoc_public() {
+		$u1 = $this->factory->user->create();
+		$this->set_current_user( $u1 );
+
+		$g = $this->factory->group->create( array(
+			'status' => 'public',
+			'creator_id' => $u1
+		) );
+		// Make sure BP-Docs is enabled for this group and this user can associate with this group.
+		$settings = array(
+			'group-enable'	=> 1,
+			'can-create' 	=> 'member'
+		);
+
+		groups_update_groupmeta( $g, 'bp-docs', $settings );
+
+		$default_settings = bp_docs_get_default_access_options( 0, $g);
+		// These are doc default settings:
+		$expected_settings = array(
+			'read'          => 'anyone',
+			'edit'          => 'group-members',
+			'read_comments' => 'anyone',
+			'post_comments' => 'group-members',
+			'view_history'  => 'anyone',
+			'manage'        => 'creator'
+		);
+
+		$this->assertEqualSetsWithIndex( $expected_settings, $default_settings );
+	}
+	/**
+	 * @group bp_docs_get_access_options
+	 */
+	function test_bp_docs_get_access_options_group_assoc_private() {
+		$u1 = $this->factory->user->create();
+		$this->set_current_user( $u1 );
+
+		$g = $this->factory->group->create( array(
+			'status' => 'private',
+			'creator_id' => $u1
+		) );
+
+		// Make sure BP-Docs is enabled for this group and this user can associate with this group.
+		$settings = array(
+			'group-enable'	=> 1,
+			'can-create' 	=> 'member'
+		);
+
+		groups_update_groupmeta( $g, 'bp-docs', $settings );
+
+		$default_settings = bp_docs_get_default_access_options( 0, $g );
+		// These are doc default settings:
+		$expected_settings = array(
+			'read'          => 'group-members',
+			'edit'          => 'group-members',
+			'read_comments' => 'group-members',
+			'post_comments' => 'group-members',
+			'view_history'  => 'group-members',
+			'manage'        => 'group-members'
+		);
+
+		$this->assertEqualSetsWithIndex( $expected_settings, $default_settings );
+	}
+
+	/**
+	 * @see issue #492
+	 */
+	public function test_bp_docs_is_docs_enabled_for_group_should_work_after_toggled_off() {
+		$group = $this->factory->group->create();
+		$doc_id = $this->factory->doc->create( array( 'group' => $group ) );
+
+		$settings = array(
+			'group-enable' => 1,
+			'can-create' => 'member',
+		);
+		groups_update_groupmeta( $group, 'bp-docs', $settings );
+
+		$this->assertTrue( bp_docs_is_docs_enabled_for_group( $group ) );
+
+		$settings = array(
+			'group-enable' => 0,
+		);
+		groups_update_groupmeta( $group, 'bp-docs', $settings );
+
+		$this->assertFalse( bp_docs_is_docs_enabled_for_group( $group ) );
+	}
+
+	/**
+	 * @group bp_docs_trash_doc
+	 */
+	function test_bp_docs_move_to_trash() {
+		$doc_id = $this->factory->doc->create();
+
+		bp_docs_trash_doc( $doc_id );
+
+		$this->assertEquals( 'trash', get_post_status( $doc_id ) );
+	}
+
+	/**
+	 * @group bp_docs_trash_doc
+	 */
+	function test_bp_docs_delete_permanently() {
+		$doc_id = $this->factory->doc->create();
+
+		// Trashing a doc once puts it in the trash.
+		bp_docs_trash_doc( $doc_id );
+		$this->assertEquals( 'trash', get_post_status( $doc_id ) );
+
+		// Trashing a doc that's already in the trash deletes it permanently.
+		bp_docs_trash_doc( $doc_id );
+
+		$this->assertNull( get_post( $doc_id ) );
+	}
+
+	/**
+	 * @group bp_docs_trash_doc
+	 */
+	function test_bp_docs_delete_force_delete() {
+		$doc_id = $this->factory->doc->create();
+
+		// Force-deleting a doc deletes it permanently.
+		bp_docs_trash_doc( $doc_id, true );
+
+		$this->assertNull( get_post( $doc_id ) );
+	}
 }
-
-

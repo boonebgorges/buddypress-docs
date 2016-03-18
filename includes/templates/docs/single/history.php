@@ -1,4 +1,10 @@
+<?php
+$bp_docs_do_theme_compat = is_buddypress() && bp_docs_do_theme_compat( 'single/history.php' );
+if ( ! $bp_docs_do_theme_compat ) : ?>
 <div id="buddypress">
+<?php endif; ?>
+
+<div class="<?php bp_docs_container_class(); ?>">
 
 	<?php include( apply_filters( 'bp_docs_header_template', bp_docs_locate_template( 'docs-header.php' ) ) ) ?>
 
@@ -62,4 +68,8 @@
 
 	</div>
 
+</div><!-- .bp-docs -->
+
+<?php if ( ! $bp_docs_do_theme_compat ) : ?>
 </div><!-- /#buddypress -->
+<?php endif; ?>

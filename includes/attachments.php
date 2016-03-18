@@ -26,6 +26,9 @@ class BP_Docs_Attachments {
 		add_filter( 'bp_docs_filter_types', array( $this, 'filter_type' ) );
 		add_filter( 'bp_docs_filter_sections', array( $this, 'filter_markup' ) );
 
+		// Determine whether the directory view is filtered by 'has-attachment' status.
+		add_filter( 'bp_docs_is_directory_view_filtered', array( $this, 'is_directory_view_filtered' ), 10, 2 );
+
 		// Icon display
 		add_filter( 'icon_dir', 'BP_Docs_Attachments::icon_dir' );
 		add_filter( 'icon_dir_uri', 'BP_Docs_Attachments::icon_dir_uri' );
@@ -58,7 +61,7 @@ class BP_Docs_Attachments {
 	function catch_attachment_request() {
 		if ( ! empty( $_GET['bp-attachment'] ) ) {
 
-			$fn = $_GET['bp-attachment'];
+			$fn = basename( $_GET['bp-attachment'] );
 
 			// Sanity check - don't do anything if this is not a Doc
 			if ( ! bp_docs_is_existing_doc() ) {
@@ -75,6 +78,9 @@ class BP_Docs_Attachments {
 			if ( ! file_exists( $filepath ) ) {
 				wp_die( __( 'File not found.', 'bp-docs' ) );
 			}
+
+			error_reporting( 0 );
+			ob_end_clean();
 
 			$headers = $this->generate_headers( $filepath );
 
@@ -301,7 +307,7 @@ class BP_Docs_Attachments {
 
 					$this->doc_id = (int) $_REQUEST['query']['auto_draft_id'];
 
-				} else if ( isset( $_REQUEST['action'] ) && 'upload-attachment' == $_REQUEST['action'] ) {
+				} else if ( isset( $_REQUEST['action'] ) && 'upload-attachment' == $_REQUEST['action'] && isset( $_REQUEST['post_id'] ) ) {
 
 					$maybe_doc = get_post( $_REQUEST['post_id'] );
 					if ( bp_docs_get_post_type_name() == $maybe_doc->post_type ) {
@@ -581,17 +587,41 @@ class BP_Docs_Attachments {
 
 		<div id="docs-filter-section-attachments" class="docs-filter-section<?php if ( $has_attachment ) : ?> docs-filter-section-open<?php endif ?>">
 			<form method="get" action="<?php echo $form_action ?>">
-				<label for="docs-attachment-filter"><?php _e( 'Has attachment?', 'bp-docs' ) ?></label>
+				<label for="has-attachment"><?php _e( 'Has attachment?', 'bp-docs' ) ?></label>
 				<select id="has-attachment" name="has-attachment">
 					<option value="yes"<?php selected( $has_attachment, 'yes' ) ?>><?php _e( 'Yes', 'bp-docs' ) ?></option>
 					<option value="no"<?php selected( $has_attachment, 'no' ) ?>><?php _e( 'No', 'bp-docs' ) ?></option>
 					<option value=""<?php selected( $has_attachment, '' ) ?>><?php _e( 'Doesn&#8217;t matter', 'bp-docs' ) ?></option>
 				</select>
 				<input type="submit" value="<?php _e( 'Filter', 'bp-docs' ) ?>" />
+				<?php do_action( 'bp_docs_directory_filter_attachments_form' ) ?>
 			</form>
 		</div>
 
 		<?php
+	}
+
+
+	/**
+	 * Determine whether the directory view is filtered by 'has-attachment' status.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param bool  $is_filtered Is the current directory view filtered?
+	 * @param array $exclude Array of filter types to ignore.
+	 *
+	 * @return bool $is_filtered
+	 */
+	public function is_directory_view_filtered( $is_filtered, $exclude ) {
+		// If this filter is excluded, stop now.
+		if ( in_array( 'has-attachment', $exclude ) ) {
+			return $is_filtered;
+		}
+
+		if ( isset( $_GET['has-attachment'] ) && ( 'yes' == $_GET['has-attachment'] || 'no' == $_GET['has-attachment'] ) ) {
+			$is_filtered = true;
+		}
+	    return $is_filtered;
 	}
 
 	/**
