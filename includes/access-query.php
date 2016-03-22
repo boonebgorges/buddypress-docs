@@ -5,7 +5,33 @@ class BP_Docs_Access_Query {
 	protected $tax_query = array();
 	protected $user_groups = array();
 	protected $levels = array();
+	protected $comment_levels = array();
+	protected $comment_tax_query = array();
+
+
+	/**
+	 * Array of docs ids that the current user can't read.
+	 *
+	 * @since 1.9.1
+	 * @var array Empty if not yet defined, otherwise an array of integers.
+	 */
 	protected $protected_doc_ids = array();
+
+	/**
+	 * Array of docs ids that the current user can't read the comments of.
+	 *
+	 * @since 1.9.1
+	 * @var array Empty if not yet defined, otherwise an array of integers.
+	 */
+	protected $restricted_comment_doc_ids = array();
+
+	/**
+	 * Array of comment ids that the current user shouldn't be able to read.
+	 *
+	 * @since 1.9.1
+	 * @var array Empty if not yet defined, otherwise an array of integers.
+	 */
+	protected $protected_comment_ids = array();
 
 	public static function init( $user_id = 0 ) {
 		static $instance;
@@ -21,17 +47,20 @@ class BP_Docs_Access_Query {
 		$this->user_id = intval( $user_id );
 		$this->set_up_levels();
 		$this->prepare_tax_query();
+		$this->prepare_comment_tax_query();
 	}
 
 	protected function set_up_levels() {
 		// Everyone can see 'anyone' docs
 		$this->levels[] = bp_docs_get_access_term_anyone();
+		$this->comment_levels[] = bp_docs_get_comment_access_term_anyone();
 
 		// Logged-in users
 		// Note that we're not verifying that the user actually exists
 		// For now this kind of check is up to whoever's instantiating
 		if ( $this->user_id != 0 ) {
 			$this->levels[] = bp_docs_get_access_term_loggedin();
+			$this->comment_levels[] = bp_docs_get_comment_access_term_loggedin();
 
 			if ( bp_is_active('groups') ) {
 
@@ -40,6 +69,7 @@ class BP_Docs_Access_Query {
 				if ( isset($this->user_groups['groups']) ) {
 					foreach ( $this->user_groups['groups'] as $member_group ) {
 						$this->levels[] = bp_docs_get_access_term_group_member( $member_group );
+						$this->comment_levels[] = bp_docs_get_comment_access_term_group_member( $member_group );
 					}
 				}
 
@@ -47,6 +77,7 @@ class BP_Docs_Access_Query {
 				if ( isset($this->user_groups['admin_mod_of']) ) {
 					foreach ( $this->user_groups['admin_mod_of'] as $adminmod_group ) {
 						$this->levels[] = bp_docs_get_access_term_group_adminmod( $adminmod_group );
+						$this->comment_levels[] = bp_docs_get_comment_access_term_group_adminmod( $adminmod_group );
 					}
 				}
 			}
@@ -55,6 +86,7 @@ class BP_Docs_Access_Query {
 			// creator
 			// @todo What's the difference?
 			$this->levels[] = bp_docs_get_access_term_user( $this->user_id );
+			$this->comment_levels[] = bp_docs_get_comment_access_term_user( $this->user_id );
 		}
 	}
 
@@ -62,6 +94,15 @@ class BP_Docs_Access_Query {
 		$this->tax_query[] = array(
 			'terms'    => $this->levels,
 			'taxonomy' => bp_docs_get_access_tax_name(),
+			'field'    => 'slug',
+			'operator' => 'IN',
+		);
+	}
+
+	protected function prepare_comment_tax_query() {
+		$this->comment_tax_query[] = array(
+			'terms'    => $this->comment_levels,
+			'taxonomy' => bp_docs_get_comment_access_tax_name(),
 			'field'    => 'slug',
 			'operator' => 'IN',
 		);
@@ -95,6 +136,22 @@ class BP_Docs_Access_Query {
 		}
 
 		return $this->tax_query;
+	}
+
+
+	/**
+	 * Returns the tax_query param for the WP_Query args
+	 *
+	 * @since 1.9.1
+	 * @return array
+	 */
+	public function get_comment_tax_query() {
+		// bp_moderate users can see anything, so no query needed
+		if ( user_can( $this->user_id, 'bp_moderate' ) ) {
+			return array();
+		}
+
+		return $this->comment_tax_query;
 	}
 
 	/**
@@ -140,6 +197,77 @@ class BP_Docs_Access_Query {
 		}
 
 		return $this->protected_doc_ids;
+	}
+
+	/**
+	 * Fetch a list of Doc IDs whose comments the user cannot read.
+	 *
+	 * @since 1.2.8
+	 */
+	public function get_restricted_comment_doc_ids() {
+		if ( ! $this->restricted_comment_doc_ids ) {
+			remove_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
+
+			$tax_query = $this->get_comment_tax_query();
+			foreach ( $tax_query as &$tq ) {
+				$tq['operator'] = "NOT IN";
+			}
+
+			// If the tax_query is empty, no docs are forbidden
+			if ( empty( $tax_query ) ) {
+				$this->restricted_comment_doc_ids = array( 0 );
+			} else {
+				$forbidden_fruit = new WP_Query( array(
+					'post_type' => bp_docs_get_post_type_name(),
+					'posts_per_page' => -1,
+					'nopaging' => true,
+					'tax_query' => $tax_query,
+					'update_post_term_cache' => false,
+					'update_post_meta_cache' => false,
+					'no_found_rows' => 1,
+					'fields' => 'ids',
+				) );
+				if ( $forbidden_fruit->posts ) {
+					$this->restricted_comment_doc_ids = $forbidden_fruit->posts;
+				} else {
+					/*
+					 * If no results are returned, we save a 0 value to avoid the
+					 * post__in => array() fetches everything problem.
+					 */
+				 	$this->restricted_comment_doc_ids = array( 0 );
+				}
+			}
+
+			add_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
+		}
+
+		return $this->restricted_comment_doc_ids;
+	}
+
+	/**
+	 * Fetch a list of Comment IDs that are forbidden for the user
+	 *
+	 * @since 1.9.1
+	 */
+	public function get_comment_ids() {
+		if ( ! $this->protected_comment_ids ) {
+			remove_action( 'pre_get_comments', 'bp_docs_general_comment_protection' );
+
+			$this->protected_comment_ids = get_comments( array(
+				'post__in' => $this->get_restricted_comment_doc_ids(),
+				'fields' => 'ids',
+			) );
+			if ( ! $this->protected_comment_ids ) {
+				/*
+				 * If no results are returned, we save a 0 value to avoid the
+				 * post__in => array() fetches everything problem.
+				 */
+				$this->protected_comment_ids = array( 0 );
+			}
+			add_action( 'pre_get_comments', 'bp_docs_general_comment_protection' );
+		}
+
+		return $this->protected_comment_ids;
 	}
 }
 
