@@ -20,6 +20,7 @@ class BP_Docs_Component extends BP_Component {
 	var $post_type_name;
 	var $associated_tax_name;
 	var $access_tax_name;
+	var $comment_access_tax_name;
 
 	var $slugtocheck = array();
 	var $query;
@@ -158,6 +159,7 @@ class BP_Docs_Component extends BP_Component {
 		$this->post_type_name		= $bp_docs->post_type_name;
 		$this->associated_item_tax_name = $bp_docs->associated_item_tax_name;
 		$this->access_tax_name          = $bp_docs->access_tax_name;
+		$this->comment_access_tax_name  = $bp_docs->comment_access_tax_name;
 
 		// This info is loaded here because it needs to happen after BP core globals are
 		// set up

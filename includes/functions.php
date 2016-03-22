@@ -40,6 +40,15 @@ function bp_docs_get_access_tax_name() {
 }
 
 /**
+ * Return the comment access taxonomy name
+ *
+ * @since 1.9.1
+ */
+function bp_docs_get_comment_access_tax_name() {
+	return buddypress()->bp_docs->comment_access_tax_name;
+}
+
+/**
  * Utility function to get and cache the current doc
  *
  * @since 1.0-beta
@@ -633,6 +642,13 @@ function bp_docs_save_doc_access_settings( $doc_id ) {
 		$read_setting = isset( $new_settings['read'] ) ? $new_settings['read'] : 'anyone';
 		bp_docs_update_doc_access( $doc_id, $read_setting );
 
+		/*
+		 * The 'read_comments' setting must also be saved to a taxonomy,
+		 * to protect non-public comments.
+		 */
+		$read_comments_setting = isset( $new_settings['read_comments'] ) ? $new_settings['read_comments'] : 'anyone';
+		bp_docs_update_doc_comment_access( $doc_id, $read_comments_setting );
+
 	// 2. User is saving a doc for which he can't manage the access settings
 	// isset( $_POST['settings'] ) is false; the access settings section
 	// isn't included on the edit form
@@ -676,6 +692,14 @@ function bp_docs_remove_group_related_doc_access_settings( $doc_id ) {
 	// easier directory queries. Update if modified.
 	if ( $settings['read'] != $new_settings['read'] ) {
 		bp_docs_update_doc_access( $doc_id, $new_settings['read'] );
+	}
+
+	/*
+	 * The 'read_comments' setting must also be saved to a taxonomy,
+	 * to protect non-public comments. Update if modified.
+	 */
+	if ( $settings['read_comments'] != $new_settings['read_comments'] ) {
+		bp_docs_update_doc_comment_access( $doc_id, $new_settings['read_comments'] );
 	}
 }
 
@@ -722,6 +746,8 @@ function bp_docs_verify_settings( $settings, $doc_id, $user_id = 0 ) {
 
 	return $verified_settings;
 }
+
+// Doc "read" access taxonomy terms. ///////////////////////////////////////////
 
 /**
  * Get the access term for 'anyone'
@@ -810,6 +836,115 @@ function bp_docs_update_doc_access( $doc_id, $access_setting = 'anyone' ) {
 
 	if ( isset( $access_term ) ) {
 		$retval = wp_set_post_terms( $doc_id, $access_term, bp_docs_get_access_tax_name() );
+	}
+
+	if ( empty( $retval ) || is_wp_error( $retval ) ) {
+		return false;
+	} else {
+		return true;
+	}
+
+}
+
+// Doc "read comments" access taxonomy terms. //////////////////////////////////
+
+/**
+ * Get the comment access term for 'anyone'.
+ *
+ * @since 1.9.1
+ * @return string The term slug
+ */
+function bp_docs_get_comment_access_term_anyone() {
+	return apply_filters( 'bp_docs_get_comment_access_term_anyone', 'bp_docs_comment_access_anyone' );
+}
+
+/**
+ * Get the comment access term for 'loggedin'.
+ *
+ * @since 1.9.1
+ * @return string The term slug
+ */
+function bp_docs_get_comment_access_term_loggedin() {
+	return apply_filters( 'bp_docs_get_comment_access_term_loggedin', 'bp_docs_comment_access_loggedin' );
+}
+
+/**
+ * Get the comment access term for a user id.
+ *
+ * @since 1.9.1
+ * @param int|bool $user_id Defaults to logged in user
+ * @return string The term slug
+ */
+function bp_docs_get_comment_access_term_user( $user_id = false ) {
+	if ( false === $user_id ) {
+		$user_id = bp_loggedin_user_id();
+	}
+
+	return apply_filters( 'bp_docs_get_comment_access_term_user', 'bp_docs_comment_access_user_' . intval( $user_id ) );
+}
+
+/**
+ * Get the comment access term corresponding to group-members for a given group.
+ *
+ * @since 1.9.1
+ * @param int $group_id
+ * @return string The term slug
+ */
+function bp_docs_get_comment_access_term_group_member( $user_id = false ) {
+	return apply_filters( 'bp_docs_get_comment_access_term_group_member', 'bp_docs_comment_access_group_member_' . intval( $user_id ) );
+}
+
+/**
+ * Get the comment access term corresponding to admins-mods for a given group.
+ *
+ * @since 1.9.1
+ * @param int $group_id
+ * @return string The term slug
+ */
+function bp_docs_get_comment_access_term_group_adminmod( $user_id = false ) {
+	return apply_filters( 'bp_docs_get_comment_access_term_group_adminmod', 'bp_docs_comment_access_group_adminmod_' . intval( $user_id ) );
+}
+
+/**
+ * Update the comment access term for a doc.
+ *
+ * @since 1.9.1
+ * @param int $group_id
+ * @return string The term slug
+ */
+function bp_docs_update_doc_comment_access( $doc_id, $access_setting = 'anyone' ) {
+
+	$doc = get_post( $doc_id );
+
+	if ( ! $doc || is_wp_error( $doc ) ) {
+		return false;
+	}
+
+	// Convert the access setting to a WP taxonomy term
+	switch ( $access_setting ) {
+		case 'anyone' :
+			$access_term = bp_docs_get_comment_access_term_anyone();
+			break;
+
+		case 'loggedin' :
+			$access_term = bp_docs_get_comment_access_term_loggedin();
+			break;
+
+		case 'group-members' :
+		case 'admins-mods' :
+			$associated_group = bp_docs_get_associated_group_id( $doc_id );
+			$access_term = 'group-members' == $access_setting ? bp_docs_get_comment_access_term_group_member( $associated_group ) : bp_docs_get_comment_access_term_group_adminmod( $associated_group );
+			break;
+
+		case 'creator' :
+		case 'no-one' :
+			// @todo Don't know how these are different
+			$access_term = bp_docs_get_comment_access_term_user( $doc->post_author );
+			break;
+	}
+
+	if ( isset( $access_term ) ) {
+		$retval = wp_set_post_terms( $doc_id, $access_term, bp_docs_get_comment_access_tax_name() );
 	}
 
 	if ( empty( $retval ) || is_wp_error( $retval ) ) {
