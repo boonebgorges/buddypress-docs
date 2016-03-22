@@ -40,15 +40,6 @@ function bp_docs_post_comment_activity( $comment_id ) {
 	// Make sure that BP doesn't record this comment with its native functions
 	remove_action( 'comment_post', 'bp_blogs_record_comment', 10, 2 );
 
-	// Until better individual activity item privacy controls are available in BP,
-	// comments will only be shown in the activity stream if "Who can read comments on
-	// this doc?" is set to "Anyone", "Logged-in Users" or "Group members"
-	$doc_settings = bp_docs_get_doc_settings( $doc_id );
-
-	if ( ! empty( $doc_settings['read_comments'] ) && ! in_array( $doc_settings['read_comments'], array( 'anyone', 'loggedin', 'group-members' ) ) ) {
-		return false;
-	}
-
 	// See if we're associated with a group
 	$group_id = bp_is_active( 'groups' ) ? bp_docs_get_associated_group_id( $doc_id ) : 0;
 
@@ -430,3 +421,63 @@ function bp_docs_load_activity_filter_options() {
 	}
 }
 add_action( 'bp_screens', 'bp_docs_load_activity_filter_options', 1 );
+
+/**
+ * Access protection in the activity feed.
+ * Users should not see activity related to docs to which they do not have access.
+ *
+ * @since 1.9.1
+ *
+ * @param $where_conditions
+ */
+function bp_docs_access_protection_for_activity_feed( $where_conditions ) {
+	$bp_docs_access_query  = bp_docs_access_query();
+	$protected_doc_ids     = $bp_docs_access_query->get_doc_ids();
+	$protected_comment_ids = $bp_docs_access_query->get_comment_ids();
+
+	// Docs and their commments are protected independently.
+	if ( ! $protected_doc_ids && ! $protected_comment_ids ) {
+		return $where_conditions;
+	}
+
+	/*
+	 * DeMorgan says: ! ( A & B ) == ( ! A || ! B )
+	 * For bp_doc_created and bp_doc_edited, the secondary_item_id is the doc_id.
+	 * For bp_doc_comment, the secondary_item_id is the comment ID.
+	 */
+	$activity_query = new BP_Activity_Query( array(
+		'relation' => 'AND',
+		array(
+			'relation' => 'OR',
+			array(
+				'column' => 'type',
+				'value' => array( 'bp_doc_created', 'bp_doc_edited' ),
+				'compare' => 'NOT IN',
+			),
+			array(
+				'column' => 'secondary_item_id',
+				'value' => $protected_doc_ids,
+				'compare' => 'NOT IN',
+			),
+		),
+		array(
+			'relation' => 'OR',
+			array(
+				'column' => 'type',
+				'value' => array( 'bp_doc_comment' ),
+				'compare' => 'NOT IN',
+			),
+			array(
+				'column' => 'secondary_item_id',
+				'value' => $protected_comment_ids,
+				'compare' => 'NOT IN',
+			),
+		),
+	) );
+	$aq_sql = $activity_query->get_sql();
+	if ( $aq_sql ) {
+		$where_conditions[] = $aq_sql;
+	}
+	return $where_conditions;
+}
+add_filter( 'bp_activity_get_where_conditions', 'bp_docs_access_protection_for_activity_feed' );

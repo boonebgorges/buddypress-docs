@@ -960,6 +960,7 @@ function bp_docs_update_doc_comment_access( $doc_id, $access_setting = 'anyone' 
  *
  * We generalize: mark the activity items as 'hide_sitewide' whenever the
  * 'read' setting is something other than 'anyone'.
+ * @TODO: Retire this in favor of activity item protection.
  *
  * Note that this gets overridden by the filter in integration-groups.php in
  * the case of group-associated Docs.
