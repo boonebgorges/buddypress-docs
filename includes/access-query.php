@@ -338,3 +338,42 @@ function bp_docs_general_access_protection( $query ) {
 // Hooked at an oddball priority to avoid conflicts with nested actions and
 // other plugins using 'pre_get_posts'. See https://github.com/boonebgorges/buddypress-docs/issues/425
 add_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
+
+/**
+ * Keep comments that the user shouldn't see out of primary WP_Comment_Query queries.
+ *
+ * By catching the query at pre_get_comments, we ensure that all queries are
+ * filtered appropriately.
+ *
+ * @since 1.9.1
+ */
+function bp_docs_general_comment_protection( $query ) {
+
+	// Access is unlimited when the current user is a site admin.
+	if ( current_user_can( 'bp_moderate' ) ) {
+		return;
+	}
+
+	// Since we're using post__not_in, we have to be aware of post__in requests.
+	$bp_docs_access_query = bp_docs_access_query();
+	$restricted_comment_doc_ids = $bp_docs_access_query->get_restricted_comment_doc_ids();
+
+	if ( $query->query_vars['post_id'] || $query->query_vars['post__in'] ) {
+		// Is this a request for the comments of a specific post?
+		if ( $query->query_vars['post_id']  ) {
+			if ( in_array( $query->query_vars['post_id'] , $restricted_comment_doc_ids ) ) {
+				$query->query_vars['post_id'] = 0;
+			}
+		}
+
+		// Is this a request for the comments of a group of posts?
+		if ( $query->query_vars['post__in'] ) {
+			$allowed_posts = array_diff( $query->query_vars['post__in'], $restricted_comment_doc_ids );
+			$query->query_vars['post__in'] = $allowed_posts;
+		}
+	} else {
+		// Other situations where the parent posts aren't specified.
+		$query->query_vars['post__not_in'] = $restricted_comment_doc_ids;
+	}
+}
+add_action( 'pre_get_comments', 'bp_docs_general_comment_protection' );
