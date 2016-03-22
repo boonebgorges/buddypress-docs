@@ -5,6 +5,7 @@ class BP_Docs_Access_Query {
 	protected $tax_query = array();
 	protected $user_groups = array();
 	protected $levels = array();
+	protected $protected_doc_ids = array();
 
 	public static function init( $user_id = 0 ) {
 		static $instance;
@@ -102,33 +103,43 @@ class BP_Docs_Access_Query {
 	 * @since 1.2.8
 	 */
 	public function get_doc_ids() {
-		remove_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
+		if ( ! $this->protected_doc_ids ) {
+			remove_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
 
-		$tax_query = $this->get_tax_query();
-		foreach ( $tax_query as &$tq ) {
-			$tq['operator'] = "NOT IN";
+			$tax_query = $this->get_tax_query();
+			foreach ( $tax_query as &$tq ) {
+				$tq['operator'] = "NOT IN";
+			}
+
+			// If the tax_query is empty, no docs are forbidden
+			if ( empty( $tax_query ) ) {
+				$this->protected_doc_ids = array( 0 );
+			} else {
+				$forbidden_fruit = new WP_Query( array(
+					'post_type' => bp_docs_get_post_type_name(),
+					'posts_per_page' => -1,
+					'nopaging' => true,
+					'tax_query' => $tax_query,
+					'update_post_term_cache' => false,
+					'update_post_meta_cache' => false,
+					'no_found_rows' => 1,
+					'fields' => 'ids',
+				) );
+				if ( $forbidden_fruit->posts ) {
+					$this->protected_doc_ids = $forbidden_fruit->posts;
+				} else {
+					/*
+					 * If no results are returned, we save a 0 value to avoid the
+					 * post__in => array() fetches everything problem.
+					 */
+				 	$this->protected_doc_ids = array( 0 );
+				}
+			}
+
+			add_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
 		}
 
-		// If the tax_query is empty, no docs are forbidden
-		if ( empty( $tax_query ) ) {
-			$forbidden_fruit_ids = array();
-		} else {
-			$forbidden_fruit = new WP_Query( array(
-				'post_type' => bp_docs_get_post_type_name(),
-				'posts_per_page' => -1,
-				'nopaging' => true,
-				'tax_query' => $tax_query,
-				'update_post_term_cache' => false,
-				'update_post_meta_cache' => false,
-				'no_found_rows' => 1,
-				'fields' => 'ids',
-			) );
-			$forbidden_fruit_ids = $forbidden_fruit->posts;
-		}
-
-		add_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
-
-		return $forbidden_fruit_ids;
+		return $this->protected_doc_ids;
 	}
 }
 
