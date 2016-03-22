@@ -8,6 +8,8 @@
 class BP_Docs {
 	var $post_type_name;
 	var $associated_item_tax_name;
+	var $access_tax_name;
+	var $comment_access_tax_name;
 
 	/**
 	 * Folders add-on.
@@ -28,6 +30,7 @@ class BP_Docs {
 		$this->post_type_name 		= apply_filters( 'bp_docs_post_type_name', 'bp_doc' );
 		$this->associated_item_tax_name = apply_filters( 'bp_docs_associated_item_tax_name', 'bp_docs_associated_item' );
 		$this->access_tax_name          = apply_filters( 'bp_docs_access_tax_name', 'bp_docs_access' );
+		$this->comment_access_tax_name  = apply_filters( 'bp_docs_comment_access_tax_name', 'bp_docs_comment_access' );
 
 		// :'(
 		wp_cache_add_non_persistent_groups( array( 'bp_docs_nonpersistent' ) );
@@ -324,6 +327,13 @@ class BP_Docs {
 
 		// Register the bp_docs_access taxonomy
 		register_taxonomy( $this->access_tax_name, array( $this->post_type_name ), array(
+			'hierarchical' => false,
+			'show_ui'      => false,
+			'query_var'    => false,
+		) );
+
+		// Register the bp_docs_comment_access taxonomy.
+		register_taxonomy( $this->comment_access_tax_name, array( $this->post_type_name ), array(
 			'hierarchical' => false,
 			'show_ui'      => false,
 			'query_var'    => false,
