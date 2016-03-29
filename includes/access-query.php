@@ -8,31 +8,6 @@ class BP_Docs_Access_Query {
 	protected $comment_levels = array();
 	protected $comment_tax_query = array();
 
-
-	/**
-	 * Array of docs ids that the current user can't read.
-	 *
-	 * @since 1.9.1
-	 * @var array Empty if not yet defined, otherwise an array of integers.
-	 */
-	protected $protected_doc_ids = array();
-
-	/**
-	 * Array of docs ids that the current user can't read the comments of.
-	 *
-	 * @since 1.9.1
-	 * @var array Empty if not yet defined, otherwise an array of integers.
-	 */
-	protected $restricted_comment_doc_ids = array();
-
-	/**
-	 * Array of comment ids that the current user shouldn't be able to read.
-	 *
-	 * @since 1.9.1
-	 * @var array Empty if not yet defined, otherwise an array of integers.
-	 */
-	protected $protected_comment_ids = array();
-
 	public static function init( $user_id = 0 ) {
 		static $instance;
 
@@ -160,7 +135,12 @@ class BP_Docs_Access_Query {
 	 * @since 1.2.8
 	 */
 	public function get_doc_ids() {
-		if ( ! $this->protected_doc_ids ) {
+		// Check the cache first.
+		$cache_key = 'bp_docs_forbidden_docs_for_user_' . $this->user_id;
+		$cached = wp_cache_get( $cache_key, 'bp_docs_nonpersistent' );
+		if ( false !== $cached ) {
+			return $cached;
+		} else {
 			remove_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
 
 			$tax_query = $this->get_tax_query();
@@ -170,7 +150,7 @@ class BP_Docs_Access_Query {
 
 			// If the tax_query is empty, no docs are forbidden
 			if ( empty( $tax_query ) ) {
-				$this->protected_doc_ids = array( 0 );
+				$protected_doc_ids = array( 0 );
 			} else {
 				$forbidden_fruit = new WP_Query( array(
 					'post_type' => bp_docs_get_post_type_name(),
@@ -183,20 +163,23 @@ class BP_Docs_Access_Query {
 					'fields' => 'ids',
 				) );
 				if ( $forbidden_fruit->posts ) {
-					$this->protected_doc_ids = $forbidden_fruit->posts;
+					$protected_doc_ids = $forbidden_fruit->posts;
 				} else {
 					/*
 					 * If no results are returned, we save a 0 value to avoid the
 					 * post__in => array() fetches everything problem.
 					 */
-				 	$this->protected_doc_ids = array( 0 );
+				 	$protected_doc_ids = array( 0 );
 				}
 			}
 
 			add_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
-		}
 
-		return $this->protected_doc_ids;
+			// Set the cache to avoid duplicate requests.
+			wp_cache_set( $cache_key, $protected_doc_ids, 'bp_docs_nonpersistent' );
+
+			return $protected_doc_ids;
+		}
 	}
 
 	/**
@@ -205,7 +188,12 @@ class BP_Docs_Access_Query {
 	 * @since 1.2.8
 	 */
 	public function get_restricted_comment_doc_ids() {
-		if ( ! $this->restricted_comment_doc_ids ) {
+		// Check the cache first.
+		$cache_key = 'bp_docs_forbidden_comment_docs_for_user_' . $this->user_id;
+		$cached = wp_cache_get( $cache_key, 'bp_docs_nonpersistent' );
+		if ( false !== $cached ) {
+			return $cached;
+		} else  {
 			remove_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
 
 			$tax_query = $this->get_comment_tax_query();
@@ -215,7 +203,7 @@ class BP_Docs_Access_Query {
 
 			// If the tax_query is empty, no docs are forbidden
 			if ( empty( $tax_query ) ) {
-				$this->restricted_comment_doc_ids = array( 0 );
+				$restricted_comment_doc_ids = array( 0 );
 			} else {
 				$forbidden_fruit = new WP_Query( array(
 					'post_type' => bp_docs_get_post_type_name(),
@@ -228,20 +216,23 @@ class BP_Docs_Access_Query {
 					'fields' => 'ids',
 				) );
 				if ( $forbidden_fruit->posts ) {
-					$this->restricted_comment_doc_ids = $forbidden_fruit->posts;
+					$restricted_comment_doc_ids = $forbidden_fruit->posts;
 				} else {
 					/*
 					 * If no results are returned, we save a 0 value to avoid the
 					 * post__in => array() fetches everything problem.
 					 */
-				 	$this->restricted_comment_doc_ids = array( 0 );
+				 	$restricted_comment_doc_ids = array( 0 );
 				}
 			}
 
 			add_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
-		}
 
-		return $this->restricted_comment_doc_ids;
+			// Set the cache to avoid duplicate requests.
+			wp_cache_set( $cache_key, $restricted_comment_doc_ids, 'bp_docs_nonpersistent' );
+
+			return $restricted_comment_doc_ids;
+		}
 	}
 
 	/**
@@ -250,24 +241,33 @@ class BP_Docs_Access_Query {
 	 * @since 1.9.1
 	 */
 	public function get_comment_ids() {
-		if ( ! $this->protected_comment_ids ) {
+		// Check the cache first.
+		$cache_key = 'bp_docs_forbidden_comments_for_user_' . $this->user_id;
+		$cached = wp_cache_get( $cache_key, 'bp_docs_nonpersistent' );
+		if ( false !== $cached ) {
+			return $cached;
+		} else {
 			remove_action( 'pre_get_comments', 'bp_docs_general_comment_protection' );
 
-			$this->protected_comment_ids = get_comments( array(
+			$protected_comment_ids = get_comments( array(
 				'post__in' => $this->get_restricted_comment_doc_ids(),
 				'fields' => 'ids',
 			) );
-			if ( ! $this->protected_comment_ids ) {
+			if ( ! $protected_comment_ids ) {
 				/*
 				 * If no results are returned, we save a 0 value to avoid the
 				 * post__in => array() fetches everything problem.
 				 */
-				$this->protected_comment_ids = array( 0 );
+				$protected_comment_ids = array( 0 );
 			}
-			add_action( 'pre_get_comments', 'bp_docs_general_comment_protection' );
-		}
 
-		return $this->protected_comment_ids;
+			add_action( 'pre_get_comments', 'bp_docs_general_comment_protection' );
+
+			// Set the cache to avoid duplicate requests.
+			wp_cache_set( $cache_key, $protected_comment_ids, 'bp_docs_nonpersistent' );
+
+			return $protected_comment_ids;
+		}
 	}
 }
 
