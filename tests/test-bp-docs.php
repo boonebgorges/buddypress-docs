@@ -511,4 +511,55 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 
 		$this->assertNull( get_post( $doc_id ) );
 	}
+
+	/**
+	 * @group bp_docs_access_query
+	 */
+	public function test_bp_docs_access_query_get_doc_ids_should_hit_cache() {
+		global $wpdb;
+
+		$bp_docs_access_query = bp_docs_access_query();
+
+		$restricted_ids_first = $bp_docs_access_query->get_doc_ids();
+
+		$num_queries = $wpdb->num_queries;
+		$restricted_ids_second = $bp_docs_access_query->get_doc_ids();
+
+		$this->assertSame( $restricted_ids_first, $restricted_ids_second );
+		$this->assertSame( $num_queries, $wpdb->num_queries );
+	}
+
+	/**
+	 * @group bp_docs_access_query
+	 */
+	public function test_bp_docs_access_query_get_restricted_comment_doc_ids_should_hit_cache() {
+		global $wpdb;
+
+		$bp_docs_access_query = bp_docs_access_query();
+
+		$restricted_ids_first = $bp_docs_access_query->get_restricted_comment_doc_ids();
+
+		$num_queries = $wpdb->num_queries;
+		$restricted_ids_second = $bp_docs_access_query->get_restricted_comment_doc_ids();
+
+		$this->assertSame( $restricted_ids_first, $restricted_ids_second );
+		$this->assertSame( $num_queries, $wpdb->num_queries );
+	}
+
+	/**
+	 * @group bp_docs_access_query
+	 */
+	public function test_bp_docs_access_query_get_comment_ids_should_hit_cache() {
+		global $wpdb;
+
+		$bp_docs_access_query = bp_docs_access_query();
+
+		$restricted_ids_first = $bp_docs_access_query->get_comment_ids();
+
+		$num_queries = $wpdb->num_queries;
+		$restricted_ids_second = $bp_docs_access_query->get_comment_ids();
+
+		$this->assertSame( $restricted_ids_first, $restricted_ids_second );
+		$this->assertSame( $num_queries, $wpdb->num_queries );
+	}
 }
