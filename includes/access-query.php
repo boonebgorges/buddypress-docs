@@ -11,11 +11,11 @@ class BP_Docs_Access_Query {
 	public static function init( $user_id = 0 ) {
 		static $instance;
 
-		if ( empty( $instance ) ) {
-			$instance = new BP_Docs_Access_Query( $user_id );
+		if ( empty( $instance[$user_id] ) ) {
+			$instance[$user_id] = new BP_Docs_Access_Query( $user_id );
 		}
 
-		return $instance;
+		return $instance[$user_id];
 	}
 
 	public function __construct( $user_id = 0 ) {
