@@ -562,4 +562,80 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 		$this->assertSame( $restricted_ids_first, $restricted_ids_second );
 		$this->assertSame( $num_queries, $wpdb->num_queries );
 	}
+
+	/**
+	 * @group bp_docs_access_query
+	 */
+	public function test_bp_docs_access_query_get_doc_ids_logged_in() {
+		$old_current_user = get_current_user_id();
+
+		$d = $this->factory->doc->create();
+		bp_docs_update_doc_access( $d, bp_docs_get_access_term_loggedin() );
+
+		// Pretend we're logged out.
+		$this->set_current_user( 0 );
+
+		$bp_docs_access_query = bp_docs_access_query();
+		$restricted_ids = $bp_docs_access_query->get_doc_ids();
+
+		$this->assertTrue( in_array( $d, $restricted_ids ) );
+
+		$this->set_current_user( $old_current_user );
+	}
+
+	/**
+	 * @group bp_docs_access_query
+	 */
+	public function test_bp_docs_access_query_get_doc_ids_creator_only() {
+		$old_current_user = get_current_user_id();
+
+		$u1 = $this->factory->user->create();
+		$u2 = $this->factory->user->create();
+		$this->set_current_user( $u1 );
+
+		$d = $this->factory->doc->create();
+		bp_docs_update_doc_access( $d, bp_docs_get_access_term_user( $u1 ) );
+
+		// Only the doc owner should have access.
+		$this->set_current_user( $u2 );
+
+		$bp_docs_access_query = bp_docs_access_query();
+		$restricted_ids = $bp_docs_access_query->get_doc_ids();
+
+		$this->assertTrue( in_array( $d, $restricted_ids ) );
+
+		$this->set_current_user( $old_current_user );
+	}
+
+	/**
+	 * @group bp_docs_access_query
+	 */
+	public function test_bp_docs_access_query_get_doc_ids_group_member() {
+		$old_current_user = get_current_user_id();
+
+		$u1 = $this->factory->user->create();
+		$this->set_current_user( $u1 );
+
+		$g = $this->factory->group->create( array(
+			'status' => 'public',
+			'creator_id' => $u1
+		) );
+
+		$d = $this->factory->doc->create( array(
+			'group' => $g,
+		) );
+		bp_docs_update_doc_access( $d, bp_docs_get_access_term_group_member( $g ) );
+
+		// We'll be a non-group-member.
+		$u2 = $this->factory->user->create();
+		$this->set_current_user( $u2 );
+
+		$bp_docs_access_query = bp_docs_access_query();
+		$restricted_ids = $bp_docs_access_query->get_doc_ids();
+
+		$this->assertTrue( in_array( $d, $restricted_ids ) );
+
+		$this->set_current_user( $old_current_user );
+	}
+
 }
