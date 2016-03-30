@@ -481,3 +481,85 @@ function bp_docs_access_protection_for_activity_feed( $where_conditions ) {
 	return $where_conditions;
 }
 add_filter( 'bp_activity_get_where_conditions', 'bp_docs_access_protection_for_activity_feed' );
+
+/**
+ * Keep some activity items out of Group Email Subscription "all activity" emails.
+ * Users should not see activity related to docs to which they do not have access.
+ *
+ * @since 1.9.1
+ *
+ * @param bool $allow        Whether to send the email
+ * @param bool $activity_obj The BP_Activity_Activity object
+ * @param int  $user_id      The email recipient's user ID
+ *
+ * @return bool $send_it Whether to send the email
+ */
+function bp_docs_filter_bp_ass_send_activity_notification_for_user( $allow, $activity_obj, $user_id ) {
+	return bp_docs_allow_activity_item_visibility( $allow, $activity_obj, $user_id );
+}
+add_filter( 'bp_ass_send_activity_notification_for_user', 'bp_docs_filter_bp_ass_send_activity_notification_for_user', 10, 3 );
+
+/**
+ * Keep some activity items out of Group Email Subscription "digest" emails.
+ * Users should not see activity related to docs to which they do not have access.
+ *
+ * @since 1.9.1
+ *
+ * @param bool $allow       Whether to include this activity item.
+ * @param bool $activity_id ID of the activity item.
+ * @param int  $user_id     The email recipient's user ID
+ *
+ * @return bool $send_it Whether to send the email
+ */
+function bp_docs_filter_ass_digest_record_activity_allow( $allow, $activity_id, $user_id ) {
+	$activity_obj = new BP_Activity_Activity( $activity_id );
+	return bp_docs_allow_activity_item_visibility( $allow, $activity_obj, $user_id );
+}
+add_filter( 'ass_digest_record_activity_allow', 'bp_docs_filter_ass_digest_record_activity_allow', 10, 3 );
+
+/**
+ * Should this user be allowed to see this activity object?
+ * Users should not see activity related to docs to which they do not have access.
+ *
+ * @since 1.9.1
+ *
+ * @param bool $allow        Should the user be able to see this activity item?
+ * @param bool $activity_obj The BP_Activity_Activity object
+ * @param int  $user_id      The user ID
+ *
+ * @return bool $allow Whether to allow this activity item to be accessible.
+ */
+function bp_docs_allow_activity_item_visibility( $allow, $activity_obj, $user_id = 0 ) {
+	if ( ! $user_id ) {
+		$user_id = bp_loggedin_user_id();
+	}
+
+	switch ( $activity_obj->type ) {
+		case 'bp_doc_created':
+		case 'bp_doc_edited':
+			$bp_docs_access_query = BP_Docs_Access_Query::init( $user_id );
+			$protected_doc_ids    = $bp_docs_access_query->get_doc_ids();
+
+			// For bp_doc_created and bp_doc_edited, the secondary_item_id is the doc_id.
+			if ( in_array( $activity_obj->secondary_item_id, $protected_doc_ids ) ) {
+				$allow = false;
+			}
+			break;
+
+		case 'bp_doc_comment':
+			$bp_docs_access_query  = BP_Docs_Access_Query::init( $user_id );
+			$protected_comment_ids = $bp_docs_access_query->get_comment_ids();
+
+			// For bp_doc_comment, the secondary_item_id is the comment ID.
+			if ( in_array( $activity_obj->secondary_item_id, $protected_comment_ids ) ) {
+				$allow = false;
+			}
+			break;
+
+		default:
+			// Do nothing.
+			break;
+	}
+
+	return $allow;
+}
