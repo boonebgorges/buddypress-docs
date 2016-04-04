@@ -638,4 +638,36 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 		$this->set_current_user( $old_current_user );
 	}
 
+	/**
+	 * @group bp_docs_access_query
+	 */
+	public function test_bp_docs_access_query_get_doc_ids_group_admins_mods() {
+		$old_current_user = get_current_user_id();
+
+		$u1 = $this->factory->user->create();
+		$this->set_current_user( $u1 );
+
+		$g = $this->factory->group->create( array(
+			'status' => 'public',
+			'creator_id' => $u1
+		) );
+
+		$d = $this->factory->doc->create( array(
+			'group' => $g,
+		) );
+		bp_docs_update_doc_access( $d, 'admins-mods' );
+
+		// We'll be a regular group-member.
+		$u2 = $this->factory->user->create();
+		$this->set_current_user( $u2 );
+		BP_UnitTestCase::add_user_to_group( $u2, $g );
+
+		$bp_docs_access_query = bp_docs_access_query();
+		$restricted_ids = $bp_docs_access_query->get_doc_ids();
+
+		$this->assertTrue( in_array( $d, $restricted_ids ) );
+
+		$this->set_current_user( $old_current_user );
+	}
+
 }
