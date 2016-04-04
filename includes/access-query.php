@@ -136,7 +136,13 @@ class BP_Docs_Access_Query {
 	 */
 	public function get_doc_ids() {
 		// Check the cache first.
-		$cache_key = 'bp_docs_forbidden_docs_for_user_' . $this->user_id;
+		$last_changed = wp_cache_get( 'last_changed', 'bp_docs_nonpersistent' );
+		if ( false === $last_changed ) {
+			$last_changed = microtime();
+			wp_cache_set( 'last_changed', $last_changed, 'bp_docs_nonpersistent' );
+		}
+
+		$cache_key = 'bp_docs_forbidden_docs_for_user_' . $this->user_id . '_' . $last_changed;
 		$cached = wp_cache_get( $cache_key, 'bp_docs_nonpersistent' );
 		if ( false !== $cached ) {
 			return $cached;
@@ -189,7 +195,13 @@ class BP_Docs_Access_Query {
 	 */
 	public function get_restricted_comment_doc_ids() {
 		// Check the cache first.
-		$cache_key = 'bp_docs_forbidden_comment_docs_for_user_' . $this->user_id;
+		$last_changed = wp_cache_get( 'last_changed', 'bp_docs_nonpersistent' );
+		if ( false === $last_changed ) {
+			$last_changed = microtime();
+			wp_cache_set( 'last_changed', $last_changed, 'bp_docs_nonpersistent' );
+		}
+
+		$cache_key = 'bp_docs_forbidden_comment_docs_for_user_' . $this->user_id . '_' . $last_changed;
 		$cached = wp_cache_get( $cache_key, 'bp_docs_nonpersistent' );
 		if ( false !== $cached ) {
 			return $cached;
@@ -241,8 +253,17 @@ class BP_Docs_Access_Query {
 	 * @since 1.9.1
 	 */
 	public function get_comment_ids() {
-		// Check the cache first.
-		$cache_key = 'bp_docs_forbidden_comments_for_user_' . $this->user_id;
+		/*
+		 * Check the cache first.
+		 * WordPress caches the 'last_changed' comment time, so let's use that.
+		 */
+		$last_changed = wp_cache_get( 'last_changed', 'comment' );
+		if ( false === $last_changed ) {
+			$last_changed = microtime();
+			wp_cache_set( 'last_changed', $last_changed, 'comment' );
+		}
+
+		$cache_key = 'bp_docs_forbidden_comments_for_user_' . $this->user_id . '_' . $last_changed;
 		$cached = wp_cache_get( $cache_key, 'bp_docs_nonpersistent' );
 		if ( false !== $cached ) {
 			return $cached;
@@ -377,3 +398,17 @@ function bp_docs_general_comment_protection( $query ) {
 	}
 }
 add_action( 'pre_get_comments', 'bp_docs_general_comment_protection' );
+
+/**
+ * Reset the 'last_changed' cache incrementor when posts are updated.
+ *
+ * Big hammer, small nail.
+ *
+ * @since 2.0.0
+ */
+function bp_docs_cache_invalidate_last_changed_incrementor() {
+	wp_cache_delete( 'last_changed', 'bp_docs_nonpersistent' );
+}
+add_action( 'save_post_bp_doc', 'bp_docs_cache_invalidate_last_changed_incrementor' );
+add_action( 'trashed_post', 'bp_docs_cache_invalidate_last_changed_incrementor' );
+add_action( 'set_object_terms', 'bp_docs_cache_invalidate_last_changed_incrementor' );
