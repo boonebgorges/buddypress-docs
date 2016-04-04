@@ -570,7 +570,7 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 		$old_current_user = get_current_user_id();
 
 		$d = $this->factory->doc->create();
-		bp_docs_update_doc_access( $d, bp_docs_get_access_term_loggedin() );
+		bp_docs_update_doc_access( $d, 'loggedin' );
 
 		// Pretend we're logged out.
 		$this->set_current_user( 0 );
@@ -594,7 +594,7 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 		$this->set_current_user( $u1 );
 
 		$d = $this->factory->doc->create();
-		bp_docs_update_doc_access( $d, bp_docs_get_access_term_user( $u1 ) );
+		bp_docs_update_doc_access( $d, 'creator' );
 
 		// Only the doc owner should have access.
 		$this->set_current_user( $u2 );
@@ -624,7 +624,7 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 		$d = $this->factory->doc->create( array(
 			'group' => $g,
 		) );
-		bp_docs_update_doc_access( $d, bp_docs_get_access_term_group_member( $g ) );
+		bp_docs_update_doc_access( $d, 'group-members' );
 
 		// We'll be a non-group-member.
 		$u2 = $this->factory->user->create();
