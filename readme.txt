@@ -34,7 +34,8 @@ This plugin is in active development. For feature requests and bug reports, visi
 == Changelog ==
 
 = 1.9.1 =
-* Styling improvements
+* Styling improvements.
+* Fixed bug in activity stream when referenced Doc was deleted.
 
 = 1.9.0 =
 * Docs can now be sorted into folders inside of groups.
