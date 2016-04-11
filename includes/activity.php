@@ -283,6 +283,10 @@ add_action( 'bp_register_activity_actions', 'bp_docs_register_activity_actions' 
  * @return string
  */
 function bp_docs_format_activity_action_bp_doc_created( $action, $activity ) {
+	if ( empty( $activity->secondary_item_id ) ) {
+		return $action;
+	}
+
 	$doc = get_post( $activity->secondary_item_id );
 	if ( ! $doc ) {
 		return $action;
@@ -308,6 +312,10 @@ function bp_docs_format_activity_action_bp_doc_created( $action, $activity ) {
  * @return string
  */
 function bp_docs_format_activity_action_bp_doc_edited( $action, $activity ) {
+	if ( empty( $activity->secondary_item_id ) ) {
+		return $action;
+	}
+
 	$doc = get_post( $activity->secondary_item_id );
 	if ( ! $doc ) {
 		return $action;
@@ -333,6 +341,11 @@ function bp_docs_format_activity_action_bp_doc_edited( $action, $activity ) {
  * @return string
  */
 function bp_docs_format_activity_action_bp_doc_comment( $action, $activity ) {
+	$comment = get_comment( $activity->secondary_item_id );
+	if ( ! $comment || ! $comment->comment_post_ID ) {
+		return $action;
+	}
+
 	$doc = get_post( $comment->comment_post_ID );
 	if ( ! $doc ) {
 		return $action;
@@ -340,7 +353,6 @@ function bp_docs_format_activity_action_bp_doc_comment( $action, $activity ) {
 
 	$user_link = bp_core_get_userlink( $activity->user_id );
 
-	$comment = get_comment( $activity->secondary_item_id );
 	$doc_url = bp_docs_get_doc_link( $doc->ID );
 	$comment_url = $doc_url . '#comment-' . $comment->comment_ID;
 	$doc_link = sprintf( '<a href="%s">%s</a>', $comment_url, $doc->post_title );
