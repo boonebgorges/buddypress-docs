@@ -173,9 +173,21 @@ class BP_Docs_Folders {
 		wp_register_style( 'bp-docs-chosen', plugins_url() . '/buddypress-docs/lib/css/chosen/chosen.min.css' );
 		wp_enqueue_style( 'bp-docs-folders', plugins_url() . '/buddypress-docs/includes/css/folders.css', array( 'bp-docs-chosen' ) );
 
+		/**
+		 * Filter whether Folders metabox should be force-shown.
+		 *
+		 * This will override any JS-based logic.
+		 *
+		 * @since 1.9.1
+		 *
+		 * @param bool $show
+		 */
+		$force_folders_metabox = apply_filters( 'bp_docs_folders_force_metabox', false );
+
 		wp_localize_script( 'bp-docs-folders', 'BP_Docs_Folders', array(
 			'folders_tab_label' => _x( 'Folders', 'Doc edit tab name', 'bp-docs' ),
 			'folders_tab_label_groups' => _x( 'Group Folders', 'Doc edit tab name', 'bp-docs' ),
+			'force_metabox' => $force_folders_metabox,
 		) );
 	}
 }
