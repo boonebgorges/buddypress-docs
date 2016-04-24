@@ -151,12 +151,18 @@ function bp_docs_post_activity( $query ) {
 		if ( !empty( $already_activity['activities'] ) ) {
 			$date_recorded 	= $already_activity['activities'][0]->date_recorded;
 			$drunix 	= strtotime( $date_recorded );
-			if ( time() - $drunix <= apply_filters( 'bp_docs_edit_activity_throttle_time', 60*60 ) )
+			if ( time() - $drunix <= apply_filters( 'bp_docs_edit_activity_throttle_time', 60*60 ) ) {
 				return;
+			}
 		}
 	}
 
 	$doc = get_post( $doc_id );
+
+	// Don't create activity if the Doc title or content hasn't changed.
+	if ( ! $query->is_new_doc && ( $query->previous_revision instanceof WP_Post ) && $doc->post_title === $query->previous_revision->post_title && $doc->post_content === $query->previous_revision->post_content ) {
+		return;
+	}
 
 	// Set the action. Filterable so that other integration pieces can alter it
 	$action 	= '';

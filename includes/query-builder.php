@@ -30,6 +30,17 @@ class BP_Docs_Query {
 	var $query;
 
 	/**
+	 * Pre-save revision.
+	 *
+	 * Can be used by action callbacks to determine whether various pieces of content have changed.
+	 *
+	 * @since 1.9.1
+	 *
+	 * @var WP_Post
+	 */
+	public $previous_revision;
+
+	/**
 	 * PHP 5 constructor
 	 *
 	 * @since 1.0-beta
@@ -505,6 +516,9 @@ class BP_Docs_Query {
 				$r['post_name'] = wp_unique_post_slug( $r['post_name'], $this->doc_id, $r['post_status'], $this->post_type_name, $doc->post_parent );
 
 				$this->doc_slug = $r['post_name'];
+
+				// Save pre-update post data, for comparison by callbacks.
+				$this->previous_revision = clone( $doc );
 
 				if ( !wp_update_post( $r ) ) {
 					$result['message'] = __( 'There was an error when saving the doc.', 'bp-docs' );
