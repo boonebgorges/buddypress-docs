@@ -249,10 +249,8 @@ class BP_Docs_Attachments {
 	 * @return string
 	 */
 	public function get_htaccess_path() {
-		if ( empty( $this->htaccess_path ) ) {
-			$upload_dir = wp_upload_dir();
-			$this->htaccess_path = $upload_dir['path'] . DIRECTORY_SEPARATOR . '.htaccess';
-		}
+		$upload_dir = wp_upload_dir( null, true, true );
+		$this->htaccess_path = $upload_dir['path'] . DIRECTORY_SEPARATOR . '.htaccess';
 
 		return $this->htaccess_path;
 	}
