@@ -1884,7 +1884,7 @@ function bp_docs_folders_meta_box() {
 			</p>
 
 			<div class="toggle-content">
-				<table class="toggle-table" id="toggle-table-tags">
+				<table class="toggle-table" id="toggle-table-folders">
 					<tr>
 						<td class="desc-column">
 							<label for="bp_docs_tag"><?php _e( 'Select a folder for this Doc.', 'bp-docs' ) ?></label>
