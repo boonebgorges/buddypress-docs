@@ -117,7 +117,7 @@ class BP_Docs_Access_Query {
 	/**
 	 * Returns the tax_query param for the WP_Query args
 	 *
-	 * @since 1.9.1
+	 * @since 2.0
 	 * @return array
 	 */
 	public function get_comment_tax_query() {
@@ -250,7 +250,7 @@ class BP_Docs_Access_Query {
 	/**
 	 * Fetch a list of Comment IDs that are forbidden for the user
 	 *
-	 * @since 1.9.1
+	 * @since 2.0
 	 */
 	public function get_comment_ids() {
 		/*
@@ -366,7 +366,7 @@ add_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
  * By catching the query at pre_get_comments, we ensure that all queries are
  * filtered appropriately.
  *
- * @since 1.9.1
+ * @since 2.0
  */
 function bp_docs_general_comment_protection( $query ) {
 

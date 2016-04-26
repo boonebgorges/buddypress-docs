@@ -426,7 +426,7 @@ add_action( 'bp_screens', 'bp_docs_load_activity_filter_options', 1 );
  * Access protection in the activity feed.
  * Users should not see activity related to docs to which they do not have access.
  *
- * @since 1.9.1
+ * @since 2.0
  *
  * @param $where_conditions
  */
@@ -486,7 +486,7 @@ add_filter( 'bp_activity_get_where_conditions', 'bp_docs_access_protection_for_a
  * Keep some activity items out of Group Email Subscription "all activity" emails.
  * Users should not see activity related to docs to which they do not have access.
  *
- * @since 1.9.1
+ * @since 2.0
  *
  * @param bool $allow        Whether to send the email
  * @param bool $activity_obj The BP_Activity_Activity object
@@ -503,7 +503,7 @@ add_filter( 'bp_ass_send_activity_notification_for_user', 'bp_docs_filter_bp_ass
  * Keep some activity items out of Group Email Subscription "digest" emails.
  * Users should not see activity related to docs to which they do not have access.
  *
- * @since 1.9.1
+ * @since 2.0
  *
  * @param bool $allow       Whether to include this activity item.
  * @param bool $activity_id ID of the activity item.
@@ -521,7 +521,7 @@ add_filter( 'ass_digest_record_activity_allow', 'bp_docs_filter_ass_digest_recor
  * Should this user be allowed to see this activity object?
  * Users should not see activity related to docs to which they do not have access.
  *
- * @since 1.9.1
+ * @since 2.0
  *
  * @param bool $allow        Should the user be able to see this activity item?
  * @param bool $activity_obj The BP_Activity_Activity object

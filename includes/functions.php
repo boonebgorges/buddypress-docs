@@ -42,7 +42,7 @@ function bp_docs_get_access_tax_name() {
 /**
  * Return the comment access taxonomy name
  *
- * @since 1.9.1
+ * @since 2.0
  */
 function bp_docs_get_comment_access_tax_name() {
 	return buddypress()->bp_docs->comment_access_tax_name;
@@ -747,7 +747,7 @@ function bp_docs_verify_settings( $settings, $doc_id, $user_id = 0 ) {
 	return $verified_settings;
 }
 
-// Doc "read" access taxonomy terms. ///////////////////////////////////////////
+/* Doc "read" access taxonomy terms. ******************************************/
 
 /**
  * Get the access term for 'anyone'
@@ -846,12 +846,12 @@ function bp_docs_update_doc_access( $doc_id, $access_setting = 'anyone' ) {
 
 }
 
-// Doc "read comments" access taxonomy terms. //////////////////////////////////
+/* Doc "read comments" access taxonomy terms. *********************************/
 
 /**
  * Get the comment access term for 'anyone'.
  *
- * @since 1.9.1
+ * @since 2.0
  * @return string The term slug
  */
 function bp_docs_get_comment_access_term_anyone() {
@@ -861,7 +861,7 @@ function bp_docs_get_comment_access_term_anyone() {
 /**
  * Get the comment access term for 'loggedin'.
  *
- * @since 1.9.1
+ * @since 2.0
  * @return string The term slug
  */
 function bp_docs_get_comment_access_term_loggedin() {
@@ -871,7 +871,7 @@ function bp_docs_get_comment_access_term_loggedin() {
 /**
  * Get the comment access term for a user id.
  *
- * @since 1.9.1
+ * @since 2.0
  * @param int|bool $user_id Defaults to logged in user
  * @return string The term slug
  */
@@ -886,7 +886,7 @@ function bp_docs_get_comment_access_term_user( $user_id = false ) {
 /**
  * Get the comment access term corresponding to group-members for a given group.
  *
- * @since 1.9.1
+ * @since 2.0
  * @param int $group_id
  * @return string The term slug
  */
@@ -897,7 +897,7 @@ function bp_docs_get_comment_access_term_group_member( $user_id = false ) {
 /**
  * Get the comment access term corresponding to admins-mods for a given group.
  *
- * @since 1.9.1
+ * @since 2.0
  * @param int $group_id
  * @return string The term slug
  */
@@ -908,7 +908,7 @@ function bp_docs_get_comment_access_term_group_adminmod( $user_id = false ) {
 /**
  * Update the comment access term for a doc.
  *
- * @since 1.9.1
+ * @since 2.0
  * @param int $group_id
  * @return string The term slug
  */
