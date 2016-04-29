@@ -435,6 +435,7 @@ class BP_Docs_Attachments {
 		if ( $has_attachment ) {
 			$post__in = $query->get( 'post__in' );
 			$att_posts = $this->get_docs_with_attachments();
+			$att_posts = empty( $att_posts ) ? array( 0 ) : $att_posts;
 			$query_arg = 'yes' === $has_attachment ? 'post__in' : 'post__not_in';
 			$query->set( $query_arg, array_merge( (array) $post__in, (array) $att_posts ) );
 		}
