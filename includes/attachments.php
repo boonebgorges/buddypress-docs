@@ -20,7 +20,7 @@ class BP_Docs_Attachments {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ), 20 );
 
 		add_action( 'pre_get_posts', array( $this, 'filter_gallery_posts' ) );
-		add_action( 'pre_get_posts', array( $this, 'filter_directory_posts' ) );
+		add_action( 'pre_get_posts', array( $this, 'filter_directory_posts' ), 48 );
 
 		// Add the tags filter markup
 		add_filter( 'bp_docs_filter_types', array( $this, 'filter_type' ) );
@@ -428,7 +428,7 @@ class BP_Docs_Attachments {
 			return;
 		}
 
-		remove_action( 'pre_get_posts', array( $this, 'filter_directory_posts' ) );
+		remove_action( 'pre_get_posts', array( $this, 'filter_directory_posts' ), 48 );
 
 		$has_attachment = isset( $_REQUEST['has-attachment'] ) && in_array( $_REQUEST['has-attachment'], array( 'yes', 'no' ) ) ? $_REQUEST['has-attachment'] : '';
 
@@ -440,7 +440,7 @@ class BP_Docs_Attachments {
 			$query->set( $query_arg, array_merge( (array) $post__in, (array) $att_posts ) );
 		}
 
-		add_action( 'pre_get_posts', array( $this, 'filter_directory_posts' ) );
+		add_action( 'pre_get_posts', array( $this, 'filter_directory_posts' ), 48 );
 	}
 
 	public function get_docs_with_attachments() {
