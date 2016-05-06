@@ -38,6 +38,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Fixed bug that could cause attachment filtering in directories to display off-limits Docs.
 * Styling improvements.
 * Fixed bug in activity stream when referenced Doc was deleted.
+* Added Catalan translation.
 
 = 1.9.0 =
 * Docs can now be sorted into folders inside of groups.
