@@ -1085,6 +1085,9 @@ table#post-revisions {
  * profile, so we essentially reset those styles to Twenty Sixteen values.
  */
 .bp-docs-theme-twentysixteen {
+	a img {
+		display: inherit;
+	}
 	.doctable th a {
 		color: white;
 	}

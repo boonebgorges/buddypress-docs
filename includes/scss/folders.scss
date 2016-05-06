@@ -148,6 +148,10 @@
 	display: none;
 }
 
+.folder-action-links {
+	overflow: hidden;
+}
+
 a#manage-folders-link {
 	float: right;
 	width: 200px;
@@ -236,7 +240,7 @@ body.js {
 div.manage-folders-link,
 div.toggle-folders-link {
 	float: left;
-	width: 100px;
+	width: 140px;
 	font-size: .8em;
 	margin-bottom: 1em;
 }

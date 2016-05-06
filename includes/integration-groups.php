@@ -819,6 +819,8 @@ class BP_Docs_Groups_Integration {
 	public function filter_bp_docs_page_links_base_url( $base_url, $wp_rewrite_pag_base  ) {
 		if ( bp_is_group() ) {
 			$base_url = user_trailingslashit( trailingslashit( bp_get_group_permalink() . bp_docs_get_docs_slug() ) . $wp_rewrite_pag_base . '/%#%/' );
+		} else if ( bp_docs_is_mygroups_directory() ) {
+			$base_url = user_trailingslashit( trailingslashit( bp_docs_get_mygroups_link() ) . $wp_rewrite_pag_base . '/%#%/' );
 		}
 		return $base_url;
 	}

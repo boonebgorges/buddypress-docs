@@ -405,6 +405,8 @@ class BP_Docs {
 				'index.php?post_type=' . $this->post_type_name . '&name=' . $wp_rewrite->preg_index( 1 ) . '&' . BP_DOCS_CREATE_SLUG . '=1',
 
 			// My Groups
+			bp_docs_get_docs_slug() . '/' . BP_DOCS_MY_GROUPS_SLUG . "/{$wp_rewrite->pagination_base}/([0-9]{1,})/?$" =>
+				'index.php?post_type=' . $this->post_type_name . '&' . BP_DOCS_MY_GROUPS_SLUG . '=1' . '&paged=' . $wp_rewrite->preg_index( 1 ),
 			bp_docs_get_docs_slug() . '/' . BP_DOCS_MY_GROUPS_SLUG . '/?$' =>
 				'index.php?post_type=' . $this->post_type_name . '&name=' . $wp_rewrite->preg_index( 1 ) . '&' . BP_DOCS_MY_GROUPS_SLUG . '=1',
 

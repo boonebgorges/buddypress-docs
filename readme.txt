@@ -3,8 +3,8 @@ Contributors: boonebgorges, cuny-academic-commons, dcavins
 Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.3, BuddyPress 1.5
-Tested up to: WordPress 4.4, BuddyPress 2.5
-Stable tag: 1.9.0
+Tested up to: WordPress 4.5, BuddyPress 2.5
+Stable tag: 1.9.1
 
 Adds collaborative Docs to BuddyPress.
 
@@ -32,6 +32,13 @@ This plugin is in active development. For feature requests and bug reports, visi
 1. Sit back and watch the jack roll in
 
 == Changelog ==
+
+= 1.9.1 =
+* Fixed bug where attachment filter could show all items when no items have attachments.
+* Fixed bug that could cause attachment filtering in directories to display off-limits Docs.
+* Styling improvements.
+* Fixed bug in activity stream when referenced Doc was deleted.
+* Added Catalan translation.
 
 = 1.9.0 =
 * Docs can now be sorted into folders inside of groups.
