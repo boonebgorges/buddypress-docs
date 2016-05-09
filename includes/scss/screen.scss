@@ -1325,6 +1325,11 @@ body.bp-docs-body-theme-twentysixteen article.type-bp_doc .entry-content {
 .genericon-downarrow:before {       content: '\f502'; }
 .genericon-leftarrow:before {       content: '\f503'; }
 
+.selected-tag {
+    font-weight: 900;
+    border: solid 1px;
+    padding: 0px 3px;
+}
 
 
 
