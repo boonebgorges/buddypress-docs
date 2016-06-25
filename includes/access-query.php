@@ -380,7 +380,6 @@ function bp_docs_general_comment_protection( $query ) {
 	$restricted_comment_doc_ids = $bp_docs_access_query->get_restricted_comment_doc_ids();
 
 	if ( ! empty( $restricted_comment_doc_ids ) ) {
-		$not_in = array();
 		if ( ! empty( $query->query_vars['post__not_in'] ) ) {
 			$query->query_vars['post__not_in'] = array_merge( (array) $query->query_vars['post__not_in'], $restricted_comment_doc_ids );
 		} else {
