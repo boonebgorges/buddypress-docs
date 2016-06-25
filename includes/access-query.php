@@ -379,22 +379,13 @@ function bp_docs_general_comment_protection( $query ) {
 	$bp_docs_access_query = bp_docs_access_query();
 	$restricted_comment_doc_ids = $bp_docs_access_query->get_restricted_comment_doc_ids();
 
-	if ( $query->query_vars['post_id'] || $query->query_vars['post__in'] ) {
-		// Is this a request for the comments of a specific post?
-		if ( $query->query_vars['post_id']  ) {
-			if ( in_array( $query->query_vars['post_id'] , $restricted_comment_doc_ids ) ) {
-				$query->query_vars['post_id'] = 0;
-			}
+	if ( ! empty( $restricted_comment_doc_ids ) ) {
+		$not_in = array();
+		if ( ! empty( $query->query_vars['post__not_in'] ) ) {
+			$query->query_vars['post__not_in'] = array_merge( (array) $query->query_vars['post__not_in'], $restricted_comment_doc_ids );
+		} else {
+			$query->query_vars['post__not_in'] = $restricted_comment_doc_ids;
 		}
-
-		// Is this a request for the comments of a group of posts?
-		if ( $query->query_vars['post__in'] ) {
-			$allowed_posts = array_diff( $query->query_vars['post__in'], $restricted_comment_doc_ids );
-			$query->query_vars['post__in'] = $allowed_posts;
-		}
-	} else {
-		// Other situations where the parent posts aren't specified.
-		$query->query_vars['post__not_in'] = $restricted_comment_doc_ids;
 	}
 }
 add_action( 'pre_get_comments', 'bp_docs_general_comment_protection' );
