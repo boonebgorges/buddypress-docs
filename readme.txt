@@ -33,6 +33,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 1.9.2 =
+* Fixed bug that caused attachments to be corrupted in some cases.
+
 = 1.9.1 =
 * Fixed bug where attachment filter could show all items when no items have attachments.
 * Fixed bug that could cause attachment filtering in directories to display off-limits Docs.
