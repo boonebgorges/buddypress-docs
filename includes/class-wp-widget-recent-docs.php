@@ -60,7 +60,7 @@ class BP_Docs_Widget_Recent_Docs extends WP_Widget {
 		$bp = buddypress();
 
 		// Store the existing doc_query, so ours is made from scratch.
-		$temp_doc_query = $bp->bp_docs->doc_query;
+		$temp_doc_query = isset( $bp->bp_docs->doc_query ) ? $bp->bp_docs->doc_query : null;
 		$bp->bp_docs->doc_query = null;
 
 		if ( ! isset( $args['widget_id'] ) ) {
