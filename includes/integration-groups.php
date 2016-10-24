@@ -491,7 +491,7 @@ class BP_Docs_Groups_Integration {
 		}
 
 		if ( $group_id && current_user_can( 'bp_docs_associate_with_group', $group_id ) ) {
-			$group = groups_get_group( 'group_id=' . intval( $group_id ) );
+			$group = groups_get_group( array( 'group_id' => intval( $group_id ) ) );
 
 			$options[40] = array(
 				'name'  => 'group-members',
@@ -533,7 +533,7 @@ class BP_Docs_Groups_Integration {
 	public static function user_can_associate_doc_with_group( $user_id, $group_id ) {
 		_deprecated_function( __FUNCTION__, '1.8', "Use current_user_can( 'bp_docs_associate_with_group' ) instead" );
 
-		$group = groups_get_group( 'group_id=' . intval( $group_id ) );
+		$group = groups_get_group( array( 'group_id' => intval( $group_id ) ) );
 
 		// No one can associate anything with a non-existent group
 		if ( empty( $group->name ) ) {
@@ -1605,7 +1605,7 @@ function bp_docs_unlink_from_group_link( $doc_id = false ) {
 	}
 
 function bp_docs_get_group_term( $group_id ) {
-	$group = groups_get_group( 'group_id=' . intval( $group_id ) );
+	$group = groups_get_group( array( 'group_id' => intval( $group_id ) ) );
 	$group_name = isset( $group->name ) ? $group->name : '';
 	return bp_docs_get_item_term_id( $group_id, 'group', $group_name );
 }
