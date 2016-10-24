@@ -1158,7 +1158,8 @@ body.bp-docs-body-theme-twentysixteen article.type-bp_doc .entry-content {
  * All Genericons
  */
 
-.bp-docs-container .genericon {
+.bp-docs-container .genericon,
+.doctable .genericon {
 	display: inline-block;
 	width: 24px;
 	height: 24px;
@@ -1181,7 +1182,8 @@ body.bp-docs-body-theme-twentysixteen article.type-bp_doc .entry-content {
  * IE7 and IE6 hacks
  */
 
-.bp-docs-container .genericon {
+.bp-docs-container .genericon,
+.doctable .genericon {
 	*overflow: auto;
 	*zoom: 1;
 	*display: inline;
