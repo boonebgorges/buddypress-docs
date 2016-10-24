@@ -136,7 +136,7 @@ function bp_docs_get_item_term_id( $item_id, $item_type, $item_name = '' ) {
 		// Set up the arguments for creating the term. Filter this to set your own
 		switch ( $item_type ) {
 			case 'group' :
-				$item = groups_get_group(array ('group_id' =>$item_id ));
+				$item = groups_get_group( array( 'group_id' => $item_id ) );
 				$item_name = $item->name;
 				break;
 
