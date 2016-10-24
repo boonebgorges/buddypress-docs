@@ -36,6 +36,8 @@ This plugin is in active development. For feature requests and bug reports, visi
 = 1.9.2 =
 * Fixed bug that caused attachments to be corrupted in some cases.
 * Fixed potential notice when using Docs widget.
+* Fixed broken attachment icon.
+* Improved compatibility with BuddyPress 2.7+.
 
 = 1.9.1 =
 * Fixed bug where attachment filter could show all items when no items have attachments.
