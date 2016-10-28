@@ -1226,6 +1226,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$g = $this->factory->group->create();
 		$old_current_user = get_current_user_id();
 		$u1 = $this->factory->user->create();
+		$this->add_user_to_group( $u1, $g );
 		$gm1 = new BP_Groups_Member( $u1, $g );
 		$gm1->promote( 'admin' );
 
