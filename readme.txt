@@ -4,7 +4,7 @@ Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.3, BuddyPress 1.5
 Tested up to: WordPress 4.6, BuddyPress 2.7
-Stable tag: 1.9.1
+Stable tag: 1.9.2
 
 Adds collaborative Docs to BuddyPress.
 
