@@ -153,7 +153,7 @@ function bp_docs_get_item_term_id( $item_id, $item_type, $item_name = '' ) {
 
 		// Create the item term
 		$item_term = wp_insert_term( $item_name, bp_docs_get_associated_item_tax_name(), $item_term_args );
-		$term_id = isset( $item_term['term_id'] ) ? $item_term['term_id'] : false;
+		$term_id = ( ! is_wp_error( $item_term ) && isset( $item_term['term_id'] ) ) ? $item_term['term_id'] : false;
 	} else {
 		$term_id = $item_term->term_id;
 	}
