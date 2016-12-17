@@ -563,7 +563,7 @@ function bp_docs_post_categories_meta_box( $post ) {
 					<a id="<?php echo $taxonomy; ?>-add-toggle" href="#<?php echo $taxonomy; ?>-add" class="hide-if-no-js" tabindex="3">
 						<?php
 							/* translators: %s: add new taxonomy label */
-							printf( __( '+ %s' ), $tax->labels->add_new_item );
+							printf( __( '+ %s', 'bp-docs' ), $tax->labels->add_new_item );
 						?>
 					</a>
 				</h4>

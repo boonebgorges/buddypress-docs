@@ -233,7 +233,7 @@ class BP_Docs_Admin {
 			return;
 
 		// Set up and add our widget
-		$recent_comments_title = __( 'Recent Comments' );
+		$recent_comments_title = __( 'Recent Comments', 'bp-docs' );
 
 		// Add our widget in the same location
 		wp_add_dashboard_widget( 'dashboard_recent_comments_bp_docs', $recent_comments_title, array( $this, 'wp_dashboard_recent_comments' ), 'wp_dashboard_recent_comments_control' );
@@ -307,7 +307,7 @@ class BP_Docs_Admin {
 		else :
 	?>
 
-		<p><?php _e( 'No comments yet.' ); ?></p>
+		<p><?php _e( 'No comments yet.', 'bp-docs' ); ?></p>
 
 	<?php
 		endif; // $comments;

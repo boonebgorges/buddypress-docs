@@ -348,7 +348,7 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
 	}
 
 	/* translators: post revision: 1: when, 2: author name */
-	$titlef = _x( '%1$s by %2$s', 'post revision' );
+	$titlef = _x( '%1$s by %2$s', 'post revision', 'bp-docs' );
 
 	if ( $parent )
 		array_unshift( $revisions, $post );
