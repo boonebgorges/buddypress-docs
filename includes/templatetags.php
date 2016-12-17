@@ -1350,8 +1350,8 @@ function bp_docs_paginate_links() {
 	$pagination_args = array(
 		'base' 		=> add_query_arg( 'paged', '%#%' ),
 		'format' 	=> '',
-		'prev_text' 	=> __('&laquo;'),
-		'next_text' 	=> __('&raquo;'),
+		'prev_text' 	=> __( '&laquo;', 'bp-docs' ),
+		'next_text' 	=> __( '&raquo;', 'bp-docs' ),
 		'total' 	=> $page_links_total,
 		'end_size'  => 2,
 	);
@@ -2163,7 +2163,7 @@ function bp_docs_attachment_item_markup( $attachment_id, $format = 'full' ) {
 			$attachment_delete_html = sprintf(
 				'<a href="%s" class="doc-attachment-delete confirm button">%s</a> ',
 				$attachment_delete_url,
-				__( 'Delete', 'buddypress' )
+				__( 'Delete', 'bp-docs' )
 			);
 		}
 

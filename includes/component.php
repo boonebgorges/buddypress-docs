@@ -148,7 +148,7 @@ class BP_Docs_Component extends BP_Component {
 			'root_slug'             => isset( $bp->pages->{$this->id}->slug ) ? $bp->pages->{$this->id}->slug : bp_docs_get_docs_slug(),
 			'has_directory'         => false, // Set to false if not required
 			'notification_callback' => 'bp_docs_format_notifications',
-			'search_string'         => __( 'Search Docs...', 'buddypress' ),
+			'search_string'         => __( 'Search Docs...', 'bp-docs' ),
 		);
 
 		// Let BP_Component::setup_globals() do its work.
@@ -309,7 +309,7 @@ class BP_Docs_Component extends BP_Component {
 
 		$parent_url = trailingslashit( bp_displayed_user_domain() . bp_docs_get_docs_slug() );
 
-		$mydocs_label = bp_is_my_profile() ? __( 'My Docs ', 'bp-docs' ) : sprintf( __( '%s&#8217;s Docs' ), bp_get_user_firstname( bp_get_displayed_user_fullname() ) );
+		$mydocs_label = bp_is_my_profile() ? __( 'My Docs ', 'bp-docs' ) : sprintf( __( '%s&#8217;s Docs', 'bp-docs' ), bp_get_user_firstname( bp_get_displayed_user_fullname() ) );
 
 		$sub_nav[] = array(
 			'name'            => bp_is_my_profile() ? __( 'Started By Me', 'bp-docs' ) : sprintf( __( 'Started By %s', 'bp-docs' ), bp_get_user_firstname() ),
