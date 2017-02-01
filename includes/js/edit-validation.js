@@ -40,6 +40,10 @@ function bpdv_refresh_access_settings() {
 		},
 		success: function(r) {
 			jQuery('#toggle-table-settings tbody').html(r);
+			//Add permissions cascade to access settings based on changing read setting
+			jQuery("select[name='settings[read]']").change(function(){
+				jQuery("select[name*='settings']").val( jQuery(this).val() );
+			});
 		}
 	});
 }
