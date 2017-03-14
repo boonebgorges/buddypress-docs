@@ -518,7 +518,7 @@ class BP_Docs_Query {
 				$this->doc_slug = $r['post_name'];
 
 				// Save pre-update post data, for comparison by callbacks.
-				$this->previous_revision = clone( $doc );
+				$this->previous_revision = clone $doc;
 
 				if ( !wp_update_post( $r ) ) {
 					$result['message'] = __( 'There was an error when saving the doc.', 'bp-docs' );

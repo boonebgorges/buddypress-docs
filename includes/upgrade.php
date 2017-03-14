@@ -278,7 +278,7 @@ function bp_docs_upgrade_1_2( $udata = array() ) {
 			if ( isset( $doc_settings['read'] ) ) {
 				$read_setting = $doc_settings['read'];
 			} else {
-				$group = groups_get_group( 'group_id=' . bp_docs_get_associated_group_id( $next_doc_id ) );
+				$group = groups_get_group( array( 'group_id' => bp_docs_get_associated_group_id( $next_doc_id ) ) );
 				if ( ! empty( $group->status ) && 'public' != $group->status ) {
 					$read_setting = 'group-members';
 

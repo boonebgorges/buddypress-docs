@@ -261,10 +261,14 @@ function bp_docs_cancel_edit_link() {
  * @since 1.1
  */
 function bp_docs_remove_edit_lock() {
-	$doc_id = isset( $_POST['doc_id'] ) ? $_POST['doc_id'] : false;
+	if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'bp_docs_save' ) ) {
+		return;
+	}
 
-	if ( !$doc_id )
-		return false;
+	$doc_id = isset( $_POST['doc_id'] ) ? $_POST['doc_id'] : false;
+	if ( ! $doc_id || ! current_user_can( 'bp_docs_edit', $doc_id ) ) {
+		return;
+	}
 
 	delete_post_meta( $doc_id, '_bp_docs_last_pinged' );
 }
