@@ -91,6 +91,7 @@ class BP_Docs_Attachments {
 				@header("{$name}: {$field_value}");
 			}
 
+			ob_end_clean();
 			readfile( $filepath );
 			exit();
 		}

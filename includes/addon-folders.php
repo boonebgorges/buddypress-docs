@@ -1827,7 +1827,7 @@ function bp_docs_create_new_folder_markup( $args = array() ) {
 	<div style="clear:both"></div>
 
 	<div class="folder-type-selector-div <?php echo $folder_type_class ?>">
-		<label for="new-folder-type"><?php _e( 'Folder type' ) ?></label>
+		<label for="new-folder-type"><?php _e( 'Folder type', 'bp-docs' ) ?></label>
 		<?php bp_docs_folder_type_selector( array(
 			'selected' => $r['selected'],
 			'id' => $r['folder_type_id'],
@@ -2225,7 +2225,7 @@ class BP_Docs_Folder_Dropdown_Walker extends Walker {
 
 		$title = $page->post_title . '&nbsp;';
 		if ( '' === $title ) {
-			$title = sprintf( __( '#%d (no title)' ), $page->ID );
+			$title = sprintf( __( '#%d (no title)', 'bp-docs' ), $page->ID );
 		}
 
 		$output .= $pad . esc_html( $title );

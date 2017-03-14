@@ -1036,7 +1036,7 @@ function bp_docs_associated_group_summary( $group_id = 0 ) {
 
 	$group_id = intval( $group_id );
 	if ( $group_id ) {
-		$group = groups_get_group( 'group_id=' . $group_id );
+		$group = groups_get_group( array( 'group_id' => $group_id ) );
 
 		if ( ! empty( $group->name ) ) {
 			$group_link = esc_url( bp_get_group_permalink( $group ) );
@@ -1350,8 +1350,8 @@ function bp_docs_paginate_links() {
 	$pagination_args = array(
 		'base' 		=> add_query_arg( 'paged', '%#%' ),
 		'format' 	=> '',
-		'prev_text' 	=> __('&laquo;'),
-		'next_text' 	=> __('&raquo;'),
+		'prev_text' 	=> __( '&laquo;', 'bp-docs' ),
+		'next_text' 	=> __( '&raquo;', 'bp-docs' ),
 		'total' 	=> $page_links_total,
 		'end_size'  => 2,
 	);
@@ -1612,7 +1612,7 @@ function bp_docs_doc_permissions_snapshot( $args = array() ) {
 		$doc_group_ids = bp_docs_get_associated_group_id( get_the_ID(), false, true );
 		$doc_groups = array();
 		foreach( $doc_group_ids as $dgid ) {
-			$maybe_group = groups_get_group( 'group_id=' . $dgid );
+			$maybe_group = groups_get_group( array( 'group_id' => $dgid ) );
 
 			// Don't show hidden groups if the
 			// current user is not a member
@@ -2163,7 +2163,7 @@ function bp_docs_attachment_item_markup( $attachment_id, $format = 'full' ) {
 			$attachment_delete_html = sprintf(
 				'<a href="%s" class="doc-attachment-delete confirm button">%s</a> ',
 				$attachment_delete_url,
-				__( 'Delete', 'buddypress' )
+				__( 'Delete', 'bp-docs' )
 			);
 		}
 

@@ -2,9 +2,9 @@
 # This file is distributed under the same license as the BuddyPress Docs package.
 msgid ""
 msgstr ""
-"Project-Id-Version: BuddyPress Docs 1.9.1\n"
+"Project-Id-Version: BuddyPress Docs 1.9.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/buddypress-docs\n"
-"POT-Creation-Date: 2016-05-06 18:31:13+00:00\n"
+"POT-Creation-Date: 2016-10-28 15:15:38+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -401,7 +401,7 @@ msgstr ""
 msgid "Group Tab Name"
 msgstr ""
 
-#: includes/admin.php:122 includes/attachments.php:570
+#: includes/admin.php:122 includes/attachments.php:571
 #: includes/templates/docs/single/edit.php:75
 #: includes/templates/docs/single/index.php:39 includes/templatetags.php:2239
 msgid "Attachments"
@@ -486,55 +486,55 @@ msgstr ""
 msgid "File not found."
 msgstr ""
 
-#: includes/attachments.php:340
+#: includes/attachments.php:341
 msgid "Attachment deleted"
 msgstr ""
 
-#: includes/attachments.php:342
+#: includes/attachments.php:343
 msgid "Could not delete attachment"
 msgstr ""
 
-#: includes/attachments.php:389 includes/component.php:974
+#: includes/attachments.php:390 includes/component.php:974
 msgid "Upload File"
 msgstr ""
 
-#: includes/attachments.php:390 includes/component.php:975
+#: includes/attachments.php:391 includes/component.php:975
 msgid "OK"
 msgstr ""
 
-#: includes/attachments.php:586
+#: includes/attachments.php:587
 msgid "Has attachment?"
 msgstr ""
 
-#: includes/attachments.php:588
+#: includes/attachments.php:589
 msgid "Yes"
 msgstr ""
 
-#: includes/attachments.php:589
+#: includes/attachments.php:590
 msgid "No"
 msgstr ""
 
-#: includes/attachments.php:590
+#: includes/attachments.php:591
 msgid "Doesn&#8217;t matter"
 msgstr ""
 
-#: includes/attachments.php:592
+#: includes/attachments.php:593
 msgid "Filter"
 msgstr ""
 
-#: includes/attachments.php:746
+#: includes/attachments.php:747
 msgid ""
 "It looks like you are running <strong>nginx</strong>. We recommend the "
 "following setting in your site configuration file:"
 msgstr ""
 
-#: includes/attachments.php:756
+#: includes/attachments.php:757
 msgid ""
 "It looks like you are running <strong>IIS 7</strong>. We recommend the "
 "following setting in your Web.config file:"
 msgstr ""
 
-#: includes/attachments.php:768
+#: includes/attachments.php:769
 msgid ""
 "It looks like you are running <strong>Apache</strong>. The most likely cause "
 "of your problem is that the <code>AllowOverride</code> directive has been "
@@ -542,18 +542,18 @@ msgid ""
 "<code>VirtualHost</code> definition. Contact your host for assistance."
 msgstr ""
 
-#: includes/attachments.php:774
+#: includes/attachments.php:775
 msgid ""
 "<strong>Your BuddyPress Docs attachments directory is publicly accessible.</"
 "strong> Doc attachments will not be properly protected from direct viewing, "
 "even if the parent Docs are non-public."
 msgstr ""
 
-#: includes/attachments.php:781
+#: includes/attachments.php:782
 msgid "See <a href=\"%s\">this wiki page</a> for more information."
 msgstr ""
 
-#: includes/attachments.php:784
+#: includes/attachments.php:785
 msgid "Dismiss this message"
 msgstr ""
 
@@ -584,7 +584,7 @@ msgstr ""
 msgid "Display post date?"
 msgstr ""
 
-#. #-#-#-#-#  bp-docs.pot (BuddyPress Docs 1.9.1)  #-#-#-#-#
+#. #-#-#-#-#  bp-docs.pot (BuddyPress Docs 1.9.2)  #-#-#-#-#
 #. Plugin Name of the plugin/theme
 #: includes/component.php:41
 msgid "BuddyPress Docs"
