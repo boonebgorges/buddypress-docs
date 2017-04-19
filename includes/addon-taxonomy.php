@@ -257,7 +257,7 @@ class BP_Docs_Taxonomy {
 	function tags_th() {
 		?>
 
-		<th scope="column" class="tags-cell"><?php _e( 'Tags', 'bp-docs' ); ?></th>
+		<th scope="col" class="tags-cell"><?php _e( 'Tags', 'bp-docs' ); ?></th>
 
 		<?php
 	}

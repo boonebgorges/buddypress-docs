@@ -415,7 +415,7 @@ msgstr ""
 msgid "Change the slug used to build Docs URLs."
 msgstr ""
 
-#: includes/admin.php:152
+#: includes/admin.php:153
 msgid ""
 "You have already defined this value in <code>wp-config.php</code>, so it "
 "cannot be edited here."

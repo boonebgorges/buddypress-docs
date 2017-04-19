@@ -726,7 +726,7 @@ class BP_Docs_Groups_Integration {
 
 		?>
 
-		<th scope="column" class="groups-cell"><?php _e( 'Group', 'bp-docs' ); ?></th>
+		<th scope="col" class="groups-cell"><?php _e( 'Group', 'bp-docs' ); ?></th>
 
 		<?php
 	}
