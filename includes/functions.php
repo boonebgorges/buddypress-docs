@@ -619,22 +619,27 @@ function bp_docs_get_default_access_options( $doc_id = 0, $group_id = 0 ) {
  *
  * @since 1.6.1
  * @param int $doc_id The numeric ID of the doc
- * @return null
+ * @return string Notice of access setting modification
  */
-function bp_docs_save_doc_access_settings( $doc_id ) {
+function bp_docs_save_doc_access_settings( $doc_id, $author_id, $settings ) {
+	if ( empty( $author_id ) ) {
+		$author_id = bp_loggedin_user_id();
+	}
+	$message = '';
+
 	// Two cases:
 	// 1. User is saving a doc for which he can update the access settings
-	if ( isset( $_POST['settings'] ) ) {
-		$settings = ! empty( $_POST['settings'] ) ? $_POST['settings'] : array();
-		$verified_settings = bp_docs_verify_settings( $settings, $doc_id, bp_loggedin_user_id() );
+	if ( ! empty( $settings ) ) {
+		$verified_settings = bp_docs_verify_settings( $settings, $doc_id, $author_id );
 
 		$new_settings = array();
 		foreach ( $verified_settings as $verified_setting_name => $verified_setting ) {
 			$new_settings[ $verified_setting_name ] = $verified_setting['verified_value'];
 			if ( $verified_setting['verified_value'] != $verified_setting['original_value'] ) {
-				$result['message'] = __( 'Your Doc was successfully saved, but some of your access settings have been changed to match the Doc\'s permissions.', 'bp-docs' );
+				$message = __( 'Your Doc was successfully saved, but some of your access settings have been changed to match the Doc\'s permissions.', 'bp-docs' );
 			}
 		}
+
 		update_post_meta( $doc_id, 'bp_docs_settings', $new_settings );
 
 		// The 'read' setting must also be saved to a taxonomy, for
@@ -656,6 +661,8 @@ function bp_docs_save_doc_access_settings( $doc_id ) {
 		// Do nothing.
 		// Leave the access settings intact.
 	}
+
+	return $message;
 }
 
 /**
@@ -1061,4 +1068,67 @@ function bp_docs_get_docs_directory_title() {
 		$title = __( 'Docs Directory', 'bp-docs' );
 	}
 	return apply_filters( 'bp_docs_directory_title', esc_html( $title ) );
+}
+
+/**
+ * Wrapper for the BP_Docs_Query->save() method for docs saved via the create/edit screens.
+ * Creates an args array from $_POST in the format that BP_Docs_Query->save() expects.
+ *
+ * @since 1.9
+ *
+ * @return boolean (success)
+ */
+function bp_docs_save_doc_via_post() {
+	// Defaults for the args that the save() method is expecting:
+	$args = array(
+		'doc_id'      => 0,
+		'title'       => '',
+		'content'     => '',
+		'permalink'   => '',
+		'author_id'   => 0,
+		'group_id'    => null, // Value of null does nothing; 0 will unset existing group association.
+		'is_auto'     => 0,
+		'taxonomies'  => array(),
+		'settings'    => array(),
+		'parent_id'   => 0,
+		);
+
+	if ( isset( $_POST['doc_id'] ) && 0 != $_POST['doc_id'] ) {
+		$args['doc_id'] = (int) $_POST['doc_id'];
+	}
+
+	if ( isset( $_POST['doc']['title'] ) ) {
+		$args['title'] = $_POST['doc']['title'];
+	}
+
+	// Using WP editor necessitated the change to $_POST['doc_content'].
+	// Maintain backward compatibility by checking $_POST['doc']['content'] too.
+	if ( isset( $_POST['doc_content'] ) ) {
+		$args['content'] = $_POST['doc_content'];
+	} else if ( isset( $_POST['doc']['content'] ) ) {
+		$args['content'] = $_POST['doc']['content'];
+	}
+
+	$args['permalink'] = isset( $_POST['doc']['permalink'] ) ? sanitize_title( $_POST['doc']['permalink'] ) : sanitize_title( $_POST['doc']['title'] );
+
+	$args['author_id'] = bp_loggedin_user_id();
+
+	if ( isset( $_POST['associated_group_id'] ) ) {
+		$args['group_id'] = intval( $_POST['associated_group_id'] );
+	}
+
+	if ( ! empty( $_POST['is_auto'] ) && $_POST['is_auto'] ) {
+		$args['is_auto'] = $_POST['is_auto'];
+	}
+
+	$args['taxonomies'] = apply_filters( 'bp_docs_prepare_terms_via_post', $args['taxonomies'] );
+
+	if ( ! empty( $_POST['settings'] ) ) {
+		$args['settings'] = $_POST['settings'];
+	}
+
+	$args['parent_id'] = apply_filters( 'bp_docs_get_parent_id_via_post', $args['parent_id'] );
+
+	$instance = new BP_Docs_Query;
+	return $instance->save( $args );
 }
