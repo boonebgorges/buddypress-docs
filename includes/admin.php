@@ -78,6 +78,16 @@ class BP_Docs_Admin {
 		);
 		register_setting( 'bp-docs-settings', 'bp-docs-excerpt-length', 'absint' );
 
+		// General - Docs Directory title
+		add_settings_field(
+			'bp-docs-directory-title',
+			__( 'Directory Title', 'bp-docs' ),
+			array( $this, 'directory_title_setting_markup' ),
+			'bp-docs-settings',
+			'bp-docs-general'
+		);
+		register_setting( 'bp-docs-settings', 'bp-docs-directory-title', 'sanitize_text_field' );
+
 		// Users
 		add_settings_section(
 			'bp-docs-users',
@@ -161,6 +171,17 @@ class BP_Docs_Admin {
 		<label for="bp-docs-excerpt-length" class="screen-reader-text"><?php _e( "Change the value for longer or shorter excerpts.", 'bp-docs' ) ?></label>
 		<input name="bp-docs-excerpt-length" id="bp-docs-excerpt-length" type="text" value="<?php echo esc_html( $length ) ?>" />
 		<p class="description"><?php _e( "Excerpts are shown on Docs directories, to provide better context. If your theme or language requires longer or shorter excerpts, change this value. Set to <code>0</code> to disable these excerpts.", 'bp-docs' ) ?></p>
+
+		<?php
+	}
+
+	public function directory_title_setting_markup() {
+		$label = bp_docs_get_docs_directory_title();
+
+		?>
+		<label for="bp-docs-directory-title" class="screen-reader-text"><?php _e( "Change the title of the main Docs directory.", 'bp-docs' ) ?></label>
+		<input name="bp-docs-directory-title" id="bp-docs-directory-title" type="text" value="<?php echo $label; ?>" />
+		<p class="description"><?php _e( "Change the title of the main Docs directory from 'Docs Directory' to whatever you&rsquo;d like.", 'bp-docs' ) ?></p>
 
 		<?php
 	}

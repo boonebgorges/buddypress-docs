@@ -1047,3 +1047,18 @@ function bp_docs_filter_active_components_unhook() {
 	remove_filter( 'bp_active_components', 'bp_docs_filter_active_components' );
 }
 add_action( 'bp_member_plugin_options_nav', 'bp_docs_filter_active_components_unhook' );
+
+/**
+ * Calculate the title of the main docs directory.
+ *
+ * @since 2.0
+ *
+ * @return string The title to be displayed in the page header.
+ */
+function bp_docs_get_docs_directory_title() {
+	$title = get_option( 'bp-docs-directory-title' );
+	if ( empty( $title ) ) {
+		$title = __( 'Docs Directory', 'bp-docs' );
+	}
+	return apply_filters( 'bp_docs_directory_title', esc_html( $title ) );
+}
