@@ -1087,16 +1087,17 @@ function bp_docs_get_docs_directory_title() {
 function bp_docs_save_doc_via_post() {
 	// Defaults for the array of args that the save() method is expecting:
 	$args = array(
-		'doc_id'      => 0,
-		'title'       => '',
-		'content'     => '',
-		'permalink'   => '',
-		'author_id'   => 0,
-		'group_id'    => null, // Value of null does nothing; 0 will unset existing group association.
-		'is_auto'     => 0,
-		'taxonomies'  => array(),
-		'settings'    => array(),
-		'parent_id'   => 0,
+		'doc_id'       => 0,
+		'title'        => '',
+		'content'      => '',
+		'permalink'    => '',
+		'author_id'    => 0,
+		'group_id'     => null, // Value of null does nothing; 0 will unset existing group association.
+		'is_auto'      => 0,
+		'taxonomies'   => array(),
+		'settings'     => array(),
+		'parent_id'    => 0,
+		'save_context' => 'post_data'
 		);
 
 	if ( isset( $_POST['doc_id'] ) && 0 != $_POST['doc_id'] ) {

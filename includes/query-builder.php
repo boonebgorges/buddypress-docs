@@ -437,7 +437,8 @@ class BP_Docs_Query {
 	 *                            'read_comments' => 'group-members',
 	 *                            'post_comments' => 'group-members',
 	 *                            'view_history' => 'creator' )
-	 *	      @type int   $parent_id The ID of the parent doc, if applicable.
+	 *	      @type int    $parent_id    The ID of the parent doc, if applicable.
+	 *	      @type string $save_context How this doc is being saved.
 	 *        }
 	 * @return array {
 	 *		  @type string $message_type Type of message, success or error.
@@ -462,6 +463,7 @@ class BP_Docs_Query {
 			'taxonomies'	=> array(),
 			'settings'		=> array(),
 			'parent_id'		=> 0,
+			'save_context'  => 'direct'
 			);
 
 		$args = wp_parse_args( $passed_args, $defaults );
