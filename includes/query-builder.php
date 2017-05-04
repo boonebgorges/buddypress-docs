@@ -474,27 +474,29 @@ class BP_Docs_Query {
 		$this->setup_terms(); // @TODO: Not sure what this is doing
 
 		// Set up the default value for the result message
-		$results = array(
-			'message' => __( 'Unknown error. Please try again.', 'bp-docs' ),
+		$result = array(
+			'error'    => false,
+			'message'  => __( 'Unknown error. Please try again.', 'bp-docs' ),
 			'redirect' => 'create'
 		);
 
-		// Check group associations
-		// @todo Move into group integration piece
-		if ( bp_is_active( 'groups' ) ) {
-			// Check whether the user can associate the doc with the group.
-			// $args['group_id'] could be null (untouched) or 0, which unsets existing association
-			if ( ! empty( $args['group_id'] ) && ! user_can( $args['author_id'], 'bp_docs_associate_with_group', $args['group_id'] ) ) {
-				$retval = array(
-					'message_type' => 'error',
-					'message' => __( 'You are not allowed to associate a Doc with that group.', 'bp-docs' ),
-					'redirect_url' => bp_docs_get_create_link(),
-				);
-				return $retval;
-			}
-		}
+		/**
+		 * Filters the default results array based on the passed args.
+		 * Returning $result['error'] = true will prevent the doc from being saved.
+		 *
+		 * @since 2.0.0
+		 *
+		 * @param array $args The default results array.
+		 * @param array $args The parameters for the doc about to be saved.
+		 */
+		$result = apply_filters( 'bp_docs_filter_result_before_save', $result, $args );
 
-		if ( empty( $args['title'] ) ) {
+		if ( true === $result['error'] ) {
+			/*
+			 * An extension has reported an error. Do not save.
+			 * Extension should also provide error message information.
+			 */
+		} elseif ( empty( $args['title'] ) ) {
 			// The title field is required
 			$result['message'] = __( 'The title field is required.', 'bp-docs' );
 			$result['redirect'] = ! empty( $this->doc_slug ) ? 'edit' : 'create';

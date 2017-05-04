@@ -40,6 +40,10 @@ class BP_Docs_Groups_Integration {
 		add_filter( 'bp_docs_this_doc_slug',		array( $this, 'get_doc_slug' ) );
 		add_filter( 'bp_docs_pre_query_args',           array( $this, 'pre_query_args' ), 10, 2 );
 
+		// Doc save actions.
+		add_action( 'bp_docs_filter_result_before_save', array( $this, 'pre_save_check_group_association' ), 10, 2 );
+		add_action( 'bp_docs_after_save',                array( $this, 'post_save_set_group_association' ), 10, 2 );
+
 		// Taxonomy helpers
 		add_filter( 'bp_docs_taxonomy_get_item_terms', 	array( $this, 'get_group_terms' ) );
 
@@ -312,6 +316,44 @@ class BP_Docs_Groups_Integration {
 	 * @param array $terms The terms to be saved to groupmeta
 	 */
 	function save_group_terms( $terms ) {}
+
+
+	/**
+	 * Check that the user saving the doc can associate the doc with a group,
+	 * when applicable.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @param array $args The parameters for the doc about to be saved.
+	 */
+	public function pre_save_check_group_association( $result, $args ) {
+		// Check whether the user can associate the doc with the group.
+		// $args['group_id'] could be null (untouched) or 0, which unsets existing association
+		if ( ! empty( $args['group_id'] ) && ! user_can( $args['author_id'], 'bp_docs_associate_with_group', $args['group_id'] ) ) {
+			$result['error']    = true;
+			$result['message']	= __( 'You are not allowed to associate a Doc with that group.', 'bp-docs' );
+			$result['redirect']	= 'create';
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Update group association for newly saved docs.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @param int   $id   The ID of the recently saved doc.
+	 * @param array $args The passed and filtered parameters for the doc
+	 *                    that was just saved.
+	 */
+	public function post_save_set_group_association( $post_id, $args ) {
+		// Add to a group, if necessary
+		if ( ! is_null( $args['group_id'] ) ) {
+			bp_docs_set_associated_group_id( $post_id, $args['group_id'] );
+		}
+	}
+
 
 	/**
 	 * Determine whether a user can edit the group doc in question
