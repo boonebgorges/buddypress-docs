@@ -1116,15 +1116,15 @@ function bp_docs_save_doc_via_post() {
 		$args['content'] = sanitize_post_field( 'post_content', $_POST['doc']['content'], 0, 'db' );
 	}
 
-	$args['permalink'] = isset( $_POST['doc']['permalink'] ) ? sanitize_title( $_POST['doc']['permalink'] ) : sanitize_title( $_POST['doc']['title'] );
+	$args['permalink'] = isset( $_POST['doc']['permalink'] ) ? sanitize_title( $_POST['doc']['permalink'] ) : sanitize_title( $args['title'] );
 
 	$args['author_id'] = bp_loggedin_user_id();
 
 	if ( isset( $_POST['associated_group_id'] ) ) {
-		$args['group_id'] = intval( $_POST['associated_group_id'] );
+		$args['group_id'] = absint( $_POST['associated_group_id'] );
 	}
 
-	if ( ! empty( $_POST['is_auto'] ) && $_POST['is_auto'] ) {
+	if ( ! empty( $_POST['is_auto'] ) ) {
 		$args['is_auto'] = $_POST['is_auto'];
 	}
 
