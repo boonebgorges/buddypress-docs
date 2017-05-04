@@ -566,8 +566,6 @@ class BP_Docs_Query {
 				$revision_count = get_post_meta( $this->doc_id, 'bp_docs_revision_count', true );
 				update_post_meta( $this->doc_id, 'bp_docs_revision_count', intval( $revision_count ) + 1 );
 
-
-
 				// Set successful save message.
 				if ( $this->is_new_doc ) {
 					// New doc saved.
@@ -595,7 +593,16 @@ class BP_Docs_Query {
 		// the WP admin handles automatically)
 		do_action( 'bp_docs_doc_saved', $this );
 
-		do_action( 'bp_docs_after_save', $this->doc_id );
+		/**
+		 * Fires after the doc has been saved.
+		 *
+		 * @since 2.0.0
+		 *
+		 * @param int   $id   The ID of the recently saved doc.
+		 * @param array $args The passed and filtered parameters for the doc
+		 *                    that was just saved.
+		 */
+		do_action( 'bp_docs_after_save', $this->doc_id, $args );
 
 		$message_type = $result['redirect'] == 'single' ? 'success' : 'error';
 
@@ -613,9 +620,9 @@ class BP_Docs_Query {
 
 		if ( $result['redirect'] == 'single' ) {
 			$redirect_url .= $this->doc_slug;
-		} else if ( $result['redirect'] == 'edit' ) {
+		} elseif ( $result['redirect'] == 'edit' ) {
 			$redirect_url .= $this->doc_slug . '/' . BP_DOCS_EDIT_SLUG;
-		} else if ( $result['redirect'] == 'create' ) {
+		} elseif ( $result['redirect'] == 'create' ) {
 			$redirect_url .= BP_DOCS_CREATE_SLUG;
 		}
 

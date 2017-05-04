@@ -1112,7 +1112,7 @@ function bp_docs_save_doc_via_post() {
 	// Maintain backward compatibility by checking $_POST['doc']['content'] too.
 	if ( isset( $_POST['doc_content'] ) ) {
 		$args['content'] = sanitize_post_field( 'post_content', $_POST['doc_content'], 0, 'db' );
-	} else if ( isset( $_POST['doc']['content'] ) ) {
+	} elseif ( isset( $_POST['doc']['content'] ) ) {
 		$args['content'] = sanitize_post_field( 'post_content', $_POST['doc']['content'], 0, 'db' );
 	}
 
@@ -1128,12 +1128,14 @@ function bp_docs_save_doc_via_post() {
 		$args['is_auto'] = $_POST['is_auto'];
 	}
 
+	// Calculate terms only if taxonomy addon is active.
 	$args['taxonomies'] = apply_filters( 'bp_docs_prepare_terms_via_post', $args['taxonomies'] );
 
 	if ( ! empty( $_POST['settings'] ) ) {
 		$args['settings'] = $_POST['settings'];
 	}
 
+	// Calculate parent_id only if hierarchy addon is active.
 	$args['parent_id'] = apply_filters( 'bp_docs_get_parent_id_via_post', $args['parent_id'] );
 
 	$instance = new BP_Docs_Query;
