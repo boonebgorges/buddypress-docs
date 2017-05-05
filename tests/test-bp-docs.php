@@ -245,7 +245,7 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 
 		// call manually because the hook is outside of the proper
 		// group document creation workflow
-		do_action( 'bp_docs_after_save', $d );
+		do_action( 'bp_docs_after_save', $d, array( 'group_id' => $g ) );
 
 		$this->assertNotEquals( $last_activity, groups_get_groupmeta( $g, 'last_activity' ) );
 	}

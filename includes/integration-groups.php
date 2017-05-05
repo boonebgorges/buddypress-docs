@@ -42,7 +42,7 @@ class BP_Docs_Groups_Integration {
 
 		// Doc save actions.
 		add_action( 'bp_docs_filter_result_before_save', array( $this, 'pre_save_check_group_association' ), 10, 2 );
-		add_action( 'bp_docs_after_save',                array( $this, 'post_save_set_group_association' ), 10, 2 );
+		add_action( 'bp_docs_after_save',                array( $this, 'post_save_set_group_association' ), 8, 2 );
 
 		// Taxonomy helpers
 		add_filter( 'bp_docs_taxonomy_get_item_terms', 	array( $this, 'get_group_terms' ) );
@@ -76,7 +76,7 @@ class BP_Docs_Groups_Integration {
 		add_filter( 'bp_docs_page_links_base_url', 		array( $this, 'filter_bp_docs_page_links_base_url' ), 10, 2 );
 
 		// Update group last active metadata when a doc is created, updated, or saved
-		add_filter( 'bp_docs_after_save',               array( $this, 'update_group_last_active' )  );
+		add_filter( 'bp_docs_after_save',               array( $this, 'update_group_last_active' ) );
 		add_filter( 'bp_docs_before_doc_delete',        array( $this, 'update_group_last_active' ) );
 		add_filter( 'wp_insert_comment',                array( $this, 'update_group_last_active_comment' ), 10, 2 );
 
