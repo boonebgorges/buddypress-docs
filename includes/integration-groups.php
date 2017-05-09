@@ -537,7 +537,7 @@ class BP_Docs_Groups_Integration {
 
 			$options[40] = array(
 				'name'  => 'group-members',
-				'label' => sprintf( __( 'Members of %s', 'bp-docs' ), $group->name )
+				'label' => sprintf( __( 'Members of %s', 'buddypress-docs' ), $group->name )
 			);
 
 			// "Admins and mods" setting only available to admins and mods
@@ -549,7 +549,7 @@ class BP_Docs_Groups_Integration {
 			if ( $is_admin || $is_mod ) {
 				$options[50] = array(
 					'name'  => 'admins-mods',
-					'label' => sprintf( __( 'Admins and mods of %s', 'bp-docs' ), $group->name )
+					'label' => sprintf( __( 'Admins and mods of %s', 'buddypress-docs' ), $group->name )
 				);
 			}
 
@@ -635,9 +635,9 @@ class BP_Docs_Groups_Integration {
 			$group_link = '<a href="' . $group_url . '">' . $group->name . '</a>';
 
 			if ( $is_new_doc ) {
-				$action = sprintf( __( '%1$s created the doc %2$s in the group %3$s', 'bp-docs' ), $user_link, $doc_link, $group_link );
+				$action = sprintf( __( '%1$s created the doc %2$s in the group %3$s', 'buddypress-docs' ), $user_link, $doc_link, $group_link );
 			} else {
-				$action = sprintf( __( '%1$s edited the doc %2$s in the group %3$s', 'bp-docs' ), $user_link, $doc_link, $group_link );
+				$action = sprintf( __( '%1$s edited the doc %2$s in the group %3$s', 'buddypress-docs' ), $user_link, $doc_link, $group_link );
 			}
 		}
 
@@ -692,7 +692,7 @@ class BP_Docs_Groups_Integration {
 			$group_url  = bp_get_group_permalink( $group );
 			$group_link = '<a href="' . $group_url . '">' . $group->name . '</a>';
 
-			$action 	= sprintf( __( '%1$s commented on the doc %2$s in the group %3$s', 'bp-docs' ), $user_link, $comment_link, $group_link );
+			$action 	= sprintf( __( '%1$s commented on the doc %2$s in the group %3$s', 'buddypress-docs' ), $user_link, $comment_link, $group_link );
 		}
 
 		return $action;
@@ -768,7 +768,7 @@ class BP_Docs_Groups_Integration {
 
 		?>
 
-		<th scope="column" class="groups-cell"><?php _e( 'Group', 'bp-docs' ); ?></th>
+		<th scope="column" class="groups-cell"><?php _e( 'Group', 'buddypress-docs' ); ?></th>
 
 		<?php
 	}
@@ -846,7 +846,7 @@ class BP_Docs_Groups_Integration {
 		// Only add this link to the in-group doc directory
 		if ( $group_id = bp_get_current_group_id() ) {
 			if ( current_user_can( 'bp_docs_dissociate_from_group', $group_id ) ) {
-				$links[] = '<a href="' . bp_docs_get_unlink_from_group_link( $doc_id, $group_id ) . '" class="unlink-from-group confirm">' . __( 'Unlink from Group', 'bp-docs' ) . '</a>';
+				$links[] = '<a href="' . bp_docs_get_unlink_from_group_link( $doc_id, $group_id ) . '" class="unlink-from-group confirm">' . __( 'Unlink from Group', 'buddypress-docs' ) . '</a>';
 			}
 		}
 		return $links;
@@ -936,7 +936,7 @@ class BP_Docs_Groups_Integration {
 				$doc_count = groups_get_groupmeta( $bp->groups->current_group->id, 'bp-docs-count' );
 			}
 
-			$bp->bp_options_nav[$group_slug][ $docs_slug ]['name'] = sprintf( __( '%s <span>%d</span>', 'bp-docs' ), $current_tab_name, $doc_count );
+			$bp->bp_options_nav[$group_slug][ $docs_slug ]['name'] = sprintf( __( '%s <span>%d</span>', 'buddypress-docs' ), $current_tab_name, $doc_count );
 		}
 	}
 
@@ -957,22 +957,22 @@ class BP_Docs_Groups_Integration {
 			// Get rid of the Docs title with Doc count (see buggy
 			// show_doc_count_in_tab()) and replace with Docs
 			array_pop( $title );
-			$title[] = __( 'Docs', 'bp-docs' );
+			$title[] = __( 'Docs', 'buddypress-docs' );
 
 			$doc = bp_docs_get_current_doc();
 
 			if ( empty( $doc->post_title ) ) {
 				// If post_title is empty, this is a New Doc screen
-				$title[] = __( 'New Doc', 'bp-docs' );
+				$title[] = __( 'New Doc', 'buddypress-docs' );
 			} else {
 				// Add the post title
 				$title[] = $doc->post_title;
 
 				if ( isset( $bp->action_variables[1] ) ) {
 					if ( BP_DOCS_EDIT_SLUG == $bp->action_variables[1] ) {
-						$title[] = __( 'Edit', 'bp-docs' );
+						$title[] = __( 'Edit', 'buddypress-docs' );
 					} else if ( BP_DOCS_HISTORY_SLUG == $bp->action_variables[1] ) {
-						$title[] = __( 'History', 'bp-docs' );
+						$title[] = __( 'History', 'buddypress-docs' );
 					}
 				}
 			}
@@ -1054,7 +1054,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 		$this->settings = bp_docs_get_group_settings( $this->maybe_group_id );
 		$this->group_enable		= !empty( $this->settings['group-enable'] ) ? true : false;
 
-		$this->name 			= !empty( $bp_docs_tab_name ) ? $bp_docs_tab_name : __( 'Docs', 'bp-docs' );
+		$this->name 			= !empty( $bp_docs_tab_name ) ? $bp_docs_tab_name : __( 'Docs', 'buddypress-docs' );
 
 		$this->slug 			= bp_docs_get_docs_slug();
 
@@ -1150,7 +1150,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 		// On the edit screen, we have to provide a save button
 		?>
 		<p>
-			<input type="submit" value="<?php _e( 'Save Changes', 'bp-docs' ) ?>" id="save" name="save" />
+			<input type="submit" value="<?php _e( 'Save Changes', 'buddypress-docs' ) ?>" id="save" name="save" />
 		</p>
 		<?php
 
@@ -1174,9 +1174,9 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 
 		/* To post an error/success message to the screen, use the following */
 		if ( !$success )
-			bp_core_add_message( __( 'There was an error saving, please try again', 'bp-docs' ), 'error' );
+			bp_core_add_message( __( 'There was an error saving, please try again', 'buddypress-docs' ), 'error' );
 		else
-			bp_core_add_message( __( 'Settings saved successfully', 'bp-docs' ) );
+			bp_core_add_message( __( 'Settings saved successfully', 'buddypress-docs' ) );
 
 		bp_core_redirect( bp_get_group_permalink( $bp->groups->current_group ) . 'admin/' . $this->slug );
 	}
@@ -1238,28 +1238,28 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 
 		?>
 
-		<h2><?php _e( 'Docs', 'bp-docs' ) ?></h2>
+		<h2><?php _e( 'Docs', 'buddypress-docs' ) ?></h2>
 
-		<p><?php _e( 'Docs is a powerful tool for collaboration with members of your group. A cross between document editor and wiki, Docs allows you to co-author and co-edit documents with your fellow group members, which you can then sort and tag in a way that helps your group to get work done.', 'bp-docs' ) ?></p>
+		<p><?php _e( 'Docs is a powerful tool for collaboration with members of your group. A cross between document editor and wiki, Docs allows you to co-author and co-edit documents with your fellow group members, which you can then sort and tag in a way that helps your group to get work done.', 'buddypress-docs' ) ?></p>
 
 		<p>
-			 <label for="bp-docs[group-enable]"> <input type="checkbox" name="bp-docs[group-enable]" id="bp-docs-group-enable" value="1" <?php checked( $group_enable, true ) ?> /> <?php _e( 'Enable Docs for this group', 'bp-docs' ) ?></label>
+			 <label for="bp-docs[group-enable]"> <input type="checkbox" name="bp-docs[group-enable]" id="bp-docs-group-enable" value="1" <?php checked( $group_enable, true ) ?> /> <?php _e( 'Enable Docs for this group', 'buddypress-docs' ) ?></label>
 		</p>
 
 		<div id="group-doc-options" <?php if ( !$group_enable ) : ?>class="hidden"<?php endif ?>>
-			<h3><?php _e( 'Options', 'bp-docs' ) ?></h3>
+			<h3><?php _e( 'Options', 'buddypress-docs' ) ?></h3>
 
 			<table class="group-docs-options">
 				<tr>
 					<td class="label">
-						<label for="bp-docs-can-create"><?php _e( 'Minimum role to associate Docs with this group:', 'bp-docs' ) ?></label>
+						<label for="bp-docs-can-create"><?php _e( 'Minimum role to associate Docs with this group:', 'buddypress-docs' ) ?></label>
 					</td>
 
 					<td>
 						<select name="bp-docs[can-create]" id="bp-docs-can-create">
-							<option value="admin" <?php selected( $can_create, 'admin' ) ?>><?php _e( 'Group admin', 'bp-docs' ) ?></option>
-							<option value="mod" <?php selected( $can_create, 'mod' ) ?>><?php _e( 'Group moderator', 'bp-docs' ) ?></option>
-							<option value="member" <?php selected( $can_create, 'member' ) ?>><?php _e( 'Group member', 'bp-docs' ) ?></option>
+							<option value="admin" <?php selected( $can_create, 'admin' ) ?>><?php _e( 'Group admin', 'buddypress-docs' ) ?></option>
+							<option value="mod" <?php selected( $can_create, 'mod' ) ?>><?php _e( 'Group moderator', 'buddypress-docs' ) ?></option>
+							<option value="member" <?php selected( $can_create, 'member' ) ?>><?php _e( 'Group member', 'buddypress-docs' ) ?></option>
 						</select>
 					</td>
 				</tr>
@@ -1440,10 +1440,10 @@ function bp_docs_group_tabs( $group = false ) {
 	$groups_slug = !empty( $bp->groups->root_slug ) ? $bp->groups->root_slug : $bp->groups->slug;
 
 ?>
-	<li<?php if ( $bp->bp_docs->current_view == 'list' ) : ?> class="current"<?php endif; ?>><a href="<?php echo $bp->root_domain . '/' . $groups_slug ?>/<?php echo $group->slug ?>/<?php echo $bp->bp_docs->slug ?>/"><?php _e( 'View Docs', 'bp-docs' ) ?></a></li>
+	<li<?php if ( $bp->bp_docs->current_view == 'list' ) : ?> class="current"<?php endif; ?>><a href="<?php echo $bp->root_domain . '/' . $groups_slug ?>/<?php echo $group->slug ?>/<?php echo $bp->bp_docs->slug ?>/"><?php _e( 'View Docs', 'buddypress-docs' ) ?></a></li>
 
 	<?php if ( current_user_can( 'bp_docs_create' ) ) : ?>
-		<li<?php if ( 'create' == $bp->bp_docs->current_view ) : ?> class="current"<?php endif; ?>><a href="<?php echo $bp->root_domain . '/' . $groups_slug ?>/<?php echo $group->slug ?>/<?php echo $bp->bp_docs->slug ?>/create"><?php _e( 'New Doc', 'bp-docs' ) ?></a></li>
+		<li<?php if ( 'create' == $bp->bp_docs->current_view ) : ?> class="current"<?php endif; ?>><a href="<?php echo $bp->root_domain . '/' . $groups_slug ?>/<?php echo $group->slug ?>/<?php echo $bp->bp_docs->slug ?>/create"><?php _e( 'New Doc', 'buddypress-docs' ) ?></a></li>
 	<?php endif ?>
 
 	<?php if ( bp_docs_is_existing_doc() ) : ?>
@@ -1670,7 +1670,7 @@ function bp_docs_get_term_slug_from_group_id( $group_id ) {
 function bp_docs_get_group_tab_name() {
 	$name = get_option( 'bp-docs-tab-name' );
 	if ( empty( $name ) ) {
-		$name = __( 'Docs', 'bp-docs' );
+		$name = __( 'Docs', 'buddypress-docs' );
 	}
 	return apply_filters( 'bp_docs_get_group_tab_name', $name );
 }
@@ -1689,7 +1689,7 @@ function bp_docs_group_directory_breadcrumb( $crumbs ) {
 			sprintf(
 				'<a href="%s">%s</a>',
 				bp_get_group_permalink( groups_get_current_group() ) . bp_docs_get_slug() . '/',
-				sprintf( _x( '%s&#8217;s Docs', 'group Docs directory breadcrumb', 'bp-docs' ), esc_html( bp_get_current_group_name() ) )
+				sprintf( _x( '%s&#8217;s Docs', 'group Docs directory breadcrumb', 'buddypress-docs' ), esc_html( bp_get_current_group_name() ) )
 			),
 		);
 

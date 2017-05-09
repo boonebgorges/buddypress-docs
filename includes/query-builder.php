@@ -478,7 +478,7 @@ class BP_Docs_Query {
 		// Set up the default value for the result message
 		$result = array(
 			'error'    => false,
-			'message'  => __( 'Unknown error. Please try again.', 'bp-docs' ),
+			'message'  => __( 'Unknown error. Please try again.', 'buddypress-docs' ),
 			'redirect' => 'create'
 		);
 
@@ -500,7 +500,7 @@ class BP_Docs_Query {
 			 */
 		} elseif ( empty( $args['title'] ) ) {
 			// The title field is required
-			$result['message'] = __( 'The title field is required.', 'bp-docs' );
+			$result['message'] = __( 'The title field is required.', 'buddypress-docs' );
 			$result['redirect'] = ! empty( $this->doc_slug ) ? 'edit' : 'create';
 		} else {
 			// Is this a new doc? If we can't find a saved slug, we assume yes.
@@ -537,10 +537,10 @@ class BP_Docs_Query {
 			if ( ! $this->doc_id ) {
 				// Failed to save. Set error message.
 				if ( $this->is_new_doc  ) {
-					$result['message'] = __( 'There was an error when creating the doc.', 'bp-docs' );
+					$result['message'] = __( 'There was an error when creating the doc.', 'buddypress-docs' );
 					$result['redirect'] = 'create';
 				} else {
-					$result['message'] = __( 'There was an error when saving the doc.', 'bp-docs' );
+					$result['message'] = __( 'There was an error when saving the doc.', 'buddypress-docs' );
 					$result['redirect'] = 'edit';
 				}
 			} else {

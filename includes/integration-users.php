@@ -272,7 +272,7 @@ class BP_Docs_Users_Integration {
 function bp_docs_get_user_tab_name() {
 	$name = get_option( 'bp-docs-user-tab-name' );
 	if ( empty( $name ) ) {
-		$name = __( 'Docs', 'bp-docs' );
+		$name = __( 'Docs', 'buddypress-docs' );
 	}
 	return apply_filters( 'bp_docs_get_user_tab_name', $name );
 }
@@ -291,7 +291,7 @@ function bp_docs_user_directory_breadcrumb( $crumbs ) {
 			sprintf(
 				'<a href="%s">%s</a>',
 				bp_displayed_user_domain() . bp_docs_get_slug() . '/',
-				sprintf( _x( '%s&#8217;s Docs', 'user Docs directory breadcrumb', 'bp-docs' ), esc_html( bp_get_displayed_user_fullname() ) )
+				sprintf( _x( '%s&#8217;s Docs', 'user Docs directory breadcrumb', 'buddypress-docs' ), esc_html( bp_get_displayed_user_fullname() ) )
 			),
 		);
 
@@ -300,7 +300,7 @@ function bp_docs_user_directory_breadcrumb( $crumbs ) {
 				$user_crumbs[] = sprintf(
 					'<a href="%s">%s</a>',
 					bp_docs_get_mydocs_started_link(),
-					__( 'Started By Me', 'bp-docs' )
+					__( 'Started By Me', 'buddypress-docs' )
 				);
 
 				break;
@@ -309,7 +309,7 @@ function bp_docs_user_directory_breadcrumb( $crumbs ) {
 				$user_crumbs[] = sprintf(
 					'<a href="%s">%s</a>',
 					bp_docs_get_mydocs_edited_link(),
-					__( 'Edited By Me', 'bp-docs' )
+					__( 'Edited By Me', 'buddypress-docs' )
 				);
 
 				break;

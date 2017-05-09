@@ -13,14 +13,14 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 
 	<?php if ( bp_docs_is_doc_edit_locked() && current_user_can( 'bp_docs_edit' ) ) : ?>
 		<div class="toggleable doc-is-locked">
-			<span class="toggle-switch" id="toggle-doc-is-locked"><?php _e( 'Locked', 'bp-docs' ) ?> <span class="hide-if-no-js description"><?php _e( '(click for more info)', 'bp-docs' ) ?></span></span>
+			<span class="toggle-switch" id="toggle-doc-is-locked"><?php _e( 'Locked', 'buddypress-docs' ) ?> <span class="hide-if-no-js description"><?php _e( '(click for more info)', 'buddypress-docs' ) ?></span></span>
 			<div class="toggle-content">
-				<p><?php printf( __( 'This doc is currently being edited by %1$s. In order to prevent edit conflicts, only one user can edit a doc at a time.', 'bp-docs' ), bp_docs_get_current_doc_locker_name() ) ?></p>
+				<p><?php printf( __( 'This doc is currently being edited by %1$s. In order to prevent edit conflicts, only one user can edit a doc at a time.', 'buddypress-docs' ), bp_docs_get_current_doc_locker_name() ) ?></p>
 
 				<?php if ( is_super_admin() || bp_group_is_admin() ) : ?>
-					<p><?php printf( __( 'Please try again in a few minutes. Or, as an admin, you can <a href="%s">force cancel</a> the edit lock.', 'bp-docs' ), bp_docs_get_force_cancel_edit_lock_link() ) ?></p>
+					<p><?php printf( __( 'Please try again in a few minutes. Or, as an admin, you can <a href="%s">force cancel</a> the edit lock.', 'buddypress-docs' ), bp_docs_get_force_cancel_edit_lock_link() ) ?></p>
 				<?php else : ?>
-					<p><?php _e( 'Please try again in a few minutes.', 'bp-docs' ) ?></p>
+					<p><?php _e( 'Please try again in a few minutes.', 'buddypress-docs' ) ?></p>
 				<?php endif ?>
 			</div>
 		</div>
@@ -36,7 +36,7 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 
 	<?php if ( bp_docs_enable_attachments() && bp_docs_doc_has_attachments() ) : ?>
 		<div class="doc-attachments">
-			<h3><?php _e( 'Attachments', 'bp-docs' ) ?></h3>
+			<h3><?php _e( 'Attachments', 'buddypress-docs' ) ?></h3>
 			<?php include ( bp_docs_locate_template( 'single/attachments.php' ) ) ?>
 		</div>
 	<?php endif ?>

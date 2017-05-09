@@ -37,7 +37,7 @@ function bp_docs_upgrade_notice() {
 
 	if ( ! empty( $_GET['bp_docs_upgraded'] ) ) {
 		flush_rewrite_rules(); // just in case. Hack
-		echo '<div class="updated message"><p>' . __( 'Upgrade complete!', 'bp-docs' ) . '</p></div>';
+		echo '<div class="updated message"><p>' . __( 'Upgrade complete!', 'buddypress-docs' ) . '</p></div>';
 	}
 
 	$upgrades = bp_docs_upgrade_check();
@@ -58,8 +58,8 @@ function bp_docs_upgrade_notice() {
 
 	?>
 	<div class="message error">
-		<p><?php _e( 'Thanks for updating BuddyPress Docs. We need to run a few quick operations before your new Docs is ready to use.', 'bp-docs' ) ?></p>
-		<p><strong><a href="<?php echo admin_url( 'edit.php?post_type=bp_doc&page=bp-docs-upgrade' ) ?>"><?php _e( 'Click here to start the upgrade.', 'bp-docs' ) ?></a></strong></p>
+		<p><?php _e( 'Thanks for updating BuddyPress Docs. We need to run a few quick operations before your new Docs is ready to use.', 'buddypress-docs' ) ?></p>
+		<p><strong><a href="<?php echo admin_url( 'edit.php?post_type=bp_doc&page=bp-docs-upgrade' ) ?>"><?php _e( 'Click here to start the upgrade.', 'buddypress-docs' ) ?></a></strong></p>
 	</div>
 	<?php
 }
@@ -67,8 +67,8 @@ function bp_docs_upgrade_notice() {
 function bp_docs_upgrade_menu() {
 	add_submenu_page(
 		'edit.php?post_type=' . bp_docs_get_post_type_name(),
-		__( 'BuddyPress Docs Upgrade', 'bp-docs' ),
-		__( 'Upgrade', 'bp-docs' ),
+		__( 'BuddyPress Docs Upgrade', 'buddypress-docs' ),
+		__( 'Upgrade', 'buddypress-docs' ),
 		'bp_moderate',
 		'bp-docs-upgrade',
 		'bp_docs_upgrade_render'
@@ -88,7 +88,7 @@ function bp_docs_upgrade_render() {
 
 	?>
 	<div class="wrap">
-		<h2><?php _e( 'BuddyPress Docs Upgrade', 'bp-docs' ) ?></h2>
+		<h2><?php _e( 'BuddyPress Docs Upgrade', 'buddypress-docs' ) ?></h2>
 
 		<?php if ( 'none' == $status ) : ?>
 			<?php
@@ -96,15 +96,15 @@ function bp_docs_upgrade_render() {
 				$url = wp_nonce_url( $url, 'bp-docs-upgrade' );
 			?>
 
-			<p><?php _e( 'Thanks for updating BuddyPress Docs. We need to run a few quick operations before your new Docs is ready to use.', 'bp-docs' ) ?></p>
+			<p><?php _e( 'Thanks for updating BuddyPress Docs. We need to run a few quick operations before your new Docs is ready to use.', 'buddypress-docs' ) ?></p>
 
-			<a class="button primary" href="<?php echo $url ?>"><?php _e( 'Start the upgrade', 'bp-docs' ) ?></a>
+			<a class="button primary" href="<?php echo $url ?>"><?php _e( 'Start the upgrade', 'buddypress-docs' ) ?></a>
 
 		<?php elseif ( 'upgrade' == $status ) : ?>
 
 			<?php check_admin_referer( 'bp-docs-upgrade' ) ?>
 
-			<p><?php _e( 'Migrating...', 'bp-docs' ) ?></p>
+			<p><?php _e( 'Migrating...', 'buddypress-docs' ) ?></p>
 
 			<?php
 				$upgrade_status = bp_get_option( 'bp_docs_upgrade' );
@@ -135,7 +135,7 @@ function bp_docs_upgrade_render() {
 
 		<?php elseif ( 'complete' == $status ) : ?>
 
-			<p><?php printf( __( 'Migration complete! <a href="%s">Dashboard</a>', 'bp-docs' ), admin_url() ) ?></p>
+			<p><?php printf( __( 'Migration complete! <a href="%s">Dashboard</a>', 'buddypress-docs' ), admin_url() ) ?></p>
 
 		<?php endif ?>
 	</div>
@@ -240,7 +240,7 @@ function bp_docs_upgrade_1_2( $udata = array() ) {
 
 			foreach ( $group_terms as $group_term ) {
 				// Concatenate new term slugs
-				$new_desc = sprintf( __( 'Docs associated with the group %s', 'bp-docs' ), $group_term->description );
+				$new_desc = sprintf( __( 'Docs associated with the group %s', 'buddypress-docs' ), $group_term->description );
 				$new_slug = 'bp_docs_associated_group_' . $group_term->name;
 				$new_name = $group_term->description;
 
@@ -255,7 +255,7 @@ function bp_docs_upgrade_1_2( $udata = array() ) {
 
 		// Store that we're done
 		$udata['group_terms_migrated'] = 1;
-		$udata['message'] = __( 'Group terms migrated. Now migrating Doc access terms....', 'bp-docs' );
+		$udata['message'] = __( 'Group terms migrated. Now migrating Doc access terms....', 'buddypress-docs' );
 		$udata['refresh_url'] = add_query_arg( array(
 			'do_upgrade' => '1',
 			'_wpnonce'   => wp_create_nonce( 'bp-docs-upgrade' ),
@@ -303,7 +303,7 @@ function bp_docs_upgrade_1_2( $udata = array() ) {
 			$counter++;
 			$udata['done']++;
 			$udata['last'] = $next_doc_id;
-			$udata['message'] = sprintf( __( 'Migrated %s of %s Docs. Migrating....', 'bp-docs' ), $udata['done'], $udata['total'] );
+			$udata['message'] = sprintf( __( 'Migrated %s of %s Docs. Migrating....', 'buddypress-docs' ), $udata['done'], $udata['total'] );
 			$udata['refresh_url'] = add_query_arg( array(
 				'do_upgrade' => '1',
 				'_wpnonce'   => wp_create_nonce( 'bp-docs-upgrade' ),

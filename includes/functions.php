@@ -156,7 +156,7 @@ function bp_docs_get_item_term_id( $item_id, $item_type, $item_name = '' ) {
 		}
 
 		$item_term_args = apply_filters( 'bp_docs_item_term_values', array(
-			'description' => sprintf( _x( 'Docs associated with the %1$s %2$s', 'Description for the associated-item taxonomy term. Of the form "Docs associated with the [item-type] [item-name]" - item-type is group, user, etc', 'bp-docs' ), $item_type, $item_name ),
+			'description' => sprintf( _x( 'Docs associated with the %1$s %2$s', 'Description for the associated-item taxonomy term. Of the form "Docs associated with the [item-type] [item-name]" - item-type is group, user, etc', 'buddypress-docs' ), $item_type, $item_name ),
 			'slug'        => $item_term_slug,
 		) );
 
@@ -545,12 +545,12 @@ function bp_docs_get_access_options( $settings_field, $doc_id = 0, $group_id = 0
 	$options = array(
 		20 => array(
 			'name'  => 'loggedin',
-			'label' => __( 'Logged-in Users', 'bp-docs' ),
+			'label' => __( 'Logged-in Users', 'buddypress-docs' ),
 			'default' => 1 // default to 'loggedin' for most options. See below for override
 		),
 		90 => array(
 			'name'  => 'creator',
-			'label' => __( 'The Doc author only', 'bp-docs' )
+			'label' => __( 'The Doc author only', 'buddypress-docs' )
 		),
 	);
 
@@ -566,7 +566,7 @@ function bp_docs_get_access_options( $settings_field, $doc_id = 0, $group_id = 0
 	if ( in_array( $settings_field, array( 'read', 'read_comments', 'post_comments', 'view_history' ) ) ) {
 		$options[10] = array(
 			'name'  => 'anyone',
-			'label' => __( 'Anyone', 'bp-docs' ),
+			'label' => __( 'Anyone', 'buddypress-docs' ),
 			'default' => 1
 		);
 
@@ -636,7 +636,7 @@ function bp_docs_save_doc_access_settings( $doc_id, $author_id, $settings ) {
 		foreach ( $verified_settings as $verified_setting_name => $verified_setting ) {
 			$new_settings[ $verified_setting_name ] = $verified_setting['verified_value'];
 			if ( $verified_setting['verified_value'] != $verified_setting['original_value'] ) {
-				$message = __( 'Your Doc was successfully saved, but some of your access settings have been changed to match the Doc\'s permissions.', 'bp-docs' );
+				$message = __( 'Your Doc was successfully saved, but some of your access settings have been changed to match the Doc\'s permissions.', 'buddypress-docs' );
 			}
 		}
 
@@ -1065,7 +1065,7 @@ add_action( 'bp_member_plugin_options_nav', 'bp_docs_filter_active_components_un
 function bp_docs_get_docs_directory_title() {
 	$title = get_option( 'bp-docs-directory-title' );
 	if ( empty( $title ) ) {
-		$title = __( 'Docs Directory', 'bp-docs' );
+		$title = __( 'Docs Directory', 'buddypress-docs' );
 	}
 	return apply_filters( 'bp_docs_directory_title', esc_html( $title ) );
 }

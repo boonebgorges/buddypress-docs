@@ -10,19 +10,19 @@
 			<?php endif ?>
 
 			<th scope="column" class="title-cell<?php bp_docs_is_current_orderby_class( 'title' ) ?>">
-				<a href="<?php bp_docs_order_by_link( 'title' ) ?>"><?php _e( 'Title', 'bp-docs' ); ?></a>
+				<a href="<?php bp_docs_order_by_link( 'title' ) ?>"><?php _e( 'Title', 'buddypress-docs' ); ?></a>
 			</th>
 
 			<th scope="column" class="author-cell<?php bp_docs_is_current_orderby_class( 'author' ) ?>">
-				<a href="<?php bp_docs_order_by_link( 'author' ) ?>"><?php _e( 'Author', 'bp-docs' ); ?></a>
+				<a href="<?php bp_docs_order_by_link( 'author' ) ?>"><?php _e( 'Author', 'buddypress-docs' ); ?></a>
 			</th>
 
 			<th scope="column" class="created-date-cell<?php bp_docs_is_current_orderby_class( 'created' ) ?>">
-				<a href="<?php bp_docs_order_by_link( 'created' ) ?>"><?php _e( 'Created', 'bp-docs' ); ?></a>
+				<a href="<?php bp_docs_order_by_link( 'created' ) ?>"><?php _e( 'Created', 'buddypress-docs' ); ?></a>
 			</th>
 
 			<th scope="column" class="edited-date-cell<?php bp_docs_is_current_orderby_class( 'modified' ) ?>">
-				<a href="<?php bp_docs_order_by_link( 'modified' ) ?>"><?php _e( 'Last Edited', 'bp-docs' ); ?></a>
+				<a href="<?php bp_docs_order_by_link( 'modified' ) ?>"><?php _e( 'Last Edited', 'buddypress-docs' ); ?></a>
 			</th>
 
 			<?php do_action( 'bp_docs_loop_additional_th' ) ?>
@@ -75,7 +75,7 @@
 
 	<div id="bp-docs-pagination">
 		<div id="bp-docs-pagination-count">
-			<?php printf( __( 'Viewing %1$s-%2$s of %3$s docs', 'bp-docs' ), bp_docs_get_current_docs_start(), bp_docs_get_current_docs_end(), bp_docs_get_total_docs_num() ) ?>
+			<?php printf( __( 'Viewing %1$s-%2$s of %3$s docs', 'buddypress-docs' ), bp_docs_get_current_docs_start(), bp_docs_get_current_docs_end(), bp_docs_get_total_docs_num() ) ?>
 		</div>
 
 		<div id="bp-docs-paginate-links">
@@ -86,9 +86,9 @@
 <?php else: ?>
 
         <?php if ( bp_docs_current_user_can_create_in_context() ) : ?>
-                <p class="no-docs"><?php printf( __( 'There are no docs for this view. Why not <a href="%s">create one</a>?', 'bp-docs' ), bp_docs_get_create_link() ) ?>
+                <p class="no-docs"><?php printf( __( 'There are no docs for this view. Why not <a href="%s">create one</a>?', 'buddypress-docs' ), bp_docs_get_create_link() ) ?>
 	<?php else : ?>
-		<p class="no-docs"><?php _e( 'There are no docs for this view.', 'bp-docs' ) ?></p>
+		<p class="no-docs"><?php _e( 'There are no docs for this view.', 'buddypress-docs' ) ?></p>
         <?php endif ?>
 
 <?php endif ?>

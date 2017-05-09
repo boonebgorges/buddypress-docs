@@ -256,7 +256,7 @@ class BP_Docs_Theme_Compat {
 	public function create_dummy_post() {
 		bp_theme_compat_reset_post( array(
 			'ID'             => 0,
-			'post_title'     => __( 'Create a Doc', 'bp-docs' ),
+			'post_title'     => __( 'Create a Doc', 'buddypress-docs' ),
 			'post_author'    => get_current_user_id(),
 			'post_date'      => 0,
 			'post_content'   => '',

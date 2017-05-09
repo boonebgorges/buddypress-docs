@@ -138,7 +138,7 @@ function bp_docs_edit_parent_dropdown() {
 		'include'          => $include,
 		'selected'         => $parent,
 		'name'             => 'parent_id',
-		'show_option_none' => __( '(no parent)', 'bp-docs' ),
+		'show_option_none' => __( '(no parent)', 'buddypress-docs' ),
 		'sort_column'      => 'menu_order, post_title',
 		'echo'             => 0 )
 	);

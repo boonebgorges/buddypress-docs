@@ -115,7 +115,7 @@ class BP_Docs_Hierarchy {
 				$parent_url = bp_docs_get_doc_link( $parent->ID );
 				$parent_title = $parent->post_title;
 
-				$html = "<p>" . __( 'Parent: ', 'bp-docs' ) . "<a href=\"$parent_url\" title=\"$parent_title\">$parent_title</a></p>";
+				$html = "<p>" . __( 'Parent: ', 'buddypress-docs' ) . "<a href=\"$parent_url\" title=\"$parent_title\">$parent_title</a></p>";
 			}
 		}
 
@@ -165,7 +165,7 @@ class BP_Docs_Hierarchy {
 		// Create the HTML
 		$html = '';
 		if ( !empty( $child_data ) ) {
-			$html .= '<p>' . __( 'Children: ', 'bp-docs' );
+			$html .= '<p>' . __( 'Children: ', 'buddypress-docs' );
 
 			$children_html = array();
 			foreach( $child_data as $child ) {

@@ -24,13 +24,13 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 		<div class="folder-action-links">
 			<?php if ( current_user_can( 'bp_docs_manage_folders' ) ) : ?>
 				<div class="manage-folders-link">
-					<a href="<?php bp_docs_manage_folders_url() ?>"><?php _e( 'Manage Folders', 'bp-docs' ) ?></a>
+					<a href="<?php bp_docs_manage_folders_url() ?>"><?php _e( 'Manage Folders', 'buddypress-docs' ) ?></a>
 				</div>
 			<?php endif ?>
 
 			<div class="toggle-folders-link hide-if-no-js">
-				<a href="#" class="toggle-folders" id="toggle-folders-hide"><?php _e( 'Hide Folders', 'bp-docs' ) ?></a>
-				<a href="#" class="toggle-folders" id="toggle-folders-show"><?php _e( 'Show Folders', 'bp-docs' ) ?></a>
+				<a href="#" class="toggle-folders" id="toggle-folders-hide"><?php _e( 'Hide Folders', 'buddypress-docs' ) ?></a>
+				<a href="#" class="toggle-folders" id="toggle-folders-show"><?php _e( 'Show Folders', 'buddypress-docs' ) ?></a>
 			</div>
 		</div>
 	<?php endif; ?>
@@ -44,21 +44,21 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 			<?php endif ?>
 
 			<th scope="column" class="title-cell<?php bp_docs_is_current_orderby_class( 'title' ) ?>">
-				<a href="<?php bp_docs_order_by_link( 'title' ) ?>"><?php _e( 'Title', 'bp-docs' ); ?></a>
+				<a href="<?php bp_docs_order_by_link( 'title' ) ?>"><?php _e( 'Title', 'buddypress-docs' ); ?></a>
 			</th>
 
 			<?php if ( ! bp_docs_is_started_by() ) : ?>
 				<th scope="column" class="author-cell<?php bp_docs_is_current_orderby_class( 'author' ) ?>">
-					<a href="<?php bp_docs_order_by_link( 'author' ) ?>"><?php _e( 'Author', 'bp-docs' ); ?></a>
+					<a href="<?php bp_docs_order_by_link( 'author' ) ?>"><?php _e( 'Author', 'buddypress-docs' ); ?></a>
 				</th>
 			<?php endif; ?>
 
 			<th scope="column" class="created-date-cell<?php bp_docs_is_current_orderby_class( 'created' ) ?>">
-				<a href="<?php bp_docs_order_by_link( 'created' ) ?>"><?php _e( 'Created', 'bp-docs' ); ?></a>
+				<a href="<?php bp_docs_order_by_link( 'created' ) ?>"><?php _e( 'Created', 'buddypress-docs' ); ?></a>
 			</th>
 
 			<th scope="column" class="edited-date-cell<?php bp_docs_is_current_orderby_class( 'modified' ) ?>">
-				<a href="<?php bp_docs_order_by_link( 'modified' ) ?>"><?php _e( 'Last Edited', 'bp-docs' ); ?></a>
+				<a href="<?php bp_docs_order_by_link( 'modified' ) ?>"><?php _e( 'Last Edited', 'buddypress-docs' ); ?></a>
 			</th>
 
 			<?php do_action( 'bp_docs_loop_additional_th' ) ?>
@@ -79,7 +79,7 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 				<?php endif ?>
 
 				<td class="folder-row-name" colspan=10>
-					<a href="<?php echo esc_url( bp_docs_get_parent_folder_url() ) ?>" class="up-one-folder"><?php bp_docs_genericon( 'category', 0 ); ?><span class="screen-reader-text"><?php _e( 'Go up one folder', 'bp-docs' ) ?></span><?php _ex( '..', 'up one folder', 'bp-docs' ) ?></a>
+					<a href="<?php echo esc_url( bp_docs_get_parent_folder_url() ) ?>" class="up-one-folder"><?php bp_docs_genericon( 'category', 0 ); ?><span class="screen-reader-text"><?php _e( 'Go up one folder', 'buddypress-docs' ) ?></span><?php _ex( '..', 'up one folder', 'buddypress-docs' ) ?></a>
 				</td>
 			</tr>
 		<?php endif ?>
@@ -160,7 +160,7 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 	<?php if ( $has_docs ) : ?>
 		<div id="bp-docs-pagination">
 			<div id="bp-docs-pagination-count">
-				<?php printf( __( 'Viewing %1$s-%2$s of %3$s docs', 'bp-docs' ), bp_docs_get_current_docs_start(), bp_docs_get_current_docs_end(), bp_docs_get_total_docs_num() ); ?>
+				<?php printf( __( 'Viewing %1$s-%2$s of %3$s docs', 'buddypress-docs' ), bp_docs_get_current_docs_start(), bp_docs_get_current_docs_end(), bp_docs_get_total_docs_num() ); ?>
 			</div>
 
 			<div id="bp-docs-paginate-links">
@@ -169,9 +169,9 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 		</div>
 	<?php else : ?>
 	    <?php if ( bp_docs_current_user_can_create_in_context() ) : ?>
-	        <p class="no-docs"><?php printf( __( 'There are no docs for this view. Why not <a href="%s">create one</a>?', 'bp-docs' ), bp_docs_get_create_link() ); ?>
+	        <p class="no-docs"><?php printf( __( 'There are no docs for this view. Why not <a href="%s">create one</a>?', 'buddypress-docs' ), bp_docs_get_create_link() ); ?>
 		<?php else : ?>
-			<p class="no-docs"><?php _e( 'There are no docs for this view.', 'bp-docs' ); ?></p>
+			<p class="no-docs"><?php _e( 'There are no docs for this view.', 'buddypress-docs' ); ?></p>
 	    <?php endif; ?>
 	<?php endif; ?>
 <?php endif; ?>

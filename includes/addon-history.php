@@ -111,7 +111,7 @@ class BP_Docs_History {
 
 			wp_restore_post_revision( $this->revision->ID );
 
-			bp_core_add_message( sprintf( __( 'You have successfully restored the Doc to the revision from %s.', 'bp-docs' ), $this->revision->post_date ) );
+			bp_core_add_message( sprintf( __( 'You have successfully restored the Doc to the revision from %s.', 'buddypress-docs' ), $this->revision->post_date ) );
 			$redirect = get_permalink( $post->ID ) . '/' . BP_DOCS_HISTORY_SLUG . '/';
 			break;
 		case 'diff' :
@@ -159,8 +159,8 @@ class BP_Docs_History {
 				break;
 
 			$post_title = '<a href="' . get_edit_post_link() . '">' . get_the_title() . '</a>';
-			$h2 = sprintf( __( 'Compare Revisions of &#8220;%1$s&#8221;', 'bp-docs' ), $post_title );
-			$title = __( 'Revisions', 'bp-docs' );
+			$h2 = sprintf( __( 'Compare Revisions of &#8220;%1$s&#8221;', 'buddypress-docs' ), $post_title );
+			$title = __( 'Revisions', 'buddypress-docs' );
 
 			$this->left  = $this->left_revision->ID;
 			$this->right = $this->right_revision->ID;
@@ -188,8 +188,8 @@ class BP_Docs_History {
 
 			$post_title = '<a href="' . get_edit_post_link() . '">' . get_the_title() . '</a>';
 			$revision_title = wp_post_revision_title( $this->revision, false );
-			$h2 = sprintf( __( 'Revision for &#8220;%1$s&#8221; created on %2$s', 'bp-docs' ), $post_title, $revision_title );
-			$title = __( 'Revisions', 'bp-docs' );
+			$h2 = sprintf( __( 'Revision for &#8220;%1$s&#8221; created on %2$s', 'buddypress-docs' ), $post_title, $revision_title );
+			$title = __( 'Revisions', 'buddypress-docs' );
 
 			// Sets up the diff radio buttons
 			$this->left  = $this->revision->ID;
@@ -348,7 +348,7 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
 	}
 
 	/* translators: post revision: 1: when, 2: author name */
-	$titlef = _x( '%1$s by %2$s', 'post revision', 'bp-docs' );
+	$titlef = _x( '%1$s by %2$s', 'post revision', 'buddypress-docs' );
 
 	if ( $parent )
 		array_unshift( $revisions, $post );
@@ -375,13 +375,13 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
 			$class = $class ? '' : " class='alternate'";
 
 			if ( $post->ID != $revision->ID && $can_edit_post )
-				$actions = '<a class="confirm" href="' . wp_nonce_url( add_query_arg( array( 'revision' => $revision->ID, 'action' => 'restore' ), $base_url ), "restore-post_$post->ID|$revision->ID" ) . '">' . __( 'Restore', 'bp-docs' ) . '</a>';
+				$actions = '<a class="confirm" href="' . wp_nonce_url( add_query_arg( array( 'revision' => $revision->ID, 'action' => 'restore' ), $base_url ), "restore-post_$post->ID|$revision->ID" ) . '">' . __( 'Restore', 'buddypress-docs' ) . '</a>';
 			else
 				$actions = '';
 
 			$rows .= "<tr$class>\n";
-			$rows .= "\t<th style='white-space:nowrap;text-align:center' scope='row'><input type='radio' name='left' value='$revision->ID'$left_checked id='left-$revision->ID' /><label class='screen-reader-text' for='left-$revision->ID'>" . __( 'Old', 'bp-docs' ) . "</label></th>\n";
-			$rows .= "\t<th style='white-space:nowrap;text-align:center' scope='row'><input type='radio' name='right' value='$revision->ID'$right_checked id='right-$revision->ID' /><label class='screen-reader-text' for='right-$revision->ID'>" . __( 'New', 'bp-docs' ) . "</label></th>\n";
+			$rows .= "\t<th style='white-space:nowrap;text-align:center' scope='row'><input type='radio' name='left' value='$revision->ID'$left_checked id='left-$revision->ID' /><label class='screen-reader-text' for='left-$revision->ID'>" . __( 'Old', 'buddypress-docs' ) . "</label></th>\n";
+			$rows .= "\t<th style='white-space:nowrap;text-align:center' scope='row'><input type='radio' name='right' value='$revision->ID'$right_checked id='right-$revision->ID' /><label class='screen-reader-text' for='right-$revision->ID'>" . __( 'New', 'buddypress-docs' ) . "</label></th>\n";
 			$rows .= "\t<td>$date</td>\n";
 			$rows .= "\t<td>$name</td>\n";
 			$rows .= "\t<td class='action-links'>$actions</td>\n";
@@ -398,7 +398,7 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
 
 <div class="tablenav">
 	<div class="alignleft">
-		<input type="submit" class="button-secondary" value="<?php esc_attr_e( 'Compare Revisions', 'bp-docs' ); ?>" />
+		<input type="submit" class="button-secondary" value="<?php esc_attr_e( 'Compare Revisions', 'buddypress-docs' ); ?>" />
 		<input type="hidden" name="action" value="diff" />
 		<input type="hidden" name="post_type" value="<?php echo esc_attr($post->post_type); ?>" />
 	</div>
@@ -414,11 +414,11 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
 	<col style="width: 33%" />
 <thead>
 <tr>
-	<th scope="col"><?php /* translators: column name in revisons */ _e( 'Old', 'bp-docs' ); ?></th>
-	<th scope="col"><?php /* translators: column name in revisons */ _e( 'New', 'bp-docs' ); ?></th>
-	<th scope="col"><?php /* translators: column name in revisons */ _e( 'Date Created', 'bp-docs' ); ?></th>
-	<th scope="col"><?php _e( 'Author', 'bp-docs' ); ?></th>
-	<th scope="col" class="action-links"><?php _e( 'Actions', 'bp-docs' ); ?></th>
+	<th scope="col"><?php /* translators: column name in revisons */ _e( 'Old', 'buddypress-docs' ); ?></th>
+	<th scope="col"><?php /* translators: column name in revisons */ _e( 'New', 'buddypress-docs' ); ?></th>
+	<th scope="col"><?php /* translators: column name in revisons */ _e( 'Date Created', 'buddypress-docs' ); ?></th>
+	<th scope="col"><?php _e( 'Author', 'buddypress-docs' ); ?></th>
+	<th scope="col" class="action-links"><?php _e( 'Actions', 'buddypress-docs' ); ?></th>
 </tr>
 </thead>
 <tbody>
@@ -445,7 +445,7 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
 function bp_docs_history_tab() {
 	if ( current_user_can( 'bp_docs_view_history' ) ) : ?>
 		<li<?php if ( bp_docs_is_doc_history() ) : ?> class="current"<?php endif ?>>
-			<a href="<?php echo bp_docs_get_doc_link() . BP_DOCS_HISTORY_SLUG ?>"><?php _e( 'History', 'bp-docs' ) ?></a>
+			<a href="<?php echo bp_docs_get_doc_link() . BP_DOCS_HISTORY_SLUG ?>"><?php _e( 'History', 'buddypress-docs' ) ?></a>
 		</li>
 	<?php endif;
 }
