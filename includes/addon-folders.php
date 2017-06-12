@@ -2315,6 +2315,15 @@ class BP_Docs_Folder_Manage_Walker extends Walker {
 			);
 		}
 
+		$delete_link_markup = '';
+		if ( current_user_can( 'bp_docs_manage_folder', $page->ID ) ) {
+			$delete_link_markup = sprintf(
+				'<a class="folder-delete" href="%s">%s</a>',
+				add_query_arg( 'delete-folder', $page->ID, bp_get_requested_url() ), // No nonce because actual deletion is done on the subsequent page
+				__( 'Delete', 'buddypress-docs' )
+			);
+		}
+
 		$output .= sprintf(
 			'
 <li class="folder folder-edit-closed" data-folder-id="%d">
@@ -2329,7 +2338,7 @@ class BP_Docs_Folder_Manage_Walker extends Walker {
 				%s
 				<input type="hidden" class="folder-id" name="folder-id" value="%d" />
 				%s
-				<input type="submit" value="%s" class="primary-button" /> <a class="folder-delete" href="%s">%s</a>
+				<input type="submit" value="%s" class="primary-button" /> %s
 			</form>
 		</div>
 	</div>',
@@ -2349,8 +2358,7 @@ class BP_Docs_Folder_Manage_Walker extends Walker {
 			intval( $page->ID ), // hidden input value
 			wp_nonce_field( 'bp-docs-edit-folder-' . $page->ID, 'bp-docs-edit-folder-nonce-' . $page->ID, false, false ), // nonce
 			__( 'Save Changes', 'buddypress-docs' ), // save button text
-			add_query_arg( 'delete-folder', $page->ID, bp_get_requested_url() ), // No nonce because actual deletion is done on the subsequent page
-			__( 'Delete', 'buddypress-docs' )
+			$delete_link_markup
 		);
 	}
 
