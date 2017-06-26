@@ -3,8 +3,8 @@ Contributors: boonebgorges, cuny-academic-commons, dcavins
 Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.3, BuddyPress 1.5
-Tested up to: WordPress 4.7, BuddyPress 2.8
-Stable tag: 1.9.3
+Tested up to: WordPress 4.8, BuddyPress 2.9
+Stable tag: 1.9.4
 
 Adds collaborative Docs to BuddyPress.
 
