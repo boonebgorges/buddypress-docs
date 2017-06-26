@@ -3,8 +3,8 @@ Contributors: boonebgorges, cuny-academic-commons, dcavins
 Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: WordPress 3.3, BuddyPress 1.5
-Tested up to: WordPress 4.6, BuddyPress 2.7
-Stable tag: 1.9.2
+Tested up to: WordPress 4.7, BuddyPress 2.8
+Stable tag: 1.9.3
 
 Adds collaborative Docs to BuddyPress.
 
@@ -32,6 +32,10 @@ This plugin is in active development. For feature requests and bug reports, visi
 1. Sit back and watch the jack roll in
 
 == Changelog ==
+
+= 1.9.3 =
+* Fixed security issue that made it possible to edit certain Docs without proper permissions. Thanks to Ewoud Vlasselaer, Eric Schayes, and Nabeel Ahmed for discovering and privately reporting this issue.
+* Fixed bug in Edit Lock functionality that caused locks to be removed improperly on certain link clicks.
 
 = 1.9.2 =
 * Fixed bug that caused attachments to be corrupted in some cases.

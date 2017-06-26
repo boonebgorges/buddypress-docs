@@ -381,6 +381,14 @@ class BP_Docs_Component extends BP_Component {
 
 		if ( !empty( $_POST['doc-edit-submit'] ) ) {
 
+			// Existing Docs have a more specific permission check.
+			$doc = bp_docs_get_current_doc();
+			if ( $doc && ! current_user_can( 'bp_docs_edit', $doc->ID ) ) {
+				return;
+			} elseif ( ! $doc && ! current_user_can( 'bp_docs_create' ) ) {
+				return;
+			}
+
 			check_admin_referer( 'bp_docs_save' );
 
 			$this_doc = new BP_Docs_Query;
