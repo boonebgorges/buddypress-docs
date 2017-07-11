@@ -137,12 +137,23 @@ function bp_docs_has_docs( $args = array() ) {
 			$doc_ids = wp_list_pluck( $bp->bp_docs->doc_query->posts, 'ID' );
 			$att_hash = array_fill_keys( $doc_ids, array() );
 			if ( $doc_ids ) {
-				$attachments = get_posts( array(
+				/**
+				 * Filter the arguments passed to get_posts() when populating
+				 * the attachment cache.
+				 *
+				 * @since 2.0.0
+				 *
+				 * @param array $doc_ids An array of the doc IDs shown on the
+				 *                       current page of the loop.
+				 */
+				$attachment_args = apply_filters( 'bp_docs_update_attachment_cache_args', array(
 					'post_type' => 'attachment',
 					'post_parent__in' => $doc_ids,
 					'update_post_term_cache' => false,
 					'posts_per_page' => -1,
-				) );
+				), $doc_ids );
+
+				$attachments = get_posts( $attachment_args );
 
 				foreach ( $attachments as $a ) {
 					$att_hash[ $a->post_parent ][] = $a;
@@ -2089,6 +2100,14 @@ function bp_docs_get_doc_attachments( $doc_id = null ) {
 		return array();
 	}
 
+	/**
+	 * Filter the arguments passed to get_posts() when fetching
+	 * the attachments for a specific doc.
+	 *
+	 * @since 1.5
+	 *
+	 * @param int $doc_id The current doc ID.
+	 */
 	$atts_args = apply_filters( 'bp_docs_get_doc_attachments_args', array(
 		'post_type' => 'attachment',
 		'post_parent' => $doc_id,
