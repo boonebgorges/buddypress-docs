@@ -141,6 +141,7 @@ function bp_docs_has_docs( $args = array() ) {
 					'post_type' => 'attachment',
 					'post_parent__in' => $doc_ids,
 					'update_post_term_cache' => false,
+					'posts_per_page' => -1,
 				) );
 
 				foreach ( $attachments as $a ) {
