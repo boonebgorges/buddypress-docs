@@ -448,3 +448,50 @@ function bp_docs_load_activity_filter_options() {
 	}
 }
 add_action( 'bp_screens', 'bp_docs_load_activity_filter_options', 1 );
+
+/**
+ * Modify the AJAX query string to enable filtering of activity stream.
+ *
+ * @since 1.9.5
+ *
+ * @param string $qs The query string for the BuddyPress loop
+ * @param string $object The current object for the query string
+ * @return string The modified query string
+ */
+function bp_docs_activity_filter_querystring( $qs, $object ) {
+
+	// bail if not an activity object
+	if ( $object != 'activity' ) return $qs;
+
+	// parse query string into an array
+	$r = wp_parse_args( $qs );
+
+	// bail if no type is set
+	if ( empty( $r['type'] ) ) return $qs;
+
+	// define activity types
+	$types = array( 'bp_doc_created', 'bp_doc_edited', 'bp_doc_comment' );
+
+	// bail if not a type that we're looking for
+	if ( ! in_array( $r['type'], $types ) ) {
+		return $qs;
+	}
+
+	// add the types if they don't exist
+	foreach( $types AS $type ) {
+		if ( $type === $r['type'] ) {
+			if ( ! isset( $r['action'] ) OR false === strpos( $r['action'], $type ) ) {
+				// 'action' filters activity items by the 'type' column
+				$r['action'] = $type;
+			}
+		}
+	}
+
+	// 'type' isn't used anywhere internally
+	unset( $r['type'] );
+
+	// return a querystring
+	return build_query( $r );
+
+}
+add_filter( 'bp_ajax_querystring', 'bp_docs_activity_filter_querystring', 20, 2 );
