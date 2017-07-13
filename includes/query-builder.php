@@ -566,6 +566,17 @@ class BP_Docs_Query {
 				$revision_count = get_post_meta( $this->doc_id, 'bp_docs_revision_count', true );
 				update_post_meta( $this->doc_id, 'bp_docs_revision_count', intval( $revision_count ) + 1 );
 
+				/**
+				 * Fires after the doc has been successfully saved.
+				 *
+				 * @since 2.0.0
+				 *
+				 * @param int   $id   The ID of the recently saved doc.
+				 * @param array $args The passed and filtered parameters for the doc
+				 *                    that was just saved.
+				 */
+				do_action( 'bp_docs_after_successful_save', $this->doc_id, $args );
+
 				// Set successful save message.
 				if ( $this->is_new_doc ) {
 					// New doc saved.

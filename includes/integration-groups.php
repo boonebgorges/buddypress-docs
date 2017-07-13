@@ -42,7 +42,7 @@ class BP_Docs_Groups_Integration {
 
 		// Doc save actions.
 		add_action( 'bp_docs_filter_result_before_save', array( $this, 'pre_save_check_group_association' ), 10, 2 );
-		add_action( 'bp_docs_after_save',                array( $this, 'post_save_set_group_association' ), 8, 2 );
+		add_action( 'bp_docs_after_successful_save',     array( $this, 'post_save_set_group_association' ), 8, 2 );
 
 		// Taxonomy helpers
 		add_filter( 'bp_docs_taxonomy_get_item_terms', 	array( $this, 'get_group_terms' ) );
