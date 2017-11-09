@@ -42,8 +42,15 @@ function bp_docs_map_meta_caps( $caps, $cap, $user_id, $args ) {
 			if ( ! $user_id ) {
 				$caps[] = 'do_not_allow';
 
-			// All logged-in users can create
+			} else if ( $group_id = bp_get_current_group_id() ) {
+				// In a group, only set this cap if the user can associate a doc with the group.
+				if ( current_user_can( 'bp_docs_associate_with_group', $group_id ) ) {
+					$caps[] = 'exist';
+				} else {
+					$caps[] = 'do_not_allow';
+				}
 			} else {
+				// Otherwise, all logged-in users can create
 				$caps[] = 'exist';
 			}
 
