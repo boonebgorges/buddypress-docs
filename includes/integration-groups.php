@@ -1848,6 +1848,21 @@ function bp_docs_groups_map_meta_caps( $caps, $cap, $user_id, $args ) {
 
 			break;
 
+		case 'bp_docs_create' :
+
+			if ( $group_id = bp_get_current_group_id() ) {
+				$caps = array();
+
+				// In a group, only set this cap if the user can associate a doc with the group.
+				if ( current_user_can( 'bp_docs_associate_with_group', $group_id ) ) {
+					$caps[] = 'exist';
+				} else {
+					$caps[] = 'do_not_allow';
+				}
+			}
+
+			break;
+
 		case 'bp_docs_associate_with_group' :
 			if ( isset( $args[0] ) ) {
 				$group_id = intval( $args[0] );
