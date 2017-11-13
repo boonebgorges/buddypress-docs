@@ -190,7 +190,7 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 			<?php wp_nonce_field( 'bp_docs_save' ) ?>
 
 			<input type="hidden" id="doc_id" name="doc_id" value="<?php echo $doc_id ?>" />
-			<input type="submit" name="doc-edit-submit" id="doc-edit-submit" value="<?php _e( 'Save', 'buddypress-docs' ) ?>"> <a href="<?php bp_docs_cancel_edit_link() ?>" class="action safe"><?php _e( 'Cancel', 'buddypress-docs' ); ?></a>
+			<input type="submit" name="doc-edit-submit" id="doc-edit-submit" value="<?php _e( 'Save', 'buddypress-docs' ) ?>"> <a href="<?php bp_docs_cancel_edit_link() ?>" class="action safe confirm"><?php _e( 'Cancel', 'buddypress-docs' ); ?></a>
 
 			<?php if ( bp_docs_is_existing_doc() ) : ?>
 				<?php if ( current_user_can( 'bp_docs_manage', $doc_id ) ) : ?>
