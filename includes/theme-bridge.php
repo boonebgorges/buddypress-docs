@@ -160,6 +160,15 @@ class BP_Docs_Theme_Compat {
 			add_action( 'bp_template_include_reset_dummy_post_data', array( $this, 'create_dummy_post' ) );
 			add_filter( 'bp_replace_the_content',                    array( $this, 'create_content'    ) );
 		}
+
+		/**
+		 * Fires after the BuddyPress Docs theme compatibility layer has initialized.
+		 *
+		 * @since 1.9.4
+		 *
+		 * @param BP_Docs_Theme_Compat $theme_compat
+		 */
+		do_action( 'bp_docs_setup_theme_compat', $this );
 	}
 
 	/**

@@ -1738,9 +1738,10 @@ function bp_docs_group_single_breadcrumb( $crumbs, $doc = null ) {
 	if ( $user_has_access ) {
 		$group_crumbs = array(
 			sprintf(
-				'<a href="%s">%s&#8217;s Docs</a>',
+				'<a href="%s">%s</a>',
 				bp_get_group_permalink( $group ) . bp_docs_get_slug() . '/',
-				esc_html( $group->name )
+				/* translators: group name */
+				sprintf( esc_html__( '%s&#8217;s Docs', 'bp-docs' ), esc_html( $group->name ) )
 			),
 		);
 
