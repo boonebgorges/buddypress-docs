@@ -7,8 +7,8 @@ language: php
 # Versions of PHP to test against
 php:
   - 5.6
-  - 7.0
-  - 7.1
+#  - 7.0
+#  - 7.1
 
 # Specify versions of WordPress to test against
 # WP_VERSION = WordPress version number (use "master" for SVN trunk)
@@ -17,7 +17,7 @@ php:
 # changes in the path structure)
 env:
     - WP_VERSION=master WP_MULTISITE=0 BP_VERSION=master
-    - WP_VERSION=master WP_MULTISITE=1 BP_VERSION=master
+#    - WP_VERSION=master WP_MULTISITE=1 BP_VERSION=master
 
 # Grab the setup script and execute
 before_script:
@@ -39,8 +39,10 @@ before_script:
     - sed -i "s/yourdbnamehere/wordpress_test/" wp-tests-config.php
     - sed -i "s/yourusernamehere/root/" wp-tests-config.php
     - sed -i "s/yourpasswordhere//" wp-tests-config.php
+    - cat wp-tests-config.php
     # set up database
     - mysql -e 'CREATE DATABASE wordpress_test;' -uroot
+    - mysql -e 'SHOW DATABASES;' -uroot	
     # prepare for running the tests
     - cd $plugin_dir
     - pwd
