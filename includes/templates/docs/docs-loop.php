@@ -40,24 +40,24 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 	<thead>
 		<tr valign="bottom">
 			<?php if ( bp_docs_enable_attachments() ) : ?>
-				<th scope="column" class="attachment-clip-cell"> </th>
+				<th scope="col" class="attachment-clip-cell"> </th>
 			<?php endif ?>
 
-			<th scope="column" class="title-cell<?php bp_docs_is_current_orderby_class( 'title' ) ?>">
+			<th scope="col" class="title-cell<?php bp_docs_is_current_orderby_class( 'title' ) ?>">
 				<a href="<?php bp_docs_order_by_link( 'title' ) ?>"><?php _e( 'Title', 'bp-docs' ); ?></a>
 			</th>
 
 			<?php if ( ! bp_docs_is_started_by() ) : ?>
-				<th scope="column" class="author-cell<?php bp_docs_is_current_orderby_class( 'author' ) ?>">
+				<th scope="col" class="author-cell<?php bp_docs_is_current_orderby_class( 'author' ) ?>">
 					<a href="<?php bp_docs_order_by_link( 'author' ) ?>"><?php _e( 'Author', 'bp-docs' ); ?></a>
 				</th>
 			<?php endif; ?>
 
-			<th scope="column" class="created-date-cell<?php bp_docs_is_current_orderby_class( 'created' ) ?>">
+			<th scope="col" class="created-date-cell<?php bp_docs_is_current_orderby_class( 'created' ) ?>">
 				<a href="<?php bp_docs_order_by_link( 'created' ) ?>"><?php _e( 'Created', 'bp-docs' ); ?></a>
 			</th>
 
-			<th scope="column" class="edited-date-cell<?php bp_docs_is_current_orderby_class( 'modified' ) ?>">
+			<th scope="col" class="edited-date-cell<?php bp_docs_is_current_orderby_class( 'modified' ) ?>">
 				<a href="<?php bp_docs_order_by_link( 'modified' ) ?>"><?php _e( 'Last Edited', 'bp-docs' ); ?></a>
 			</th>
 
