@@ -619,7 +619,7 @@ class BP_Docs_Query {
 
 		// Stuff data into a cookie so it can be accessed on next page load
 		if ( 'error' === $message_type ) {
-			setcookie( 'bp-docs-submit-data', json_encode( $_POST ), time() + 30, '/' );
+			setcookie( 'bp-docs-submit-data', json_encode( $args ), time() + 30, '/' );
 		}
 
 		$redirect_base = trailingslashit( bp_get_root_domain() );
