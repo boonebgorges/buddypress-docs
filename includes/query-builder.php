@@ -591,7 +591,7 @@ class BP_Docs_Query {
 				$result['redirect'] = 'single';
 
 				// Save settings. We append the notice message if necessary.
-				$access_setting_message = bp_docs_save_doc_access_settings( $this->doc_id, $args['author_id'], $args['settings'] );
+				$access_setting_message = bp_docs_save_doc_access_settings( $this->doc_id, $args['author_id'], $args['settings'], $this->is_new_doc );
 				if ( $access_setting_message ) {
 					$result['message'] = $result['message'] . ' ' . $access_setting_message;
 				}

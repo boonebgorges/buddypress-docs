@@ -618,18 +618,24 @@ function bp_docs_get_default_access_options( $doc_id = 0, $group_id = 0 ) {
  * Saves the settings associated with a given Doc
  *
  * @since 1.6.1
- * @param int $doc_id The numeric ID of the doc
+ * @param int   $doc_id     The numeric ID of the doc
+ * @param int   $author_id  The numeric ID of the author
+ * @param array $settings   The settings array as passed to the save() method.
+ * @param bool  $is_new_doc Is a doc being created or edited? Default: false.
  * @return string Notice of access setting modification
  */
-function bp_docs_save_doc_access_settings( $doc_id, $author_id, $settings ) {
+function bp_docs_save_doc_access_settings( $doc_id, $author_id, $settings, $is_new_doc = false ) {
 	if ( empty( $author_id ) ) {
 		$author_id = bp_loggedin_user_id();
 	}
 	$message = '';
 
-	// Two cases:
-	// 1. User is saving a doc for which he can update the access settings
-	if ( ! empty( $settings ) ) {
+	/*
+	 * Two cases:
+	 * 1. User is saving a doc for which he can update the access settings
+	 *    OR the doc is new and should inherit default settings if none are supplied.
+	 */
+	if ( ! empty( $settings ) || $is_new_doc ) {
 		$verified_settings = bp_docs_verify_settings( $settings, $doc_id, $author_id );
 
 		$new_settings = array();
