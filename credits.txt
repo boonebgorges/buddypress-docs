@@ -17,7 +17,7 @@ includes/images/padlock.png is derived from the file Gnome-emblem-readonly.svg, 
 Huge thanks go out to the individuals who donate their translations, making plugins like this one usable for a far bigger audience. Translations for BuddyPress Docs:
 - Spanish: Selu Vega
 - Italian: Luca Camellini
-- German: Birgit, HansRuedi Keller
+- German: Birgit, HansRuedi Keller, svendue
 - French: stbouvier, Xavier Jimenez
 - Swedish: Thomas Schneider
 - Brazilian Portuguese: John Morgenthaler
