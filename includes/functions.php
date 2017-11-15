@@ -981,7 +981,7 @@ function bp_docs_hide_sitewide_for_doc( $doc_id ) {
 		return false;
 	}
 
-	$settings = get_post_meta( $doc_id, 'bp_docs_settings', true );
+	$settings = bp_docs_get_doc_settings( $doc_id );
 	$hide_sitewide = empty( $settings['read'] ) || 'anyone' != $settings['read'];
 
 	return apply_filters( 'bp_docs_hide_sitewide_for_doc', $hide_sitewide, $doc_id );
