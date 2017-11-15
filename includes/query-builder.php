@@ -493,6 +493,9 @@ class BP_Docs_Query {
 		 */
 		$result = apply_filters( 'bp_docs_filter_result_before_save', $result, $args );
 
+		// Is this a new doc?
+		$this->is_new_doc = ( 0 === $args['doc_id'] || 'auto-draft' === get_post_status( $args['doc_id'] ) );
+
 		if ( true === $result['error'] ) {
 			/*
 			 * An extension has reported an error. Do not save.
@@ -501,11 +504,8 @@ class BP_Docs_Query {
 		} elseif ( empty( $args['title'] ) ) {
 			// The title field is required
 			$result['message'] = __( 'The title field is required.', 'buddypress-docs' );
-			$result['redirect'] = ! empty( $this->doc_slug ) ? 'edit' : 'create';
+			$result['redirect'] = $this->is_new_doc ? 'create' : 'edit';
 		} else {
-			// Is this a new doc? If we can't find a saved slug, we assume yes.
-			$this->is_new_doc = empty( $this->doc_slug );
-
 			// Use the passed permalink if it exists, otherwise create one
 			if ( ! empty( $args['permalink'] ) ) {
 				$args['permalink'] = sanitize_title( $args['permalink'] );
