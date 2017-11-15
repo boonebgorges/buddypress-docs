@@ -1,775 +1,1092 @@
+# Copyright (C) 2016 BuddyPress Docs
+# This file is distributed under the same license as the BuddyPress Docs package.
 msgid ""
 msgstr ""
-"Project-Id-Version: BuddyPress Docs v1.2.3\n"
-"Report-Msgid-Bugs-To: http://wordpress.org/tag/buddypress-docs\n"
-"POT-Creation-Date: 2013-05-24 17:18:20+00:00\n"
-"PO-Revision-Date: 2013-05-27 15:57+0100\n"
-"Last-Translator: HansRuedi Keller <keller@fusion.ch>\n"
-"Language-Team: HansRuedi Keller <keller@fusion.ch>\n"
+"Project-Id-Version: BuddyPress Docs 1.9.1\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/buddypress-docs\n"
+"POT-Creation-Date: 2016-06-22 17:11+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Poedit 1.5.5\n"
-"X-Poedit-SourceCharset: utf-8\n"
-"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;"
-"_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2\n"
-"X-Textdomain-Support: yes\n"
-"X-Poedit-SearchPath-0: .\n"
+"PO-Revision-Date: 2016-06-22 17:18+0200\n"
+"Language-Team: \n"
+"X-Generator: Poedit 1.8.7\n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: de_DE\n"
 
-# @ bp-docs
-#: bp-docs.php:256
+#: bp-docs.php:277
 msgctxt "post type general name"
-msgid "BuddyPress Docs"
-msgstr "BuddyPress Docs"
+msgid "Docs"
+msgstr "Dokumente"
 
-# @ bp-docs
-#: bp-docs.php:257
+#: bp-docs.php:278
 msgctxt "post type singular name"
 msgid "Doc"
-msgstr "Doc"
+msgstr "Dokument"
 
-# @ bp-docs
-#: bp-docs.php:258
+#: bp-docs.php:279
 msgctxt "add new"
 msgid "Add New"
-msgstr "Erstellen"
+msgstr "Hinzufügen"
 
-# @ bp-docs
-#: bp-docs.php:259
+#: bp-docs.php:280
 msgid "Add New Doc"
-msgstr "Neues Doc erstellen"
+msgstr "Neues Dokument erstellen"
 
-# @ bp-docs
-#: bp-docs.php:260
+#: bp-docs.php:281
 msgid "Edit Doc"
-msgstr "Doc bearbeiten"
+msgstr "Dokument bearbeiten"
 
-# @ bp-docs
-#: bp-docs.php:261 includes/integration-groups.php:746
-#: includes/integration-groups.php:1268
-#: includes/templates/docs/docs-header.php:36
+#: bp-docs.php:282 includes/integration-groups.php:924
+#: includes/integration-groups.php:1404
+#: includes/templates/docs/docs-header.php:40
 msgid "New Doc"
-msgstr "Neues Doc"
+msgstr "Neues Dokument"
 
-# @ bp-docs
-#: bp-docs.php:262
+#: bp-docs.php:283
 msgid "View Doc"
-msgstr "Doc ansehen"
+msgstr "Dokument anzeigen"
 
-# @ bp-docs
-#: bp-docs.php:263
+#: bp-docs.php:284
 msgid "Search Docs"
-msgstr "Docs suchen"
+msgstr "Suche Dokumente"
 
-# @ bp-docs
-#: bp-docs.php:264
+#: bp-docs.php:285
 msgid "No Docs found"
-msgstr "Keine Docs gefunden"
+msgstr "Kein Dokument gefunden"
 
-# @ bp-docs
-#: bp-docs.php:265
+#: bp-docs.php:286
 msgid "No Docs found in Trash"
-msgstr "Keine Docs im Papierkorb gefunden"
+msgstr "Kein Dokument im Papierkorb gefunden"
 
-# @ bp-docs
-#: bp-docs.php:272 includes/component.php:39
-#: includes/integration-groups.php:1063
-msgid "BuddyPress Docs"
-msgstr "BuddyPress Docs"
+#: bp-docs.php:293 includes/integration-groups.php:918
+#: includes/integration-groups.php:1015 includes/integration-groups.php:1199
+#: includes/integration-groups.php:1631 includes/integration-users.php:275
+msgid "Docs"
+msgstr "Dokumente"
 
-# @ bp-docs
-#: bp-docs.php:291
+#: bp-docs.php:312
 msgid "Associated Items"
-msgstr "Kategorien"
+msgstr "Zugehörige Elemente"
 
-# @ bp-docs
-#: bp-docs.php:292
+#: bp-docs.php:313
 msgid "Associated Item"
-msgstr "Zugeordnete Kategorie"
+msgstr "Zugehöriges Element"
 
-# @ bp-docs
-#: bp-docs.php:486
-msgid "You are not allowed to read that Doc."
-msgstr "Du bist nicht berechtigt, dieses Doc zu lesen."
+#: includes/activity.php:78 includes/activity.php:366
+msgid "%1$s commented on the doc %2$s"
+msgstr "%1$s kommentierte das Dokument %2$s"
 
-# @ bp-docs
-#: bp-docs.php:490
-msgid "You are not allowed to create Docs."
-msgstr "Du bist nicht berechtigt, Docs zu erstellen."
+#: includes/activity.php:174 includes/activity.php:306
+msgid "%1$s created the doc %2$s"
+msgstr "%1$s erstellte das Dokument %2$s"
 
-# @ bp-docs
-#: bp-docs.php:494
-msgid "You are not allowed to edit that Doc."
-msgstr "Du bist nicht berechtigt, dieses Doc zu ändern."
+#: includes/activity.php:176 includes/activity.php:335
+msgid "%1$s edited the doc %2$s"
+msgstr "%1$s bearbeitete das Dokument %2$s"
 
-# @ bp-docs
-#: bp-docs.php:498
-msgid "You are not allowed to view that Doc's history."
-msgstr "Du bist nicht berechtigt, die Versionen dieses Docs anzusehen."
+#: includes/activity.php:262
+msgid "Created a Doc"
+msgstr "Erstelle ein Dokument"
 
-# @ bp-docs
-#: includes/addon-hierarchy.php:110
+#: includes/activity.php:269
+msgid "Edited a Doc"
+msgstr "Bearbeitete ein Dokument"
+
+#: includes/activity.php:276
+msgid "Commented on a Doc"
+msgstr "Kommentiere ein Dokument"
+
+#: includes/activity.php:427
+msgid "New Docs"
+msgstr "Neue Dokumente"
+
+#: includes/activity.php:428
+msgid "Doc Edits"
+msgstr "Dokument Editieieren"
+
+#: includes/activity.php:429
+msgid "Doc Comments"
+msgstr "Dokument Kommentare"
+
+#: includes/addon-folders.php:41
+msgid "BuddyPress Docs Folders"
+msgstr "BuddyPress Docs Ordner"
+
+#: includes/addon-folders.php:42
+msgid "BuddyPress Docs Folder"
+msgstr "BuddyPress Docs Ordner"
+
+#: includes/addon-folders.php:43
+msgid "Docs Folders"
+msgstr "Dokumentenverzeichnis"
+
+#: includes/addon-folders.php:44
+msgid "Docs Folder"
+msgstr "Dokumentverzeichnis"
+
+#: includes/addon-folders.php:188
+msgctxt "Doc edit tab name"
+msgid "Folders"
+msgstr "Ordner"
+
+#: includes/addon-folders.php:189
+msgctxt "Doc edit tab name"
+msgid "Group Folders"
+msgstr "Gruppenordner"
+
+#: includes/addon-folders.php:1055
+msgid "You must provide a folder name."
+msgstr "Sie müssen einen Ordnernamen zur Verfügung stellen."
+
+#: includes/addon-folders.php:1137 includes/addon-folders.php:1165
+#: includes/addon-folders.php:1193
+msgid "There was a problem editing that folder. Please try again."
+msgstr "Es gab ein Problem beim Ordner bearbeiten. Bitte versuche es erneut."
+
+#: includes/addon-folders.php:1163
+msgid "Folder successfully updated."
+msgstr "Ordner erfolgreich aktualisiert."
+
+#: includes/addon-folders.php:1233
+msgid "Folder successfully created."
+msgstr "Ordner erfolgreich erstellt."
+
+#: includes/addon-folders.php:1235
+msgid "There was a problem creating the folder. Please try again."
+msgstr "Es gab ein Problem den Ordner zu erstellen. Bitte versuche es erneut."
+
+#: includes/addon-folders.php:1284
+msgid "Folder deleted."
+msgstr "Ordner gelöscht"
+
+#: includes/addon-folders.php:1286
+msgid "Could not delete folder."
+msgstr "Ordner kann nicht gelöscht werden"
+
+#: includes/addon-folders.php:1600 includes/addon-folders.php:1707
+msgid "Global"
+msgstr "Global"
+
+#: includes/addon-folders.php:1631
+msgid "My Folders"
+msgstr "Meine Verzeichnisse"
+
+#: includes/addon-folders.php:1664
+msgid " - None - "
+msgstr "- Keine -"
+
+#: includes/addon-folders.php:1708
+msgid "Personal"
+msgstr "Persönlich"
+
+#: includes/addon-folders.php:1711
+msgid "Group-specific"
+msgstr "Gruppen-spezifisch"
+
+#: includes/addon-folders.php:1823 includes/addon-folders.php:2341
+msgid "Name"
+msgstr "Name"
+
+#: includes/addon-folders.php:1830
+msgid "Folder type"
+msgstr "Ordnertyp"
+
+#: includes/addon-folders.php:1840
+msgid "Parent (optional)"
+msgstr "Übergeordneter (optional)"
+
+#: includes/addon-folders.php:1882 includes/addon-folders.php:1883
+msgid "Folders"
+msgstr "Ordner"
+
+#: includes/addon-folders.php:1890
+msgid "Select a folder for this Doc."
+msgstr "Wählen Sie einen Ordner für dieses Dokument."
+
+#: includes/addon-folders.php:1896
+msgid "Use an existing folder"
+msgstr "Verwende einen existierenden Ordner"
+
+#: includes/addon-folders.php:1909
+msgid "Create a new folder"
+msgstr "Neuen Ordner erstellen"
+
+#: includes/addon-folders.php:2087
+msgid "You are viewing docs in the following folder: %s"
+msgid_plural "You are viewing docs in the following folders: %s"
+msgstr[0] "Sie betrachten das Dokumente mit den folgenden Tags: %s"
+msgstr[1] ""
+
+#: includes/addon-folders.php:2228
+msgid "#%d (no title)"
+msgstr "#%d (kein Titel)"
+
+#: includes/addon-folders.php:2313
+msgid "Type"
+msgstr "Typ"
+
+#: includes/addon-folders.php:2338 includes/integration-groups.php:931
+#: includes/templates/docs/docs-header.php:30 includes/templatetags.php:1185
+#: includes/templatetags.php:1755
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: includes/addon-folders.php:2339
+msgid "Close"
+msgstr "Schließen"
+
+#: includes/addon-folders.php:2346 includes/templates/docs/single/edit.php:159
+#: includes/templates/docs/single/edit.php:160
+msgid "Parent"
+msgstr "Übergeordnet"
+
+#: includes/addon-folders.php:2351 includes/integration-groups.php:1111
+msgid "Save Changes"
+msgstr "Änderungen übernehmen"
+
+#: includes/addon-folders.php:2353
+#: includes/templates/docs/manage-folders.php:27 includes/templatetags.php:2166
+msgid "Delete"
+msgstr "löschen"
+
+#: includes/addon-folders.php:2430
+msgid "This folder contains no Docs."
+msgstr "Dieser Ordner enthält keine Dokumente."
+
+#: includes/addon-hierarchy.php:134
 msgid "Parent: "
-msgstr "Eltern: "
+msgstr "Übergeordnetes Dokument:"
 
-# @ bp-docs
-#: includes/addon-hierarchy.php:161
+#: includes/addon-hierarchy.php:184
 msgid "Children: "
-msgstr "Kinder: "
+msgstr "Untergeordnetes Dokument:"
 
-# @ bp-docs
-#: includes/addon-history.php:117
+#: includes/addon-history.php:114
 msgid "You have successfully restored the Doc to the revision from %s."
-msgstr "Erfolgreich als Revision vom %s gespeichert."
+msgstr ""
+"Sie haben erfolgreich das Dokument zur Revision von % s wiederhergestellt."
 
-# @ bp-docs
-#: includes/addon-history.php:165
+#: includes/addon-history.php:162
 msgid "Compare Revisions of &#8220;%1$s&#8221;"
-msgstr "Revisionsvergleich von &#8220;%1$s&#8221;"
+msgstr "Vergleichen von Revisionen von &#8220;%1$s&#8221;"
 
-# @ bp-docs
-#: includes/addon-history.php:166 includes/addon-history.php:195
+#: includes/addon-history.php:163 includes/addon-history.php:192
 msgid "Revisions"
 msgstr "Revisionen"
 
-# @ bp-docs
-#: includes/addon-history.php:194
+#: includes/addon-history.php:191
 msgid "Revision for &#8220;%1$s&#8221; created on %2$s"
 msgstr "Revision für &#8220;%1$s&#8221; erstellt am %2$s"
 
-# @ default
 #. translators: post revision: 1: when, 2: author name
-#: includes/addon-history.php:360
+#: includes/addon-history.php:351
 msgctxt "post revision"
 msgid "%1$s by %2$s"
-msgstr "%1$s von %2$s"
+msgstr "%1$s um %2$s"
 
-# @ bp-docs
-#: includes/addon-history.php:387
+#: includes/addon-history.php:378
 msgid "Restore"
-msgstr "Restore"
+msgstr "Wiederherstellen"
 
-# @ bp-docs
-#: includes/addon-history.php:410
-msgid "Compare Revisions"
-msgstr "Revisionsvergleich"
-
-# @ bp-docs
 #. translators: column name in revisons
-#: includes/addon-history.php:426
+#: includes/addon-history.php:383 includes/addon-history.php:417
 msgid "Old"
 msgstr "Alt"
 
-# @ bp-docs
 #. translators: column name in revisons
-#: includes/addon-history.php:427
+#: includes/addon-history.php:384 includes/addon-history.php:418
 msgid "New"
 msgstr "Neu"
 
-# @ bp-docs
-#. translators: column name in revisons
-#: includes/addon-history.php:428
-msgid "Date Created"
-msgstr "Erstellungsdatum"
+#: includes/addon-history.php:401
+msgid "Compare Revisions"
+msgstr "Vergleichen Revisionen"
 
-# @ bp-docs
-#: includes/addon-history.php:429 includes/templates/docs/docs-loop.php:23
+#. translators: column name in revisons
+#: includes/addon-history.php:419
+msgid "Date Created"
+msgstr "Datumsauswahl"
+
+#: includes/addon-history.php:420 includes/templates/docs/docs-loop-list.php:17
+#: includes/templates/docs/docs-loop.php:52
 msgid "Author"
 msgstr "Autor"
 
-# @ bp-docs
-#: includes/addon-history.php:430
+#: includes/addon-history.php:421
 msgid "Actions"
 msgstr "Aktionen"
 
-# @ bp-docs
-#: includes/addon-history.php:458 includes/integration-groups.php:755
-#: includes/templatetags.php:907
+#: includes/addon-history.php:448 includes/integration-groups.php:933
+#: includes/templatetags.php:1189
 msgid "History"
-msgstr "Versionen"
+msgstr "Aktivitätsverlauf"
 
-# @ bp-docs
-#: includes/addon-taxonomy.php:87
+#: includes/addon-taxonomy.php:83
 msgid "Docs Tags"
-msgstr "Doc Tags"
+msgstr "Schlagworte"
 
-# @ bp-docs
-#: includes/addon-taxonomy.php:88
+#: includes/addon-taxonomy.php:84
 msgid "Docs Tag"
-msgstr "Docs Tag"
+msgstr "Schlagwort"
 
-# @ bp-docs
-#: includes/addon-taxonomy.php:225
+#: includes/addon-taxonomy.php:182
 msgid "Tags: %s"
-msgstr "Tags: %s"
+msgstr "Schlagworte %s"
 
-# @ bp-docs
-#: includes/addon-taxonomy.php:357 includes/templates/docs/single/edit.php:97
+#: includes/addon-taxonomy.php:260 includes/templates/docs/single/edit.php:130
+#: includes/templates/docs/single/edit.php:131
 msgid "Tags"
-msgstr "Tags"
+msgstr "Schlagworte"
 
-# @ bp-docs
-#: includes/addon-taxonomy.php:409
+#: includes/addon-taxonomy.php:310
 msgid "You are viewing docs with the following tags: %s"
-msgstr "Du siehst Docs mit den folgenden Tags: %s"
+msgstr "Sie betrachten das Dokumente mit den folgenden Tags: %s"
 
-# @ bp-docs
-#: includes/addon-taxonomy.php:418
+#: includes/addon-taxonomy.php:319
 msgid "Tag"
-msgstr "Tags"
+msgstr "Schlagwort"
 
-# @ bp-docs
-#: includes/addon-taxonomy.php:446
+#: includes/addon-taxonomy.php:360
 msgid "(%d)"
 msgstr "(%d)"
 
-# @ bp-docs
-#: includes/addon-taxonomy.php:528
+#: includes/addon-taxonomy.php:365
+msgid "No tags to show."
+msgstr "Keine Schlagworte zum zeigen."
+
+#: includes/addon-taxonomy.php:469
 msgid "Docs tagged %s"
-msgstr "Docs tagged %s"
+msgstr "Mit Schlagwörter gekennzeichnet %s"
 
-# @ bp-docs
-#: includes/addon-taxonomy.php:587
+#: includes/addon-taxonomy.php:542
 msgid "Most Used"
-msgstr "Am häufigsten genutzt"
+msgstr "Beliebteste"
 
-# @ default
 #. translators: %s: add new taxonomy label
-#: includes/addon-taxonomy.php:611
+#: includes/addon-taxonomy.php:566
 msgid "+ %s"
-msgstr "+ %s"
+msgstr "vor %s"
 
-# @ default
-#: includes/admin.php:63
-msgid "Recent Comments"
-msgstr "Aktuelle Kommentare"
+#: includes/admin.php:31 includes/admin.php:43
+msgid "BuddyPress Docs Settings"
+msgstr "BuddyPress Docs -Einstellungen"
 
-# @ default
-#: includes/admin.php:138
-msgid "No comments yet."
-msgstr "Noch keine Kommentare vorhanden."
+#: includes/admin.php:32
+msgid "Settings"
+msgstr "Einstellungen"
 
-#: includes/attachments.php:61 includes/attachments.php:68
-msgid "File not found."
-msgstr "Datei nicht gefunden."
+#: includes/admin.php:56
+msgid "General"
+msgstr "Allgemein"
 
-#: includes/attachments.php:289
-msgid "Attachment deleted"
-msgstr "Anhang gelöscht"
+#: includes/admin.php:64
+msgid "Slug"
+msgstr "Schnecke"
 
-#: includes/attachments.php:291
-msgid "Could not delete attachment"
-msgstr "Anhang konnte nicht gelöscht werden."
+#: includes/admin.php:74
+msgid "Directory Excerpt Length"
+msgstr "Anzahl der Wörter im Auszug:"
 
-#: includes/attachments.php:507 includes/templates/docs/single/edit.php:62
-#: includes/templates/docs/single/index.php:28 includes/templatetags.php:1867
+#: includes/admin.php:84
+msgid "Users"
+msgstr "Benutzer"
+
+#: includes/admin.php:92
+msgid "User Tab Name"
+msgstr "Benutername"
+
+#: includes/admin.php:103
+msgid "Groups"
+msgstr "Gruppen"
+
+#: includes/admin.php:111
+msgid "Group Tab Name"
+msgstr "Gruppenname"
+
+#: includes/admin.php:122 includes/attachments.php:570
+#: includes/templates/docs/single/edit.php:75
+#: includes/templates/docs/single/index.php:39 includes/templatetags.php:2239
 msgid "Attachments"
 msgstr "Anhänge"
 
-#: includes/attachments.php:523
-msgid "Has attachment?"
-msgstr "Anhang vorhanden?"
+#: includes/admin.php:130
+msgid "Enable Attachments"
+msgstr "Aktiviere Anhänge"
 
-#: includes/attachments.php:525
+#: includes/admin.php:150 includes/admin.php:152
+msgid "Change the slug used to build Docs URLs."
+msgstr "Ändern Sie den verwendeten Slug , um Dokumente URLs erstellen."
+
+#: includes/admin.php:152
+msgid ""
+"You have already defined this value in <code>wp-config.php</code>, so it "
+"cannot be edited here."
+msgstr ""
+"Sie haben bereits diesen Wert in <code> wp-config.php </ code> definiert, so "
+"kann es hier nicht bearbeitet werden."
+
+#: includes/admin.php:161
+msgid "Change the value for longer or shorter excerpts."
+msgstr "Ändern Sie den Wert für kürzere oder längere Auszüge."
+
+#: includes/admin.php:163
+msgid ""
+"Excerpts are shown on Docs directories, to provide better context. If your "
+"theme or language requires longer or shorter excerpts, change this value. "
+"Set to <code>0</code> to disable these excerpts."
+msgstr ""
+"Auszüge sind auf Docs Verzeichnisse, bessere Kontext zu liefern. Wenn Ihr "
+"Thema oder Sprache längere oder kürzere Auszüge erfordert, diesen Wert zu "
+"ändern. Auf <code> 0 </ code> diese Ausschnitte zu deaktivieren."
+
+#: includes/admin.php:175
+msgid "Change the word on groups' Docs tab."
+msgstr "Ändern Sie das Wort auf Gruppen Dokumenten Tab."
+
+#: includes/admin.php:177
+msgid ""
+"Change the word on the BuddyPress group tab from 'Docs' to whatever you'd "
+"like. Keep in mind that this will not change the text anywhere else on the "
+"page. For a more thorough text change, create a <a href='http://codex."
+"buddypress.org/extending-buddypress/customizing-labels-messages-and-"
+"urls/'>language file</a> for BuddyPress Docs."
+msgstr ""
+"Ändern Sie das Wort auf der Buddy Gruppe Registerkarte \"Docs\" auf, was "
+"auch immer Sie möchten. Denken Sie daran, dass dies nicht den Text auf der "
+"Seite anderswo ändern wird. Für eine gründlichere Text ändern, erstellen Sie "
+"ein <ahref='http://codex.buddypress.org/extending-buddypress/customizing-"
+"labels-messages-and-urls/'>language Datei </a> für Buddy Docs."
+
+#: includes/admin.php:186
+msgid "Change the word on users' Docs tab."
+msgstr "Ändern Sie das Wort auf Benutzer Dokumenten Tab."
+
+#: includes/admin.php:188
+msgid ""
+"Change the word on users' Docs tabs from 'Docs' to whatever you'd like. Keep "
+"in mind that this will not change the text anywhere else on the page. For a "
+"more thorough text change, create a <a href='http://codex.buddypress.org/"
+"extending-buddypress/customizing-labels-messages-and-urls/'>language file</"
+"a> for BuddyPress Docs."
+msgstr ""
+"Ändern Sie das Wort auf der Buddy Benutzer Registerkarte \"Docs\" auf, was "
+"auch immer Sie möchten. Denken Sie daran, dass dies nicht den Text auf der "
+"Seite anderswo ändern wird. Für eine gründlichere Text ändern, erstellen Sie "
+"ein <ahref='http://codex.buddypress.org/extending-buddypress/customizing-"
+"labels-messages-and-urls/'>language Datei </a> für Buddy Docs."
+
+#: includes/admin.php:197
+msgid "Allow users to add attachments."
+msgstr "Benutzern erlauben, Anhänge hinzuzufügen."
+
+#: includes/admin.php:199
+msgid "Enabled"
+msgstr "Aktiviert"
+
+#: includes/admin.php:200
+msgid "Disabled"
+msgstr "Deaktiviert."
+
+#: includes/admin.php:202
+msgid "Allow users to add attachments to their Docs."
+msgstr "Benutzern erlauben, Ihre Anhänge hinzuzufügen."
+
+#: includes/admin.php:236
+msgid "Recent Comments"
+msgstr "Letzte Kommentare"
+
+#: includes/admin.php:310
+msgid "No comments yet."
+msgstr "Bisher keine Kommentare"
+
+#: includes/attachments.php:72 includes/attachments.php:79
+msgid "File not found."
+msgstr "Datei nicht gefunden"
+
+#: includes/attachments.php:340
+msgid "Attachment deleted"
+msgstr "Anhang gelöscht"
+
+#: includes/attachments.php:342
+msgid "Could not delete attachment"
+msgstr "Anhang kann nicht gelöscht werden"
+
+#: includes/attachments.php:389 includes/component.php:974
+msgid "Upload File"
+msgstr "Datei hochladen"
+
+#: includes/attachments.php:390 includes/component.php:975
+msgid "OK"
+msgstr "Ok"
+
+#: includes/attachments.php:586
+msgid "Has attachment?"
+msgstr "Hat es Anhänge?"
+
+#: includes/attachments.php:588
 msgid "Yes"
 msgstr "Ja"
 
-# @ bp-docs
-#: includes/attachments.php:526
+#: includes/attachments.php:589
 msgid "No"
 msgstr "Nein"
 
-#: includes/attachments.php:527
+#: includes/attachments.php:590
 msgid "Doesn&#8217;t matter"
-msgstr "Spielt keine Rolle"
+msgstr "Kein unterschied"
 
-# @ bp-docs
-#: includes/attachments.php:529
+#: includes/attachments.php:592
 msgid "Filter"
 msgstr "Filter"
 
-# @ buddypress
-#: includes/component.php:157
+#: includes/attachments.php:746
+msgid ""
+"It looks like you are running <strong>nginx</strong>. We recommend the "
+"following setting in your site configuration file:"
+msgstr ""
+"Es sieht aus wie Sie ausführen <strong> nginx </ strong>. Wir empfehlen die "
+"folgende Einstellung in Ihrer Site-Konfigurationsdatei :"
+
+#: includes/attachments.php:756
+msgid ""
+"It looks like you are running <strong>IIS 7</strong>. We recommend the "
+"following setting in your Web.config file:"
+msgstr ""
+"Es sieht aus wie Sie ausführen <strong> IIS7 </ strong>. Wir empfehlen die "
+"folgende Einstellung in der Datei Web.config:"
+
+#: includes/attachments.php:768
+msgid ""
+"It looks like you are running <strong>Apache</strong>. The most likely cause "
+"of your problem is that the <code>AllowOverride</code> directive has been "
+"disabled, either globally (<code>httpd.conf</code>) or in a "
+"<code>VirtualHost</code> definition. Contact your host for assistance."
+msgstr ""
+"Es sieht aus wie Sie ausführen <strong> Apache </ strong>. Die "
+"wahrscheinlichste Ursache des Problems ist, dass der <code> AllowOverride </ "
+"code> deaktiviert wurde, entweder global (<code> httpd.conf </ code>) oder "
+"in einem <code> Virtualhost </ code> Definition. Kontaktieren Sie Ihren "
+"Administrator um Hilfe."
+
+#: includes/attachments.php:774
+msgid ""
+"<strong>Your BuddyPress Docs attachments directory is publicly accessible.</"
+"strong> Doc attachments will not be properly protected from direct viewing, "
+"even if the parent Docs are non-public."
+msgstr ""
+"<Strong> Ihre Buddy Docs Anhänge Verzeichnis ist öffentlich zugänglich. </ "
+"Strong> Doc-Anhänge werden nicht korrekt vom direkten Einblick geschützt "
+"werden, auch wenn die Eltern Docs sind nicht öffentlich."
+
+#: includes/attachments.php:781
+msgid "See <a href=\"%s\">this wiki page</a> for more information."
+msgstr "Weitere Informationen findest du in den <a href=\"%s\">HowTos</a>."
+
+#: includes/attachments.php:784
+msgid "Dismiss this message"
+msgstr "Diese Nachricht löschen"
+
+#: includes/class-wp-widget-recent-docs.php:44
+msgid ""
+"Displays the most recent BuddyPress Docs that the visitor can read. Shows "
+"only group-associated docs when used in a single groups sidebar."
+msgstr ""
+"Zeigt die jüngsten BuddyPress Dokumente an, die Besucher lesen können. Zeigt "
+"nur Gruppenassoziierte Dokumente, wenn sie in einer einzelnen Gruppen "
+"Sidebar verwendet."
+
+#: includes/class-wp-widget-recent-docs.php:45
+msgctxt "widget name"
+msgid "(BuddyPress Docs) Recent Docs"
+msgstr "(BuddyPress Docs) Kürzlich hinzugefügte Dokumente"
+
+#: includes/class-wp-widget-recent-docs.php:70
+msgid "Recent BuddyPress Docs"
+msgstr "Neue BuddyPress Dokumente"
+
+#: includes/class-wp-widget-recent-docs.php:149
+msgid "Title:"
+msgstr "Titel:"
+
+#: includes/class-wp-widget-recent-docs.php:152
+msgid "Number of docs to show:"
+msgstr "Anzahl der Dokumente zu zeigen:"
+
+#: includes/class-wp-widget-recent-docs.php:156
+msgid "Display post date?"
+msgstr "Postdatum anzeigen?"
+
+#. Plugin Name of the plugin/theme
+#: includes/component.php:41
+msgid "BuddyPress Docs"
+msgstr "BuddyPress Docs"
+
+#: includes/component.php:151
 msgid "Search Docs..."
-msgstr "Docs suchen..."
+msgstr "Suche Dokumente"
 
-# @ bp-docs
-#: includes/component.php:190 includes/component.php:296
-#: includes/integration-groups.php:740 includes/integration-groups.php:810
-#: includes/integration-groups.php:880
-msgid "Docs"
-msgstr "Docs"
-
-# @ bp-docs
-#: includes/component.php:203 includes/component.php:311
-#: includes/templatetags.php:1272
+#: includes/component.php:197 includes/component.php:315
+#: includes/integration-users.php:303 includes/templatetags.php:1551
 msgid "Started By Me"
-msgstr "Erstellt durch mich"
+msgstr "Angefangen von Mir"
 
-# @ bp-docs
-#: includes/component.php:210 includes/component.php:320
-#: includes/templatetags.php:1273
+#: includes/component.php:204 includes/component.php:324
+#: includes/integration-users.php:312 includes/templatetags.php:1552
 msgid "Edited By Me"
-msgstr "Bearbeitet durch mich"
+msgstr "Bearbeitet von Mir"
 
-# @ bp-docs
-#: includes/component.php:217 includes/templatetags.php:1297
+#: includes/component.php:211 includes/templatetags.php:1576
 msgid "Create New Doc"
-msgstr "Neues Doc erstellen"
+msgstr "Ein Dokument erstellen"
 
-# @ bp-docs
-#: includes/component.php:308
+#: includes/component.php:312
 msgid "My Docs "
-msgstr "Meine Docs "
+msgstr "Meine Dokumente"
 
-# @ default
-#: includes/component.php:308
+#: includes/component.php:312
 msgid "%s&#8217;s Docs"
-msgstr "Docs von %s"
+msgstr "%s&#8217;s Dokumente"
 
-# @ bp-docs
-#: includes/component.php:311
+#: includes/component.php:315
 msgid "Started By %s"
-msgstr "Begonnen von %s"
+msgstr "Erstellt von %1$s"
 
-# @ bp-docs
-#: includes/component.php:320
+#: includes/component.php:324
 msgid "Edited By %s"
 msgstr "Bearbeitet von %s"
 
-# @ bp-docs
-#: includes/component.php:409
+#: includes/component.php:412
 msgid ""
 "This doc is currently being edited by %s. To prevent overwrites, you cannot "
 "edit until that user has finished. Please try again in a few minutes."
 msgstr ""
-"Dieses Doc wird gerade von %s bearbeitet. Um das Überschreiben zu "
-"verhindern, kannst du es nicht bearbeiten, bis dieses Mitglied fertig ist. "
-"Bitte versuche es in ein paar Minuten nochmals."
+"Dieses Dokument wird derzeit von% s bearbeitet wird. Um zu verhindern, "
+"Überschreibungen , können Sie nicht ändern, bis der Benutzer beendet hat. "
+"Bitte versuchen Sie es in ein paar Minuten."
 
-# @ bp-docs
-#: includes/component.php:422
+#: includes/component.php:425
 msgid "You do not have permission to edit the doc."
-msgstr "Du hast keine Berechtigung, das Doc zu bearbeiten."
+msgstr "Sie haben keine Berechtigung, das Dokument zu bearbeiten."
 
-# @ bp-docs
-#: includes/component.php:438
+#: includes/component.php:439
 msgid "You do not have permission to create a Doc in this group."
-msgstr "Du hast in dieser Gruppe nicht die Berechtigung, ein Doc zu erstellen."
+msgstr ""
+"Sie haben keine Berechtigung, ein Dokument in dieser Gruppe zu erstellen."
 
-# @ bp-docs
-#: includes/component.php:454
+#: includes/component.php:455
 msgid "You do not have permission to view this Doc's history."
-msgstr "Du hast nicht die Berechtigung, die Versionen anzusehen."
+msgstr "Sie haben keine Berechtigung dieses Dokuments Geschichte zu sehen."
 
-# @ bp-docs
-#: includes/component.php:478
+#: includes/component.php:479
 msgid "Lock successfully removed"
-msgstr "Sperre erfolgreich entfernt"
+msgstr "Sperrung erfolgreich entfernt"
 
-# @ bp-docs
-#: includes/component.php:503
+#: includes/component.php:511
 msgid "Doc successfully deleted!"
-msgstr "Doc erfolgreich gelöscht!"
+msgstr "Duokument wurde erfolgreich gelöscht!"
 
-#: includes/component.php:505
+#: includes/component.php:513
 msgid "Could not delete doc."
-msgstr "Doc konnte nicht gelöscht werden."
+msgstr "Dokument kann nicht gelöscht werden"
 
-# @ bp-docs
-#: includes/component.php:508
+#: includes/component.php:516
 msgid "You do not have permission to delete that doc."
-msgstr "Du hast nicht die Berechtigung, dieses Doc zu löschen."
+msgstr "Sie haben keine Berechtigung, das Dokument zu löschen."
 
-# @ bp-docs
-#: includes/component.php:640
-msgid "%1$s commented on the doc %2$s"
-msgstr "%1$s kommentierte das Doc %2$s"
+#: includes/component.php:537
+msgid "Doc successfully removed from Trash!"
+msgstr "Dokument erfolgreich aus dem Papierkorb entfernt!"
 
-# @ bp-docs
-#: includes/component.php:736
-msgid "Show New Docs"
-msgstr "Neue Dokumente zeigen"
+#: includes/component.php:539
+msgid "Could not remove Doc from Trash."
+msgstr "Dokument konnte nicht aus dem Papierkorb entfernen werden."
 
-# @ bp-docs
-#: includes/component.php:737
-msgid "Show Doc Edits"
-msgstr "Zeige Doc-Bearbeitungen"
+#: includes/component.php:542
+msgid "You do not have permission to remove that Doc from the Trash."
+msgstr ""
+"Sie haben keine Berechtigung dieses Dokument aus dem Papierkorb zu entfernen."
 
-# @ bp-docs
-#: includes/component.php:738
-msgid "Show Doc Comments"
-msgstr "Zeige Doc-Kommentare"
+#: includes/component.php:557
+msgid "Doc successfully removed from the group"
+msgstr "Dokument erfolgreich aus der Gruppe entfernt"
 
-# @ bp-docs
-#: includes/component.php:805
-msgid "%1$s created the doc %2$s"
-msgstr "%1$s erstellte das Doc %2$s"
+#: includes/component.php:559
+msgid "Could not remove Doc from the group."
+msgstr "Dokument konnte nicht aus der Gruppe entfernt."
 
-# @ bp-docs
-#: includes/component.php:807
-msgid "%1$s edited the doc %2$s"
-msgstr "%1$s bearbeitete das Doc %2$s"
+#: includes/component.php:562
+msgid "You do not have permission to remove that Doc from this group."
+msgstr "Sie haben keine Berechtigung, dass Doc aus dieser Gruppe zu entfernen."
 
-# @ bp-docs
-#: includes/component.php:1037 includes/component.php:1049
+#: includes/component.php:888 includes/component.php:900
 msgid "Search"
 msgstr "Suchen"
 
-#: includes/component.php:1100
-msgid "Upload File"
-msgstr "Datei hinzufügen"
-
-#: includes/component.php:1101
-msgid "OK"
-msgstr "OK"
-
-# @ bp-docs
-#: includes/component.php:1102
+#: includes/component.php:976
 msgid "Still working?"
-msgstr "Noch am Arbeiten?"
+msgstr "Immer noch am arbeiten?"
 
-# @ bp-docs
-#: includes/functions.php:160
+#: includes/component.php:977
+msgid "and %d more"
+msgstr "Und %d mehr!"
+
+#: includes/functions.php:150
+msgctxt ""
+"Description for the associated-item taxonomy term. Of the form \"Docs "
+"associated with the [item-type] [item-name]\" - item-type is group, user, etc"
 msgid "Docs associated with the %1$s %2$s"
-msgstr "Docs zugeordnet zu %1$s %2$s"
+msgstr "Dokumente mit den zugehörigen %1$s %2$s"
 
-# @ bp-docs
-#: includes/functions.php:480 includes/templatetags.php:1363
+#: includes/functions.php:539 includes/templatetags.php:1652
 msgid "Logged-in Users"
-msgstr "Eingeloggte Benutzer"
+msgstr "Eingeloggte User"
 
-# @ bp-docs
-#: includes/functions.php:485 includes/templatetags.php:1365
+#: includes/functions.php:544 includes/templatetags.php:1654
 msgid "The Doc author only"
-msgstr "Nur der Doc-Autor"
+msgstr "Der Dokumentauthor alleine"
 
-# @ bp-docs
-#: includes/functions.php:493 includes/templatetags.php:1362
+#: includes/functions.php:560 includes/templatetags.php:1651
 msgid "Anyone"
-msgstr "jedermann"
+msgstr "Jeder"
 
-# @ bp-docs
-#: includes/integration-groups.php:424
+#: includes/functions.php:626
+msgid ""
+"Your Doc was successfully saved, but some of your access settings have been "
+"changed to match the Doc's permissions."
+msgstr ""
+"Ihr Dokument wurde erfolgreich gespeichert, aber einige Ihrer "
+"Zugriffseinstellungen geändert wurden, die Doc Berechtigungen entsprechen."
+
+#: includes/integration-groups.php:498
 msgid "Members of %s"
 msgstr "Mitglieder von %s"
 
-# @ bp-docs
-#: includes/integration-groups.php:429
+#: includes/integration-groups.php:510
 msgid "Admins and mods of %s"
-msgstr "Admins und Mods von %s"
+msgstr "Nur für Gruppen Administratoren und Moderatoren von %s"
 
-# @ bp-docs
-#: includes/integration-groups.php:506
+#: includes/integration-groups.php:596
 msgid "%1$s created the doc %2$s in the group %3$s"
-msgstr "%1$s erstellte das Doc %2$s in der Gruppe %3$s"
+msgstr "%1$s erstellte das Dokument %2$s in der Gruppe %3$s"
 
-# @ bp-docs
-#: includes/integration-groups.php:508
+#: includes/integration-groups.php:598
 msgid "%1$s edited the doc %2$s in the group %3$s"
-msgstr "%1$s bearbeitete das Doc %2$s in der Gruppe %3$s"
+msgstr "%1$s bearbeitete das Dokument %2$s in der Gruppe %3$s"
 
-# @ bp-docs
-#: includes/integration-groups.php:535
+#: includes/integration-groups.php:653
 msgid "%1$s commented on the doc %2$s in the group %3$s"
-msgstr "%1$s kommentierte das Doc %2$s in der Gruppe %3$s"
+msgstr "%1$s kommentierte das Dokument %2$s in der Gruppe %3$s"
 
-# @ bp-docs
-#: includes/integration-groups.php:609
+#: includes/integration-groups.php:729
 msgid "Group"
 msgstr "Gruppe"
 
-# @ bp-docs
-#: includes/integration-groups.php:718
+#: includes/integration-groups.php:807
+msgid "Unlink from Group"
+msgstr "Aus der Gruppe entfernen"
+
+#: includes/integration-groups.php:897
 msgid "%s <span>%d</span>"
 msgstr "%s <span>%d</span>"
 
-# @ bp-docs
-#: includes/integration-groups.php:753
-#: includes/templates/docs/docs-header.php:26 includes/templatetags.php:903
-#: includes/templatetags.php:1466
-msgid "Edit"
-msgstr "Bearbeiten"
-
-# @ bp-docs
-#: includes/integration-groups.php:795
-msgid "BuddyPress Docs group tab name:"
-msgstr "Name des BuddyPress Docs Gruppen-Tab:"
-
-# @ bp-docs
-#: includes/integration-groups.php:822
-msgid "BuddyPress Docs Settings"
-msgstr "BuddyPress Docs Einstellungen"
-
-# @ bp-docs
-#: includes/integration-groups.php:825
-msgid "Group Tab Name"
-msgstr "Name des Gruppen-Tab"
-
-# @ bp-docs
-#: includes/integration-groups.php:981
-msgid "Save Changes"
-msgstr "Änderungen speichern"
-
-# @ buddypress
-#: includes/integration-groups.php:1006
+#: includes/integration-groups.php:1135
 msgid "There was an error saving, please try again"
-msgstr "Beim Speichern ist ein Fehler aufgetreten. Bitte versuche es nochmals."
+msgstr "Es gab einen Fehler beim Speichern. Bitte versuche es erneut."
 
-# @ buddypress
-#: includes/integration-groups.php:1008
+#: includes/integration-groups.php:1137
 msgid "Settings saved successfully"
-msgstr "Einstellungen erfolgreich gespeichert"
+msgstr "Einstellungen gespeichert."
 
-# @ bp-docs
-#: includes/integration-groups.php:1065
+#: includes/integration-groups.php:1201
 msgid ""
-"BuddyPress Docs is a powerful tool for collaboration with members of your "
-"group. A cross between document editor and wiki, BuddyPress Docs allows you "
-"to co-author and co-edit documents with your fellow group members, which you "
-"can then sort and tag in a way that helps your group to get work done."
+"Docs is a powerful tool for collaboration with members of your group. A "
+"cross between document editor and wiki, Docs allows you to co-author and co-"
+"edit documents with your fellow group members, which you can then sort and "
+"tag in a way that helps your group to get work done."
 msgstr ""
-"BuddyPress Docs sind nützlich, um mit den Mitgliedern deiner Gruppe "
-"gemeinsam ein Dokument zu erarbeiten; eine Kreuzung zwischen Editor und "
-"Wiki. Sie können sortiert und mit Stichworten versehen werden, um die "
-"Zusammenarbeit zu erleichtern."
+"Docs ist ein mächtiges Werkzeug für die Zusammenarbeit mit den Mitgliedern "
+"Ihrer Gruppe. Eine Kreuzung zwischen Dokumenten-Editor und dem Wiki, Text & "
+"Tabellen können Sie mit den anderen Gruppenmitgliedern und Co-Dokumente "
+"bearbeiten zu-Autor zusammen, die Sie dann zu sortieren und Tag in einer "
+"Weise, dass Ihre Gruppe hilft Arbeit zu erledigen."
 
-# @ bp-docs
-#: includes/integration-groups.php:1068
-msgid "Enable BuddyPress Docs for this group"
-msgstr "BuddyPress Docs für diese Gruppe aktivieren"
+#: includes/integration-groups.php:1204
+msgid "Enable Docs for this group"
+msgstr "Aktiviere BuddyPress Docs für diese Gruppe"
 
-# @ bp-docs
-#: includes/integration-groups.php:1072
+#: includes/integration-groups.php:1208
 msgid "Options"
-msgstr "Optionen"
+msgstr "Einstellungen"
 
-# @ bp-docs
-#: includes/integration-groups.php:1077
-msgid "Minimum role to create new Docs:"
-msgstr "Mindest-Berechtigung für das Erstellen neuer Docs:"
+#: includes/integration-groups.php:1213
+msgid "Minimum role to associate Docs with this group:"
+msgstr "Mindest Rolle Dokumente mit dieser Gruppe zuzuordnen:"
 
-# @ bp-docs
-#: includes/integration-groups.php:1082
+#: includes/integration-groups.php:1218
 msgid "Group admin"
-msgstr "Gruppen-Administrator"
+msgstr "Gruppen Administrator"
 
-# @ bp-docs
-#: includes/integration-groups.php:1083
+#: includes/integration-groups.php:1219
 msgid "Group moderator"
-msgstr "Gruppen-Moderator"
+msgstr "Gruppen Moderator"
 
-# @ bp-docs
-#: includes/integration-groups.php:1084
+#: includes/integration-groups.php:1220
 msgid "Group member"
 msgstr "Gruppenmitglied"
 
-# @ bp-docs
-#: includes/integration-groups.php:1265
+#: includes/integration-groups.php:1401
 msgid "View Docs"
-msgstr "Zeige Docs"
+msgstr "Zeige Dokumente"
 
-# @ bp-docs
-#: includes/query-builder.php:402
-msgid "Unknown error. Please try again."
-msgstr "Unbekannter Fehler. Versuche es nochmals."
+#: includes/integration-groups.php:1650
+msgctxt "group Docs directory breadcrumb"
+msgid "%s&#8217;s Docs"
+msgstr "%s&#8217;s Dokumente"
 
-# @ bp-docs
-#: includes/query-builder.php:422
-msgid "You are not allowed to associate a Doc with that group."
-msgstr "Du bist nicht berechtigt, ein Doc einer Gruppe zuzuordnen."
+#: includes/integration-users.php:294
+msgctxt "user Docs directory breadcrumb"
+msgid "%s&#8217;s Docs"
+msgstr "%s&#8217;s Dokumente"
 
-# @ bp-docs
 #: includes/query-builder.php:432
-msgid "Both the title and the content fields are required."
-msgstr "Titel- und Inhalts-Feld müssen ausgefüllt werden."
+msgid "Unknown error. Please try again."
+msgstr "Unbekannter Fehler. Bitte erneut versuchen."
 
-# @ bp-docs
+#: includes/query-builder.php:452
+msgid "You are not allowed to associate a Doc with that group."
+msgstr ""
+"Sie sind nicht berechtigt ein Dokument mit dieser Gruppe zu verknüpfen."
+
 #: includes/query-builder.php:462
-msgid "There was an error when creating the doc."
-msgstr "Beim Erstellen ist ein Fehler aufgetreten."
+msgid "The title field is required."
+msgstr "Dieses Feld wird benötigt"
 
-# @ bp-docs
-#: includes/query-builder.php:471
-msgid "Doc successfully created!"
-msgstr "Doc erfolgreich erstellt!"
-
-# @ bp-docs
 #: includes/query-builder.php:491
-msgid "There was an error when saving the doc."
-msgstr "Beim Speichern ist ein Fehler aufgetreten."
+msgid "There was an error when creating the doc."
+msgstr "Es gab einen Fehler bei der Erstellung des Dokuments."
 
-# @ bp-docs
 #: includes/query-builder.php:500
+msgid "Doc successfully created!"
+msgstr "Dokument erfolgreich erstellt!"
+
+#: includes/query-builder.php:524
+msgid "There was an error when saving the doc."
+msgstr "Es gab einen Fehler beim Speichern des Dokuments."
+
+#: includes/query-builder.php:534
 msgid ""
 "You idled a bit too long while in Edit mode. In order to allow others to "
 "edit the doc you were working on, your changes have been autosaved. Click "
 "the Edit button to return to Edit mode."
 msgstr ""
-"Du warst zu lange im Bearbeitungsmodus. Um anderen ebenfalls zu erlauben, "
-"das Doc zu bearbeiten, wurden deine Änderungen automatisch gespeichert. "
-"Klicke auf den Bearbeitungs-Button, um zu diesem Modus zurückzukehren."
+"Sie waren zu lang im Bearbeitungsmodus. Um andere zu ermöglichen, das "
+"Dokument zu bearbeiten, wurden Ihre Änderungen automatisch gespeichert. "
+"Klicken Sie auf die Schaltfläche Bearbeiten, um in den Bearbeitungsmodus "
+"zurückzukehren."
 
-# @ bp-docs
-#: includes/query-builder.php:503
+#: includes/query-builder.php:537
 msgid "Doc successfully edited!"
-msgstr "Doc erfolgreich bearbeitet!"
+msgstr "Dokument wurde erfolgreich bearbeitet!"
 
-# @ bp-docs
-#: includes/query-builder.php:534
-msgid ""
-"Your Doc was successfully saved, but some of your access settings have been "
-"changed to match the Doc's permissions."
-msgstr ""
-"Dein Doc wurde erfolgreich gespeichert, gewisse Zugriffsrechte wurden aber "
-"den Doc-Einstellungen angepasst."
+#: includes/templates/docs/docs-folder-loop.php:83
+msgid "Viewing %1$s-%2$s of %3$s docs in this folder."
+msgstr "Anzeigen %1$s -%2$s von%3$s Dokumenten in diesem Ordner."
 
-# @ bp-docs
-#: includes/templates/docs/docs-header.php:21 includes/templatetags.php:900
+#: includes/templates/docs/docs-folder-loop.php:84
+msgid "View all docs in <strong>%s</strong>."
+msgstr "Alle Dokumente in <strong>%s</strong> anzeigen."
+
+#: includes/templates/docs/docs-folder-loop.php:88
+#: includes/templates/docs/docs-loop-list.php:91
+#: includes/templates/docs/docs-loop.php:174
+msgid "There are no docs for this view."
+msgstr "Es sind keine Dokumente für diese Ansicht"
+
+#: includes/templates/docs/docs-header.php:16 includes/templatetags.php:2321
+msgid "This Doc is in the Trash"
+msgstr "Dieses Dokument In Papierkorb legen"
+
+#: includes/templates/docs/docs-header.php:25 includes/templatetags.php:1182
 msgid "Read"
 msgstr "Lesen"
 
-# @ bp-docs
-#: includes/templates/docs/docs-loop.php:19
-#: includes/templates/docs/single/edit.php:34
+#: includes/templates/docs/docs-loop-list.php:13
+#: includes/templates/docs/docs-loop.php:47
+#: includes/templates/docs/single/edit.php:41
 msgid "Title"
 msgstr "Titel"
 
-# @ bp-docs
-#: includes/templates/docs/docs-loop.php:27
+#: includes/templates/docs/docs-loop-list.php:21
+#: includes/templates/docs/docs-loop.php:57
 msgid "Created"
 msgstr "Erstellt"
 
-# @ bp-docs
-#: includes/templates/docs/docs-loop.php:31
+#: includes/templates/docs/docs-loop-list.php:25
+#: includes/templates/docs/docs-loop.php:61
 msgid "Last Edited"
-msgstr "Geändert"
+msgstr "Bearbeitet am"
 
-# @ bp-docs
-#: includes/templates/docs/docs-loop.php:80
+#: includes/templates/docs/docs-loop-list.php:78
+#: includes/templates/docs/docs-loop.php:163
 msgid "Viewing %1$s-%2$s of %3$s docs"
-msgstr "%1$s-%2$s von %3$s Docs anzeigen"
+msgstr "Zeige %1$s-%2$s von %3$s Dokumente"
 
-# @ bp-docs
-#: includes/templates/docs/docs-loop.php:91
+#: includes/templates/docs/docs-loop-list.php:89
+#: includes/templates/docs/docs-loop.php:172
 msgid "There are no docs for this view. Why not <a href=\"%s\">create one</a>?"
 msgstr ""
-"Es gibt keine Docs in dieser Ansicht. Willst du ein Doc <a href=\"%s"
-"\">erstellen</a>?"
+"Es sind keine Dokumente für diese Ansicht. Warum <a href=\"%s\"> nicht ein </"
+"a> erstellen?"
 
-# @ bp-docs
-#: includes/templates/docs/docs-loop.php:93
-msgid "There are no docs for this view."
-msgstr "Es gibt keine Docs in dieser Ansicht."
+#: includes/templates/docs/docs-loop-tree.php:7
+#: includes/templates/docs/docs-loop.php:27
+msgid "Manage Folders"
+msgstr "Ordner verwalten"
 
-# @ bp-docs
-#: includes/templates/docs/index.php:23 includes/theme-bridge.php:165
+#: includes/templates/docs/docs-loop.php:32
+msgid "Hide Folders"
+msgstr "Ordner verstecken"
+
+#: includes/templates/docs/docs-loop.php:33
+msgid "Show Folders"
+msgstr "Zeige Ordner"
+
+#: includes/templates/docs/docs-loop.php:82
+msgid "Go up one folder"
+msgstr "Gehen Sie auf einen Ordner"
+
+#: includes/templates/docs/docs-loop.php:82
+msgctxt "up one folder"
+msgid ".."
+msgstr ".."
+
+#: includes/templates/docs/index.php:25 includes/theme-bridge.php:201
 msgid "Docs Directory"
-msgstr "Docs Verzeichnis"
+msgstr "Dokumentverzeichnis"
 
-# @ bp-docs
+#: includes/templates/docs/manage-folders.php:3
+msgid "Delete Folder"
+msgstr "Ordner löschen"
+
+#: includes/templates/docs/manage-folders.php:7
+msgid "This does not appear to be a valid folder."
+msgstr "Dies scheint kein gültiger Ordner zu sein."
+
+#: includes/templates/docs/manage-folders.php:13
+msgid "You are about to delete the folder %s."
+msgstr "Sie sind dabei den Ordner %s zu löschen."
+
+#: includes/templates/docs/manage-folders.php:19
+msgid ""
+"<strong>WARNING:</strong> Deleting a folder will also delete all Docs and "
+"subfolders in the folder. This action cannot be undone. To preserve your "
+"content, remove everything from this folder before deleting it."
+msgstr ""
+"<Strong> ACHTUNG: </ strong> Löschen eines Ordners werden auch alle "
+"Dokumente und Unterordner im Ordner löschen. Diese Aktion kann nicht "
+"rückgängig gemacht werden. Um Ihre Inhalte zu erhalten, entfernen Sie alles "
+"aus diesem Ordner, bevor sie gelöscht werden."
+
+#: includes/templates/docs/manage-folders.php:23
+msgid ""
+"I understand the consequences and wish to continue deleting this folder."
+msgstr ""
+"Ich verstehe die Konsequenzen und wollen diesen Ordner fortsetzen zu löschen."
+
+#: includes/templates/docs/manage-folders.php:28
+#: includes/templates/docs/single/edit.php:193
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: includes/templates/docs/manage-folders.php:46
+msgid "Manage Existing Folders"
+msgstr "Verwalten vorhandener Ordner"
+
+#: includes/templates/docs/manage-folders.php:55
+msgid "Create New Folder"
+msgstr " Neuen Ordner erstellen"
+
+#: includes/templates/docs/manage-folders.php:61
+msgid "Create"
+msgstr "Erstellen"
+
 #: includes/templates/docs/single/comments.php:27
 msgid "Discussion (%d)"
-msgstr "Diskussion (%d)"
+msgstr "Diskussion (% d)"
 
-# @ bp-docs
 #: includes/templates/docs/single/comments.php:49
 msgid "There are no comments for this doc yet."
-msgstr "Für dieses Doc gibt es noch keine Kommentare."
+msgstr "Es gibt keine Kommentare zu diesem Dokument vor."
 
-# @ bp-docs
 #: includes/templates/docs/single/comments.php:58
-msgid "Comment display has been disabled on this doc."
-msgstr "Für dieses Doc wurde die Kommentaransicht deaktiviert."
-
-# @ bp-docs
-#: includes/templates/docs/single/comments.php:67
 msgid "Comment posting has been disabled on this doc."
-msgstr "Für dieses Doc wurde die Kommentarfunktion deaktiviert."
+msgstr "Kommentar Posting wurde auf diesem Dokument deaktiviert."
 
-# @ bp-docs
-#: includes/templates/docs/single/edit.php:23
+#: includes/templates/docs/single/comments.php:66
+msgid "Comment display has been disabled on this doc."
+msgstr "Comment Anzeige wurde auf diesem Dokument deaktiviert."
+
+#: includes/templates/docs/single/edit.php:30
 msgid "You have been idle for <span id=\"idle-warning-time\"></span>"
-msgstr "Du warst untätig für <span id=\"idle-warning-time\"></span>"
+msgstr "Sie haben für <span id = \"idle-warning-time> </ span> Leerlauf"
 
-# @ bp-docs
-#: includes/templates/docs/single/edit.php:40
+#: includes/templates/docs/single/edit.php:47
 msgid "Permalink"
 msgstr "Permalink"
 
-# @ bp-docs
-#: includes/templates/docs/single/edit.php:46
+#: includes/templates/docs/single/edit.php:55
 msgid "Content"
 msgstr "Inhalt"
 
-# @ bp-docs
-#: includes/templates/docs/single/edit.php:70
+#: includes/templates/docs/single/edit.php:89
+#: includes/templates/docs/single/edit.php:90
 msgid "Associated Group"
-msgstr "Gruppenzugehörigkeit"
+msgstr "Assoziierte Gruppe"
 
-# @ bp-docs
-#: includes/templates/docs/single/edit.php:84
+#: includes/templates/docs/single/edit.php:110
+#: includes/templates/docs/single/edit.php:111
 msgid "Access"
-msgstr "Zugriffsrechte"
+msgstr "Zugriff"
 
-# @ bp-docs
-#: includes/templates/docs/single/edit.php:103
+#: includes/templates/docs/single/edit.php:138
 msgid "Tags are words or phrases that help to describe and organize your Docs."
 msgstr ""
-"Tags sind Schlagwörter, die bei der Beschreibung und Organisation der Docs "
-"hilfreich sind."
+"Stichworte sind Wörter oder Phrasen, die Ihre Dokumente zu beschreiben und "
+"zu organisieren helfen."
 
-# @ bp-docs
-#: includes/templates/docs/single/edit.php:104
+#: includes/templates/docs/single/edit.php:139
 msgid ""
 "Separate tags with commas (for example: <em>orchestra, snare drum, piccolo, "
 "Brahms</em>)"
 msgstr ""
-"Trenne die Tags mit Komma (zum Beispiel: <em>Recht, Gesundheitsreform, "
-"Arztpraxis, Arbeitsablauf</em>)"
+"Stichworte durch Kommas trennen (zum Beispiel: <em> Orchester, Snare-Drum, "
+"piccolo, Brahms </ em>)"
 
-# @ bp-docs
-#: includes/templates/docs/single/edit.php:118
-msgid "Parent"
-msgstr "Eltern"
-
-# @ bp-docs
-#: includes/templates/docs/single/edit.php:124
+#: includes/templates/docs/single/edit.php:167
 msgid "Select a parent for this Doc."
-msgstr "Eltern für dieses Doc auswählen."
+msgstr "Wählen Sie ein Elternteil für dieses Dokument."
 
-# @ bp-docs
-#: includes/templates/docs/single/edit.php:126
+#: includes/templates/docs/single/edit.php:169
 msgid ""
 "(Optional) Assigning a parent Doc means that a link to the parent will "
 "appear at the bottom of this Doc, and a link to this Doc will appear at the "
 "bottom of the parent."
 msgstr ""
-"Ein übergeordnetes Doc anzugeben bedeutet, dass in der Fusszeile beider Docs "
-"ein Link zum jeweils anderen Doc angezeigt wird (optional)."
+"(Optional) ein übergeordnetes Dokument zuweisen bedeutet, dass ein Link zu "
+"den Eltern am unteren Rand dieses Dokuments erscheint, und einen Link zu "
+"diesem Dokument werden am unteren Rand des Mutter erscheinen."
 
-# @ bp-docs
-#: includes/templates/docs/single/edit.php:147
+#: includes/templates/docs/single/edit.php:193
 msgid "Save"
 msgstr "Speichern"
 
-# @ bp-docs
-#: includes/templates/docs/single/edit.php:147
-msgid "Cancel"
-msgstr "Abbrechen"
-
-#: includes/templates/docs/single/edit.php:150 includes/templatetags.php:1795
-msgid "Delete"
-msgstr "Löschen"
-
-# @ bp-docs
-#: includes/templates/docs/single/edit.php:180
+#: includes/templates/docs/single/edit.php:226
 msgid "Are you still there?"
-msgstr "Bist du noch da?"
+msgstr "Immer noch am arbeiten?"
 
-# @ bp-docs
-#: includes/templates/docs/single/edit.php:182
+#: includes/templates/docs/single/edit.php:228
 msgid ""
 "In order to prevent overwriting content, only one person can edit a given "
 "doc at a time. For that reason, you must periodically ensure the system that "
@@ -777,361 +1094,336 @@ msgid ""
 "your changes will be auto-saved, and you'll be sent out of Edit mode so that "
 "others can access the doc."
 msgstr ""
-"Um das Überschreiben zu verhindern kann jeweils nur eine Person ein Doc "
-"bearbeiten. Bist du für mehr als 30 Minuten untätig, werden deine Änderungen "
-"automatisch gespeichert und du wirst vom Bearbeitungsmodus verabschiedet, "
-"damit andere auf das Doc zugreifen können."
+"Um Inhalte zu verhindern Überschreiben kann nur eine Person einen bestimmten "
+"doc zu einem Zeitpunkt, zu bearbeiten. Aus diesem Grund müssen Sie "
+"regelmäßig das System sicherstellen, dass Sie immer noch aktiv bearbeiten. "
+"Wenn Sie länger als 30 Minuten im Leerlauf sind, werden die Änderungen "
+"automatisch gespeichert werden, und Sie werden aus Edit-Modus gesendet "
+"werden, damit andere das Dokument zugreifen können."
 
-# @ bp-docs
-#: includes/templates/docs/single/edit.php:184
+#: includes/templates/docs/single/edit.php:230
 msgid "I'm still editing!"
-msgstr "Ich bin noch am Bearbeiten!"
+msgstr "Ich bin der Bearbeitung immer noch!"
 
-# @ bp-docs
-#: includes/templates/docs/single/history.php:9
+#: includes/templates/docs/single/history.php:15
 msgid "Click on a revision date from the list below to view that revision."
-msgstr "Klicke auf das Revisionsdatum in der Liste, um die Version anzusehen."
+msgstr ""
+"Klicken Sie auf eine Revisionsdatum aus der Liste unten, dass die Revision "
+"anzuzeigen."
 
-# @ bp-docs
-#: includes/templates/docs/single/history.php:11
+#: includes/templates/docs/single/history.php:17
 msgid ""
 "Alternatively, you can compare two revisions by selecting them in the 'Old' "
 "and 'New' columns, and clicking 'Compare Revisions'."
 msgstr ""
-"Alternativ kannst du zwei Versionen vergleichen, indem du diese in der "
-"'Alt'- und 'Neu'-Spalte ausw&auml;hlst und auf 'Revisionsvergleich' klickst."
+"Alternativ können Sie zwei Revisionen vergleichen, indem sie in den \"alten"
+"\" und \"neuen\" Spalten auswählen und auf \"Revisionen vergleichen\"."
 
-# @ bp-docs
-#: includes/templates/docs/single/history.php:22
+#: includes/templates/docs/single/history.php:28
 msgid "Older: %s"
-msgstr "Älter: %s"
+msgstr "Ältere: %s"
 
-# @ bp-docs
-#: includes/templates/docs/single/history.php:23
+#: includes/templates/docs/single/history.php:29
 msgid "Newer: %s"
 msgstr "Neuer: %s"
 
-# @ bp-docs
-#: includes/templates/docs/single/history.php:30
+#: includes/templates/docs/single/history.php:36
 msgid ""
 "You are currently viewing a revision titled \"%1$s\", saved on %2$s by %3$s"
-msgstr "Dies ist die Version \"%1$s\", gespeichert am %2$s von %3$s"
+msgstr ""
+"Sie betrachten derzeit eine Revision Titel \"%1$s\", auf %2$s von %3$s "
+"gespeichert"
 
-# @ bp-docs
-#: includes/templates/docs/single/history.php:52
+#: includes/templates/docs/single/history.php:60
 msgid "These revisions are identical."
-msgstr "Diese Versionen sind identisch."
+msgstr "Diese Revisionen sind identisch."
 
-# @ bp-docs
-#: includes/templates/docs/single/index.php:7
+#: includes/templates/docs/single/index.php:16
 msgid "Locked"
 msgstr "Gesperrt"
 
-# @ bp-docs
-#: includes/templates/docs/single/index.php:7
+#: includes/templates/docs/single/index.php:16
 msgid "(click for more info)"
-msgstr "(klicke für mehr Info)"
+msgstr "(Klicken Sie für weitere Informationen)"
 
-# @ bp-docs
-#: includes/templates/docs/single/index.php:9
+#: includes/templates/docs/single/index.php:18
 msgid ""
 "This doc is currently being edited by %1$s. In order to prevent edit "
 "conflicts, only one user can edit a doc at a time."
 msgstr ""
-"Dieses Doc wird gerade von %1$s bearbeitet. Damit es keine Konflikte gibt, "
-"kann nur eine Person ein Doc bearbeiten."
+"Dieses Dokument wird derzeit von %1$s bearbeitet wird. Um "
+"Bearbeitungskonflikte zu vermeiden, kann nur ein Benutzer ein Dokument zu "
+"einem Zeitpunkt, zu bearbeiten."
 
-# @ bp-docs
-#: includes/templates/docs/single/index.php:12
+#: includes/templates/docs/single/index.php:21
 msgid ""
 "Please try again in a few minutes. Or, as an admin, you can <a href=\"%s"
 "\">force cancel</a> the edit lock."
 msgstr ""
-"Bitte versuche es in ein paar Minuten nochmals. Wenn du Admin bist, kannst "
-"du <a href=\"%s\">die Sperre aufheben</a>."
+"Bitte versuchen Sie es in ein paar Minuten. Oder als Admin können Sie <a "
+"href=\"%s\"> Kraft aufheben </a> der Bearbeitungssperre ."
 
-# @ bp-docs
-#: includes/templates/docs/single/index.php:14
+#: includes/templates/docs/single/index.php:23
 msgid "Please try again in a few minutes."
-msgstr "Bitte versuche es in ein paar Minuten nochmals."
+msgstr "Bitte versuchen Sie es in ein paar Minuten."
 
-# @ bp-docs
-#: includes/templatetags-edit.php:115
+#: includes/templatetags-edit.php:141
 msgid "(no parent)"
-msgstr "(kein Doc)"
+msgstr "Kein Übergeordnetes Element"
 
-# @ bp-docs
-#: includes/templatetags.php:191
+#: includes/templatetags.php:241
 msgid "You are viewing <strong>all</strong> docs."
-msgstr "Du siehst <strong>alle</strong> Docs."
+msgstr "Sie sehen <strong> alle </ strong> Dokumente."
 
-# @ bp-docs
-#: includes/templatetags.php:200
+#: includes/templatetags.php:255
 msgid ""
 "<strong><a href=\"%s\" title=\"View All Docs\">View All Docs</a></strong>"
 msgstr ""
-"<strong><a href=\"%s\" title=\"Alle Docs zeigen\">Alle Docs zeigen</a></"
+"<strong><a href=\"%s\" title=\"View All Docs\">Alle Dokumente anzeigen</a></"
 "strong>"
 
-# @ bp-docs
-#: includes/templatetags.php:210
+#: includes/templatetags.php:265
 msgid "Filter by: %s"
-msgstr "Filtern nach: %s"
+msgstr "Filter nach: %s"
 
-# @ bp-docs
-#: includes/templatetags.php:287
+#: includes/templatetags.php:413
 msgid "You are searching for docs containing the term <em>%s</em>"
-msgstr "Du suchst nach Docs, die den Begriff <em>%s</em> enthalten"
+msgstr "Du suchst nach Dokumenten, die den Begriff <em>%s</em> enthalten"
 
-# @ bp-docs
-#: includes/templatetags.php:731
+#: includes/templatetags.php:930
+msgid "None"
+msgstr "Nichts"
+
+#: includes/templatetags.php:996
 msgid "Which group should this Doc be associated with?"
-msgstr "Welcher Gruppe soll dieses Doc zugeordnet werden?"
+msgstr "Welcher Gruppe soll diesem Dokument zugeordnet werden?"
 
-# @ bp-docs
-#: includes/templatetags.php:732
+#: includes/templatetags.php:997
 msgid ""
 "(Optional) Note that the Access settings available for this Doc may be "
 "limited by the privacy settings of the group you choose."
 msgstr ""
-"Beachte, dass die für dieses Doc zur Verfügung stehenden Zugriffsrechte "
-"durch die Gruppe, die du wählst, limitiert sein können (optional)."
+"(Optional) Beachten Sie, dass die Zugriffseinstellungen für dieses Dokument "
+"kann durch die Datenschutzeinstellungen der Gruppe wählen Sie begrenzt."
 
-# @ bp-docs
-#: includes/templatetags.php:737
-msgid "None"
-msgstr "(keine Gruppe)"
-
-# @ bp-docs
-#: includes/templatetags.php:784
+#: includes/templatetags.php:1053 includes/templatetags.php:1055
 msgid "%s member"
-msgstr "%s Mitglied"
+msgstr "(Mitglieder Typen: %s)"
 
-# @ bp-docs
-#: includes/templatetags.php:784
-msgid "%s members"
-msgstr "%s Mitglieder"
-
-# @ bp-docs
-#: includes/templatetags.php:788
+#: includes/templatetags.php:1060
 msgid "Public Group"
 msgstr "Öffentliche Gruppe"
 
-# @ bp-docs
-#: includes/templatetags.php:792
+#: includes/templatetags.php:1064
 msgid "Private Group"
 msgstr "Private Gruppe"
 
-# @ bp-docs
-#: includes/templatetags.php:796
+#: includes/templatetags.php:1068
 msgid "Hidden Group"
 msgstr "Unsichtbare Gruppe"
 
-# @ bp-docs
-#: includes/templatetags.php:835
+#: includes/templatetags.php:1106
 msgid "Who can read this doc?"
-msgstr "Wer kann dieses Doc lesen?"
+msgstr "Wer kann das Dokument lesen?"
 
-# @ bp-docs
-#: includes/templatetags.php:839
+#: includes/templatetags.php:1110
 msgid "Who can edit this doc?"
-msgstr "Wer kann dieses Doc bearbeiten?"
+msgstr "Wer kann das Dokument bearbeiten?"
 
-# @ bp-docs
-#: includes/templatetags.php:843
+#: includes/templatetags.php:1114
 msgid "Who can read comments on this doc?"
-msgstr "Wer kann die Kommentare dieses Docs lesen?"
+msgstr "Wer kann Kommentare zu diesem Dokument lesen?"
 
-# @ bp-docs
-#: includes/templatetags.php:847
+#: includes/templatetags.php:1118
 msgid "Who can post comments on this doc?"
-msgstr "Wer kann für dieses Doc Kommentare verfassen?"
+msgstr "Wer kann das Dokument kommentieren?"
 
-# @ bp-docs
-#: includes/templatetags.php:851
+#: includes/templatetags.php:1122
 msgid "Who can view the history of this doc?"
-msgstr "Wer kann die Versionen dieses Docs ansehen?"
+msgstr "Wer kann die Änderungsgeschichte des Dokument sehen?"
 
-# @ default
-#: includes/templatetags.php:1102
+#: includes/templatetags.php:1193
+msgid "Untrash"
+msgstr "Wiederherstellen"
+
+#: includes/templatetags.php:1293
+msgid "Remove from Trash"
+msgstr "Aus dem Papierkorb entfernen"
+
+#: includes/templatetags.php:1295 includes/templatetags.php:1300
+msgid "Permanently Delete"
+msgstr "Endgültig löschen"
+
+#: includes/templatetags.php:1298
+msgid "Move to Trash"
+msgstr "In Papierkorb legen"
+
+#: includes/templatetags.php:1353
 msgid "&laquo;"
 msgstr "&laquo;"
 
-# @ default
-#: includes/templatetags.php:1103
+#: includes/templatetags.php:1354
 msgid "&raquo;"
 msgstr "&raquo;"
 
-# @ bp-docs
-#: includes/templatetags.php:1266
+#: includes/templatetags.php:1545
 msgid "All Docs"
-msgstr "Alle Docs"
+msgstr "Alle Dokumente"
 
-# @ bp-docs
-#: includes/templatetags.php:1270
+#: includes/templatetags.php:1549
 msgid "%s's Docs"
-msgstr "Docs von %s"
+msgstr "%s's Dokumente"
 
-# @ bp-docs
-#: includes/templatetags.php:1276
+#: includes/templatetags.php:1555
 msgid "My Groups"
 msgstr "Meine Gruppen"
 
-# @ bp-docs
-#: includes/templatetags.php:1348
+#: includes/templatetags.php:1637
 msgid "Group: "
-msgstr "Gruppe: "
+msgstr "Gruppe:"
 
-# @ default
-#: includes/templatetags.php:1350
+#: includes/templatetags.php:1639
 msgid " %s"
-msgstr " %s"
+msgstr "vor %s"
 
-# @ bp-docs
-#: includes/templatetags.php:1364
+#: includes/templatetags.php:1653
 msgid "My Friends"
 msgstr "Meine Freunde"
 
-# @ bp-docs
-#: includes/templatetags.php:1366
+#: includes/templatetags.php:1655
 msgid "Just Me"
-msgstr "Nur ich"
+msgstr "Nur Ich"
 
-# @ bp-docs
-#: includes/templatetags.php:1370
+#: includes/templatetags.php:1659
 msgid "Members of: %s"
-msgstr "Mitglieder von: %s"
+msgstr "Mitglieder von %s"
 
-# @ bp-docs
-#: includes/templatetags.php:1371
+#: includes/templatetags.php:1660
 msgid "Admins and mods of the group %s"
-msgstr "Admins und Mods der Gruppe %s"
+msgstr "Nur für Gruppen Administratoren und Moderatoren von %s"
 
-# @ bp-docs
-#: includes/templatetags.php:1375
+#: includes/templatetags.php:1664
 msgid "The Doc author only (that's you!)"
-msgstr "Nur der Doc-Autor (das bist du!)"
+msgstr "Der Dokumentauthor alleine (das bist du!)"
 
-# @ bp-docs
-#: includes/templatetags.php:1382
+#: includes/templatetags.php:1671
 msgid "This Doc can be read by: <strong>%s</strong>"
-msgstr "Dieses Doc kann gelesen werden durch <strong>%s</strong>"
+msgstr "Dieses Dokument kann gelesen werden: <strong>% s </ strong>"
 
-# @ bp-docs
-#: includes/templatetags.php:1386
+#: includes/templatetags.php:1675
 msgid "This Doc can be edited by: <strong>%s</strong>"
-msgstr "Diese Doc kann bearbeitet werden durch <strong>%s</strong>"
+msgstr "Dieses Dokument kann bearbeitet  werden von: <strong>% s </ strong>"
 
-# @ bp-docs
-#: includes/templatetags.php:1390
+#: includes/templatetags.php:1679
 msgid "Comments are visible to: <strong>%s</strong>"
-msgstr "Kommentare sind sichtbar für <strong>%s</strong>"
+msgstr "Kommentare sind lesbar für: %s"
 
-# @ bp-docs
-#: includes/templatetags.php:1394
+#: includes/templatetags.php:1683
 msgid "Comments can be posted by: <strong>%s</strong>"
-msgstr "Kommentare können verfasst werden durch <strong>%s</strong>"
+msgstr "Kommentieren können: <strong> %s </strong>"
 
-# @ bp-docs
-#: includes/templatetags.php:1398
+#: includes/templatetags.php:1687
 msgid "History can be viewed by: <strong>%s</strong>"
-msgstr "Versionen können gesehen werden von <strong>%s</strong>"
+msgstr "Änderungsverlauf kann anzeigt werden von: <strong>%s</strong>"
 
-# @ bp-docs
-#: includes/templatetags.php:1440
+#: includes/templatetags.php:1729
 msgid "Private"
 msgstr "Privat"
 
-# @ bp-docs
-#: includes/templatetags.php:1443
+#: includes/templatetags.php:1732
 msgid "Public"
 msgstr "Öffentlich"
 
-# @ bp-docs
-#: includes/templatetags.php:1446
+#: includes/templatetags.php:1735
 msgid "Limited"
-msgstr "Eingeschränkt"
+msgstr "Limitiert"
 
-# @ bp-docs
-#: includes/templatetags.php:1451
+#: includes/templatetags.php:1740
 msgid "Access: <strong>%s</strong>"
-msgstr "Zugriffsrecht: <strong>%s</strong>"
+msgstr "Zugriff: <strong>%s</strong>"
 
-# @ bp-docs
-#: includes/templatetags.php:1452
+#: includes/templatetags.php:1741
 msgid "Show Details"
 msgstr "Zeige Details"
 
-# @ bp-docs
-#: includes/templatetags.php:1468
+#: includes/templatetags.php:1757
 msgid "Hide Details"
-msgstr "Details verbergen"
+msgstr "Details verstecken"
 
-# @ bp-docs
-#: includes/templatetags.php:1742
+#: includes/templatetags.php:2063
 msgid "Add Files"
 msgstr "Dateien hinzufügen"
 
-# @ bp-docs
-#: includes/theme-bridge.php:223
-msgid "Create a Doc"
-msgstr "Doc erstellen"
+#: includes/templatetags.php:2321
+msgid "Trash"
+msgstr "Papierkorb"
 
-# @ bp-docs
+#: includes/theme-bridge.php:259
+msgid "Create a Doc"
+msgstr "Ein Dokument erstellen"
+
 #: includes/upgrade.php:40
 msgid "Upgrade complete!"
-msgstr "Upgrade abgeschlossen!"
+msgstr "Upgrade fertig!"
 
-# @ bp-docs
 #: includes/upgrade.php:61 includes/upgrade.php:99
 msgid ""
 "Thanks for updating BuddyPress Docs. We need to run a few quick operations "
 "before your new Docs is ready to use."
 msgstr ""
-"Danke für das Updaten von BuddyPress Docs. Wir müssen ein paar Funktionen "
-"ablaufen lassen, bevor deine Docs bereit sind."
+"Vielen Dank für die Aktualisierung Buddy Docs. Wir brauchen ein paar "
+"schnelle Operationen ausführen, bevor Sie Ihren neuen Dokumente bereit ist, "
+"zu verwenden."
 
-# @ bp-docs
 #: includes/upgrade.php:62
 msgid "Click here to start the upgrade."
-msgstr "Klicke hier, um den Upgrade zu starten."
+msgstr "Klick hier um Upgrade zu starten."
 
-# @ bp-docs
 #: includes/upgrade.php:70 includes/upgrade.php:91
 msgid "BuddyPress Docs Upgrade"
 msgstr "BuddyPress Docs Upgrade"
 
-# @ bp-docs
 #: includes/upgrade.php:71
 msgid "Upgrade"
 msgstr "Upgrade"
 
-# @ bp-docs
 #: includes/upgrade.php:101
 msgid "Start the upgrade"
 msgstr "Upgrade starten"
 
-# @ bp-docs
 #: includes/upgrade.php:107
 msgid "Migrating..."
-msgstr "Migriere..."
+msgstr "Migration..."
 
-# @ bp-docs
 #: includes/upgrade.php:138
 msgid "Migration complete! <a href=\"%s\">Dashboard</a>"
-msgstr "Migration abgeschlossen! <a href=\"%s\">Dashboard</a>"
+msgstr "Migration fertig! <a href=\"%s\">Dashboard</a>"
 
-# @ bp-docs
 #: includes/upgrade.php:243
 msgid "Docs associated with the group %s"
-msgstr "Docs die der Gruppe %s zugeordnet sind"
+msgstr "Dokumente mit der zugehörigen Gruppe %s"
 
-# @ bp-docs
 #: includes/upgrade.php:258
 msgid "Group terms migrated. Now migrating Doc access terms...."
-msgstr "Kategorien migriert. Jetzt Zugriffsrechte migrieren..."
+msgstr ""
+"Gruppen Begriffe migrieren. Nicht die Migration Begriffe Doc Zugang ...."
 
-# @ bp-docs
 #: includes/upgrade.php:306
 msgid "Migrated %s of %s Docs. Migrating...."
-msgstr "Migriere %s von %s Docs. Migriere..."
+msgstr "Migrieren %s von %s Docs. Migration ...."
+
+#. Plugin URI of the plugin/theme
+msgid "http://github.com/boonebgorges/buddypress-docs"
+msgstr "http://github.com/boonebgorges/buddypress-docs"
+
+#. Description of the plugin/theme
+msgid "Adds collaborative Docs to BuddyPress"
+msgstr "Fügt Dokumente für die Zusammenarbeit in BuddyPress hinzu"
+
+#. Author of the plugin/theme
+msgid "Boone B Gorges"
+msgstr "Boone B Gorges"
+
+#. Author URI of the plugin/theme
+msgid "http://boone.gorg.es"
+msgstr "http://boone.gorg.es"
