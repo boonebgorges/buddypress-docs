@@ -39,6 +39,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 *    If you use custom template parts, all text domain identifiers must be updated to 'buddypress-docs'.
 * Improved privacy of comments on limited access Docs.
 * Improved success messaging when saving admin settings.
+* Fixed bug that caused edited doc to appear in its own Parent dropdown.
 
 = 1.9.4 =
 * Fixed bug that caused post global variables to be improperly set after use of the widget, which interfered with template generation in certain cases.
