@@ -20,6 +20,7 @@ class BP_Docs_Component extends BP_Component {
 	var $post_type_name;
 	var $associated_tax_name;
 	var $access_tax_name;
+	var $comment_access_tax_name;
 
 	var $slugtocheck = array();
 	var $query;
@@ -38,7 +39,7 @@ class BP_Docs_Component extends BP_Component {
 
 		parent::start(
 			'bp_docs',
-			__( 'BuddyPress Docs', 'bp-docs' ),
+			__( 'BuddyPress Docs', 'buddypress-docs' ),
 			BP_DOCS_INSTALL_PATH
 		);
 
@@ -148,7 +149,7 @@ class BP_Docs_Component extends BP_Component {
 			'root_slug'             => isset( $bp->pages->{$this->id}->slug ) ? $bp->pages->{$this->id}->slug : bp_docs_get_docs_slug(),
 			'has_directory'         => false, // Set to false if not required
 			'notification_callback' => 'bp_docs_format_notifications',
-			'search_string'         => __( 'Search Docs...', 'bp-docs' ),
+			'search_string'         => __( 'Search Docs...', 'buddypress-docs' ),
 		);
 
 		// Let BP_Component::setup_globals() do its work.
@@ -158,6 +159,7 @@ class BP_Docs_Component extends BP_Component {
 		$this->post_type_name		= $bp_docs->post_type_name;
 		$this->associated_item_tax_name = $bp_docs->associated_item_tax_name;
 		$this->access_tax_name          = $bp_docs->access_tax_name;
+		$this->comment_access_tax_name  = $bp_docs->comment_access_tax_name;
 
 		// This info is loaded here because it needs to happen after BP core globals are
 		// set up
@@ -194,21 +196,21 @@ class BP_Docs_Component extends BP_Component {
 			$wp_admin_nav[] = array(
 				'parent' => 'my-account-' . $this->id,
 				'id'     => 'my-account-' . $this->id . '-started',
-				'title'  => __( 'Started By Me', 'bp-docs' ),
+				'title'  => __( 'Started By Me', 'buddypress-docs' ),
 				'href'   => bp_docs_get_mydocs_started_link(),
 			);
 
 			$wp_admin_nav[] = array(
 				'parent' => 'my-account-' . $this->id,
 				'id'     => 'my-account-' . $this->id . '-edited',
-				'title'  => __( 'Edited By Me', 'bp-docs' ),
+				'title'  => __( 'Edited By Me', 'buddypress-docs' ),
 				'href'   => bp_docs_get_mydocs_edited_link(),
 			);
 
 			$wp_admin_nav[] = array(
 				'parent' => 'my-account-' . $this->id,
 				'id'     => 'my-account-' . $this->id . '-create',
-				'title'  => __( 'Create New Doc', 'bp-docs' ),
+				'title'  => __( 'Create New Doc', 'buddypress-docs' ),
 				'href'   => bp_docs_get_create_link(),
 			);
 
@@ -309,10 +311,10 @@ class BP_Docs_Component extends BP_Component {
 
 		$parent_url = trailingslashit( bp_displayed_user_domain() . bp_docs_get_docs_slug() );
 
-		$mydocs_label = bp_is_my_profile() ? __( 'My Docs ', 'bp-docs' ) : sprintf( __( '%s&#8217;s Docs', 'bp-docs' ), bp_get_user_firstname( bp_get_displayed_user_fullname() ) );
+		$mydocs_label = bp_is_my_profile() ? __( 'My Docs ', 'buddypress-docs' ) : sprintf( __( '%s&#8217;s Docs', 'buddypress-docs' ), bp_get_user_firstname( bp_get_displayed_user_fullname() ) );
 
 		$sub_nav[] = array(
-			'name'            => bp_is_my_profile() ? __( 'Started By Me', 'bp-docs' ) : sprintf( __( 'Started By %s', 'bp-docs' ), bp_get_user_firstname() ),
+			'name'            => bp_is_my_profile() ? __( 'Started By Me', 'buddypress-docs' ) : sprintf( __( 'Started By %s', 'buddypress-docs' ), bp_get_user_firstname() ),
 			'slug'            => BP_DOCS_STARTED_SLUG,
 			'parent_url'      => $parent_url,
 			'parent_slug'     => bp_docs_get_docs_slug(),
@@ -321,7 +323,7 @@ class BP_Docs_Component extends BP_Component {
 		);
 
 		$sub_nav[] = array(
-			'name'            => bp_is_my_profile() ? __( 'Edited By Me', 'bp-docs' ) : sprintf( __( 'Edited By %s', 'bp-docs' ), bp_get_user_firstname() ),
+			'name'            => bp_is_my_profile() ? __( 'Edited By Me', 'buddypress-docs' ) : sprintf( __( 'Edited By %s', 'buddypress-docs' ), bp_get_user_firstname() ),
 			'slug'            => BP_DOCS_EDITED_SLUG,
 			'parent_url'      => $parent_url,
 			'parent_slug'     => bp_docs_get_docs_slug(),
@@ -391,8 +393,7 @@ class BP_Docs_Component extends BP_Component {
 
 			check_admin_referer( 'bp_docs_save' );
 
-			$this_doc = new BP_Docs_Query;
-			$result = $this_doc->save();
+			$result = bp_docs_save_doc_via_post();
 
 			bp_core_add_message( $result['message'], $result['message_type'] );
 			bp_core_redirect( trailingslashit( $result['redirect_url'] ) );
@@ -417,7 +418,7 @@ class BP_Docs_Component extends BP_Component {
 					$lock = bp_docs_check_post_lock( $doc->ID );
 
 					if ( $lock ) {
-						bp_core_add_message( sprintf( __( 'This doc is currently being edited by %s. To prevent overwrites, you cannot edit until that user has finished. Please try again in a few minutes.', 'bp-docs' ), bp_core_get_user_displayname( $lock ) ), 'error' );
+						bp_core_add_message( sprintf( __( 'This doc is currently being edited by %s. To prevent overwrites, you cannot edit until that user has finished. Please try again in a few minutes.', 'buddypress-docs' ), bp_core_get_user_displayname( $lock ) ), 'error' );
 
 						// Redirect back to the non-edit view of this document
 						bp_core_redirect( bp_docs_get_doc_link( $doc->ID ) );
@@ -430,7 +431,7 @@ class BP_Docs_Component extends BP_Component {
 				}
 
 				// The user does not have edit permission. Redirect.
-				bp_core_add_message( __( 'You do not have permission to edit the doc.', 'bp-docs' ), 'error' );
+				bp_core_add_message( __( 'You do not have permission to edit the doc.', 'buddypress-docs' ), 'error' );
 
 				// Redirect back to the non-edit view of this document
 				bp_core_redirect( bp_docs_get_doc_link( $doc->ID ) );
@@ -444,7 +445,7 @@ class BP_Docs_Component extends BP_Component {
 				if ( function_exists( 'bp_core_no_access' ) && !is_user_logged_in() )
 					bp_core_no_access();
 
-				bp_core_add_message( __( 'You do not have permission to create a Doc in this group.', 'bp-docs' ), 'error' );
+				bp_core_add_message( __( 'You do not have permission to create a Doc in this group.', 'buddypress-docs' ), 'error' );
 
 				$group_permalink = bp_get_group_permalink( $bp->groups->current_group );
 
@@ -460,7 +461,7 @@ class BP_Docs_Component extends BP_Component {
 				if ( function_exists( 'bp_core_no_access' ) && !is_user_logged_in() )
 					bp_core_no_access();
 
-				bp_core_add_message( __( 'You do not have permission to view this Doc\'s history.', 'bp-docs' ), 'error' );
+				bp_core_add_message( __( 'You do not have permission to view this Doc\'s history.', 'buddypress-docs' ), 'error' );
 
 				$doc = bp_docs_get_current_doc();
 
@@ -484,7 +485,7 @@ class BP_Docs_Component extends BP_Component {
 				// Todo: get this into a proper method as well, blech
 				delete_post_meta( $doc->ID, '_bp_docs_last_pinged' );
 
-				bp_core_add_message( __( 'Lock successfully removed', 'bp-docs' ) );
+				bp_core_add_message( __( 'Lock successfully removed', 'buddypress-docs' ) );
 				bp_core_redirect( bp_docs_get_doc_link( $doc->ID ) );
 				die();
 			}
@@ -516,12 +517,12 @@ class BP_Docs_Component extends BP_Component {
 				$delete_doc_id = get_queried_object_id();
 
 				if ( bp_docs_trash_doc( $delete_doc_id, $force_delete ) ) {
-					bp_core_add_message( __( 'Doc successfully deleted!', 'bp-docs' ) );
+					bp_core_add_message( __( 'Doc successfully deleted!', 'buddypress-docs' ) );
 				} else {
-					bp_core_add_message( __( 'Could not delete doc.', 'bp-docs' ) );
+					bp_core_add_message( __( 'Could not delete doc.', 'buddypress-docs' ) );
 				}
 			} else {
-				bp_core_add_message( __( 'You do not have permission to delete that doc.', 'bp-docs' ), 'error' );
+				bp_core_add_message( __( 'You do not have permission to delete that doc.', 'buddypress-docs' ), 'error' );
 			}
 
 			// Send the user back to the most recently viewed directory if possible.
@@ -542,12 +543,12 @@ class BP_Docs_Component extends BP_Component {
 
 			if ( current_user_can( 'bp_docs_manage', $untrash_doc_id ) ) {
 				if ( bp_docs_untrash_doc( $untrash_doc_id ) ) {
-					bp_core_add_message( __( 'Doc successfully removed from Trash!', 'bp-docs' ) );
+					bp_core_add_message( __( 'Doc successfully removed from Trash!', 'buddypress-docs' ) );
 				} else {
-					bp_core_add_message( __( 'Could not remove Doc from Trash.', 'bp-docs' ) );
+					bp_core_add_message( __( 'Could not remove Doc from Trash.', 'buddypress-docs' ) );
 				}
 			} else {
-				bp_core_add_message( __( 'You do not have permission to remove that Doc from the Trash.', 'bp-docs' ), 'error' );
+				bp_core_add_message( __( 'You do not have permission to remove that Doc from the Trash.', 'buddypress-docs' ), 'error' );
 			}
 
 			bp_core_redirect( bp_docs_get_doc_link( $untrash_doc_id ) );
@@ -562,12 +563,12 @@ class BP_Docs_Component extends BP_Component {
 
 			if ( current_user_can( 'bp_docs_dissociate_from_group', $unlink_group_id ) ) {
 				if ( bp_docs_unlink_from_group( $unlink_doc_id, $unlink_group_id ) ) {
-					bp_core_add_message( __( 'Doc successfully removed from the group', 'bp-docs' ) );
+					bp_core_add_message( __( 'Doc successfully removed from the group', 'buddypress-docs' ) );
 				} else {
-					bp_core_add_message( __( 'Could not remove Doc from the group.', 'bp-docs' ) );
+					bp_core_add_message( __( 'Could not remove Doc from the group.', 'buddypress-docs' ) );
 				}
 			} else {
-				bp_core_add_message( __( 'You do not have permission to remove that Doc from this group.', 'bp-docs' ), 'error' );
+				bp_core_add_message( __( 'You do not have permission to remove that Doc from this group.', 'buddypress-docs' ), 'error' );
 			}
 			bp_core_redirect( bp_get_group_permalink( groups_get_group( array( 'group_id' => $unlink_group_id ) ) ) . $bp->bp_docs->slug . '/' );
 			die();
@@ -893,7 +894,7 @@ class BP_Docs_Component extends BP_Component {
 	public static function filter_type( $types ) {
 		$types[] = array(
 			'slug' => 'search',
-			'title' => __( 'Search', 'bp-docs' ),
+			'title' => __( 'Search', 'buddypress-docs' ),
 			'query_arg' => 's',
 		);
 		return $types;
@@ -905,7 +906,7 @@ class BP_Docs_Component extends BP_Component {
 		<div id="docs-filter-section-search" class="docs-filter-section<?php if ( $has_search ) : ?> docs-filter-section-open<?php endif ?>">
 			<form action="" method="get">
 				<input name="s" value="<?php the_search_query() ?>">
-				<input name="search_submit" type="submit" value="<?php _e( 'Search', 'bp-docs' ) ?>" />
+				<input name="search_submit" type="submit" value="<?php _e( 'Search', 'buddypress-docs' ) ?>" />
 				<?php do_action( 'bp_docs_directory_filter_search_form' ) ?>
 			</form>
 		</div>
@@ -979,10 +980,10 @@ class BP_Docs_Component extends BP_Component {
 			wp_enqueue_script( 'comment-reply' );
 
 			$strings = array(
-				'upload_title' => __( 'Upload File', 'bp-docs' ),
-				'upload_button' => __( 'OK', 'bp-docs' ),
-				'still_working'	=> __( 'Still working?', 'bp-docs' ),
-				'and_x_more' => __( 'and %d more', 'bp-docs' ),
+				'upload_title' => __( 'Upload File', 'buddypress-docs' ),
+				'upload_button' => __( 'OK', 'buddypress-docs' ),
+				'still_working'	=> __( 'Still working?', 'buddypress-docs' ),
+				'and_x_more' => __( 'and %d more', 'buddypress-docs' ),
 				'failed_submission' => ! empty( buddypress()->bp_docs->submitted_data ) ? 1 : 0,
 			);
 

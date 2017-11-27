@@ -22,8 +22,8 @@ class BP_Docs_Hierarchy {
 		// Make sure that the bp_docs post type supports our post taxonomies
 		add_filter( 'bp_docs_post_type_args', array( $this, 'register_with_post_type' ) );
 
-		// Hook into post saves to save any taxonomy terms.
-		add_action( 'bp_docs_doc_saved', array( $this, 'save_post' ) );
+		// Set parent_id for posts saved from the front end
+		add_filter( 'bp_docs_get_parent_id_via_post', array( $this, 'set_parent_id_via_post' ) );
 
 		// Display a doc's parent on its single doc page
 		add_action( 'bp_docs_single_doc_meta', array( $this, 'show_parent' ) );
@@ -83,35 +83,19 @@ class BP_Docs_Hierarchy {
 	}
 
 	/**
-	 * Saves post parent to a doc when saved from the front end
+	 * Set parent_id for posts saved from the front end
 	 *
 	 * @since 1.0-beta
 	 *
-	 * @param object $query The query object created by BP_Docs_Query
-	 * @return int $post_id Returns the doc's post_id on success
+	 * @param int $parent_id The parent ID from BP_Docs_Query->save()
+	 * @return int $parent_id Returns the doc's parent_id on success
 	 */
-	function save_post( $query ) {
-		if ( empty( $query->doc_id ) ) {
-			return false;
+	function set_parent_id_via_post( $parent_id ) {
+		if ( ! empty( $_POST['parent_id'] ) ) {
+			$parent_id = $_POST['parent_id'];
 		}
 
-		$post_parent = !empty( $_POST['parent_id'] ) ? $_POST['parent_id'] : 0;
-
-		$args = array(
-			'ID' => $query->doc_id,
-			'post_parent' => $post_parent,
-		);
-
-		// Don't let a revision get saved here
-		remove_action( 'pre_post_update', 'wp_save_post_revision' );
-		$post_id = wp_update_post( $args );
-		add_action( 'pre_post_update', 'wp_save_post_revision' );
-
-		if ( $post_id ) {
-			return $post_id;
-		} else {
-			return false;
-		}
+		return $parent_id;
 	}
 
 	/**
@@ -131,7 +115,7 @@ class BP_Docs_Hierarchy {
 				$parent_url = bp_docs_get_doc_link( $parent->ID );
 				$parent_title = $parent->post_title;
 
-				$html = "<p>" . __( 'Parent: ', 'bp-docs' ) . "<a href=\"$parent_url\" title=\"$parent_title\">$parent_title</a></p>";
+				$html = "<p>" . __( 'Parent: ', 'buddypress-docs' ) . "<a href=\"$parent_url\" title=\"$parent_title\">$parent_title</a></p>";
 			}
 		}
 
@@ -181,7 +165,7 @@ class BP_Docs_Hierarchy {
 		// Create the HTML
 		$html = '';
 		if ( !empty( $child_data ) ) {
-			$html .= '<p>' . __( 'Children: ', 'bp-docs' );
+			$html .= '<p>' . __( 'Children: ', 'buddypress-docs' );
 
 			$children_html = array();
 			foreach( $child_data as $child ) {

@@ -223,6 +223,18 @@ jQuery(document).ready(function($){
 	}
 },(jQuery));
 
+function bp_docs_tiny_mce_init(ed) {
+	if ( typeof window.tinyMCE === 'undefined' || window.tinyMCE.activeEditor === null || typeof window.tinyMCE.activeEditor === 'undefined' ) {
+		return;
+	} else {
+		bp_docs_load_idle();
+
+		jQuery( window.tinyMCE.activeEditor.contentDocument.activeElement ).on( "mousemove keydown", function(evt) {
+			_active(evt);
+		});
+	}
+}
+
 function bp_docs_load_idle() {
 	if(jQuery('#doc-form').length != 0 && jQuery('#existing-doc-id').length != 0 ) {
 		// For testing
@@ -266,20 +278,6 @@ function bp_docs_load_idle() {
 				},
 				complete: function(){
 					return true;
-				}
-			});
-		});
-	}
-}
-
-function bp_docs_kitchen_sink(ed) {
-	var adv_button = jQuery(ed.editorContainer).find('a.mce_wp_adv');
-	if ( 0 != adv_button.length ) {
-		jQuery(adv_button).on('click',function(e){
-			var sec_rows = jQuery(adv_button).closest('table.mceToolbar').siblings('table.mceToolbar');
-			jQuery(sec_rows).each(function(k,row){
-				if ( !jQuery(row).hasClass('mceToolbarRow2') ) {
-					jQuery(row).toggle();
 				}
 			});
 		});

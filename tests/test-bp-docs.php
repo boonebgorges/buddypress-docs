@@ -69,6 +69,53 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 		$wp_query = $wpq;
 	}
 
+	public function test_bp_docs_save_new_doc() {
+		$g = $this->factory->group->create();
+		groups_update_groupmeta( $g, 'bp-docs', array(
+			'can-create' => 'member',
+		) );
+		$u1 = $this->factory->user->create();
+		$this->add_user_to_group( $u1, $g );
+
+		$title = 'Doc title for testing';
+		$content = 'Doc content for testing';
+
+		$args = array(
+			'title' 	=> $title,
+			'content'	=> $content,
+			'author_id'	=> $u1,
+			'group_id'	=> $g,
+		);
+
+		$query = new BP_Docs_Query;
+		$retval = $query->save( $args );
+
+		$doc = $this->factory->doc->get_object_by_id( $retval['doc_id'] );
+
+		// Make sure the saved data matches what we passed in.
+		$this->assertEquals( $doc->post_title, $title );
+		$this->assertEquals( $doc->post_content, $content );
+		$this->assertEquals( $doc->post_author, $u1);
+		$this->assertEquals( $g, bp_docs_get_associated_group_id( $retval['doc_id'] ) );
+	}
+
+	public function test_bp_docs_update_existing_doc() {
+		$doc_id = $this->factory->doc->create();
+
+		$doc = $this->factory->doc->get_object_by_id( $doc_id );
+		$args = array(
+			'doc_id'	=> $doc_id,
+			'title' 	=> $doc->post_title,
+			'content'	=> $doc->post_content,
+		);
+
+		$query = new BP_Docs_Query;
+		$retval = $query->save( $args );
+
+		// Make sure the id didn't change.
+		$this->assertEquals( $doc_id, $retval['doc_id'] );
+	}
+
 	/**
 	 * see #286
 	 */
@@ -77,7 +124,7 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 		$group2 = $this->factory->group->create();
 
 		$doc_id = $this->factory->doc->create( array(
-			'group' => $group,
+			'group' => $group2,
 		) );
 
 		bp_docs_set_associated_group_id( $doc_id, $group );
@@ -87,21 +134,10 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 
 	function test_set_group_association_on_create() {
 		$group = $this->factory->group->create();
-		$doc_id = $this->factory->doc->create( array( 'group' => $group ) );
 
-		$permalink = get_permalink( $doc_id );
-		$this->go_to( $permalink );
-
-		$_POST['associated_group_id'] = $group;
-		//unset( $_POST['associated_group_id'] );
-
-		// We need this dummy $_POST data to make the save go through. Ugh
-		$doc = $this->factory->doc->get_object_by_id( $doc_id );
-		$_POST['doc_content'] = $doc->post_content;
-		$_POST['doc']['title'] = $doc->post_title;
-
-		$query = new BP_Docs_Query;
-		$query->save();
+		$doc_id = $this->factory->doc->create( array(
+			'group' => $group,
+		) );
 
 		$maybe_group_id = bp_docs_get_associated_group_id( $doc_id );
 
@@ -116,17 +152,16 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 		$permalink = get_permalink( $doc_id );
 		$this->go_to( $permalink );
 
-		// Just to be sure
-		$_POST['associated_group_id'] = '';
-
-		// We need this dummy $_POST data to make the save go through. Ugh
 		$doc = $this->factory->doc->get_object_by_id( $doc_id );
-		$_POST['doc_id'] = $doc_id;
-		$_POST['doc_content'] = $doc->post_content;
-		$_POST['doc']['title'] = $doc->post_title;
+		$args = array(
+			'doc_id'	=> $doc_id,
+			'title' 	=> $doc->post_title,
+			'content'	=> $doc->post_content,
+			'group_id' 	=> 0,
+		);
 
 		$query = new BP_Docs_Query;
-		$query->save();
+		$retval = $query->save( $args );
 
 		$maybe_group_id = bp_docs_get_associated_group_id( $doc_id );
 
@@ -210,7 +245,7 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 
 		// call manually because the hook is outside of the proper
 		// group document creation workflow
-		do_action( 'bp_docs_after_save', $d );
+		do_action( 'bp_docs_after_save', $d, array( 'group_id' => $g ) );
 
 		$this->assertNotEquals( $last_activity, groups_get_groupmeta( $g, 'last_activity' ) );
 	}
@@ -511,4 +546,900 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 
 		$this->assertNull( get_post( $doc_id ) );
 	}
+
+	/**
+	 * @group bp_docs_access_query
+	 */
+	public function test_bp_docs_access_query_get_doc_ids_should_hit_cache() {
+		global $wpdb;
+
+		$bp_docs_access_query = bp_docs_access_query();
+
+		$restricted_ids_first = $bp_docs_access_query->get_doc_ids();
+
+		$num_queries = $wpdb->num_queries;
+		$restricted_ids_second = $bp_docs_access_query->get_doc_ids();
+
+		$this->assertSame( $restricted_ids_first, $restricted_ids_second );
+		$this->assertSame( $num_queries, $wpdb->num_queries );
+	}
+
+	/**
+	 * @group bp_docs_access_query
+	 */
+	public function test_bp_docs_access_query_get_restricted_comment_doc_ids_should_hit_cache() {
+		global $wpdb;
+
+		$bp_docs_access_query = bp_docs_access_query();
+
+		$restricted_ids_first = $bp_docs_access_query->get_restricted_comment_doc_ids();
+
+		$num_queries = $wpdb->num_queries;
+		$restricted_ids_second = $bp_docs_access_query->get_restricted_comment_doc_ids();
+
+		$this->assertSame( $restricted_ids_first, $restricted_ids_second );
+		$this->assertSame( $num_queries, $wpdb->num_queries );
+	}
+
+	/**
+	 * @group bp_docs_access_query
+	 */
+	public function test_bp_docs_access_query_get_comment_ids_should_hit_cache() {
+		global $wpdb;
+
+		$bp_docs_access_query = bp_docs_access_query();
+
+		$restricted_ids_first = $bp_docs_access_query->get_comment_ids();
+
+		$num_queries = $wpdb->num_queries;
+		$restricted_ids_second = $bp_docs_access_query->get_comment_ids();
+
+		$this->assertSame( $restricted_ids_first, $restricted_ids_second );
+		$this->assertSame( $num_queries, $wpdb->num_queries );
+	}
+
+	/**
+	 * @group bp_docs_access_query
+	 */
+	public function test_bp_docs_access_query_get_doc_ids_logged_in_prevent() {
+		$old_current_user = get_current_user_id();
+
+		$d = $this->factory->doc->create();
+		bp_docs_update_doc_access( $d, 'loggedin' );
+
+		// Pretend we're logged out.
+		$this->set_current_user( 0 );
+
+		$bp_docs_access_query = bp_docs_access_query();
+		$restricted_ids = $bp_docs_access_query->get_doc_ids();
+
+		$this->assertTrue( in_array( $d, $restricted_ids ) );
+
+		$this->set_current_user( $old_current_user );
+	}
+
+	/**
+	 * @group bp_docs_access_query
+	 */
+	public function test_bp_docs_access_query_get_doc_ids_creator_only_prevent() {
+		$old_current_user = get_current_user_id();
+
+		$u1 = $this->factory->user->create();
+		$u2 = $this->factory->user->create();
+		$this->set_current_user( $u1 );
+
+		$d = $this->factory->doc->create();
+		bp_docs_update_doc_access( $d, 'creator' );
+
+		// Only the doc owner should have access.
+		$this->set_current_user( $u2 );
+
+		$bp_docs_access_query = bp_docs_access_query();
+		$restricted_ids = $bp_docs_access_query->get_doc_ids();
+
+		$this->assertTrue( in_array( $d, $restricted_ids ) );
+
+		$this->set_current_user( $old_current_user );
+	}
+
+	/**
+	 * @group bp_docs_access_query
+	 */
+	public function test_bp_docs_access_query_get_doc_ids_group_member_prevent() {
+		$old_current_user = get_current_user_id();
+
+		$u1 = $this->factory->user->create();
+		$this->set_current_user( $u1 );
+
+		$g = $this->factory->group->create( array(
+			'status' => 'public',
+			'creator_id' => $u1
+		) );
+
+		$d = $this->factory->doc->create( array(
+			'group' => $g,
+		) );
+		bp_docs_update_doc_access( $d, 'group-members' );
+
+		// We'll be a non-group-member.
+		$u2 = $this->factory->user->create();
+		$this->set_current_user( $u2 );
+
+		$bp_docs_access_query = bp_docs_access_query();
+		$restricted_ids = $bp_docs_access_query->get_doc_ids();
+
+		$this->assertTrue( in_array( $d, $restricted_ids ) );
+
+		$this->set_current_user( $old_current_user );
+	}
+
+	/**
+	 * @group bp_docs_access_query
+	 */
+	public function test_bp_docs_access_query_get_doc_ids_group_admins_mods_prevent() {
+		$old_current_user = get_current_user_id();
+
+		$u1 = $this->factory->user->create();
+		$this->set_current_user( $u1 );
+
+		$g = $this->factory->group->create( array(
+			'status' => 'public',
+			'creator_id' => $u1
+		) );
+
+		$d = $this->factory->doc->create( array(
+			'group' => $g,
+		) );
+		bp_docs_update_doc_access( $d, 'admins-mods' );
+
+		// We'll be a regular group-member.
+		$u2 = $this->factory->user->create();
+		$this->set_current_user( $u2 );
+		BP_UnitTestCase::add_user_to_group( $u2, $g );
+
+		$bp_docs_access_query = bp_docs_access_query();
+		$restricted_ids = $bp_docs_access_query->get_doc_ids();
+
+		$this->assertTrue( in_array( $d, $restricted_ids ) );
+
+		$this->set_current_user( $old_current_user );
+	}
+
+	/**
+	 * @group bp_docs_access_query
+	 */
+	public function test_bp_docs_access_query_get_doc_ids_logged_in_allow() {
+		$old_current_user = get_current_user_id();
+		$u1 = $this->factory->user->create();
+		$u2 = $this->factory->user->create();
+		$this->set_current_user( $u1 );
+
+		$d = $this->factory->doc->create();
+		bp_docs_update_doc_access( $d, 'loggedin' );
+
+		// Pretend we're a different, logged-in user.
+		$this->set_current_user( $u2 );
+
+		$bp_docs_access_query = bp_docs_access_query();
+		$restricted_ids = $bp_docs_access_query->get_doc_ids();
+
+		$this->assertFalse( in_array( $d, $restricted_ids ) );
+
+		$this->set_current_user( $old_current_user );
+	}
+
+	/**
+	 * @group bp_docs_access_query
+	 */
+	public function test_bp_docs_access_query_get_doc_ids_creator_only_allow() {
+		$old_current_user = get_current_user_id();
+
+		$u1 = $this->factory->user->create();
+		$this->set_current_user( $u1 );
+
+		$d = $this->factory->doc->create();
+		bp_docs_update_doc_access( $d, 'creator' );
+
+		$bp_docs_access_query = bp_docs_access_query();
+		$restricted_ids = $bp_docs_access_query->get_doc_ids();
+
+		$this->assertFalse( in_array( $d, $restricted_ids ) );
+
+		$this->set_current_user( $old_current_user );
+	}
+
+	/**
+	 * @group bp_docs_access_query
+	 */
+	public function test_bp_docs_access_query_get_doc_ids_group_member_allow() {
+		$old_current_user = get_current_user_id();
+
+		$u1 = $this->factory->user->create();
+		$this->set_current_user( $u1 );
+
+		$g = $this->factory->group->create( array(
+			'status' => 'public',
+			'creator_id' => $u1
+		) );
+
+		$d = $this->factory->doc->create( array(
+			'group' => $g,
+		) );
+		bp_docs_update_doc_access( $d, 'group-members' );
+
+		// We'll be a group-member.
+		$u2 = $this->factory->user->create();
+		$this->set_current_user( $u2 );
+		BP_UnitTestCase::add_user_to_group( $u2, $g );
+
+		$bp_docs_access_query = bp_docs_access_query();
+		$restricted_ids = $bp_docs_access_query->get_doc_ids();
+
+		$this->assertFalse( in_array( $d, $restricted_ids ) );
+
+		$this->set_current_user( $old_current_user );
+	}
+
+	/**
+	 * @group bp_docs_access_query
+	 */
+	public function test_bp_docs_access_query_get_doc_ids_group_admins_mods_allow() {
+		$old_current_user = get_current_user_id();
+
+		$u1 = $this->factory->user->create();
+		$this->set_current_user( $u1 );
+
+		$g = $this->factory->group->create( array(
+			'status' => 'public',
+			'creator_id' => $u1
+		) );
+
+		$d = $this->factory->doc->create( array(
+			'group' => $g,
+		) );
+		bp_docs_update_doc_access( $d, 'admins-mods' );
+
+		// We'll be a group mod.
+		$u2 = $this->factory->user->create();
+		$this->set_current_user( $u2 );
+		BP_UnitTestCase::add_user_to_group( $u2, $g );
+		$m2 = new BP_Groups_Member( $u2, $g );
+		$m2->promote( 'mod' );
+
+		$bp_docs_access_query = bp_docs_access_query();
+		$restricted_ids = $bp_docs_access_query->get_doc_ids();
+
+		$this->assertFalse( in_array( $d, $restricted_ids ) );
+
+		$this->set_current_user( $old_current_user );
+	}
+
+	/**
+	 * @group bp_docs_access_query
+	 */
+	public function test_bp_docs_access_query_get_comment_doc_ids_logged_in_prevent() {
+		$old_current_user = get_current_user_id();
+
+		$d = $this->factory->doc->create();
+		bp_docs_update_doc_comment_access( $d, 'loggedin' );
+
+		// Pretend we're logged out.
+		$this->set_current_user( 0 );
+
+		$bp_docs_access_query = bp_docs_access_query();
+		$restricted_ids = $bp_docs_access_query->get_restricted_comment_doc_ids();
+
+		$this->assertTrue( in_array( $d, $restricted_ids ) );
+
+		$this->set_current_user( $old_current_user );
+	}
+
+	/**
+	 * @group bp_docs_access_query
+	 */
+	public function test_bp_docs_access_query_get_comment_doc_ids_creator_only_prevent() {
+		$old_current_user = get_current_user_id();
+
+		$u1 = $this->factory->user->create();
+		$u2 = $this->factory->user->create();
+		$this->set_current_user( $u1 );
+
+		$d = $this->factory->doc->create();
+		bp_docs_update_doc_comment_access( $d, 'creator' );
+
+		// Only the doc owner should have access.
+		$this->set_current_user( $u2 );
+
+		$bp_docs_access_query = bp_docs_access_query();
+		$restricted_ids = $bp_docs_access_query->get_restricted_comment_doc_ids();
+
+		$this->assertTrue( in_array( $d, $restricted_ids ) );
+
+		$this->set_current_user( $old_current_user );
+	}
+
+	/**
+	 * @group bp_docs_access_query
+	 */
+	public function test_bp_docs_access_query_get_comment_doc_ids_group_member_prevent() {
+		$old_current_user = get_current_user_id();
+
+		$u1 = $this->factory->user->create();
+		$this->set_current_user( $u1 );
+
+		$g = $this->factory->group->create( array(
+			'status' => 'public',
+			'creator_id' => $u1
+		) );
+
+		$d = $this->factory->doc->create( array(
+			'group' => $g,
+		) );
+		bp_docs_update_doc_comment_access( $d, 'group-members' );
+
+		// We'll be a non-group-member.
+		$u2 = $this->factory->user->create();
+		$this->set_current_user( $u2 );
+
+		$bp_docs_access_query = bp_docs_access_query();
+		$restricted_ids = $bp_docs_access_query->get_restricted_comment_doc_ids();
+
+		$this->assertTrue( in_array( $d, $restricted_ids ) );
+
+		$this->set_current_user( $old_current_user );
+	}
+
+	/**
+	 * @group bp_docs_access_query
+	 */
+	public function test_bp_docs_access_query_get_comment_doc_ids_group_admins_mods_prevent() {
+		$old_current_user = get_current_user_id();
+
+		$u1 = $this->factory->user->create();
+		$this->set_current_user( $u1 );
+
+		$g = $this->factory->group->create( array(
+			'status' => 'public',
+			'creator_id' => $u1
+		) );
+
+		$d = $this->factory->doc->create( array(
+			'group' => $g,
+		) );
+		bp_docs_update_doc_comment_access( $d, 'admins-mods' );
+
+		// We'll be a regular group-member.
+		$u2 = $this->factory->user->create();
+		$this->set_current_user( $u2 );
+		BP_UnitTestCase::add_user_to_group( $u2, $g );
+
+		$bp_docs_access_query = bp_docs_access_query();
+		$restricted_ids = $bp_docs_access_query->get_restricted_comment_doc_ids();
+
+		$this->assertTrue( in_array( $d, $restricted_ids ) );
+
+		$this->set_current_user( $old_current_user );
+	}
+
+	/**
+	 * @group bp_docs_access_query
+	 */
+	public function test_bp_docs_access_query_get_comment_doc_ids_logged_in_allow() {
+		$old_current_user = get_current_user_id();
+		$u1 = $this->factory->user->create();
+		$u2 = $this->factory->user->create();
+		$this->set_current_user( $u1 );
+
+		$d = $this->factory->doc->create();
+		bp_docs_update_doc_comment_access( $d, 'loggedin' );
+
+		// Pretend we're a different, logged-in user.
+		$this->set_current_user( $u2 );
+
+		$bp_docs_access_query = bp_docs_access_query();
+		$restricted_ids = $bp_docs_access_query->get_restricted_comment_doc_ids();
+
+		$this->assertFalse( in_array( $d, $restricted_ids ) );
+
+		$this->set_current_user( $old_current_user );
+	}
+
+	/**
+	 * @group bp_docs_access_query
+	 */
+	public function test_bp_docs_access_query_get_comment_doc_ids_creator_only_allow() {
+		$old_current_user = get_current_user_id();
+
+		$u1 = $this->factory->user->create();
+		$this->set_current_user( $u1 );
+
+		$d = $this->factory->doc->create();
+		bp_docs_update_doc_comment_access( $d, 'creator' );
+
+		$bp_docs_access_query = bp_docs_access_query();
+		$restricted_ids = $bp_docs_access_query->get_restricted_comment_doc_ids();
+
+		$this->assertFalse( in_array( $d, $restricted_ids ) );
+
+		$this->set_current_user( $old_current_user );
+	}
+
+	/**
+	 * @group bp_docs_access_query
+	 */
+	public function test_bp_docs_access_query_get_comment_doc_ids_group_member_allow() {
+		$old_current_user = get_current_user_id();
+
+		$u1 = $this->factory->user->create();
+		$this->set_current_user( $u1 );
+
+		$g = $this->factory->group->create( array(
+			'status' => 'public',
+			'creator_id' => $u1
+		) );
+
+		$d = $this->factory->doc->create( array(
+			'group' => $g,
+		) );
+		bp_docs_update_doc_comment_access( $d, 'group-members' );
+
+		// We'll be a group-member.
+		$u2 = $this->factory->user->create();
+		$this->set_current_user( $u2 );
+		BP_UnitTestCase::add_user_to_group( $u2, $g );
+
+		$bp_docs_access_query = bp_docs_access_query();
+		$restricted_ids = $bp_docs_access_query->get_restricted_comment_doc_ids();
+
+		$this->assertFalse( in_array( $d, $restricted_ids ) );
+
+		$this->set_current_user( $old_current_user );
+	}
+
+	/**
+	 * @group bp_docs_access_query
+	 */
+	public function test_bp_docs_access_query_get_comment_doc_ids_group_admins_mods_allow() {
+		$old_current_user = get_current_user_id();
+
+		$u1 = $this->factory->user->create();
+		$this->set_current_user( $u1 );
+
+		$g = $this->factory->group->create( array(
+			'status' => 'public',
+			'creator_id' => $u1
+		) );
+
+		$d = $this->factory->doc->create( array(
+			'group' => $g,
+		) );
+		bp_docs_update_doc_comment_access( $d, 'admins-mods' );
+
+		// We'll be a group mod.
+		$u2 = $this->factory->user->create();
+		$this->set_current_user( $u2 );
+		BP_UnitTestCase::add_user_to_group( $u2, $g );
+		$m2 = new BP_Groups_Member( $u2, $g );
+		$m2->promote( 'mod' );
+
+		$bp_docs_access_query = bp_docs_access_query();
+		$restricted_ids = $bp_docs_access_query->get_restricted_comment_doc_ids();
+
+		$this->assertFalse( in_array( $d, $restricted_ids ) );
+
+		$this->set_current_user( $old_current_user );
+	}
+
+	/**
+	 * @group bp_docs_access_query
+	 */
+	public function test_bp_docs_access_query_get_comment_ids_logged_in_prevent() {
+		$old_current_user = get_current_user_id();
+
+		$u1 = $this->factory->user->create();
+		$this->set_current_user( $u1 );
+
+		$d = $this->factory->doc->create();
+		bp_docs_update_doc_comment_access( $d, 'loggedin' );
+
+		// Silence comment flood errors.
+		add_filter( 'comment_flood_filter', '__return_false' );
+
+		// Add a comment
+		$userdata = get_userdata( $u1 );
+		$c = wp_new_comment( array(
+			'comment_post_ID'      => $d,
+			'comment_author'       => $userdata->user_nicename,
+			'comment_author_url'   => 'http://buddypress.org',
+			'comment_author_email' => $userdata->user_email,
+			'comment_content'      => 'this is a doc comment',
+			'comment_type'         => '',
+			'comment_parent'       => 0,
+			'user_id'              => $u1,
+		) );
+
+		// Approve the comment
+		$this->factory->comment->update_object( $c, array( 'comment_approved' => 1 ) );
+
+		// Pretend we're logged out.
+		$this->set_current_user( 0 );
+
+		// Check that our access query setup is working.
+		$bp_docs_access_query = bp_docs_access_query();
+		$restricted_ids = $bp_docs_access_query->get_comment_ids();
+		$this->assertTrue( in_array( $c, $restricted_ids ) );
+
+		// Get comments, make sure this comment is not included.
+		$comment_ids = get_comments( array( 'post_id' => $d, 'fields' => 'ids' ) );
+		$this->assertFalse( in_array( $c, $comment_ids ) );
+
+		$this->set_current_user( $old_current_user );
+		remove_filter( 'comment_flood_filter', '__return_false' );
+	}
+
+	/**
+	 * @group bp_docs_access_query
+	 */
+	public function test_bp_docs_access_query_get_comment_ids_creator_only_prevent() {
+		$old_current_user = get_current_user_id();
+
+		$u1 = $this->factory->user->create();
+		$u2 = $this->factory->user->create();
+		$this->set_current_user( $u1 );
+
+		$d = $this->factory->doc->create();
+		bp_docs_update_doc_comment_access( $d, 'creator' );
+
+		// Silence comment flood errors.
+		add_filter( 'comment_flood_filter', '__return_false' );
+
+		// Add a comment
+		$userdata = get_userdata( $u1 );
+		$c = wp_new_comment( array(
+			'comment_post_ID'      => $d,
+			'comment_author'       => $userdata->user_nicename,
+			'comment_author_url'   => 'http://buddypress.org',
+			'comment_author_email' => $userdata->user_email,
+			'comment_content'      => 'this is a doc comment',
+			'comment_type'         => '',
+			'comment_parent'       => 0,
+			'user_id'              => $u1,
+		) );
+
+		// Approve the comment
+		$this->factory->comment->update_object( $c, array( 'comment_approved' => 1 ) );
+
+		// Only the doc owner should have access.
+		$this->set_current_user( $u2 );
+
+		// Check that our access query setup is working.
+		$bp_docs_access_query = bp_docs_access_query();
+		$restricted_ids = $bp_docs_access_query->get_comment_ids();
+		$this->assertTrue( in_array( $c, $restricted_ids ) );
+
+		// Get comments, make sure this comment is not included.
+		$comment_ids = get_comments( array( 'post_id' => $d, 'fields' => 'ids' ) );
+		$this->assertFalse( in_array( $c, $comment_ids ) );
+
+		$this->set_current_user( $old_current_user );
+		remove_filter( 'comment_flood_filter', '__return_false' );
+	}
+
+	/**
+	 * @group bp_docs_access_query
+	 */
+	public function test_bp_docs_access_query_get_comment_ids_group_member_prevent() {
+		$old_current_user = get_current_user_id();
+
+		$u1 = $this->factory->user->create();
+		$this->set_current_user( $u1 );
+
+		$g = $this->factory->group->create( array(
+			'status' => 'public',
+			'creator_id' => $u1
+		) );
+
+		$d = $this->factory->doc->create( array(
+			'group' => $g,
+		) );
+		bp_docs_update_doc_comment_access( $d, 'group-members' );
+
+		// Silence comment flood errors.
+		add_filter( 'comment_flood_filter', '__return_false' );
+
+		// Add a comment
+		$userdata = get_userdata( $u1 );
+		$c = wp_new_comment( array(
+			'comment_post_ID'      => $d,
+			'comment_author'       => $userdata->user_nicename,
+			'comment_author_url'   => 'http://buddypress.org',
+			'comment_author_email' => $userdata->user_email,
+			'comment_content'      => 'this is a doc comment',
+			'comment_type'         => '',
+			'comment_parent'       => 0,
+			'user_id'              => $u1,
+		) );
+
+		// Approve the comment
+		$this->factory->comment->update_object( $c, array( 'comment_approved' => 1 ) );
+
+		// We'll be a non-group-member.
+		$u2 = $this->factory->user->create();
+		$this->set_current_user( $u2 );
+
+		// Check that our access query setup is working.
+		$bp_docs_access_query = bp_docs_access_query();
+		$restricted_ids = $bp_docs_access_query->get_comment_ids();
+		$this->assertTrue( in_array( $c, $restricted_ids ) );
+
+		// Get comments, make sure this comment is not included.
+		$comment_ids = get_comments( array( 'post_id' => $d, 'fields' => 'ids' ) );
+		$this->assertFalse( in_array( $c, $comment_ids ) );
+
+		$this->set_current_user( $old_current_user );
+		remove_filter( 'comment_flood_filter', '__return_false' );
+	}
+
+	/**
+	 * @group bp_docs_access_query
+	 */
+	public function test_bp_docs_access_query_get_comment_ids_group_admins_mods_prevent() {
+		$old_current_user = get_current_user_id();
+
+		$u1 = $this->factory->user->create();
+		$this->set_current_user( $u1 );
+
+		$g = $this->factory->group->create( array(
+			'status' => 'public',
+			'creator_id' => $u1
+		) );
+
+		$d = $this->factory->doc->create( array(
+			'group' => $g,
+		) );
+		bp_docs_update_doc_comment_access( $d, 'admins-mods' );
+
+		// Silence comment flood errors.
+		add_filter( 'comment_flood_filter', '__return_false' );
+
+		// Add a comment.
+		$userdata = get_userdata( $u1 );
+		$c = wp_new_comment( array(
+			'comment_post_ID'      => $d,
+			'comment_author'       => $userdata->user_nicename,
+			'comment_author_url'   => 'http://buddypress.org',
+			'comment_author_email' => $userdata->user_email,
+			'comment_content'      => 'this is a doc comment',
+			'comment_type'         => '',
+			'comment_parent'       => 0,
+			'user_id'              => $u1,
+		) );
+
+		// Approve the comment
+		$this->factory->comment->update_object( $c, array( 'comment_approved' => 1 ) );
+
+		// We'll be a regular group-member.
+		$u2 = $this->factory->user->create();
+		$this->set_current_user( $u2 );
+		BP_UnitTestCase::add_user_to_group( $u2, $g );
+
+		// Check that our access query setup is working.
+		$bp_docs_access_query = bp_docs_access_query();
+		$restricted_ids = $bp_docs_access_query->get_comment_ids();
+		$this->assertTrue( in_array( $c, $restricted_ids ) );
+
+		// Get comments, make sure this comment is not included.
+		$comment_ids = get_comments( array( 'post_id' => $d, 'fields' => 'ids' ) );
+		$this->assertFalse( in_array( $c, $comment_ids ) );
+
+		$this->set_current_user( $old_current_user );
+		remove_filter( 'comment_flood_filter', '__return_false' );
+	}
+
+	/**
+	 * @group bp_docs_access_query
+	 */
+	public function test_bp_docs_access_query_get_comment_ids_logged_in_allow() {
+		$old_current_user = get_current_user_id();
+
+		$u1 = $this->factory->user->create();
+		$u2 = $this->factory->user->create();
+		$this->set_current_user( $u1 );
+
+		$d = $this->factory->doc->create();
+		bp_docs_update_doc_comment_access( $d, 'loggedin' );
+
+		// Silence comment flood errors.
+		add_filter( 'comment_flood_filter', '__return_false' );
+
+		// Add a comment
+		$userdata = get_userdata( $u1 );
+		$c = wp_new_comment( array(
+			'comment_post_ID'      => $d,
+			'comment_author'       => $userdata->user_nicename,
+			'comment_author_url'   => 'http://buddypress.org',
+			'comment_author_email' => $userdata->user_email,
+			'comment_content'      => 'this is a doc comment',
+			'comment_type'         => '',
+			'comment_parent'       => 0,
+			'user_id'              => $u1,
+		) );
+
+		// Approve the comment
+		$this->factory->comment->update_object( $c, array( 'comment_approved' => 1 ) );
+
+		// Pretend we're a different, logged-in user.
+		$this->set_current_user( $u2 );
+
+		// Check that our access query setup is working.
+		$bp_docs_access_query = bp_docs_access_query();
+		$restricted_ids = $bp_docs_access_query->get_comment_ids();
+		$this->assertFalse( in_array( $c, $restricted_ids ) );
+
+		// Get comments, make sure this comment is included.
+		$comment_ids = get_comments( array( 'post_id' => $d, 'fields' => 'ids' ) );
+		$this->assertTrue( in_array( $c, $comment_ids ) );
+
+		$this->set_current_user( $old_current_user );
+		remove_filter( 'comment_flood_filter', '__return_false' );
+	}
+
+	/**
+	 * @group bp_docs_access_query
+	 */
+	public function test_bp_docs_access_query_get_comment_ids_creator_only_allow() {
+		$old_current_user = get_current_user_id();
+
+		$u1 = $this->factory->user->create();
+		$this->set_current_user( $u1 );
+
+		$d = $this->factory->doc->create();
+		bp_docs_update_doc_comment_access( $d, 'creator' );
+
+		// Silence comment flood errors.
+		add_filter( 'comment_flood_filter', '__return_false' );
+
+		// Add a comment
+		$userdata = get_userdata( $u1 );
+		$c = wp_new_comment( array(
+			'comment_post_ID'      => $d,
+			'comment_author'       => $userdata->user_nicename,
+			'comment_author_url'   => 'http://buddypress.org',
+			'comment_author_email' => $userdata->user_email,
+			'comment_content'      => 'this is a doc comment',
+			'comment_type'         => '',
+			'comment_parent'       => 0,
+			'user_id'              => $u1,
+		) );
+
+		// Approve the comment
+		$this->factory->comment->update_object( $c, array( 'comment_approved' => 1 ) );
+
+		// Check that our access query setup is working.
+		$bp_docs_access_query = bp_docs_access_query();
+		$restricted_ids = $bp_docs_access_query->get_comment_ids();
+		$this->assertFalse( in_array( $c, $restricted_ids ) );
+
+		// Get comments, make sure this comment is included.
+		$comment_ids = get_comments( array( 'post_id' => $d, 'fields' => 'ids' ) );
+		$this->assertTrue( in_array( $c, $comment_ids ) );
+
+		$this->set_current_user( $old_current_user );
+		remove_filter( 'comment_flood_filter', '__return_false' );
+	}
+
+	/**
+	 * @group bp_docs_access_query
+	 */
+	public function test_bp_docs_access_query_get_comment_ids_group_member_allow() {
+		$old_current_user = get_current_user_id();
+
+		$u1 = $this->factory->user->create();
+		$this->set_current_user( $u1 );
+
+		$g = $this->factory->group->create( array(
+			'status' => 'public',
+			'creator_id' => $u1
+		) );
+
+		$d = $this->factory->doc->create( array(
+			'group' => $g,
+		) );
+		bp_docs_update_doc_comment_access( $d, 'group-members' );
+
+		// Silence comment flood errors.
+		add_filter( 'comment_flood_filter', '__return_false' );
+
+		// Add a comment
+		$userdata = get_userdata( $u1 );
+		$c = wp_new_comment( array(
+			'comment_post_ID'      => $d,
+			'comment_author'       => $userdata->user_nicename,
+			'comment_author_url'   => 'http://buddypress.org',
+			'comment_author_email' => $userdata->user_email,
+			'comment_content'      => 'this is a doc comment',
+			'comment_type'         => '',
+			'comment_parent'       => 0,
+			'user_id'              => $u1,
+		) );
+
+		// Approve the comment
+		$this->factory->comment->update_object( $c, array( 'comment_approved' => 1 ) );
+
+		// We'll be a group-member.
+		$u2 = $this->factory->user->create();
+		$this->set_current_user( $u2 );
+		BP_UnitTestCase::add_user_to_group( $u2, $g );
+
+		// Check that our access query setup is working.
+		$bp_docs_access_query = bp_docs_access_query();
+		$restricted_ids = $bp_docs_access_query->get_comment_ids();
+		$this->assertFalse( in_array( $c, $restricted_ids ) );
+
+		// Get comments, make sure this comment is included.
+		$comment_ids = get_comments( array( 'post_id' => $d, 'fields' => 'ids' ) );
+		$this->assertTrue( in_array( $c, $comment_ids ) );
+
+		$this->set_current_user( $old_current_user );
+		remove_filter( 'comment_flood_filter', '__return_false' );
+	}
+
+	/**
+	 * @group bp_docs_access_query
+	 */
+	public function test_bp_docs_access_query_get_comment_ids_group_admins_mods_allow() {
+		$old_current_user = get_current_user_id();
+
+		$u1 = $this->factory->user->create();
+		$this->set_current_user( $u1 );
+
+		$g = $this->factory->group->create( array(
+			'status' => 'public',
+			'creator_id' => $u1
+		) );
+
+		$d = $this->factory->doc->create( array(
+			'group' => $g,
+		) );
+		bp_docs_update_doc_comment_access( $d, 'admins-mods' );
+
+		// Silence comment flood errors.
+		add_filter( 'comment_flood_filter', '__return_false' );
+
+		// Add a comment.
+		$userdata = get_userdata( $u1 );
+		$c = wp_new_comment( array(
+			'comment_post_ID'      => $d,
+			'comment_author'       => $userdata->user_nicename,
+			'comment_author_url'   => 'http://buddypress.org',
+			'comment_author_email' => $userdata->user_email,
+			'comment_content'      => 'this is a doc comment',
+			'comment_type'         => '',
+			'comment_parent'       => 0,
+			'user_id'              => $u1,
+		) );
+
+		// Approve the comment
+		$this->factory->comment->update_object( $c, array( 'comment_approved' => 1 ) );
+
+		// We'll be a group mod.
+		$u2 = $this->factory->user->create();
+		$this->set_current_user( $u2 );
+		BP_UnitTestCase::add_user_to_group( $u2, $g );
+		$m2 = new BP_Groups_Member( $u2, $g );
+		$m2->promote( 'mod' );
+
+		// Check that our access query setup is working.
+		$bp_docs_access_query = bp_docs_access_query();
+		$restricted_ids = $bp_docs_access_query->get_comment_ids();
+		$this->assertFalse( in_array( $c, $restricted_ids ) );
+
+		// Get comments, make sure this comment is included.
+		$comment_ids = get_comments( array( 'post_id' => $d, 'fields' => 'ids' ) );
+		$this->assertTrue( in_array( $c, $comment_ids ) );
+
+		$this->set_current_user( $old_current_user );
+		remove_filter( 'comment_flood_filter', '__return_false' );
+	}
+
 }

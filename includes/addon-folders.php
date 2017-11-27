@@ -38,10 +38,10 @@ class BP_Docs_Folders {
 	 */
 	public function register_post_type() {
 		$labels = array(
-			'name' => __( 'BuddyPress Docs Folders', 'bp-docs' ),
-			'singular_name' => __( 'BuddyPress Docs Folder', 'bp-docs' ),
-			'menu_name' => __( 'Docs Folders', 'bp-docs' ),
-			'name_admin_bar' => __( 'Docs Folder', 'bp-docs' ),
+			'name' => __( 'BuddyPress Docs Folders', 'buddypress-docs' ),
+			'singular_name' => __( 'BuddyPress Docs Folder', 'buddypress-docs' ),
+			'menu_name' => __( 'Docs Folders', 'buddypress-docs' ),
+			'name_admin_bar' => __( 'Docs Folder', 'buddypress-docs' ),
 		);
 
 		register_post_type( 'bp_docs_folder', array(
@@ -185,8 +185,8 @@ class BP_Docs_Folders {
 		$force_folders_metabox = apply_filters( 'bp_docs_folders_force_metabox', false );
 
 		wp_localize_script( 'bp-docs-folders', 'BP_Docs_Folders', array(
-			'folders_tab_label' => _x( 'Folders', 'Doc edit tab name', 'bp-docs' ),
-			'folders_tab_label_groups' => _x( 'Group Folders', 'Doc edit tab name', 'bp-docs' ),
+			'folders_tab_label' => _x( 'Folders', 'Doc edit tab name', 'buddypress-docs' ),
+			'folders_tab_label_groups' => _x( 'Group Folders', 'Doc edit tab name', 'buddypress-docs' ),
 			'force_metabox' => $force_folders_metabox,
 		) );
 	}
@@ -1052,7 +1052,7 @@ function bp_docs_save_folder_selection( $doc_id ) {
 			$folder_name = trim( stripslashes( $_POST['new-folder'] ) );
 
 			if ( empty( $folder_name ) ) {
-				bp_core_add_message( __( 'You must provide a folder name.', 'bp-docs' ), 'error' );
+				bp_core_add_message( __( 'You must provide a folder name.', 'buddypress-docs' ), 'error' );
 			} else {
 				$folder_args = array(
 					'name' => $folder_name,
@@ -1134,7 +1134,7 @@ function bp_docs_process_folder_edit_cb() {
 	$redirect_url = bp_get_requested_url();
 
 	if ( ! wp_verify_nonce( $nonce, 'bp-docs-edit-folder-' . $folder_id ) ) {
-		bp_core_add_message( __( 'There was a problem editing that folder. Please try again.', 'bp-docs' ), 'error' );
+		bp_core_add_message( __( 'There was a problem editing that folder. Please try again.', 'buddypress-docs' ), 'error' );
 		bp_core_redirect( $redirect_url );
 		die();
 	}
@@ -1160,9 +1160,9 @@ function bp_docs_process_folder_edit_cb() {
 	$success = bp_docs_create_folder( $edit_args );
 
 	if ( ! empty( $success ) && ! is_wp_error( $success ) ) {
-		bp_core_add_message( __( 'Folder successfully updated.', 'bp-docs' ), 'success' );
+		bp_core_add_message( __( 'Folder successfully updated.', 'buddypress-docs' ), 'success' );
 	} else {
-		bp_core_add_message( __( 'There was a problem editing that folder. Please try again.', 'bp-docs' ), 'error' );
+		bp_core_add_message( __( 'There was a problem editing that folder. Please try again.', 'buddypress-docs' ), 'error' );
 	}
 
 	bp_core_redirect( $redirect_url );
@@ -1190,7 +1190,7 @@ function bp_docs_process_folder_create_cb() {
 	$redirect_url = bp_get_requested_url();
 
 	if ( ! wp_verify_nonce( $nonce, 'bp-docs-create-folder' ) ) {
-		bp_core_add_message( __( 'There was a problem editing that folder. Please try again.', 'bp-docs' ), 'error' );
+		bp_core_add_message( __( 'There was a problem editing that folder. Please try again.', 'buddypress-docs' ), 'error' );
 		bp_core_redirect( $redirect_url );
 		die();
 	}
@@ -1230,9 +1230,9 @@ function bp_docs_process_folder_create_cb() {
 	$success = bp_docs_create_folder( $folder_args );
 
 	if ( ! empty( $success ) && ! is_wp_error( $success ) ) {
-		bp_core_add_message( __( 'Folder successfully created.', 'bp-docs' ), 'success' );
+		bp_core_add_message( __( 'Folder successfully created.', 'buddypress-docs' ), 'success' );
 	} else {
-		bp_core_add_message( __( 'There was a problem creating the folder. Please try again.', 'bp-docs' ), 'error' );
+		bp_core_add_message( __( 'There was a problem creating the folder. Please try again.', 'buddypress-docs' ), 'error' );
 	}
 
 	bp_core_redirect( $redirect_url );
@@ -1281,9 +1281,9 @@ function bp_docs_process_folder_delete_cb() {
 	) );
 
 	if ( $deleted ) {
-		bp_core_add_message( __( 'Folder deleted.', 'bp-docs' ) );
+		bp_core_add_message( __( 'Folder deleted.', 'buddypress-docs' ) );
 	} else {
-		bp_core_add_message( __( 'Could not delete folder.', 'bp-docs' ) );
+		bp_core_add_message( __( 'Could not delete folder.', 'buddypress-docs' ) );
 	}
 
 	bp_core_redirect( remove_query_arg( 'delete-folder', bp_get_requested_url() ) );
@@ -1597,7 +1597,7 @@ function bp_docs_folder_selector( $args = array() ) {
 	// are no others to show
 	if ( $r['force_global'] || ( empty( $r['group_id'] ) && empty( $r['user_id'] ) ) ) {
 		$types['global'] = array(
-			'label' => __( 'Global', 'bp-docs' ),
+			'label' => __( 'Global', 'buddypress-docs' ),
 			'folders' => bp_docs_get_folders( array(
 				'display'   => 'flat',
 				'group_id'  => null,
@@ -1628,7 +1628,7 @@ function bp_docs_folder_selector( $args = array() ) {
 		$user = new WP_User( $r['user_id'] );
 
 		if ( ! empty( $user->ID ) ) {
-			$label = $r['user_id'] === bp_loggedin_user_id() ? __( 'My Folders', 'bp-docs' ) : bp_core_get_user_displayname( $r['user_id'] );
+			$label = $r['user_id'] === bp_loggedin_user_id() ? __( 'My Folders', 'buddypress-docs' ) : bp_core_get_user_displayname( $r['user_id'] );
 			$types['user'] = array(
 				'label' => $label,
 				'folders' => bp_docs_get_folders( array(
@@ -1661,7 +1661,7 @@ function bp_docs_folder_selector( $args = array() ) {
 		}
 	}
 
-	$options = '<option value="">' . __( ' - None - ', 'bp-docs' ) . '</option>' . $options;
+	$options = '<option value="">' . __( ' - None - ', 'buddypress-docs' ) . '</option>' . $options;
 	$retval = sprintf( '<select name="%s" id="%s" class="chosen-select %s">', esc_attr( $r['name'] ), esc_attr( $r['id'] ), esc_attr( $r['class'] ) ) . $options . '</select>';
 
 	if ( false === $r['echo'] ) {
@@ -1704,11 +1704,11 @@ function bp_docs_folder_type_selector( $args = array() ) {
 	}
 
 	$type_selector  = '<select name="' . esc_attr( $r['name'] ) . '" id="' . esc_attr( $r['id'] ) . '" class="folder-type">';
-	$type_selector .=   '<option ' . selected( $r['selected'], 'global', false ) . ' value="global">' . __( 'Global', 'bp-docs' ) . '</option>';
-	$type_selector .=   '<option ' . selected( $r['selected'], 'me', false ) . ' value="me">' . __( 'Personal', 'bp-docs' ) . '</option>';
+	$type_selector .=   '<option ' . selected( $r['selected'], 'global', false ) . ' value="global">' . __( 'Global', 'buddypress-docs' ) . '</option>';
+	$type_selector .=   '<option ' . selected( $r['selected'], 'me', false ) . ' value="me">' . __( 'Personal', 'buddypress-docs' ) . '</option>';
 
 	if ( isset( $group_selector ) ) {
-		$type_selector .=   '<optgroup label="' . __( 'Group-specific', 'bp-docs' ) . '">';
+		$type_selector .=   '<optgroup label="' . __( 'Group-specific', 'buddypress-docs' ) . '">';
 		$type_selector .=     $group_selector;
 		$type_selector .=   '</optgroup>';
 	}
@@ -1820,14 +1820,14 @@ function bp_docs_create_new_folder_markup( $args = array() ) {
 
 	?>
 
-	<label for="new-folder"><?php _e( 'Name', 'bp-docs' ) ?></label> <input name="new-folder" id="new-folder" />
+	<label for="new-folder"><?php _e( 'Name', 'buddypress-docs' ) ?></label> <input name="new-folder" id="new-folder" />
 
 	<?php $folder_type_class = current_user_can( 'bp_docs_change_folder_type' ) ? 'can-change' : 'cannot-change' ?>
 
 	<div style="clear:both"></div>
 
 	<div class="folder-type-selector-div <?php echo $folder_type_class ?>">
-		<label for="new-folder-type"><?php _e( 'Folder type', 'bp-docs' ) ?></label>
+		<label for="new-folder-type"><?php _e( 'Folder type', 'buddypress-docs' ) ?></label>
 		<?php bp_docs_folder_type_selector( array(
 			'selected' => $r['selected'],
 			'id' => $r['folder_type_id'],
@@ -1837,7 +1837,7 @@ function bp_docs_create_new_folder_markup( $args = array() ) {
 	</div>
 
 	<div style="clear:both"></div>
-	<label for="new-folder-parent"><?php _e( 'Parent (optional)', 'bp-docs' ) ?></label>
+	<label for="new-folder-parent"><?php _e( 'Parent (optional)', 'buddypress-docs' ) ?></label>
 	<?php bp_docs_folder_selector( array(
 		'name'     => 'new-folder-parent',
 		'id'       => 'new-folder-parent',
@@ -1879,21 +1879,21 @@ function bp_docs_folders_meta_box() {
 	<div id="doc-folders" class="doc-meta-box">
 		<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class() ?>">
 			<p id="folders-toggle-edit" class="toggle-switch">
-				<span class="hide-if-js toggle-link-no-js"><?php _e( 'Folders', 'bp-docs' ) ?></span>
-				<a class="hide-if-no-js toggle-link" id="folders-toggle-link" href="#"><span class="show-pane plus-or-minus"></span><span class="toggle-title"><?php _e( 'Folders', 'bp-docs' ) ?></span></a>
+				<span class="hide-if-js toggle-link-no-js"><?php _e( 'Folders', 'buddypress-docs' ) ?></span>
+				<a class="hide-if-no-js toggle-link" id="folders-toggle-link" href="#"><span class="show-pane plus-or-minus"></span><span class="toggle-title"><?php _e( 'Folders', 'buddypress-docs' ) ?></span></a>
 			</p>
 
 			<div class="toggle-content">
 				<table class="toggle-table" id="toggle-table-folders">
 					<tr>
 						<td class="desc-column">
-							<label for="bp_docs_tag"><?php _e( 'Select a folder for this Doc.', 'bp-docs' ) ?></label>
+							<label for="bp_docs_tag"><?php _e( 'Select a folder for this Doc.', 'buddypress-docs' ) ?></label>
 						</td>
 
 						<td>
 							<div class="existing-or-new-selector">
 								<input type="radio" name="existing-or-new-folder" id="use-existing-folder" value="existing" checked="checked" />
-								<label for="use-existing-folder" class="radio-label"><?php _e( 'Use an existing folder', 'bp-docs' ) ?></label><br />
+								<label for="use-existing-folder" class="radio-label"><?php _e( 'Use an existing folder', 'buddypress-docs' ) ?></label><br />
 								<div class="selector-content">
 									<?php bp_docs_folder_selector( array(
 										'name'     => 'bp-docs-folder',
@@ -1906,7 +1906,7 @@ function bp_docs_folders_meta_box() {
 
 							<div class="existing-or-new-selector" id="new-folder-block">
 								<input type="radio" name="existing-or-new-folder" id="create-new-folder" value="new" />
-								<label for="create-new-folder" class="radio-label"><?php _e( 'Create a new folder', 'bp-docs' ) ?></label>
+								<label for="create-new-folder" class="radio-label"><?php _e( 'Create a new folder', 'buddypress-docs' ) ?></label>
 								<div class="selector-content">
 
 									<?php bp_docs_create_new_folder_markup( array(
@@ -2084,7 +2084,7 @@ function bp_docs_folder_info_header_message( $message, $filters ) {
 		}
 
 		$message[] = sprintf(
-			_n( 'You are viewing docs in the following folder: %s', 'You are viewing docs in the following folders: %s', count( $folders ), 'bp-docs' ),
+			_n( 'You are viewing docs in the following folder: %s', 'You are viewing docs in the following folders: %s', count( $folders ), 'buddypress-docs' ),
 			implode( ', ', $folder_links )
 		);
 	}
@@ -2225,7 +2225,7 @@ class BP_Docs_Folder_Dropdown_Walker extends Walker {
 
 		$title = $page->post_title . '&nbsp;';
 		if ( '' === $title ) {
-			$title = sprintf( __( '#%d (no title)', 'bp-docs' ), $page->ID );
+			$title = sprintf( __( '#%d (no title)', 'buddypress-docs' ), $page->ID );
 		}
 
 		$output .= $pad . esc_html( $title );
@@ -2310,8 +2310,17 @@ class BP_Docs_Folder_Manage_Walker extends Walker {
 				'<label for="folder-type-%d">%s</label> %s
 				<div style="clear:both;"></div>',
 				intval( $page->ID ), // for="folder-type-%d"
-				__( 'Type', 'bp-docs' ), // type label text
+				__( 'Type', 'buddypress-docs' ), // type label text
 				$type_selector // type dropdown
+			);
+		}
+
+		$delete_link_markup = '';
+		if ( current_user_can( 'bp_docs_manage_folder', $page->ID ) ) {
+			$delete_link_markup = sprintf(
+				'<a class="folder-delete" href="%s">%s</a>',
+				add_query_arg( 'delete-folder', $page->ID, bp_get_requested_url() ), // No nonce because actual deletion is done on the subsequent page
+				__( 'Delete', 'buddypress-docs' )
 			);
 		}
 
@@ -2329,28 +2338,27 @@ class BP_Docs_Folder_Manage_Walker extends Walker {
 				%s
 				<input type="hidden" class="folder-id" name="folder-id" value="%d" />
 				%s
-				<input type="submit" value="%s" class="primary-button" /> <a class="folder-delete" href="%s">%s</a>
+				<input type="submit" value="%s" class="primary-button" /> %s
 			</form>
 		</div>
 	</div>',
 			intval( $page->ID ), // data-folder-id
 			esc_html( $page->post_title ), // h4
-			__( 'Edit', 'bp-docs' ), // folder-edit-toggle text
-			__( 'Close', 'bp-docs' ), // folder-edit-close text
+			__( 'Edit', 'buddypress-docs' ), // folder-edit-toggle text
+			__( 'Close', 'buddypress-docs' ), // folder-edit-close text
 			intval( $page->ID ), // for="folder-name-%d"
-			__( 'Name', 'bp-docs' ), // label text
+			__( 'Name', 'buddypress-docs' ), // label text
 			intval( $page->ID ), // id="folder-name-%d"
 			intval( $page->ID ), // name="folder-name-%d"
 			esc_attr( $page->post_title ), // input value
 			intval( $page->ID ), // for="folder-parent-%d"
-			__( 'Parent', 'bp-docs' ), // label text
+			__( 'Parent', 'buddypress-docs' ), // label text
 			$parent_selector, // parent dropdown
 			$type_selector_markup,
 			intval( $page->ID ), // hidden input value
 			wp_nonce_field( 'bp-docs-edit-folder-' . $page->ID, 'bp-docs-edit-folder-nonce-' . $page->ID, false, false ), // nonce
-			__( 'Save Changes', 'bp-docs' ), // save button text
-			add_query_arg( 'delete-folder', $page->ID, bp_get_requested_url() ), // No nonce because actual deletion is done on the subsequent page
-			__( 'Delete', 'bp-docs' )
+			__( 'Save Changes', 'buddypress-docs' ), // save button text
+			$delete_link_markup
 		);
 	}
 
@@ -2427,7 +2435,7 @@ class BP_Docs_Folder_Walker extends Walker {
 		$empty_class = empty( $folder_docs ) ? 'empty' : '';
 		$output .= sprintf( '<ul class="docs-in-folder %s" id="docs-in-folder-%d">', $empty_class, $page->ID );
 
-		$output .= '<li class="folder-empty">' . __( 'This folder contains no Docs.', 'bp-docs' ) . '</li>';
+		$output .= '<li class="folder-empty">' . __( 'This folder contains no Docs.', 'buddypress-docs' ) . '</li>';
 		foreach ( $folder_docs as $folder_doc ) {
 			$output .= sprintf(
 				'<li class="doc-in-folder" id="doc-in-folder-%d" data-doc-id="%d">%s<a href="%s">%s</a>%s</li>',

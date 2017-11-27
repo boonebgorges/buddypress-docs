@@ -22,7 +22,7 @@
 
 		<?php do_action( 'bp_before_directory_docs' ); ?>
 
-		<h3><?php _e( 'Docs Directory', 'bp-docs' ); ?></h3>
+		<h3><?php echo bp_docs_get_docs_directory_title(); ?></h3>
 
 		<?php include( bp_docs_locate_template( 'docs-loop.php' ) ) ?>
 

@@ -412,157 +412,190 @@ class BP_Docs_Query {
 	/**
 	 * Saves a doc.
 	 *
-	 * This method handles saving for both new and existing docs. It detects the difference by
-	 * looking for the presence of $this->doc_slug
+	 * This method handles saving for both new and existing docs. It detects the
+	 * difference by looking for the presence of $this->doc_slug
 	 *
 	 * @since 1.0-beta
+	 *
+	 * @param array $passed_args {
+	 *	      @type int    $doc_id ID of the doc, if it already exists.
+	 *	      @type string $title Doc title.
+	 *	      @type string $content Doc content.
+	 *	      @type string $permalink Optional. Permalink will be calculated if
+	 *                     if not specified.
+	 *	      @type int    $author_id ID of the user submitting the changes.
+	 *	      @type int    $group_id ID of the associated group, if any.
+	 *                     Special cases: Passing "null" leaves current group
+	 *                     associations intact. Passing 0 will unset existing
+	 *                     group associations.
+	 *	      @type bool   $is_auto Is this an autodraft?
+	 *	      @type array  $taxonomies Taxonomy terms to apply to the doc.
+	 *                     Use the form: array( $tax_name => (array) $terms ).
+	 *	      @type array  $settings Doc access settings. Of the form:
+	 *                     array( 'read' => 'group-members',
+	 *                            'edit' => 'admins-mods',
+	 *                            'read_comments' => 'group-members',
+	 *                            'post_comments' => 'group-members',
+	 *                            'view_history' => 'creator' )
+	 *	      @type int    $parent_id    The ID of the parent doc, if applicable.
+	 *	      @type string $save_context How this doc is being saved.
+	 *        }
+	 * @return array {
+	 *		  @type string $message_type Type of message, success or error.
+	 *		  @type string $message Text of message to display to user.
+	 *		  @type string $redirect_url URL to use for redirect after save.
+	 *		  @type int    $doc_id ID of the updated doc, if applicable.
+	 *        }
 	 */
-	function save( $args = false ) {
-		global $bp, $wp_rewrite;
+	function save( $passed_args = array() ) {
+		global $wp_rewrite;
+		$bp = buddypress();
+
+		// Sensible defaults
+		$defaults = array(
+			'doc_id' 		=> 0,
+			'title'			=> '',
+			'content' 		=> '',
+			'permalink'		=> '',
+			'author_id'		=> bp_loggedin_user_id(),
+			'group_id'		=> null,
+			'is_auto'		=> 0,
+			'taxonomies'	=> array(),
+			'settings'		=> array(),
+			'parent_id'		=> 0,
+			'save_context'  => 'direct'
+			);
+
+		$args = wp_parse_args( $passed_args, $defaults );
 
 		// bbPress plays naughty with revision saving
 		add_action( 'pre_post_update', 'wp_save_post_revision' );
 
 		// Get the required taxonomy items associated with the group. We only run this
 		// on a save because it requires extra database hits.
-		$this->setup_terms();
+		$this->setup_terms(); // @TODO: Not sure what this is doing
 
 		// Set up the default value for the result message
-		$results = array(
-			'message' => __( 'Unknown error. Please try again.', 'bp-docs' ),
+		$result = array(
+			'error'    => false,
+			'message'  => __( 'Unknown error. Please try again.', 'buddypress-docs' ),
 			'redirect' => 'create'
 		);
 
-		// Backward compatibility. Had to change to doc_content to work with wp_editor
-		$doc_content = '';
-		if ( isset( $_POST['doc_content'] ) ) {
-			$doc_content = $_POST['doc_content'];
-		} else if ( isset( $_POST['doc']['content'] ) ) {
-			$doc_content = $_POST['doc']['content'];
-		}
+		/**
+		 * Filters the default results array based on the passed args.
+		 * Returning $result['error'] = true will prevent the doc from being saved.
+		 *
+		 * @since 2.0.0
+		 *
+		 * @param array $args The default results array.
+		 * @param array $args The parameters for the doc about to be saved.
+		 */
+		$result = apply_filters( 'bp_docs_filter_result_before_save', $result, $args );
 
-		// Check group associations
-		// @todo Move into group integration piece
-		// This group id is only used to check whether the user can associate the doc with the group.
-		$associated_group_id = isset( $_POST['associated_group_id'] ) ? intval( $_POST['associated_group_id'] ) : null;
-		if ( bp_is_active( 'groups' ) ) {
-			if ( ! empty( $associated_group_id ) && ! current_user_can( 'bp_docs_associate_with_group', $associated_group_id ) ) {
-				$retval = array(
-					'message_type' => 'error',
-					'message' => __( 'You are not allowed to associate a Doc with that group.', 'bp-docs' ),
-					'redirect_url' => bp_docs_get_create_link(),
-				);
+		// Is this a new doc?
+		$this->is_new_doc = ( 0 === $args['doc_id'] || 'auto-draft' === get_post_status( $args['doc_id'] ) );
 
-				return $retval;
-			}
-		}
-
-		if ( empty( $_POST['doc']['title'] ) ) {
+		if ( true === $result['error'] ) {
+			/*
+			 * An extension has reported an error. Do not save.
+			 * Extension should also provide error message information.
+			 */
+		} elseif ( empty( $args['title'] ) ) {
 			// The title field is required
-			$result['message'] = __( 'The title field is required.', 'bp-docs' );
-			$result['redirect'] = ! empty( $this->doc_slug ) ? 'edit' : 'create';
+			$result['message'] = __( 'The title field is required.', 'buddypress-docs' );
+			$result['redirect'] = $this->is_new_doc ? 'create' : 'edit';
 		} else {
-			$defaults = array(
+			// Use the passed permalink if it exists, otherwise create one
+			if ( ! empty( $args['permalink'] ) ) {
+				$args['permalink'] = sanitize_title( $args['permalink'] );
+			} else {
+				$args['permalink'] = sanitize_title( $args['title'] );
+			}
+
+			$r = array(
+				'ID'           => absint( $args['doc_id'] ),
 				'post_type'    => $this->post_type_name,
-				'post_title'   => $_POST['doc']['title'],
-				'post_name'    => isset( $_POST['doc']['permalink'] ) ? sanitize_title( $_POST['doc']['permalink'] ) : sanitize_title( $_POST['doc']['title'] ),
-				'post_content' => sanitize_post_field( 'post_content', $doc_content, 0, 'db' ),
-				'post_status'  => 'publish'
+				'post_title'   => $args['title'],
+				'post_name'    => $args['permalink'],
+				'post_content' => $args['content'],
+				'post_status'  => 'publish',
+				'post_parent'  => $args['parent_id']
 			);
 
-			$r = wp_parse_args( $args, $defaults );
+			if ( $this->is_new_doc ) {
+				// We only save the author for new docs.
+				$r['post_author'] = $args['author_id'];
+			} else {
+				// Save pre-update post data, for comparison by callbacks.
+				$this->previous_revision = get_post( $args['doc_id'] );
+			}
 
-			if ( empty( $this->doc_slug ) ) {
-				$this->is_new_doc = true;
+			// Insert or update the post.
+			$this->doc_id = wp_insert_post( $r );
 
-				$r['post_author'] = bp_loggedin_user_id();
-
-				// If there's a 'doc_id' value in the POST, use
-				// the autodraft as a starting point
-				if ( isset( $_POST['doc_id'] ) && 0 != $_POST['doc_id'] ) {
-					$post_id = (int) $_POST['doc_id'];
-					$r['ID'] = $post_id;
-					wp_update_post( $r );
-				} else {
-					$post_id = wp_insert_post( $r );
-				}
-
-				if ( ! $post_id ) {
-					$result['message'] = __( 'There was an error when creating the doc.', 'bp-docs' );
+			if ( ! $this->doc_id ) {
+				// Failed to save. Set error message.
+				if ( $this->is_new_doc  ) {
+					$result['message'] = __( 'There was an error when creating the doc.', 'buddypress-docs' );
 					$result['redirect'] = 'create';
 				} else {
-					$this->doc_id = $post_id;
-
-					$the_doc = get_post( $this->doc_id );
-					$this->doc_slug = $the_doc->post_name;
-
-					// A normal, successful save
-					$result['message'] = __( 'Doc successfully created!', 'bp-docs' );
-					$result['redirect'] = 'single';
+					$result['message'] = __( 'There was an error when saving the doc.', 'buddypress-docs' );
+					$result['redirect'] = 'edit';
 				}
 			} else {
-				$this->is_new_doc = false;
+				// Successful save.
+				$the_doc = get_post( $this->doc_id );
+				$this->doc_slug = $the_doc->post_name;
 
-				$doc = bp_docs_get_current_doc();
+				// Save the last editor id. We'll use this to create an activity item.
+				update_post_meta( $this->doc_id, 'bp_docs_last_editor', $args['author_id'] );
 
-				$this->doc_id = $doc->ID;
-				$r['ID']      = $this->doc_id;
+				// Make sure the current user is added as one of the authors
+				// @TODO: Is this still used?
+				wp_set_post_terms( $this->doc_id, $this->user_term_id, $this->associated_item_tax_name, true );
 
-				// Make sure the post_name is set
-				if ( empty( $r['post_name'] ) )
-					$r['post_name'] = sanitize_title( $r['post_title'] );
-
-				// Make sure the post_name is unique
-				$r['post_name'] = wp_unique_post_slug( $r['post_name'], $this->doc_id, $r['post_status'], $this->post_type_name, $doc->post_parent );
-
-				$this->doc_slug = $r['post_name'];
-
-				// Save pre-update post data, for comparison by callbacks.
-				$this->previous_revision = clone $doc;
-
-				if ( !wp_update_post( $r ) ) {
-					$result['message'] = __( 'There was an error when saving the doc.', 'bp-docs' );
-					$result['redirect'] = 'edit';
-				} else {
-					// Remove the edit lock
-					delete_post_meta( $this->doc_id, '_edit_lock' );
-					delete_post_meta( $this->doc_id, '_bp_docs_last_pinged' );
-
-					// When the post has been autosaved, we need to leave a
-					// special success message
-					if ( !empty( $_POST['is_auto'] ) && $_POST['is_auto'] ) {
-						$result['message'] = __( 'You idled a bit too long while in Edit mode. In order to allow others to edit the doc you were working on, your changes have been autosaved. Click the Edit button to return to Edit mode.', 'bp-docs' );
-					} else {
-						// A normal, successful save
-						$result['message'] = __( 'Doc successfully edited!', 'bp-docs' );
+				// Update taxonomies if necessary.
+				if ( ! empty( $args['taxonomies'] ) ) {
+					foreach ( $args['taxonomies'] as $tax_name => $terms ) {
+						wp_set_post_terms( $this->doc_id, $terms, $tax_name );
 					}
-					$result['redirect'] = 'single';
 				}
 
-				$post_id = $this->doc_id;
+				// Increment the revision count
+				$revision_count = get_post_meta( $this->doc_id, 'bp_docs_revision_count', true );
+				update_post_meta( $this->doc_id, 'bp_docs_revision_count', intval( $revision_count ) + 1 );
+
+				/**
+				 * Fires after the doc has been successfully saved.
+				 *
+				 * @since 2.0.0
+				 *
+				 * @param int   $id   The ID of the recently saved doc.
+				 * @param array $args The passed and filtered parameters for the doc
+				 *                    that was just saved.
+				 */
+				do_action( 'bp_docs_after_successful_save', $this->doc_id, $args );
+
+				// Set successful save message.
+				if ( $this->is_new_doc ) {
+					// New doc saved.
+					$result['message'] = __( 'Doc successfully created!', 'bp-docs' );
+				} elseif ( $args['is_auto'] ) {
+					// Doc update was an autosave.
+					$result['message'] = __( 'You idled a bit too long while in Edit mode. In order to allow others to edit the doc you were working on, your changes have been autosaved. Click the Edit button to return to Edit mode.', 'bp-docs' );
+				} else {
+					// Existing Doc updated.
+					$result['message'] = __( 'Doc successfully edited!', 'bp-docs' );
+				}
+				$result['redirect'] = 'single';
+
+				// Save settings. We append the notice message if necessary.
+				$access_setting_message = bp_docs_save_doc_access_settings( $this->doc_id, $args['author_id'], $args['settings'], $this->is_new_doc );
+				if ( $access_setting_message ) {
+					$result['message'] = $result['message'] . ' ' . $access_setting_message;
+				}
 			}
-		}
-
-		// If the Doc was successfully created, run some more stuff
-		if ( ! empty( $post_id ) ) {
-
-			// Add to a group, if necessary
-			if ( ! is_null( $associated_group_id ) ) {
-				bp_docs_set_associated_group_id( $post_id, $associated_group_id );
-			}
-
-			// Make sure the current user is added as one of the authors
-			wp_set_post_terms( $post_id, $this->user_term_id, $this->associated_item_tax_name, true );
-
-			// Save the last editor id. We'll use this to create an activity item
-			update_post_meta( $this->doc_id, 'bp_docs_last_editor', bp_loggedin_user_id() );
-
-			// Save settings
-			bp_docs_save_doc_access_settings( $this->doc_id );
-
-			// Increment the revision count
-			$revision_count = get_post_meta( $this->doc_id, 'bp_docs_revision_count', true );
-			update_post_meta( $this->doc_id, 'bp_docs_revision_count', intval( $revision_count ) + 1 );
 		}
 
 		// Provide a custom hook for plugins and optional components.
@@ -571,13 +604,22 @@ class BP_Docs_Query {
 		// the WP admin handles automatically)
 		do_action( 'bp_docs_doc_saved', $this );
 
-		do_action( 'bp_docs_after_save', $this->doc_id );
+		/**
+		 * Fires after the doc has been saved.
+		 *
+		 * @since 2.0.0
+		 *
+		 * @param int   $id   The ID of the recently saved doc.
+		 * @param array $args The passed and filtered parameters for the doc
+		 *                    that was just saved.
+		 */
+		do_action( 'bp_docs_after_save', $this->doc_id, $args );
 
 		$message_type = $result['redirect'] == 'single' ? 'success' : 'error';
 
 		// Stuff data into a cookie so it can be accessed on next page load
 		if ( 'error' === $message_type ) {
-			setcookie( 'bp-docs-submit-data', json_encode( $_POST ), time() + 30, '/' );
+			setcookie( 'bp-docs-submit-data', json_encode( $args ), time() + 30, '/' );
 		}
 
 		$redirect_base = trailingslashit( bp_get_root_domain() );
@@ -589,16 +631,17 @@ class BP_Docs_Query {
 
 		if ( $result['redirect'] == 'single' ) {
 			$redirect_url .= $this->doc_slug;
-		} else if ( $result['redirect'] == 'edit' ) {
+		} elseif ( $result['redirect'] == 'edit' ) {
 			$redirect_url .= $this->doc_slug . '/' . BP_DOCS_EDIT_SLUG;
-		} else if ( $result['redirect'] == 'create' ) {
+		} elseif ( $result['redirect'] == 'create' ) {
 			$redirect_url .= BP_DOCS_CREATE_SLUG;
 		}
 
 		$retval = array(
-			'message_type' => $message_type,
-			'message' => $result['message'],
-			'redirect_url' => $redirect_url,
+			'message_type' 	=> $message_type,
+			'message' 		=> $result['message'],
+			'redirect_url' 	=> $redirect_url,
+			'doc_id' 		=> $this->doc_id,
 		);
 
 		return $retval;

@@ -40,15 +40,6 @@ function bp_docs_post_comment_activity( $comment_id ) {
 	// Make sure that BP doesn't record this comment with its native functions
 	remove_action( 'comment_post', 'bp_blogs_record_comment', 10, 2 );
 
-	// Until better individual activity item privacy controls are available in BP,
-	// comments will only be shown in the activity stream if "Who can read comments on
-	// this doc?" is set to "Anyone", "Logged-in Users" or "Group members"
-	$doc_settings = bp_docs_get_doc_settings( $doc_id );
-
-	if ( ! empty( $doc_settings['read_comments'] ) && ! in_array( $doc_settings['read_comments'], array( 'anyone', 'loggedin', 'group-members' ) ) ) {
-		return false;
-	}
-
 	// See if we're associated with a group
 	$group_id = bp_is_active( 'groups' ) ? bp_docs_get_associated_group_id( $doc_id ) : 0;
 
@@ -75,7 +66,7 @@ function bp_docs_post_comment_activity( $comment_id ) {
 	$comment_url  = $doc_url . '#comment-' . $comment->comment_ID;
 	$comment_link = '<a href="' . $comment_url . '">' . $doc->post_title . '</a>';
 
-	$action = sprintf( __( '%1$s commented on the doc %2$s', 'bp-docs' ), $user_link, $comment_link );
+	$action = sprintf( __( '%1$s commented on the doc %2$s', 'buddypress-docs' ), $user_link, $comment_link );
 
 	$action	= apply_filters( 'bp_docs_comment_activity_action', $action, $user_link, $comment_link, $component, $item );
 
@@ -171,9 +162,9 @@ function bp_docs_post_activity( $query ) {
 	$doc_link	= '<a href="' . $doc_url . '">' . $doc->post_title . '</a>';
 
 	if ( $query->is_new_doc ) {
-		$action = sprintf( __( '%1$s created the doc %2$s', 'bp-docs' ), $user_link, $doc_link );
+		$action = sprintf( __( '%1$s created the doc %2$s', 'buddypress-docs' ), $user_link, $doc_link );
 	} else {
-		$action = sprintf( __( '%1$s edited the doc %2$s', 'bp-docs' ), $user_link, $doc_link );
+		$action = sprintf( __( '%1$s edited the doc %2$s', 'buddypress-docs' ), $user_link, $doc_link );
 	}
 
 	$action	= apply_filters( 'bp_docs_activity_action', $action, $user_link, $doc_link, $query->is_new_doc, $query );
@@ -259,21 +250,21 @@ function bp_docs_register_activity_actions() {
 	bp_activity_set_action(
 		'bp_docs',
 		'bp_doc_created',
-		__( 'Created a Doc', 'bp-docs' ),
+		__( 'Created a Doc', 'buddypress-docs' ),
 		'bp_docs_format_activity_action_bp_doc_created'
 	);
 
 	bp_activity_set_action(
 		'bp_docs',
 		'bp_doc_edited',
-		__( 'Edited a Doc', 'bp-docs' ),
+		__( 'Edited a Doc', 'buddypress-docs' ),
 		'bp_docs_format_activity_action_bp_doc_edited'
 	);
 
 	bp_activity_set_action(
 		'bp_docs',
 		'bp_doc_comment',
-		__( 'Commented on a Doc', 'bp-docs' ),
+		__( 'Commented on a Doc', 'buddypress-docs' ),
 		'bp_docs_format_activity_action_bp_doc_comment'
 	);
 }
@@ -303,7 +294,7 @@ function bp_docs_format_activity_action_bp_doc_created( $action, $activity ) {
 	$doc_url = bp_docs_get_doc_link( $activity->secondary_item_id );
 	$doc_link = sprintf( '<a href="%s">%s</a>', $doc_url, $doc->post_title );
 
-	$action = sprintf( __( '%1$s created the doc %2$s', 'bp-docs' ), $user_link, $doc_link );
+	$action = sprintf( __( '%1$s created the doc %2$s', 'buddypress-docs' ), $user_link, $doc_link );
 
 	return $action;
 }
@@ -332,7 +323,7 @@ function bp_docs_format_activity_action_bp_doc_edited( $action, $activity ) {
 	$doc_url = bp_docs_get_doc_link( $activity->secondary_item_id );
 	$doc_link = sprintf( '<a href="%s">%s</a>', $doc_url, $doc->post_title );
 
-	$action = sprintf( __( '%1$s edited the doc %2$s', 'bp-docs' ), $user_link, $doc_link );
+	$action = sprintf( __( '%1$s edited the doc %2$s', 'buddypress-docs' ), $user_link, $doc_link );
 
 	return $action;
 }
@@ -363,7 +354,7 @@ function bp_docs_format_activity_action_bp_doc_comment( $action, $activity ) {
 	$comment_url = $doc_url . '#comment-' . $comment->comment_ID;
 	$doc_link = sprintf( '<a href="%s">%s</a>', $comment_url, $doc->post_title );
 
-	$action = sprintf( __( '%1$s commented on the doc %2$s', 'bp-docs' ), $user_link, $doc_link );
+	$action = sprintf( __( '%1$s commented on the doc %2$s', 'buddypress-docs' ), $user_link, $doc_link );
 
 	return $action;
 }
@@ -424,9 +415,9 @@ add_filter( 'bp_activity_prefetch_object_data', 'bp_docs_prefetch_activity_objec
 function bp_docs_activity_filter_options() {
 	?>
 
-	<option value="bp_doc_created"><?php _e( 'New Docs', 'bp-docs' ); ?></option>
-	<option value="bp_doc_edited"><?php _e( 'Doc Edits', 'bp-docs' ); ?></option>
-	<option value="bp_doc_comment"><?php _e( 'Doc Comments', 'bp-docs' ); ?></option>
+	<option value="bp_doc_created"><?php _e( 'New Docs', 'buddypress-docs' ); ?></option>
+	<option value="bp_doc_edited"><?php _e( 'Doc Edits', 'buddypress-docs' ); ?></option>
+	<option value="bp_doc_comment"><?php _e( 'Doc Comments', 'buddypress-docs' ); ?></option>
 
 	<?php
 }
@@ -448,6 +439,148 @@ function bp_docs_load_activity_filter_options() {
 	}
 }
 add_action( 'bp_screens', 'bp_docs_load_activity_filter_options', 1 );
+
+/**
+ * Access protection in the activity feed.
+ * Users should not see activity related to docs to which they do not have access.
+ *
+ * @since 2.0
+ *
+ * @param $where_conditions
+ */
+function bp_docs_access_protection_for_activity_feed( $where_conditions ) {
+	$bp_docs_access_query  = bp_docs_access_query();
+	$protected_doc_ids     = $bp_docs_access_query->get_doc_ids();
+	$protected_comment_ids = $bp_docs_access_query->get_comment_ids();
+
+	// Docs and their commments are protected independently.
+	if ( ! $protected_doc_ids && ! $protected_comment_ids ) {
+		return $where_conditions;
+	}
+
+	/*
+	 * DeMorgan says: ! ( A & B ) == ( ! A || ! B )
+	 * For bp_doc_created and bp_doc_edited, the secondary_item_id is the doc_id.
+	 * For bp_doc_comment, the secondary_item_id is the comment ID.
+	 */
+	$activity_query = new BP_Activity_Query( array(
+		'relation' => 'AND',
+		array(
+			'relation' => 'OR',
+			array(
+				'column' => 'type',
+				'value' => array( 'bp_doc_created', 'bp_doc_edited' ),
+				'compare' => 'NOT IN',
+			),
+			array(
+				'column' => 'secondary_item_id',
+				'value' => $protected_doc_ids,
+				'compare' => 'NOT IN',
+			),
+		),
+		array(
+			'relation' => 'OR',
+			array(
+				'column' => 'type',
+				'value' => array( 'bp_doc_comment' ),
+				'compare' => 'NOT IN',
+			),
+			array(
+				'column' => 'secondary_item_id',
+				'value' => $protected_comment_ids,
+				'compare' => 'NOT IN',
+			),
+		),
+	) );
+	$aq_sql = $activity_query->get_sql();
+	if ( $aq_sql ) {
+		$where_conditions[] = $aq_sql;
+	}
+	return $where_conditions;
+}
+add_filter( 'bp_activity_get_where_conditions', 'bp_docs_access_protection_for_activity_feed' );
+
+/**
+ * Keep some activity items out of Group Email Subscription "all activity" emails.
+ * Users should not see activity related to docs to which they do not have access.
+ *
+ * @since 2.0
+ *
+ * @param bool $allow        Whether to send the email
+ * @param bool $activity_obj The BP_Activity_Activity object
+ * @param int  $user_id      The email recipient's user ID
+ *
+ * @return bool $send_it Whether to send the email
+ */
+function bp_docs_filter_bp_ass_send_activity_notification_for_user( $allow, $activity_obj, $user_id ) {
+	return bp_docs_allow_activity_item_visibility( $allow, $activity_obj, $user_id );
+}
+add_filter( 'bp_ass_send_activity_notification_for_user', 'bp_docs_filter_bp_ass_send_activity_notification_for_user', 10, 3 );
+
+/**
+ * Keep some activity items out of Group Email Subscription "digest" emails.
+ * Users should not see activity related to docs to which they do not have access.
+ *
+ * @since 2.0
+ *
+ * @param bool $allow       Whether to include this activity item.
+ * @param bool $activity_id ID of the activity item.
+ * @param int  $user_id     The email recipient's user ID
+ *
+ * @return bool $send_it Whether to send the email
+ */
+function bp_docs_filter_ass_digest_record_activity_allow( $allow, $activity_id, $user_id ) {
+	$activity_obj = new BP_Activity_Activity( $activity_id );
+	return bp_docs_allow_activity_item_visibility( $allow, $activity_obj, $user_id );
+}
+add_filter( 'ass_digest_record_activity_allow', 'bp_docs_filter_ass_digest_record_activity_allow', 10, 3 );
+
+/**
+ * Should this user be allowed to see this activity object?
+ * Users should not see activity related to docs to which they do not have access.
+ *
+ * @since 2.0
+ *
+ * @param bool $allow        Should the user be able to see this activity item?
+ * @param bool $activity_obj The BP_Activity_Activity object
+ * @param int  $user_id      The user ID
+ *
+ * @return bool $allow Whether to allow this activity item to be accessible.
+ */
+function bp_docs_allow_activity_item_visibility( $allow, $activity_obj, $user_id = 0 ) {
+	if ( ! $user_id ) {
+		$user_id = bp_loggedin_user_id();
+	}
+
+	switch ( $activity_obj->type ) {
+		case 'bp_doc_created':
+		case 'bp_doc_edited':
+			$bp_docs_access_query = BP_Docs_Access_Query::init( $user_id );
+			$protected_doc_ids    = $bp_docs_access_query->get_doc_ids();
+
+			// For bp_doc_created and bp_doc_edited, the secondary_item_id is the doc_id.
+			if ( in_array( $activity_obj->secondary_item_id, $protected_doc_ids ) ) {
+				$allow = false;
+			}
+			break;
+
+		case 'bp_doc_comment':
+			$bp_docs_access_query  = BP_Docs_Access_Query::init( $user_id );
+			$protected_comment_ids = $bp_docs_access_query->get_comment_ids();
+
+			// For bp_doc_comment, the secondary_item_id is the comment ID.
+			if ( in_array( $activity_obj->secondary_item_id, $protected_comment_ids ) ) {
+				$allow = false;
+			}
+			break;
+
+		default:
+			// Do nothing.
+			break;
+	}
+
+	return $allow;
+}
 
 /**
  * Modify the AJAX query string to enable filtering of activity stream.

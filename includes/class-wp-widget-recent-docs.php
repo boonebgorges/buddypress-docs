@@ -41,8 +41,8 @@ class BP_Docs_Widget_Recent_Docs extends WP_Widget {
 		$widget_ops = array(
 			// Use the class `widget_recent_entries` to inherit WP Recent Posts widget styling.
 			'classname' => 'widget_recent_entries widget_recent_bp_docs',
-			'description' => __( 'Displays the most recent BuddyPress Docs that the visitor can read. Shows only group-associated docs when used in a single groups sidebar.', 'bp-docs' ) );
-		parent::__construct( 'widget_recent_bp_docs', _x( '(BuddyPress Docs) Recent Docs', 'widget name', 'bp-docs' ), $widget_ops);
+			'description' => __( 'Displays the most recent BuddyPress Docs that the visitor can read. Shows only group-associated docs when used in a single groups sidebar.', 'buddypress-docs' ) );
+		parent::__construct( 'widget_recent_bp_docs', _x( '(BuddyPress Docs) Recent Docs', 'widget name', 'buddypress-docs' ), $widget_ops);
 		$this->alt_option_name = 'widget_recent_bp_docs';
 	}
 
@@ -67,7 +67,7 @@ class BP_Docs_Widget_Recent_Docs extends WP_Widget {
 			$args['widget_id'] = $this->id;
 		}
 
-		$title = ( ! empty( $instance['title'] ) ) ? $instance['title'] : __( 'Recent BuddyPress Docs', 'bp-docs' );
+		$title = ( ! empty( $instance['title'] ) ) ? $instance['title'] : __( 'Recent BuddyPress Docs', 'buddypress-docs' );
 
 		/* This filter is documented in wp-includes/widgets/class-wp-widget-pages.php */
 		$title = apply_filters( 'widget_title', $title, $instance, $this->id_base );
@@ -148,14 +148,14 @@ class BP_Docs_Widget_Recent_Docs extends WP_Widget {
 		$number    = isset( $instance['number'] ) ? absint( $instance['number'] ) : 5;
 		$show_date = isset( $instance['show_date'] ) ? (bool) $instance['show_date'] : false;
 		?>
-		<p><label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:', 'bp-docs' ); ?></label>
+		<p><label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:', 'buddypress-docs' ); ?></label>
 		<input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo $title; ?>" /></p>
 
-		<p><label for="<?php echo $this->get_field_id( 'number' ); ?>"><?php _e( 'Number of docs to show:', 'bp-docs' ); ?></label>
+		<p><label for="<?php echo $this->get_field_id( 'number' ); ?>"><?php _e( 'Number of docs to show:', 'buddypress-docs' ); ?></label>
 		<input class="tiny-text" id="<?php echo $this->get_field_id( 'number' ); ?>" name="<?php echo $this->get_field_name( 'number' ); ?>" type="number" step="1" min="1" value="<?php echo $number; ?>" size="3" /></p>
 
 		<p><input class="checkbox" type="checkbox"<?php checked( $show_date ); ?> id="<?php echo $this->get_field_id( 'show_date' ); ?>" name="<?php echo $this->get_field_name( 'show_date' ); ?>" />
-		<label for="<?php echo $this->get_field_id( 'show_date' ); ?>"><?php _e( 'Display post date?', 'bp-docs' ); ?></label></p>
+		<label for="<?php echo $this->get_field_id( 'show_date' ); ?>"><?php _e( 'Display post date?', 'buddypress-docs' ); ?></label></p>
 		<?php
 	}
 }

@@ -29,9 +29,16 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 1. Install
 1. Activate
-1. Sit back and watch the jack roll in
+1. Sit back and watch the jack roll in.
 
 == Changelog ==
+
+= 2.0.0 =
+* Began using the WordPress.org translation service. This will require action by some users:
+*    If you use a custom translation, it must be renamed and moved to this location: wp-content/languages/plugins/buddypress-docs-LOCALE.mo. E.g., wp-content/languages/plugins/buddypress-docs-es_ES.mo
+*    If you use custom template parts, all text domain identifiers must be updated to 'buddypress-docs'.
+* Improved privacy of comments on limited access Docs.
+* Improved success messaging when saving admin settings.
 
 = 1.9.4 =
 * Fixed bug that caused post global variables to be improperly set after use of the widget, which interfered with template generation in certain cases.

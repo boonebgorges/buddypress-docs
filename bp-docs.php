@@ -8,6 +8,8 @@
 class BP_Docs {
 	var $post_type_name;
 	var $associated_item_tax_name;
+	var $access_tax_name;
+	var $comment_access_tax_name;
 
 	/**
 	 * Folders add-on.
@@ -28,6 +30,7 @@ class BP_Docs {
 		$this->post_type_name 		= apply_filters( 'bp_docs_post_type_name', 'bp_doc' );
 		$this->associated_item_tax_name = apply_filters( 'bp_docs_associated_item_tax_name', 'bp_docs_associated_item' );
 		$this->access_tax_name          = apply_filters( 'bp_docs_access_tax_name', 'bp_docs_access' );
+		$this->comment_access_tax_name  = apply_filters( 'bp_docs_comment_access_tax_name', 'bp_docs_comment_access' );
 
 		// :'(
 		wp_cache_add_non_persistent_groups( array( 'bp_docs_nonpersistent' ) );
@@ -79,12 +82,23 @@ class BP_Docs {
 	}
 
 	/**
-	 * Loads the textdomain for the plugin
+	 * Loads the textdomain for the plugin.
+	 * Language files are used in this order of preference:
+	 *    - WP_LANG_DIR/plugins/buddypress-docs-LOCALE.mo
+	 *    - WP_PLUGIN_DIR/buddypress-docs/languages/buddypress-docs-LOCALE.mo
 	 *
 	 * @since 1.0.2
 	 */
 	function load_plugin_textdomain() {
-		load_plugin_textdomain( 'bp-docs', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+		/*
+		 * As of WP 4.6, WP has, by this point in the load order, already
+		 * automatically added language files in this location:
+		 * wp-content/languages/plugins/buddypress-docs-es_ES.mo
+		 * load_plugin_textdomain() also looks for language files in that location,
+		 * then it falls back to translations in the plugin's /languages folder, like
+		 * wp-content/buddypress-docs/languages/buddypress-docs-es_ES.mo
+		 */
+		load_plugin_textdomain( 'buddypress-docs', false, plugin_basename( dirname( __FILE__ ) ) . '/languages' );
 	}
 
 	/**
@@ -274,23 +288,23 @@ class BP_Docs {
 
 		// Define the labels to be used by the post type bp_doc
 		$post_type_labels = array(
-			'name' 		     => _x( 'Docs', 'post type general name', 'bp-docs' ),
-			'singular_name'      => _x( 'Doc', 'post type singular name', 'bp-docs' ),
-			'add_new' 	     => _x( 'Add New', 'add new', 'bp-docs' ),
-			'add_new_item' 	     => __( 'Add New Doc', 'bp-docs' ),
-			'edit_item' 	     => __( 'Edit Doc', 'bp-docs' ),
-			'new_item' 	     => __( 'New Doc', 'bp-docs' ),
-			'view_item' 	     => __( 'View Doc', 'bp-docs' ),
-			'search_items' 	     => __( 'Search Docs', 'bp-docs' ),
-			'not_found' 	     =>  __( 'No Docs found', 'bp-docs' ),
-			'not_found_in_trash' => __( 'No Docs found in Trash', 'bp-docs' ),
+			'name' 		     => _x( 'Docs', 'post type general name', 'buddypress-docs' ),
+			'singular_name'      => _x( 'Doc', 'post type singular name', 'buddypress-docs' ),
+			'add_new' 	     => _x( 'Add New', 'add new', 'buddypress-docs' ),
+			'add_new_item' 	     => __( 'Add New Doc', 'buddypress-docs' ),
+			'edit_item' 	     => __( 'Edit Doc', 'buddypress-docs' ),
+			'new_item' 	     => __( 'New Doc', 'buddypress-docs' ),
+			'view_item' 	     => __( 'View Doc', 'buddypress-docs' ),
+			'search_items' 	     => __( 'Search Docs', 'buddypress-docs' ),
+			'not_found' 	     =>  __( 'No Docs found', 'buddypress-docs' ),
+			'not_found_in_trash' => __( 'No Docs found in Trash', 'buddypress-docs' ),
 			'parent_item_colon'  => ''
 		);
 
 		// Set up the arguments to be used when the post type is registered
 		// Only filter this if you are hella smart and/or know what you're doing
 		$bp_docs_post_type_args = apply_filters( 'bp_docs_post_type_args', array(
-			'label'        => __( 'Docs', 'bp-docs' ),
+			'label'        => __( 'Docs', 'buddypress-docs' ),
 			'labels'       => $post_type_labels,
 			'public'       => true,
 			'show_ui'      => $this->show_cpt_ui(),
@@ -309,8 +323,8 @@ class BP_Docs {
 
 		// Define the labels to be used by the taxonomy bp_docs_associated_item
 		$associated_item_labels = array(
-			'name'          => __( 'Associated Items', 'bp-docs' ),
-			'singular_name' => __( 'Associated Item', 'bp-docs' )
+			'name'          => __( 'Associated Items', 'buddypress-docs' ),
+			'singular_name' => __( 'Associated Item', 'buddypress-docs' )
 		);
 
 		// Register the bp_docs_associated_item taxonomy
@@ -324,6 +338,13 @@ class BP_Docs {
 
 		// Register the bp_docs_access taxonomy
 		register_taxonomy( $this->access_tax_name, array( $this->post_type_name ), array(
+			'hierarchical' => false,
+			'show_ui'      => false,
+			'query_var'    => false,
+		) );
+
+		// Register the bp_docs_comment_access taxonomy.
+		register_taxonomy( $this->comment_access_tax_name, array( $this->post_type_name ), array(
 			'hierarchical' => false,
 			'show_ui'      => false,
 			'query_var'    => false,

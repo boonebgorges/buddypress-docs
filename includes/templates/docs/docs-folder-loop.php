@@ -80,12 +80,12 @@
 				</td>
 			<?php endif ?>
 			<td class="folder-meta-info-statement" colspan=10>
-				<?php printf( __( 'Viewing %1$s-%2$s of %3$s docs in this folder.', 'bp-docs' ), bp_docs_get_current_docs_start(), bp_docs_get_current_docs_end(), bp_docs_get_total_docs_num() ) ?> <br/>
-				<a href="<?php echo esc_url( bp_docs_get_folder_url( $_GET['folder'] ) ); ?>"><?php printf( __( 'View all docs in <strong>%s</strong>.', 'bp-docs' ), get_the_title( $_GET['folder'] ) ); ?></a>
+				<?php printf( __( 'Viewing %1$s-%2$s of %3$s docs in this folder.', 'buddypress-docs' ), bp_docs_get_current_docs_start(), bp_docs_get_current_docs_end(), bp_docs_get_total_docs_num() ) ?> <br/>
+				<a href="<?php echo esc_url( bp_docs_get_folder_url( $_GET['folder'] ) ); ?>"><?php printf( __( 'View all docs in <strong>%s</strong>.', 'buddypress-docs' ), get_the_title( $_GET['folder'] ) ); ?></a>
 			</td>
 		</tr>
 <?php else: ?>
-	<tr><td><p class="no-docs"><?php _e( 'There are no docs for this view.', 'bp-docs' ); ?></p></td></tr>
+	<tr><td><p class="no-docs"><?php _e( 'There are no docs for this view.', 'buddypress-docs' ); ?></p></td></tr>
 <?php endif; ?>
 </tbody>
 </table>

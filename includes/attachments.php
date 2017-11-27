@@ -69,14 +69,14 @@ class BP_Docs_Attachments {
 			}
 
 			if ( ! $this->filename_is_safe( $fn ) ) {
-				wp_die( __( 'File not found.', 'bp-docs' ) );
+				wp_die( __( 'File not found.', 'buddypress-docs' ) );
 			}
 
 			$uploads = wp_upload_dir();
 			$filepath = $uploads['path'] . DIRECTORY_SEPARATOR . $fn;
 
 			if ( ! file_exists( $filepath ) ) {
-				wp_die( __( 'File not found.', 'bp-docs' ) );
+				wp_die( __( 'File not found.', 'buddypress-docs' ) );
 			}
 
 			error_reporting( 0 );
@@ -341,9 +341,9 @@ class BP_Docs_Attachments {
 		check_admin_referer( 'bp_docs_delete_attachment_' . $attachment_id );
 
 		if ( wp_delete_attachment( $attachment_id ) ) {
-			bp_core_add_message( __( 'Attachment deleted', 'bp-docs' ) );
+			bp_core_add_message( __( 'Attachment deleted', 'buddypress-docs' ) );
 		} else {
-			bp_core_add_message( __( 'Could not delete attachment', 'bp-docs' ), 'error' );
+			bp_core_add_message( __( 'Could not delete attachment', 'buddypress-docs' ), 'error' );
 		}
 
 		wp_redirect( wp_get_referer() );
@@ -390,8 +390,8 @@ class BP_Docs_Attachments {
 			wp_enqueue_script( 'bp-docs-attachments', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/attachments.js' ), array( 'media-editor', 'media-views', 'bp-docs-js' ), false, true );
 
 			wp_localize_script( 'bp-docs-attachments', 'bp_docs_attachments', array(
-				'upload_title'  => __( 'Upload File', 'bp-docs' ),
-				'upload_button' => __( 'OK', 'bp-docs' ),
+				'upload_title'  => __( 'Upload File', 'buddypress-docs' ),
+				'upload_button' => __( 'OK', 'buddypress-docs' ),
 			) );
 		}
 	}
@@ -571,7 +571,7 @@ class BP_Docs_Attachments {
 	public static function filter_type( $types ) {
 		$types[] = array(
 			'slug' => 'attachments',
-			'title' => __( 'Attachments', 'bp-docs' ),
+			'title' => __( 'Attachments', 'buddypress-docs' ),
 			'query_arg' => 'has-attachment',
 		);
 		return $types;
@@ -587,13 +587,13 @@ class BP_Docs_Attachments {
 
 		<div id="docs-filter-section-attachments" class="docs-filter-section<?php if ( $has_attachment ) : ?> docs-filter-section-open<?php endif ?>">
 			<form method="get" action="<?php echo $form_action ?>">
-				<label for="has-attachment"><?php _e( 'Has attachment?', 'bp-docs' ) ?></label>
+				<label for="has-attachment"><?php _e( 'Has attachment?', 'buddypress-docs' ) ?></label>
 				<select id="has-attachment" name="has-attachment">
-					<option value="yes"<?php selected( $has_attachment, 'yes' ) ?>><?php _e( 'Yes', 'bp-docs' ) ?></option>
-					<option value="no"<?php selected( $has_attachment, 'no' ) ?>><?php _e( 'No', 'bp-docs' ) ?></option>
-					<option value=""<?php selected( $has_attachment, '' ) ?>><?php _e( 'Doesn&#8217;t matter', 'bp-docs' ) ?></option>
+					<option value="yes"<?php selected( $has_attachment, 'yes' ) ?>><?php _e( 'Yes', 'buddypress-docs' ) ?></option>
+					<option value="no"<?php selected( $has_attachment, 'no' ) ?>><?php _e( 'No', 'buddypress-docs' ) ?></option>
+					<option value=""<?php selected( $has_attachment, '' ) ?>><?php _e( 'Doesn&#8217;t matter', 'buddypress-docs' ) ?></option>
 				</select>
-				<input type="submit" value="<?php _e( 'Filter', 'bp-docs' ) ?>" />
+				<input type="submit" value="<?php _e( 'Filter', 'buddypress-docs' ) ?>" />
 				<?php do_action( 'bp_docs_directory_filter_attachments_form' ) ?>
 			</form>
 		</div>
@@ -747,7 +747,7 @@ class BP_Docs_Attachments {
 		if ( $is_nginx ) {
 			$help_url = 'https://github.com/boonebgorges/buddypress-docs/wiki/Attachment-Privacy#nginx';
 
-			$help_p  = __( 'It looks like you are running <strong>nginx</strong>. We recommend the following setting in your site configuration file:', 'bp-docs' );
+			$help_p  = __( 'It looks like you are running <strong>nginx</strong>. We recommend the following setting in your site configuration file:', 'buddypress-docs' );
 			$help_p .= '<pre><code>location ' . $att_url . ' {
     rewrite ^.*' . str_replace( '/wp-content/', '', $att_url ) . '([0-9]+)/(.*) /?p=$1&bp-attachment=$2 permanent;
 }
@@ -757,7 +757,7 @@ class BP_Docs_Attachments {
 		if ( $is_iis7 ) {
 			$help_url = 'https://github.com/boonebgorges/buddypress-docs/wiki/Attachment-Privacy#iis7';
 
-			$help_p  = __( 'It looks like you are running <strong>IIS 7</strong>. We recommend the following setting in your Web.config file:', 'bp-docs' );
+			$help_p  = __( 'It looks like you are running <strong>IIS 7</strong>. We recommend the following setting in your Web.config file:', 'buddypress-docs' );
 			$help_p .= '<pre><code>&lt;rule name="buddypress-docs-attachments">
     &lt;match url="^' . $att_url . '([0-9]+)/(.*)$"/>
         &lt;conditions>
@@ -769,23 +769,23 @@ class BP_Docs_Attachments {
 
 		if ( $is_apache ) {
 			$help_url = 'https://github.com/boonebgorges/buddypress-docs/wiki/Attachment-Privacy#apache';
-			$help_p = __( 'It looks like you are running <strong>Apache</strong>. The most likely cause of your problem is that the <code>AllowOverride</code> directive has been disabled, either globally (<code>httpd.conf</code>) or in a <code>VirtualHost</code> definition. Contact your host for assistance.', 'bp-docs' );
+			$help_p = __( 'It looks like you are running <strong>Apache</strong>. The most likely cause of your problem is that the <code>AllowOverride</code> directive has been disabled, either globally (<code>httpd.conf</code>) or in a <code>VirtualHost</code> definition. Contact your host for assistance.', 'buddypress-docs' );
 		}
 
 		?>
 
 		<div class="message error">
-			<p><?php _e( '<strong>Your BuddyPress Docs attachments directory is publicly accessible.</strong> Doc attachments will not be properly protected from direct viewing, even if the parent Docs are non-public.', 'bp-docs' ) ?></p>
+			<p><?php _e( '<strong>Your BuddyPress Docs attachments directory is publicly accessible.</strong> Doc attachments will not be properly protected from direct viewing, even if the parent Docs are non-public.', 'buddypress-docs' ) ?></p>
 
 			<?php if ( $help_p ) : ?>
 				<p><?php echo $help_p ?></p>
 			<?php endif ?>
 
 			<?php if ( $help_url ) : ?>
-				<p><?php printf( __( 'See <a href="%s">this wiki page</a> for more information.', 'bp-docs' ), $help_url ) ?></p>
+				<p><?php printf( __( 'See <a href="%s">this wiki page</a> for more information.', 'buddypress-docs' ), $help_url ) ?></p>
 			<?php endif ?>
 
-			<p><a href="<?php echo $dismiss_url ?>"><?php _e( 'Dismiss this message', 'bp-docs' ) ?></a></p>
+			<p><a href="<?php echo $dismiss_url ?>"><?php _e( 'Dismiss this message', 'buddypress-docs' ) ?></a></p>
 		</div>
 		<?php
 	}

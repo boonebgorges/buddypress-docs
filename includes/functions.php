@@ -40,6 +40,15 @@ function bp_docs_get_access_tax_name() {
 }
 
 /**
+ * Return the comment access taxonomy name
+ *
+ * @since 2.0
+ */
+function bp_docs_get_comment_access_tax_name() {
+	return buddypress()->bp_docs->comment_access_tax_name;
+}
+
+/**
  * Utility function to get and cache the current doc
  *
  * @since 1.0-beta
@@ -147,7 +156,7 @@ function bp_docs_get_item_term_id( $item_id, $item_type, $item_name = '' ) {
 		}
 
 		$item_term_args = apply_filters( 'bp_docs_item_term_values', array(
-			'description' => sprintf( _x( 'Docs associated with the %1$s %2$s', 'Description for the associated-item taxonomy term. Of the form "Docs associated with the [item-type] [item-name]" - item-type is group, user, etc', 'bp-docs' ), $item_type, $item_name ),
+			'description' => sprintf( _x( 'Docs associated with the %1$s %2$s', 'Description for the associated-item taxonomy term. Of the form "Docs associated with the [item-type] [item-name]" - item-type is group, user, etc', 'buddypress-docs' ), $item_type, $item_name ),
 			'slug'        => $item_term_slug,
 		) );
 
@@ -536,12 +545,12 @@ function bp_docs_get_access_options( $settings_field, $doc_id = 0, $group_id = 0
 	$options = array(
 		20 => array(
 			'name'  => 'loggedin',
-			'label' => __( 'Logged-in Users', 'bp-docs' ),
+			'label' => __( 'Logged-in Users', 'buddypress-docs' ),
 			'default' => 1 // default to 'loggedin' for most options. See below for override
 		),
 		90 => array(
 			'name'  => 'creator',
-			'label' => __( 'The Doc author only', 'bp-docs' )
+			'label' => __( 'The Doc author only', 'buddypress-docs' )
 		),
 	);
 
@@ -557,7 +566,7 @@ function bp_docs_get_access_options( $settings_field, $doc_id = 0, $group_id = 0
 	if ( in_array( $settings_field, array( 'read', 'read_comments', 'post_comments', 'view_history' ) ) ) {
 		$options[10] = array(
 			'name'  => 'anyone',
-			'label' => __( 'Anyone', 'bp-docs' ),
+			'label' => __( 'Anyone', 'buddypress-docs' ),
 			'default' => 1
 		);
 
@@ -609,29 +618,47 @@ function bp_docs_get_default_access_options( $doc_id = 0, $group_id = 0 ) {
  * Saves the settings associated with a given Doc
  *
  * @since 1.6.1
- * @param int $doc_id The numeric ID of the doc
- * @return null
+ * @param int   $doc_id     The numeric ID of the doc
+ * @param int   $author_id  The numeric ID of the author
+ * @param array $settings   The settings array as passed to the save() method.
+ * @param bool  $is_new_doc Is a doc being created or edited? Default: false.
+ * @return string Notice of access setting modification
  */
-function bp_docs_save_doc_access_settings( $doc_id ) {
-	// Two cases:
-	// 1. User is saving a doc for which he can update the access settings
-	if ( isset( $_POST['settings'] ) ) {
-		$settings = ! empty( $_POST['settings'] ) ? $_POST['settings'] : array();
-		$verified_settings = bp_docs_verify_settings( $settings, $doc_id, bp_loggedin_user_id() );
+function bp_docs_save_doc_access_settings( $doc_id, $author_id, $settings, $is_new_doc = false ) {
+	if ( empty( $author_id ) ) {
+		$author_id = bp_loggedin_user_id();
+	}
+	$message = '';
+
+	/*
+	 * Two cases:
+	 * 1. User is saving a doc for which he can update the access settings
+	 *    OR the doc is new and should inherit default settings if none are supplied.
+	 */
+	if ( ! empty( $settings ) || $is_new_doc ) {
+		$verified_settings = bp_docs_verify_settings( $settings, $doc_id, $author_id );
 
 		$new_settings = array();
 		foreach ( $verified_settings as $verified_setting_name => $verified_setting ) {
 			$new_settings[ $verified_setting_name ] = $verified_setting['verified_value'];
 			if ( $verified_setting['verified_value'] != $verified_setting['original_value'] ) {
-				$result['message'] = __( 'Your Doc was successfully saved, but some of your access settings have been changed to match the Doc\'s permissions.', 'bp-docs' );
+				$message = __( 'Your Doc was successfully saved, but some of your access settings have been changed to match the Doc\'s permissions.', 'buddypress-docs' );
 			}
 		}
+
 		update_post_meta( $doc_id, 'bp_docs_settings', $new_settings );
 
 		// The 'read' setting must also be saved to a taxonomy, for
 		// easier directory queries
 		$read_setting = isset( $new_settings['read'] ) ? $new_settings['read'] : 'anyone';
 		bp_docs_update_doc_access( $doc_id, $read_setting );
+
+		/*
+		 * The 'read_comments' setting must also be saved to a taxonomy,
+		 * to protect non-public comments.
+		 */
+		$read_comments_setting = isset( $new_settings['read_comments'] ) ? $new_settings['read_comments'] : 'anyone';
+		bp_docs_update_doc_comment_access( $doc_id, $read_comments_setting );
 
 	// 2. User is saving a doc for which he can't manage the access settings
 	// isset( $_POST['settings'] ) is false; the access settings section
@@ -640,6 +667,8 @@ function bp_docs_save_doc_access_settings( $doc_id ) {
 		// Do nothing.
 		// Leave the access settings intact.
 	}
+
+	return $message;
 }
 
 /**
@@ -676,6 +705,14 @@ function bp_docs_remove_group_related_doc_access_settings( $doc_id ) {
 	// easier directory queries. Update if modified.
 	if ( $settings['read'] != $new_settings['read'] ) {
 		bp_docs_update_doc_access( $doc_id, $new_settings['read'] );
+	}
+
+	/*
+	 * The 'read_comments' setting must also be saved to a taxonomy,
+	 * to protect non-public comments. Update if modified.
+	 */
+	if ( $settings['read_comments'] != $new_settings['read_comments'] ) {
+		bp_docs_update_doc_comment_access( $doc_id, $new_settings['read_comments'] );
 	}
 }
 
@@ -722,6 +759,8 @@ function bp_docs_verify_settings( $settings, $doc_id, $user_id = 0 ) {
 
 	return $verified_settings;
 }
+
+/* Doc "read" access taxonomy terms. ******************************************/
 
 /**
  * Get the access term for 'anyone'
@@ -820,11 +859,121 @@ function bp_docs_update_doc_access( $doc_id, $access_setting = 'anyone' ) {
 
 }
 
+/* Doc "read comments" access taxonomy terms. *********************************/
+
+/**
+ * Get the comment access term for 'anyone'.
+ *
+ * @since 2.0
+ * @return string The term slug
+ */
+function bp_docs_get_comment_access_term_anyone() {
+	return apply_filters( 'bp_docs_get_comment_access_term_anyone', 'bp_docs_comment_access_anyone' );
+}
+
+/**
+ * Get the comment access term for 'loggedin'.
+ *
+ * @since 2.0
+ * @return string The term slug
+ */
+function bp_docs_get_comment_access_term_loggedin() {
+	return apply_filters( 'bp_docs_get_comment_access_term_loggedin', 'bp_docs_comment_access_loggedin' );
+}
+
+/**
+ * Get the comment access term for a user id.
+ *
+ * @since 2.0
+ * @param int|bool $user_id Defaults to logged in user
+ * @return string The term slug
+ */
+function bp_docs_get_comment_access_term_user( $user_id = false ) {
+	if ( false === $user_id ) {
+		$user_id = bp_loggedin_user_id();
+	}
+
+	return apply_filters( 'bp_docs_get_comment_access_term_user', 'bp_docs_comment_access_user_' . intval( $user_id ) );
+}
+
+/**
+ * Get the comment access term corresponding to group-members for a given group.
+ *
+ * @since 2.0
+ * @param int $group_id
+ * @return string The term slug
+ */
+function bp_docs_get_comment_access_term_group_member( $user_id = false ) {
+	return apply_filters( 'bp_docs_get_comment_access_term_group_member', 'bp_docs_comment_access_group_member_' . intval( $user_id ) );
+}
+
+/**
+ * Get the comment access term corresponding to admins-mods for a given group.
+ *
+ * @since 2.0
+ * @param int $group_id
+ * @return string The term slug
+ */
+function bp_docs_get_comment_access_term_group_adminmod( $user_id = false ) {
+	return apply_filters( 'bp_docs_get_comment_access_term_group_adminmod', 'bp_docs_comment_access_group_adminmod_' . intval( $user_id ) );
+}
+
+/**
+ * Update the comment access term for a doc.
+ *
+ * @since 2.0
+ * @param int $group_id
+ * @return string The term slug
+ */
+function bp_docs_update_doc_comment_access( $doc_id, $access_setting = 'anyone' ) {
+
+	$doc = get_post( $doc_id );
+
+	if ( ! $doc || is_wp_error( $doc ) ) {
+		return false;
+	}
+
+	// Convert the access setting to a WP taxonomy term
+	switch ( $access_setting ) {
+		case 'anyone' :
+			$access_term = bp_docs_get_comment_access_term_anyone();
+			break;
+
+		case 'loggedin' :
+			$access_term = bp_docs_get_comment_access_term_loggedin();
+			break;
+
+		case 'group-members' :
+		case 'admins-mods' :
+			$associated_group = bp_docs_get_associated_group_id( $doc_id );
+			$access_term = 'group-members' == $access_setting ? bp_docs_get_comment_access_term_group_member( $associated_group ) : bp_docs_get_comment_access_term_group_adminmod( $associated_group );
+			break;
+
+		case 'creator' :
+		case 'no-one' :
+			// @todo Don't know how these are different
+			$access_term = bp_docs_get_comment_access_term_user( $doc->post_author );
+			break;
+	}
+
+	if ( isset( $access_term ) ) {
+		$retval = wp_set_post_terms( $doc_id, $access_term, bp_docs_get_comment_access_tax_name() );
+	}
+
+	if ( empty( $retval ) || is_wp_error( $retval ) ) {
+		return false;
+	} else {
+		return true;
+	}
+
+}
+
 /**
  * Should 'hide_sitewide' be true for activity items associated with this Doc?
  *
  * We generalize: mark the activity items as 'hide_sitewide' whenever the
  * 'read' setting is something other than 'anyone'.
+ * @TODO: Retire this in favor of activity item protection.
  *
  * Note that this gets overridden by the filter in integration-groups.php in
  * the case of group-associated Docs.
@@ -838,7 +987,7 @@ function bp_docs_hide_sitewide_for_doc( $doc_id ) {
 		return false;
 	}
 
-	$settings = get_post_meta( $doc_id, 'bp_docs_settings', true );
+	$settings = bp_docs_get_doc_settings( $doc_id );
 	$hide_sitewide = empty( $settings['read'] ) || 'anyone' != $settings['read'];
 
 	return apply_filters( 'bp_docs_hide_sitewide_for_doc', $hide_sitewide, $doc_id );
@@ -911,3 +1060,90 @@ function bp_docs_filter_active_components_unhook() {
 	remove_filter( 'bp_active_components', 'bp_docs_filter_active_components' );
 }
 add_action( 'bp_member_plugin_options_nav', 'bp_docs_filter_active_components_unhook' );
+
+/**
+ * Calculate the title of the main docs directory.
+ *
+ * @since 2.0
+ *
+ * @return string The title to be displayed in the page header.
+ */
+function bp_docs_get_docs_directory_title() {
+	$title = get_option( 'bp-docs-directory-title' );
+	if ( empty( $title ) ) {
+		$title = __( 'Docs Directory', 'buddypress-docs' );
+	}
+	return apply_filters( 'bp_docs_directory_title', esc_html( $title ) );
+}
+
+/**
+ * Wrapper to the BP_Docs_Query->save() method for docs saved via the
+ * create/edit screens. Creates an args array from $_POST in the format that
+ * BP_Docs_Query->save() expects.
+ *
+ * @since 1.9
+ *
+ * @return array created in BP_Docs_Query->save() {
+ *		  @type string $message_type Type of message, success or error.
+ *		  @type string $message Text of message to display to user.
+ *		  @type string $redirect_url URL to use for redirect after save.
+ *		  @type int    $doc_id ID of the updated doc, if applicable.
+ *        }
+ */
+function bp_docs_save_doc_via_post() {
+	// Defaults for the array of args that the save() method is expecting:
+	$args = array(
+		'doc_id'       => 0,
+		'title'        => '',
+		'content'      => '',
+		'permalink'    => '',
+		'author_id'    => 0,
+		'group_id'     => null, // Value of null does nothing; 0 will unset existing group association.
+		'is_auto'      => 0,
+		'taxonomies'   => array(),
+		'settings'     => array(),
+		'parent_id'    => 0,
+		'save_context' => 'post_data'
+		);
+
+	if ( isset( $_POST['doc_id'] ) && 0 != $_POST['doc_id'] ) {
+		$args['doc_id'] = (int) $_POST['doc_id'];
+	}
+
+	if ( isset( $_POST['doc']['title'] ) ) {
+		$args['title'] = $_POST['doc']['title'];
+	}
+
+	// Using WP editor necessitated the change to $_POST['doc_content'].
+	// Maintain backward compatibility by checking $_POST['doc']['content'] too.
+	if ( isset( $_POST['doc_content'] ) ) {
+		$args['content'] = sanitize_post_field( 'post_content', $_POST['doc_content'], 0, 'db' );
+	} elseif ( isset( $_POST['doc']['content'] ) ) {
+		$args['content'] = sanitize_post_field( 'post_content', $_POST['doc']['content'], 0, 'db' );
+	}
+
+	$args['permalink'] = isset( $_POST['doc']['permalink'] ) ? sanitize_title( $_POST['doc']['permalink'] ) : sanitize_title( $args['title'] );
+
+	$args['author_id'] = bp_loggedin_user_id();
+
+	if ( isset( $_POST['associated_group_id'] ) ) {
+		$args['group_id'] = absint( $_POST['associated_group_id'] );
+	}
+
+	if ( ! empty( $_POST['is_auto'] ) ) {
+		$args['is_auto'] = $_POST['is_auto'];
+	}
+
+	// Calculate terms only if taxonomy addon is active.
+	$args['taxonomies'] = apply_filters( 'bp_docs_prepare_terms_via_post', $args['taxonomies'] );
+
+	if ( ! empty( $_POST['settings'] ) ) {
+		$args['settings'] = $_POST['settings'];
+	}
+
+	// Calculate parent_id only if hierarchy addon is active.
+	$args['parent_id'] = apply_filters( 'bp_docs_get_parent_id_via_post', $args['parent_id'] );
+
+	$instance = new BP_Docs_Query;
+	return $instance->save( $args );
+}

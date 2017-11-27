@@ -137,11 +137,23 @@ function bp_docs_has_docs( $args = array() ) {
 			$doc_ids = wp_list_pluck( $bp->bp_docs->doc_query->posts, 'ID' );
 			$att_hash = array_fill_keys( $doc_ids, array() );
 			if ( $doc_ids ) {
-				$attachments = get_posts( array(
+				/**
+				 * Filter the arguments passed to get_posts() when populating
+				 * the attachment cache.
+				 *
+				 * @since 2.0.0
+				 *
+				 * @param array $doc_ids An array of the doc IDs shown on the
+				 *                       current page of the loop.
+				 */
+				$attachment_args = apply_filters( 'bp_docs_update_attachment_cache_args', array(
 					'post_type' => 'attachment',
 					'post_parent__in' => $doc_ids,
 					'update_post_term_cache' => false,
-				) );
+					'posts_per_page' => -1,
+				), $doc_ids );
+
+				$attachments = get_posts( $attachment_args );
 
 				foreach ( $attachments as $a ) {
 					$att_hash[ $a->post_parent ][] = $a;
@@ -238,7 +250,7 @@ function bp_docs_info_header() {
 
 		// Set the message based on the current filters
 		if ( empty( $filters ) ) {
-			$message = __( 'You are viewing <strong>all</strong> docs.', 'bp-docs' );
+			$message = __( 'You are viewing <strong>all</strong> docs.', 'buddypress-docs' );
 		} else {
 			$message = array();
 
@@ -252,7 +264,7 @@ function bp_docs_info_header() {
 			$filter_args = wp_list_pluck( $filter_args, 'query_arg' );
 			$filter_args = array_merge( $filter_args, array( 'search_submit', 'folder' ) );
 
-			$message .= ' - ' . sprintf( __( '<strong><a href="%s" title="View All Docs">View All Docs</a></strong>', 'bp-docs' ), remove_query_arg( $filter_args ) );
+			$message .= ' - ' . sprintf( __( '<strong><a href="%s" title="View All Docs">View All Docs</a></strong>', 'buddypress-docs' ), remove_query_arg( $filter_args ) );
 		}
 
 		?>
@@ -262,7 +274,7 @@ function bp_docs_info_header() {
 		<?php if ( $filter_titles = bp_docs_filter_titles() ) : ?>
 			<div class="docs-filters">
 				<p id="docs-filter-meta">
-					<?php printf( __( 'Filter by: %s', 'bp-docs' ), $filter_titles ) ?>
+					<?php printf( __( 'Filter by: %s', 'buddypress-docs' ), $filter_titles ) ?>
 				</p>
 
 				<div id="docs-filter-sections">
@@ -410,7 +422,7 @@ function bp_docs_directory_filter_form_action() {
  */
 function bp_docs_search_term_filter_text( $message, $filters ) {
 	if ( !empty( $filters['search_terms'] ) ) {
-		$message[] = sprintf( __( 'You are searching for docs containing the term <em>%s</em>', 'bp-docs' ), esc_html( $filters['search_terms'] ) );
+		$message[] = sprintf( __( 'You are searching for docs containing the term <em>%s</em>', 'buddypress-docs' ), esc_html( $filters['search_terms'] ) );
 	}
 
 	return $message;
@@ -927,7 +939,7 @@ function bp_docs_associated_group_dropdown( $args = array() ) {
 	}
 
 	if ( $r['null_option'] ) {
-		$html .= '<option value="">' . __( 'None', 'bp-docs' ) . '</option>';
+		$html .= '<option value="">' . __( 'None', 'buddypress-docs' ) . '</option>';
 	}
 
 	foreach ( $groups_template->groups as $g ) {
@@ -993,8 +1005,8 @@ function bp_docs_doc_associated_group_markup() {
 	?>
 	<tr>
 		<td class="desc-column">
-			<label for="associated_group_id"><?php _e( 'Which group should this Doc be associated with?', 'bp-docs' ) ?></label>
-			<span class="description"><?php _e( '(Optional) Note that the Access settings available for this Doc may be limited by the privacy settings of the group you choose.', 'bp-docs' ) ?></span>
+			<label for="associated_group_id"><?php _e( 'Which group should this Doc be associated with?', 'buddypress-docs' ) ?></label>
+			<span class="description"><?php _e( '(Optional) Note that the Access settings available for this Doc may be limited by the privacy settings of the group you choose.', 'buddypress-docs' ) ?></span>
 		</td>
 
 		<td class="content-column">
@@ -1050,22 +1062,22 @@ function bp_docs_associated_group_summary( $group_id = 0 ) {
 			$_count = (int) groups_get_groupmeta( $group_id, 'total_member_count' );
 			if ( 1 === $_count ) {
 				// Using sprintf() to avoid creating another string.
-				$group_member_count = sprintf( __( '%s member', 'bp-docs', $_count ), number_format_i18n( $_count ) );
+				$group_member_count = sprintf( __( '%s member', 'buddypress-docs', $_count ), number_format_i18n( $_count ) );
 			} else {
-				$group_member_count = sprintf( _n( '%s member', '%s members', $_count, 'bp-docs' ), number_format_i18n( $_count ) );
+				$group_member_count = sprintf( _n( '%s member', '%s members', $_count, 'buddypress-docs' ), number_format_i18n( $_count ) );
 			}
 
 			switch ( $group->status ) {
 				case 'public' :
-					$group_type_string = __( 'Public Group', 'bp-docs' );
+					$group_type_string = __( 'Public Group', 'buddypress-docs' );
 					break;
 
 				case 'private' :
-					$group_type_string = __( 'Private Group', 'bp-docs' );
+					$group_type_string = __( 'Private Group', 'buddypress-docs' );
 					break;
 
 				case 'hidden' :
-					$group_type_string = __( 'Hidden Group', 'bp-docs' );
+					$group_type_string = __( 'Hidden Group', 'buddypress-docs' );
 					break;
 
 				default :
@@ -1103,23 +1115,23 @@ function bp_docs_doc_settings_markup( $doc_id = 0, $group_id = 0 ) {
 	$settings_fields = array(
 		'read' => array(
 			'name'  => 'read',
-			'label' => __( 'Who can read this doc?', 'bp-docs' )
+			'label' => __( 'Who can read this doc?', 'buddypress-docs' )
 		),
 		'edit' => array(
 			'name'  => 'edit',
-			'label' => __( 'Who can edit this doc?', 'bp-docs' )
+			'label' => __( 'Who can edit this doc?', 'buddypress-docs' )
 		),
 		'read_comments' => array(
 			'name'  => 'read_comments',
-			'label' => __( 'Who can read comments on this doc?', 'bp-docs' )
+			'label' => __( 'Who can read comments on this doc?', 'buddypress-docs' )
 		),
 		'post_comments' => array(
 			'name'  => 'post_comments',
-			'label' => __( 'Who can post comments on this doc?', 'bp-docs' )
+			'label' => __( 'Who can post comments on this doc?', 'buddypress-docs' )
 		),
 		'view_history' => array(
 			'name'  => 'view_history',
-			'label' => __( 'Who can view the history of this doc?', 'bp-docs' )
+			'label' => __( 'Who can view the history of this doc?', 'buddypress-docs' )
 		)
 	);
 
@@ -1179,18 +1191,18 @@ function bp_docs_access_options_helper( $settings_field, $doc_id = 0, $group_id 
 function bp_docs_doc_action_links() {
 	$links = array();
 
-	$links[] = '<a href="' . bp_docs_get_doc_link() . '">' . __( 'Read', 'bp-docs' ) . '</a>';
+	$links[] = '<a href="' . bp_docs_get_doc_link() . '">' . __( 'Read', 'buddypress-docs' ) . '</a>';
 
 	if ( current_user_can( 'bp_docs_edit', get_the_ID() ) ) {
-		$links[] = '<a href="' . bp_docs_get_doc_edit_link() . '">' . __( 'Edit', 'bp-docs' ) . '</a>';
+		$links[] = '<a href="' . bp_docs_get_doc_edit_link() . '">' . __( 'Edit', 'buddypress-docs' ) . '</a>';
 	}
 
 	if ( current_user_can( 'bp_docs_view_history', get_the_ID() ) && defined( 'WP_POST_REVISIONS' ) && WP_POST_REVISIONS ) {
-		$links[] = '<a href="' . bp_docs_get_doc_link() . BP_DOCS_HISTORY_SLUG . '">' . __( 'History', 'bp-docs' ) . '</a>';
+		$links[] = '<a href="' . bp_docs_get_doc_link() . BP_DOCS_HISTORY_SLUG . '">' . __( 'History', 'buddypress-docs' ) . '</a>';
 	}
 
 	if ( current_user_can( 'manage', get_the_ID() ) && bp_docs_is_doc_trashed( get_the_ID() ) ) {
-		$links[] = '<a href="' . bp_docs_get_remove_from_trash_link( get_the_ID() ) . '" class="delete confirm">' . __( 'Untrash', 'bp-docs' ) . '</a>';
+		$links[] = '<a href="' . bp_docs_get_remove_from_trash_link( get_the_ID() ) . '" class="delete confirm">' . __( 'Untrash', 'buddypress-docs' ) . '</a>';
 	}
 
 	$links = apply_filters( 'bp_docs_doc_action_links', $links, get_the_ID() );
@@ -1290,14 +1302,14 @@ function bp_docs_delete_doc_button( $doc_id = false ) {
 
 		if ( bp_docs_is_doc_trashed( $doc_id ) ) {
 			// A button to remove the doc from the trash...
-			$button = ' <a class="delete-doc-button untrash-doc-button confirm" href="' . bp_docs_get_remove_from_trash_link( $doc_id ) . '">' . __( 'Remove from Trash', 'bp-docs' ) . '</a>';
+			$button = ' <a class="delete-doc-button untrash-doc-button confirm" href="' . bp_docs_get_remove_from_trash_link( $doc_id ) . '">' . __( 'Remove from Trash', 'buddypress-docs' ) . '</a>';
 			// and a button to permanently delete the doc.
-			$button .= '<a class="delete-doc-button confirm" href="' . bp_docs_get_delete_doc_link() . '">' . __( 'Permanently Delete', 'bp-docs' ) . '</a>';
+			$button .= '<a class="delete-doc-button confirm" href="' . bp_docs_get_delete_doc_link() . '">' . __( 'Permanently Delete', 'buddypress-docs' ) . '</a>';
 		} else {
 			// A button to move the doc to the trash...
-			$button = '<a class="delete-doc-button confirm" href="' . bp_docs_get_delete_doc_link() . '">' . __( 'Move to Trash', 'bp-docs' ) . '</a>';
+			$button = '<a class="delete-doc-button confirm" href="' . bp_docs_get_delete_doc_link() . '">' . __( 'Move to Trash', 'buddypress-docs' ) . '</a>';
 			// and a button to permanently delete the doc.
-			$button .= '<a class="delete-doc-button confirm" href="' . bp_docs_get_delete_doc_link( true ) . '">' . __( 'Permanently Delete', 'bp-docs' ) . '</a>';
+			$button .= '<a class="delete-doc-button confirm" href="' . bp_docs_get_delete_doc_link( true ) . '">' . __( 'Permanently Delete', 'buddypress-docs' ) . '</a>';
 		}
 
 		return $button;
@@ -1350,8 +1362,8 @@ function bp_docs_paginate_links() {
 	$pagination_args = array(
 		'base' 		=> add_query_arg( 'paged', '%#%' ),
 		'format' 	=> '',
-		'prev_text' 	=> __( '&laquo;', 'bp-docs' ),
-		'next_text' 	=> __( '&raquo;', 'bp-docs' ),
+		'prev_text' 	=> __( '&laquo;', 'buddypress-docs' ),
+		'next_text' 	=> __( '&raquo;', 'buddypress-docs' ),
 		'total' 	=> $page_links_total,
 		'end_size'  => 2,
 	);
@@ -1542,17 +1554,17 @@ function bp_docs_tabs( $show_create_button = true ) {
 	?>
 
 	<ul id="bp-docs-all-docs">
-		<li<?php if ( bp_docs_is_global_directory() ) : ?> class="current"<?php endif; ?>><a href="<?php bp_docs_archive_link() ?>"><?php _e( 'All Docs', 'bp-docs' ) ?></a></li>
+		<li<?php if ( bp_docs_is_global_directory() ) : ?> class="current"<?php endif; ?>><a href="<?php bp_docs_archive_link() ?>"><?php _e( 'All Docs', 'buddypress-docs' ) ?></a></li>
 
 		<?php if ( is_user_logged_in() ) : ?>
 			<?php if ( function_exists( 'bp_is_group' ) && bp_is_group() ) : ?>
-				<li<?php if ( bp_is_current_action( BP_DOCS_SLUG ) ) : ?> class="current"<?php endif ?>><a href="<?php bp_group_permalink( groups_get_current_group() ) ?><?php bp_docs_slug() ?>"><?php printf( __( "%s's Docs", 'bp-docs' ), bp_get_current_group_name() ) ?></a></li>
+				<li<?php if ( bp_is_current_action( BP_DOCS_SLUG ) ) : ?> class="current"<?php endif ?>><a href="<?php bp_group_permalink( groups_get_current_group() ) ?><?php bp_docs_slug() ?>"><?php printf( __( "%s's Docs", 'buddypress-docs' ), bp_get_current_group_name() ) ?></a></li>
 			<?php else : ?>
-				<li><a href="<?php bp_docs_mydocs_started_link() ?>"><?php _e( 'Started By Me', 'bp-docs' ) ?></a></li>
-				<li><a href="<?php bp_docs_mydocs_edited_link() ?>"><?php _e( 'Edited By Me', 'bp-docs' ) ?></a></li>
+				<li><a href="<?php bp_docs_mydocs_started_link() ?>"><?php _e( 'Started By Me', 'buddypress-docs' ) ?></a></li>
+				<li><a href="<?php bp_docs_mydocs_edited_link() ?>"><?php _e( 'Edited By Me', 'buddypress-docs' ) ?></a></li>
 
 				<?php if ( bp_is_active( 'groups' ) ) : ?>
-					<li<?php if ( bp_docs_is_mygroups_docs() ) : ?> class="current"<?php endif; ?>><a href="<?php bp_docs_mygroups_link() ?>"><?php _e( 'My Groups', 'bp-docs' ) ?></a></li>
+					<li<?php if ( bp_docs_is_mygroups_docs() ) : ?> class="current"<?php endif; ?>><a href="<?php bp_docs_mygroups_link() ?>"><?php _e( 'My Groups', 'buddypress-docs' ) ?></a></li>
 				<?php endif ?>
 			<?php endif ?>
 
@@ -1573,7 +1585,7 @@ function bp_docs_tabs( $show_create_button = true ) {
  */
 function bp_docs_create_button() {
 	if ( ! bp_docs_is_doc_create() && current_user_can( 'bp_docs_create' ) ) {
-		echo apply_filters( 'bp_docs_create_button', '<a class="button" id="bp-create-doc-button" href="' . bp_docs_get_create_link() . '">' . __( "Create New Doc", 'bp-docs' ) . '</a>' );
+		echo apply_filters( 'bp_docs_create_button', '<a class="button" id="bp-create-doc-button" href="' . bp_docs_get_create_link() . '">' . __( "Create New Doc", 'buddypress-docs' ) . '</a>' );
 	}
 }
 
@@ -1634,9 +1646,9 @@ function bp_docs_doc_permissions_snapshot( $args = array() ) {
 			$html .= '<div id="doc-group-summary">';
 
 			$html .= $summary_before_content ;
-			$html .= '<span>' . __('Group: ', 'bp-docs') . '</span>';
+			$html .= '<span>' . __('Group: ', 'buddypress-docs') . '</span>';
 
-			$html .= sprintf( __( ' %s', 'bp-docs' ), '<a href="' . $group_link . '">' . bp_core_fetch_avatar( 'item_id=' . $doc_groups[0]->id . '&object=group&type=thumb&width=25&height=25' ) . '</a> ' . '<a href="' . $group_link . '">' . esc_html( $doc_groups[0]->name ) . '</a>' );
+			$html .= sprintf( __( ' %s', 'buddypress-docs' ), '<a href="' . $group_link . '">' . bp_core_fetch_avatar( 'item_id=' . $doc_groups[0]->id . '&object=group&type=thumb&width=25&height=25' ) . '</a> ' . '<a href="' . $group_link . '">' . esc_html( $doc_groups[0]->name ) . '</a>' );
 
 			$html .= $summary_after_content;
 
@@ -1648,43 +1660,43 @@ function bp_docs_doc_permissions_snapshot( $args = array() ) {
 	}
 
 	$levels = array(
-		'anyone'        => __( 'Anyone', 'bp-docs' ),
-		'loggedin'      => __( 'Logged-in Users', 'bp-docs' ),
-		'friends'       => __( 'My Friends', 'bp-docs' ),
-		'creator'       => __( 'The Doc author only', 'bp-docs' ),
-		'no-one'        => __( 'Just Me', 'bp-docs' )
+		'anyone'        => __( 'Anyone', 'buddypress-docs' ),
+		'loggedin'      => __( 'Logged-in Users', 'buddypress-docs' ),
+		'friends'       => __( 'My Friends', 'buddypress-docs' ),
+		'creator'       => __( 'The Doc author only', 'buddypress-docs' ),
+		'no-one'        => __( 'Just Me', 'buddypress-docs' )
 	);
 
 	if ( bp_is_active( 'groups' ) ) {
-		$levels['group-members'] = sprintf( __( 'Members of: %s', 'bp-docs' ), $group_names );
-		$levels['admins-mods'] = sprintf( __( 'Admins and mods of the group %s', 'bp-docs' ), $group_names );
+		$levels['group-members'] = sprintf( __( 'Members of: %s', 'buddypress-docs' ), $group_names );
+		$levels['admins-mods'] = sprintf( __( 'Admins and mods of the group %s', 'buddypress-docs' ), $group_names );
 	}
 
 	if ( get_the_author_meta( 'ID' ) == bp_loggedin_user_id() ) {
-		$levels['creator'] = __( 'The Doc author only (that\'s you!)', 'bp-docs' );
+		$levels['creator'] = __( 'The Doc author only (that\'s you!)', 'buddypress-docs' );
 	}
 
 	$settings = bp_docs_get_doc_settings();
 
 	// Read
 	$read_class = bp_docs_get_permissions_css_class( $settings['read'] );
-	$read_text  = sprintf( __( 'This Doc can be read by: <strong>%s</strong>', 'bp-docs' ), $levels[ $settings['read'] ] );
+	$read_text  = sprintf( __( 'This Doc can be read by: <strong>%s</strong>', 'buddypress-docs' ), $levels[ $settings['read'] ] );
 
 	// Edit
 	$edit_class = bp_docs_get_permissions_css_class( $settings['edit'] );
-	$edit_text  = sprintf( __( 'This Doc can be edited by: <strong>%s</strong>', 'bp-docs' ), $levels[ $settings['edit'] ] );
+	$edit_text  = sprintf( __( 'This Doc can be edited by: <strong>%s</strong>', 'buddypress-docs' ), $levels[ $settings['edit'] ] );
 
 	// Read Comments
 	$read_comments_class = bp_docs_get_permissions_css_class( $settings['read_comments'] );
-	$read_comments_text  = sprintf( __( 'Comments are visible to: <strong>%s</strong>', 'bp-docs' ), $levels[ $settings['read_comments'] ] );
+	$read_comments_text  = sprintf( __( 'Comments are visible to: <strong>%s</strong>', 'buddypress-docs' ), $levels[ $settings['read_comments'] ] );
 
 	// Post Comments
 	$post_comments_class = bp_docs_get_permissions_css_class( $settings['post_comments'] );
-	$post_comments_text  = sprintf( __( 'Comments can be posted by: <strong>%s</strong>', 'bp-docs' ), $levels[ $settings['post_comments'] ] );
+	$post_comments_text  = sprintf( __( 'Comments can be posted by: <strong>%s</strong>', 'buddypress-docs' ), $levels[ $settings['post_comments'] ] );
 
 	// View History
 	$view_history_class = bp_docs_get_permissions_css_class( $settings['view_history'] );
-	$view_history_text  = sprintf( __( 'History can be viewed by: <strong>%s</strong>', 'bp-docs' ), $levels[ $settings['view_history'] ] );
+	$view_history_text  = sprintf( __( 'History can be viewed by: <strong>%s</strong>', 'buddypress-docs' ), $levels[ $settings['view_history'] ] );
 
 	// Calculate summary
 	// Summary works like this:
@@ -1726,19 +1738,19 @@ function bp_docs_doc_permissions_snapshot( $args = array() ) {
 	$settings_count = count( $public_settings );
 	if ( $settings_count == $private_count ) {
 		$summary       = 'private';
-		$summary_label = __( 'Private', 'bp-docs' );
+		$summary_label = __( 'Private', 'buddypress-docs' );
 	} else if ( $settings_count == $anyone_count ) {
 		$summary       = 'public';
-		$summary_label = __( 'Public', 'bp-docs' );
+		$summary_label = __( 'Public', 'buddypress-docs' );
 	} else {
 		$summary       = 'limited';
-		$summary_label = __( 'Limited', 'bp-docs' );
+		$summary_label = __( 'Limited', 'buddypress-docs' );
 	}
 
 	$html .= '<div id="doc-permissions-summary" class="doc-' . $summary . '">';
 	$html .= $summary_before_content;
- $html .=   sprintf( __( 'Access: <strong>%s</strong>', 'bp-docs' ), $summary_label );
-	$html .=   '<a href="#" class="doc-permissions-toggle" id="doc-permissions-more">' . __( 'Show Details', 'bp-docs' ) . '</a>';
+ $html .=   sprintf( __( 'Access: <strong>%s</strong>', 'buddypress-docs' ), $summary_label );
+	$html .=   '<a href="#" class="doc-permissions-toggle" id="doc-permissions-more">' . __( 'Show Details', 'buddypress-docs' ) . '</a>';
 	$html .= $summary_after_content;
  $html .= '</div>';
 
@@ -1752,9 +1764,9 @@ function bp_docs_doc_permissions_snapshot( $args = array() ) {
 	$html .=   '</ul>';
 
 	if ( current_user_can( 'bp_docs_manage' ) )
-		$html .=   '<a href="' . bp_docs_get_doc_edit_link() . '#doc-settings" id="doc-permissions-edit">' . __( 'Edit', 'bp-docs' ) . '</a>';
+		$html .=   '<a href="' . bp_docs_get_doc_edit_link() . '#doc-settings" id="doc-permissions-edit">' . __( 'Edit', 'buddypress-docs' ) . '</a>';
 
-	$html .=   '<a href="#" class="doc-permissions-toggle" id="doc-permissions-less">' . __( 'Hide Details', 'bp-docs' ) . '</a>';
+	$html .=   '<a href="#" class="doc-permissions-toggle" id="doc-permissions-less">' . __( 'Hide Details', 'buddypress-docs' ) . '</a>';
 	$html .= '</div>';
 
 	echo $html;
@@ -2060,7 +2072,7 @@ function bp_docs_media_buttons( $editor_id ) {
 
 	$img = '<span class="wp-media-buttons-icon"></span> ';
 
-	echo '<a href="#" id="insert-media-button" class="button add-attachment add_media" data-editor="' . esc_attr( $editor_id ) . '" title="' . esc_attr__( 'Add Files', 'bp-docs' ) . '">' . $img . __( 'Add Files', 'bp-docs' ) . '</a>';
+	echo '<a href="#" id="insert-media-button" class="button add-attachment add_media" data-editor="' . esc_attr( $editor_id ) . '" title="' . esc_attr__( 'Add Files', 'buddypress-docs' ) . '">' . $img . __( 'Add Files', 'buddypress-docs' ) . '</a>';
 }
 
 /**
@@ -2088,6 +2100,14 @@ function bp_docs_get_doc_attachments( $doc_id = null ) {
 		return array();
 	}
 
+	/**
+	 * Filter the arguments passed to get_posts() when fetching
+	 * the attachments for a specific doc.
+	 *
+	 * @since 1.5
+	 *
+	 * @param int $doc_id The current doc ID.
+	 */
 	$atts_args = apply_filters( 'bp_docs_get_doc_attachments_args', array(
 		'post_type' => 'attachment',
 		'post_parent' => $doc_id,
@@ -2163,7 +2183,7 @@ function bp_docs_attachment_item_markup( $attachment_id, $format = 'full' ) {
 			$attachment_delete_html = sprintf(
 				'<a href="%s" class="doc-attachment-delete confirm button">%s</a> ',
 				$attachment_delete_url,
-				__( 'Delete', 'bp-docs' )
+				__( 'Delete', 'buddypress-docs' )
 			);
 		}
 
@@ -2236,7 +2256,7 @@ function bp_docs_doc_attachment_drawer() {
 
 	if ( ! empty( $atts ) ) {
 		$html .= '<ul>';
-		$html .= '<h4>' . __( 'Attachments', 'bp-docs' ) . '</h4>';
+		$html .= '<h4>' . __( 'Attachments', 'buddypress-docs' ) . '</h4>';
 
 		foreach ( $atts as $att ) {
 			$html .= bp_docs_attachment_item_markup( $att->ID, 'simple' );
@@ -2318,7 +2338,7 @@ function bp_docs_doc_row_classes() {
  */
 function bp_docs_doc_trash_notice() {
 	if ( get_post_status( get_the_ID() ) == 'trash' ) {
-		echo ' <span title="' . __( 'This Doc is in the Trash', 'bp-docs' ) . '" class="bp-docs-trashed-doc-notice">' . __( 'Trash', 'bp-docs' ) . '</span>';
+		echo ' <span title="' . __( 'This Doc is in the Trash', 'buddypress-docs' ) . '" class="bp-docs-trashed-doc-notice">' . __( 'Trash', 'buddypress-docs' ) . '</span>';
 	}
 }
 

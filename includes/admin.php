@@ -28,8 +28,8 @@ class BP_Docs_Admin {
 		// Settings
 		add_submenu_page(
 			'edit.php?post_type=' . bp_docs_get_post_type_name(),
-			__( 'BuddyPress Docs Settings', 'bp-docs' ),
-			__( 'Settings', 'bp-docs' ),
+			__( 'BuddyPress Docs Settings', 'buddypress-docs' ),
+			__( 'Settings', 'buddypress-docs' ),
 			'bp_moderate',
 			'bp-docs-settings',
 			array( $this, 'settings_cb' )
@@ -40,7 +40,7 @@ class BP_Docs_Admin {
 		?>
 <div class="wrap">
 	<form method="post" action="<?php echo admin_url( 'options.php' ) ?>">
-		<h2><?php _e( 'BuddyPress Docs Settings', 'bp-docs' ) ?></h2>
+		<h2><?php _e( 'BuddyPress Docs Settings', 'buddypress-docs' ) ?></h2>
 		<?php settings_fields( 'bp-docs-settings' ) ?>
 		<?php do_settings_sections( 'bp-docs-settings' ) ?>
 		<?php submit_button() ?>
@@ -53,7 +53,7 @@ class BP_Docs_Admin {
 		// General
 		add_settings_section(
 			'bp-docs-general',
-			__( 'General', 'bp-docs' ),
+			__( 'General', 'buddypress-docs' ),
 			array( $this, 'general_section' ),
 			'bp-docs-settings'
 		);
@@ -61,27 +61,39 @@ class BP_Docs_Admin {
 		// General - Docs slug
 		add_settings_field(
 			'bp-docs-slug',
-			__( 'Slug', 'bp-docs' ),
+			__( 'Slug', 'buddypress-docs' ),
 			array( $this, 'slug_setting_markup' ),
 			'bp-docs-settings',
 			'bp-docs-general'
 		);
-		register_setting( 'bp-docs-settings', 'bp-docs-slug', 'rawurlencode' );
+		register_setting( 'bp-docs-settings', 'bp-docs-slug', array(
+			'sanitize_callback' => array( $this, 'sanitize_slug' ),
+		) );
 
 		// General - Excerpt length
 		add_settings_field(
 			'bp-docs-excerpt-length',
-			__( 'Directory Excerpt Length', 'bp-docs' ),
+			__( 'Directory Excerpt Length', 'buddypress-docs' ),
 			array( $this, 'excerpt_length_setting_markup' ),
 			'bp-docs-settings',
 			'bp-docs-general'
 		);
 		register_setting( 'bp-docs-settings', 'bp-docs-excerpt-length', 'absint' );
 
+		// General - Docs Directory title
+		add_settings_field(
+			'bp-docs-directory-title',
+			__( 'Directory Title', 'buddypress-docs' ),
+			array( $this, 'directory_title_setting_markup' ),
+			'bp-docs-settings',
+			'bp-docs-general'
+		);
+		register_setting( 'bp-docs-settings', 'bp-docs-directory-title', 'sanitize_text_field' );
+
 		// Users
 		add_settings_section(
 			'bp-docs-users',
-			__( 'Users', 'bp-docs' ),
+			__( 'Users', 'buddypress-docs' ),
 			array( $this, 'users_section' ),
 			'bp-docs-settings'
 		);
@@ -89,7 +101,7 @@ class BP_Docs_Admin {
 		// Users - Tab name
 		add_settings_field(
 			'bp-docs-user-tab-name',
-			__( 'User Tab Name', 'bp-docs' ),
+			__( 'User Tab Name', 'buddypress-docs' ),
 			array( $this, 'user_tab_name_setting_markup' ),
 			'bp-docs-settings',
 			'bp-docs-users'
@@ -100,7 +112,7 @@ class BP_Docs_Admin {
 		if ( bp_is_active( 'groups' ) ) {
 			add_settings_section(
 				'bp-docs-groups',
-				__( 'Groups', 'bp-docs' ),
+				__( 'Groups', 'buddypress-docs' ),
 				array( $this, 'groups_section' ),
 				'bp-docs-settings'
 			);
@@ -108,7 +120,7 @@ class BP_Docs_Admin {
 			// Groups - Tab name
 			add_settings_field(
 				'bp-docs-tab-name',
-				__( 'Group Tab Name', 'bp-docs' ),
+				__( 'Group Tab Name', 'buddypress-docs' ),
 				array( $this, 'group_tab_name_setting_markup' ),
 				'bp-docs-settings',
 				'bp-docs-groups'
@@ -119,7 +131,7 @@ class BP_Docs_Admin {
 		// Attachments
 		add_settings_section(
 			'bp-docs-attachments',
-			__( 'Attachments', 'bp-docs' ),
+			__( 'Attachments', 'buddypress-docs' ),
 			array( $this, 'attachments_section' ),
 			'bp-docs-settings'
 		);
@@ -127,7 +139,7 @@ class BP_Docs_Admin {
 		// Users - Tab name
 		add_settings_field(
 			'bp-docs-enable-attachments',
-			__( 'Enable Attachments', 'bp-docs' ),
+			__( 'Enable Attachments', 'buddypress-docs' ),
 			array( $this, 'enable_attachments_setting_markup' ),
 			'bp-docs-settings',
 			'bp-docs-attachments'
@@ -135,7 +147,7 @@ class BP_Docs_Admin {
 		register_setting( 'bp-docs-settings', 'bp-docs-enable-attachments' );
 	}
 
-	public function general_section() {}
+	public function general_section() { settings_errors(); }
 	public function users_section() {}
 	public function groups_section() {}
 	public function attachments_section() {}
@@ -147,9 +159,9 @@ class BP_Docs_Admin {
 		$is_in_wp_config = 1 === $bp->bp_docs->slug_defined_in_wp_config['slug'];
 
 		?>
-		<label for="bp-docs-slug" class="screen-reader-text"><?php _e( "Change the slug used to build Docs URLs.", 'bp-docs' ) ?></label>
+		<label for="bp-docs-slug" class="screen-reader-text"><?php _e( "Change the slug used to build Docs URLs.", 'buddypress-docs' ) ?></label>
 		<input name="bp-docs-slug" id="bp-docs-slug" type="text" value="<?php echo esc_html( $slug ) ?>" <?php if ( $is_in_wp_config ) : ?>disabled="disabled" <?php endif ?>/>
-		<p class="description"><?php _e( "Change the slug used to build Docs URLs.", 'bp-docs' ) ?><?php if ( $is_in_wp_config ) : ?> <?php _e( 'You have already defined this value in <code>wp-config.php</code>, so it cannot be edited here.', 'bp-docs' ) ?><?php endif ?></p>
+		<p class="description"><?php _e( "Change the slug used to build Docs URLs.", 'buddypress-docs' ) ?><?php if ( $is_in_wp_config ) : ?> <?php _e( 'You have already defined this value in <code>wp-config.php</code>, so it cannot be edited here.', 'buddypress-docs' ) ?><?php endif ?></p>
 
 		<?php
 	}
@@ -158,9 +170,20 @@ class BP_Docs_Admin {
 		$length = bp_docs_get_excerpt_length();
 
 		?>
-		<label for="bp-docs-excerpt-length" class="screen-reader-text"><?php _e( "Change the value for longer or shorter excerpts.", 'bp-docs' ) ?></label>
+		<label for="bp-docs-excerpt-length" class="screen-reader-text"><?php _e( "Change the value for longer or shorter excerpts.", 'buddypress-docs' ) ?></label>
 		<input name="bp-docs-excerpt-length" id="bp-docs-excerpt-length" type="text" value="<?php echo esc_html( $length ) ?>" />
-		<p class="description"><?php _e( "Excerpts are shown on Docs directories, to provide better context. If your theme or language requires longer or shorter excerpts, change this value. Set to <code>0</code> to disable these excerpts.", 'bp-docs' ) ?></p>
+		<p class="description"><?php _e( "Excerpts are shown on Docs directories, to provide better context. If your theme or language requires longer or shorter excerpts, change this value. Set to <code>0</code> to disable these excerpts.", 'buddypress-docs' ) ?></p>
+
+		<?php
+	}
+
+	public function directory_title_setting_markup() {
+		$label = bp_docs_get_docs_directory_title();
+
+		?>
+		<label for="bp-docs-directory-title" class="screen-reader-text"><?php _e( "Change the title of the main Docs directory.", 'buddypress-docs' ) ?></label>
+		<input name="bp-docs-directory-title" id="bp-docs-directory-title" type="text" value="<?php echo $label; ?>" />
+		<p class="description"><?php _e( "Change the title of the main Docs directory from 'Docs Directory' to whatever you&rsquo;d like.", 'buddypress-docs' ) ?></p>
 
 		<?php
 	}
@@ -172,9 +195,9 @@ class BP_Docs_Admin {
 		$name = bp_docs_get_group_tab_name();
 
 		?>
-		<label for="bp-docs-tab-name" class="screen-reader-text"><?php _e( "Change the word on groups' Docs tab.", 'bp-docs' ) ?></label>
+		<label for="bp-docs-tab-name" class="screen-reader-text"><?php _e( "Change the word on groups' Docs tab.", 'buddypress-docs' ) ?></label>
 		<input name="bp-docs-tab-name" id="bp-docs-tab-name" type="text" value="<?php echo esc_html( $name ) ?>" />
-		<p class="description"><?php _e( "Change the word on the BuddyPress group tab from 'Docs' to whatever you'd like. Keep in mind that this will not change the text anywhere else on the page. For a more thorough text change, create a <a href='http://codex.buddypress.org/extending-buddypress/customizing-labels-messages-and-urls/'>language file</a> for BuddyPress Docs.", 'bp-docs' ) ?></p>
+		<p class="description"><?php _e( "Change the word on the BuddyPress group tab from 'Docs' to whatever you'd like. Keep in mind that this will not change the text anywhere else on the page. For a more thorough text change, create a <a href='http://codex.buddypress.org/extending-buddypress/customizing-labels-messages-and-urls/'>language file</a> for BuddyPress Docs.", 'buddypress-docs' ) ?></p>
 
 		<?php
 	}
@@ -183,9 +206,9 @@ class BP_Docs_Admin {
 		$name = bp_docs_get_user_tab_name();
 
 		?>
-		<label for="bp-docs-user-tab-name" class="screen-reader-text"><?php _e( "Change the word on users' Docs tab.", 'bp-docs' ) ?></label>
+		<label for="bp-docs-user-tab-name" class="screen-reader-text"><?php _e( "Change the word on users' Docs tab.", 'buddypress-docs' ) ?></label>
 		<input name="bp-docs-user-tab-name" id="bp-docs-user-tab-name" type="text" value="<?php echo esc_html( $name ) ?>" />
-		<p class="description"><?php _e( "Change the word on users' Docs tabs from 'Docs' to whatever you'd like. Keep in mind that this will not change the text anywhere else on the page. For a more thorough text change, create a <a href='http://codex.buddypress.org/extending-buddypress/customizing-labels-messages-and-urls/'>language file</a> for BuddyPress Docs.", 'bp-docs' ) ?></p>
+		<p class="description"><?php _e( "Change the word on users' Docs tabs from 'Docs' to whatever you'd like. Keep in mind that this will not change the text anywhere else on the page. For a more thorough text change, create a <a href='http://codex.buddypress.org/extending-buddypress/customizing-labels-messages-and-urls/'>language file</a> for BuddyPress Docs.", 'buddypress-docs' ) ?></p>
 
 		<?php
 	}
@@ -194,14 +217,22 @@ class BP_Docs_Admin {
 		$enabled = bp_docs_enable_attachments();
 
 		?>
-		<label for="bp-docs-enable-attachments" class="screen-reader-text"><?php _e( "Allow users to add attachments.", 'bp-docs' ) ?></label>
+		<label for="bp-docs-enable-attachments" class="screen-reader-text"><?php _e( "Allow users to add attachments.", 'buddypress-docs' ) ?></label>
 		<select name="bp-docs-enable-attachments" id="bp-docs-enable-attachments">
-			<option value="yes" <?php selected( $enabled, true ) ?>><?php _e( 'Enabled', 'bp-docs' ) ?></option>
-			<option value="no" <?php selected( $enabled, false ) ?>><?php _e( 'Disabled', 'bp-docs' ) ?></option>
+			<option value="yes" <?php selected( $enabled, true ) ?>><?php _e( 'Enabled', 'buddypress-docs' ) ?></option>
+			<option value="no" <?php selected( $enabled, false ) ?>><?php _e( 'Disabled', 'buddypress-docs' ) ?></option>
 		</select>
-		<p class="description"><?php _e( "Allow users to add attachments to their Docs.", 'bp-docs' ) ?></p>
+		<p class="description"><?php _e( "Allow users to add attachments to their Docs.", 'buddypress-docs' ) ?></p>
 
 		<?php
+	}
+
+	public function sanitize_slug( $value ) {
+		$value = rawurlencode( $value );
+
+		add_settings_error( 'bp-docs-settings', 'bp-docs-settings-saved', __( 'Settings updated.', 'buddypress-docs' ), 'updated' );
+
+		return $value;
 	}
 
 	function replace_recent_comments_dashboard_widget() {
@@ -233,7 +264,7 @@ class BP_Docs_Admin {
 			return;
 
 		// Set up and add our widget
-		$recent_comments_title = __( 'Recent Comments', 'bp-docs' );
+		$recent_comments_title = __( 'Recent Comments', 'buddypress-docs' );
 
 		// Add our widget in the same location
 		wp_add_dashboard_widget( 'dashboard_recent_comments_bp_docs', $recent_comments_title, array( $this, 'wp_dashboard_recent_comments' ), 'wp_dashboard_recent_comments_control' );
@@ -307,7 +338,7 @@ class BP_Docs_Admin {
 		else :
 	?>
 
-		<p><?php _e( 'No comments yet.', 'bp-docs' ); ?></p>
+		<p><?php _e( 'No comments yet.', 'buddypress-docs' ); ?></p>
 
 	<?php
 		endif; // $comments;

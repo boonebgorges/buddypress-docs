@@ -68,73 +68,52 @@ class BP_Docs_Tests_Activity extends BP_Docs_TestCase {
 	}
 
 	public function test_edit_activity_should_be_created_for_changed_content() {
-		// We have to do unholy things to make this testable.
-		$old_post = $_POST;
-
-		$doc = $this->factory->doc->create( array(
-			'post_content' => 'foo',
-			'post_title' => 'Test Doc',
-			'post_name' => 'test-doc',
-		) );
-
-		$this->current_doc = get_post( $doc );
-		add_filter( 'bp_docs_get_current_doc', array( $this, 'filter_current_doc' ) );
-
-		$_POST = array(
-			'doc' => array( 'title' => 'Test Doc' ),
-			'doc_content' => 'foo bar',
-			'ID' => $doc,
+		$args = array(
+			'title' => 'Test Doc',
+			'content' => 'foo',
+			'settings' => array( 'read' => 'anyone' ),
 		);
-
 		$q = new BP_Docs_Query();
-		$q->doc_slug = 'test-doc';
-		$q->save();
+		$result = $q->save( $args );
 
-		remove_filter( 'bp_docs_get_current_doc', array( $this, 'filter_current_doc' ) );
-		$_POST = $old_post;
+		$args = array(
+			'title' => 'Test Doc',
+			'content' => 'foo bar',
+			'doc_id' => $result['doc_id'],
+		);
+		$q->save( $args );
 
 		$found = bp_activity_get( array(
 			'show_hidden'	=> 1,
 			'filter'	=> array(
 				'action' => 'bp_doc_edited',
-				'secondary_id' => $doc,
+				'secondary_id' => $result['doc_id'],
 			),
 		) );
-
 		$this->assertNotEmpty( $found['activities'] );
 	}
 
 	public function test_edit_activity_should_be_created_for_changed_title() {
-		// We have to do unholy things to make this testable.
-		$old_post = $_POST;
-
-		$doc = $this->factory->doc->create( array(
-			'post_content' => 'foo',
-			'post_title' => 'Test Doc',
-			'post_name' => 'test-doc',
-		) );
-
-		$this->current_doc = get_post( $doc );
-		add_filter( 'bp_docs_get_current_doc', array( $this, 'filter_current_doc' ) );
-
-		$_POST = array(
-			'doc' => array( 'title' => 'Test Doc Foo' ),
-			'doc_content' => 'foo',
-			'ID' => $doc,
+		$args = array(
+			'title' => 'Test Doc',
+			'content' => 'foo',
+			'settings' => array( 'read' => 'anyone' ),
 		);
-
 		$q = new BP_Docs_Query();
-		$q->doc_slug = 'test-doc';
-		$q->save();
+		$result = $q->save( $args );
 
-		remove_filter( 'bp_docs_get_current_doc', array( $this, 'filter_current_doc' ) );
-		$_POST = $old_post;
+		$args = array(
+			'title' => 'Test Doc Foo',
+			'content' => 'foo',
+			'doc_id' => $result['doc_id'],
+		);
+		$q->save( $args );
 
 		$found = bp_activity_get( array(
 			'show_hidden'	=> 1,
 			'filter'	=> array(
 				'action' => 'bp_doc_edited',
-				'secondary_id' => $doc,
+				'secondary_id' => $result['doc_id'],
 			),
 		) );
 
@@ -142,36 +121,26 @@ class BP_Docs_Tests_Activity extends BP_Docs_TestCase {
 	}
 
 	public function test_edit_activity_should_not_be_created_for_unchanged_revision() {
-		// We have to do unholy things to make this testable.
-		$old_post = $_POST;
-
-		$doc = $this->factory->doc->create( array(
-			'post_content' => 'foo',
-			'post_title' => 'Test Doc',
-			'post_name' => 'test-doc',
-		) );
-
-		$this->current_doc = get_post( $doc );
-		add_filter( 'bp_docs_get_current_doc', array( $this, 'filter_current_doc' ) );
-
-		$_POST = array(
-			'doc' => array( 'title' => 'Test Doc' ),
-			'doc_content' => 'foo',
-			'ID' => $doc,
+		$args = array(
+			'title' => 'Test Doc',
+			'content' => 'foo',
+			'settings' => array( 'read' => 'anyone' ),
 		);
-
 		$q = new BP_Docs_Query();
-		$q->doc_slug = 'test-doc';
-		$q->save();
+		$result = $q->save( $args );
 
-		remove_filter( 'bp_docs_get_current_doc', array( $this, 'filter_current_doc' ) );
-		$_POST = $old_post;
+		$args = array(
+			'title' => 'Test Doc',
+			'content' => 'foo',
+			'doc_id' => $result['doc_id'],
+		);
+		$q->save( $args );
 
 		$found = bp_activity_get( array(
 			'show_hidden'	=> 1,
 			'filter'	=> array(
 				'action' => 'bp_doc_edited',
-				'secondary_id' => $doc,
+				'secondary_id' =>$result['doc_id'],
 			),
 		) );
 

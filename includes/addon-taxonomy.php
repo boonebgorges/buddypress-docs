@@ -39,6 +39,9 @@ class BP_Docs_Taxonomy {
 		// Make sure that the bp_docs post type supports our post taxonomies
 		add_filter( 'bp_docs_init', array( $this, 'register_with_post_type' ), 12 );
 
+		// Hook into post save preparation to squeeze term information from $_POST
+		add_filter( 'bp_docs_prepare_terms_via_post', array( $this, 'prepare_terms_via_post' ) );
+
 		// Hook into post saves to save any taxonomy terms.
 		add_action( 'bp_docs_doc_saved', 	array( $this, 'save_post' ) );
 
@@ -80,8 +83,8 @@ class BP_Docs_Taxonomy {
 
 		// Define the labels to be used by the taxonomy bp_docs_tag
 		$doc_tags_labels = array(
-			'name' 		=> __( 'Docs Tags', 'bp-docs' ),
-			'singular_name' => __( 'Docs Tag', 'bp-docs' )
+			'name' 		=> __( 'Docs Tags', 'buddypress-docs' ),
+			'singular_name' => __( 'Docs Tag', 'buddypress-docs' )
 		);
 
 		// Register the bp_docs_associated_item taxonomy
@@ -111,21 +114,23 @@ class BP_Docs_Taxonomy {
 	}
 
 	/**
-	 * Saves post taxonomy terms to a doc when saved from the front end
+	 * Hook into post save preparation to squeeze term information from $_POST
 	 *
-	 * @since 1.0-beta
+	 * @package BuddyPress Docs
+	 * @since 1.9
 	 *
-	 * @param object $query The query object created by BP_Docs_Query
-	 * @return int $post_id Returns the doc's post_id on success
+	 * @return array $tax_name => (array) $terms
 	 */
-	function save_post( $query ) {
+	function prepare_terms_via_post( $terms_array ) {
+
 		foreach ( $this->taxonomies as $tax_name ) {
 
-			if ( $tax_name == 'category' )
+			if ( $tax_name == 'category' ) {
 				$tax_name = 'post_category';
+			}
 
 			// Separate out the terms
-			$terms = !empty( $_POST[$tax_name] ) ? explode( ',', $_POST[$tax_name] ) : array();
+			$terms = ! empty( $_POST[$tax_name] ) ? explode( ',', $_POST[$tax_name] ) : array();
 
 			// Strip whitespace from the terms
 			foreach ( $terms as $key => $term ) {
@@ -136,17 +141,28 @@ class BP_Docs_Taxonomy {
 
 			// Hierarchical terms like categories have to be handled differently, with
 			// term IDs rather than the term names themselves
-			if ( !empty( $tax->hierarchical ) ) {
+			if ( ! empty( $tax->hierarchical ) ) {
 				$term_ids = array();
 				foreach( $terms as $term ) {
 					$parent = 0;
 					$term_ids[] = term_exists( $term, $tax_id, $parent );
 				}
 			}
-
-			wp_set_post_terms( $query->doc_id, $terms, $tax_name );
+			$terms_array[$tax_name] = $terms;
 		}
+		return $terms_array;
+	}
 
+	/**
+	 * Saves post taxonomy terms to a doc when saved from the front end
+	 *
+	 * @package BuddyPress Docs
+	 * @since 1.0-beta
+	 *
+	 * @param object $query The query object created by BP_Docs_Query
+	 * @return int $post_id Returns the doc's post_id on success
+	 */
+	function save_post( $query ) {
 		do_action( 'bp_docs_taxonomy_saved', $query );
 	}
 
@@ -179,7 +195,7 @@ class BP_Docs_Taxonomy {
 			}
 
 			if ( ! empty( $tagtext ) ) {
-				$html = '<p>' . sprintf( __( 'Tags: %s', 'bp-docs' ), implode( ', ', $tagtext ) ) . '</p>';
+				$html = '<p>' . sprintf( __( 'Tags: %s', 'buddypress-docs' ), implode( ', ', $tagtext ) ) . '</p>';
 			}
 
 			echo apply_filters( 'bp_docs_taxonomy_show_terms', $html, $tagtext );
@@ -257,7 +273,7 @@ class BP_Docs_Taxonomy {
 	function tags_th() {
 		?>
 
-		<th scope="col" class="tags-cell"><?php _e( 'Tags', 'bp-docs' ); ?></th>
+		<th scope="column" class="tags-cell"><?php _e( 'Tags', 'buddypress-docs' ); ?></th>
 
 		<?php
 	}
@@ -307,7 +323,7 @@ class BP_Docs_Taxonomy {
 				$tagtext[] = bp_docs_get_tag_link( array( 'tag' => $tag ) );
 			}
 
-			$message[] = sprintf( __( 'You are viewing docs with the following tags: %s', 'bp-docs' ), implode( ', ', $tagtext ) );
+			$message[] = sprintf( __( 'You are viewing docs with the following tags: %s', 'buddypress-docs' ), implode( ', ', $tagtext ) );
 		}
 
 		return $message;
@@ -316,7 +332,7 @@ class BP_Docs_Taxonomy {
 	public function filter_type( $types ) {
 		$types[] = array(
 			'slug' => 'tags',
-			'title' => __( 'Tag', 'bp-docs' ),
+			'title' => __( 'Tag', 'buddypress-docs' ),
 			'query_arg' => 'bpd_tag',
 		);
 		return $types;
@@ -357,12 +373,12 @@ class BP_Docs_Taxonomy {
 
 					?>
 					<li>
-					<a href="<?php echo bp_docs_get_tag_link( array( 'tag' => $term, 'type' => 'url' ) ) ?>" title="<?php echo esc_html( $term_name ) ?>"><?php echo esc_html( $term_name ) ?> <?php printf( __( '(%d)', 'bp-docs' ), $term_count ) ?></a>
+					<a href="<?php echo bp_docs_get_tag_link( array( 'tag' => $term, 'type' => 'url' ) ) ?>" title="<?php echo esc_html( $term_name ) ?>"><?php echo esc_html( $term_name ) ?> <?php printf( __( '(%d)', 'buddypress-docs' ), $term_count ) ?></a>
 					</li>
 
 				<?php endforeach ?>
 			<?php else: ?>
-				<li><?php _e( 'No tags to show.', 'bp-docs' )  ?></li>
+				<li><?php _e( 'No tags to show.', 'buddypress-docs' )  ?></li>
 			<?php endif; ?>
 			</ul>
 		</div>
@@ -466,7 +482,7 @@ function bp_docs_get_tag_link( $args = array() ) {
 	if ( $type != 'html' )
 		return apply_filters( 'bp_docs_get_tag_link_url', $url, $tag, $type );
 
-	$html = '<a href="' . $url . '" title="' . sprintf( __( 'Docs tagged %s', 'bp-docs' ), esc_attr( $tag ) ) . '">' . esc_html( $tag ) . '</a>';
+	$html = '<a href="' . $url . '" title="' . sprintf( __( 'Docs tagged %s', 'buddypress-docs' ), esc_attr( $tag ) ) . '">' . esc_html( $tag ) . '</a>';
 
 	return apply_filters( 'bp_docs_get_tag_link', $html, $url, $tag, $type );
 }
@@ -539,7 +555,7 @@ function bp_docs_post_categories_meta_box( $post ) {
 	<div id="taxonomy-<?php echo $taxonomy; ?>" class="categorydiv">
 		<ul id="<?php echo $taxonomy; ?>-tabs" class="category-tabs">
 			<li class="tabs"><a href="#<?php echo $taxonomy; ?>-all" tabindex="3"><?php echo $tax->labels->all_items; ?></a></li>
-			<li class="hide-if-no-js"><a href="#<?php echo $taxonomy; ?>-pop" tabindex="3"><?php _e( 'Most Used', 'bp-docs' ); ?></a></li>
+			<li class="hide-if-no-js"><a href="#<?php echo $taxonomy; ?>-pop" tabindex="3"><?php _e( 'Most Used', 'buddypress-docs' ); ?></a></li>
 		</ul>
 
 		<div id="<?php echo $taxonomy; ?>-pop" class="tabs-panel" style="display: none;">
@@ -563,7 +579,7 @@ function bp_docs_post_categories_meta_box( $post ) {
 					<a id="<?php echo $taxonomy; ?>-add-toggle" href="#<?php echo $taxonomy; ?>-add" class="hide-if-no-js" tabindex="3">
 						<?php
 							/* translators: %s: add new taxonomy label */
-							printf( __( '+ %s', 'bp-docs' ), $tax->labels->add_new_item );
+							printf( __( '+ %s', 'buddypress-docs' ), $tax->labels->add_new_item );
 						?>
 					</a>
 				</h4>
