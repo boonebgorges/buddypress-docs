@@ -105,6 +105,17 @@ function bp_docs_edit_doc_content() {
 function bp_docs_edit_parent_dropdown() {
 	$bp = buddypress();
 
+	$current_doc = get_queried_object();
+	$exclude = $parent = false;
+
+	// If this is a failed submission, use the value from the POST cookie
+	if ( ! empty( $bp->bp_docs->submitted_data->parent_id ) ) {
+		$parent = intval( $bp->bp_docs->submitted_data->parent_id );
+	} else if ( isset( $current_doc->post_type ) && $bp->bp_docs->post_type_name === $current_doc->post_type ) {
+		$exclude = $current_doc->ID;
+		$parent = $current_doc->post_parent;
+	}
+
 	$include = array( 0 );
 
 	$query_args = apply_filters( 'bp_docs_parent_dropdown_query_args', array(
@@ -116,25 +127,17 @@ function bp_docs_edit_parent_dropdown() {
 
 	if ( $doc_query->have_posts() ) {
 		while ( $doc_query->have_posts() ) {
-			$doc_query->the_post();;
-			$include[] = get_the_ID();
+			$doc_query->the_post();
+			if ( ! $exclude || $exclude !== get_the_ID() ) {
+				$include[] = get_the_ID();
+			}
 		}
 	}
 
-	$current_doc = get_queried_object();
-	$exclude = $parent = false;
-
-	// If this is a failed submission, use the value from the POST cookie
-	if ( ! empty( $bp->bp_docs->submitted_data->parent_id ) ) {
-		$parent = intval( $bp->bp_docs->submitted_data->parent_id );
-	} else if ( isset( $current_doc->post_type ) && $bp->bp_docs->post_type_name === $current_doc->post_type ) {
-		$exclude = array( $current_doc->ID );
-		$parent = $current_doc->post_parent;
-	}
+	$doc_query->reset_postdata();
 
 	$pages = wp_dropdown_pages( array(
 		'post_type'        => $bp->bp_docs->post_type_name,
-		'exclude'          => $exclude,
 		'include'          => $include,
 		'selected'         => $parent,
 		'name'             => 'parent_id',

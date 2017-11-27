@@ -1011,7 +1011,7 @@ class BP_Docs_Groups_Integration {
 		global $wp;
 
 		if ( bp_docs_is_group_docs() ) {
-			@setcookie( 'bp-docs-last-docs-directory', home_url( $wp->request ), 0, '/' );
+			bp_docs_set_last_docs_directory_cookie();
 		}
 	}
 }
