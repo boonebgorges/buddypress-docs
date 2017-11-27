@@ -439,6 +439,7 @@ class BP_Docs_Query {
 	 *                            'view_history' => 'creator' )
 	 *	      @type int    $parent_id    The ID of the parent doc, if applicable.
 	 *	      @type string $save_context How this doc is being saved.
+	 *	      @type string $redirect_to  Target mode to return to. 'single' or 'edit'.
 	 *        }
 	 * @return array {
 	 *		  @type string $message_type Type of message, success or error.
@@ -463,8 +464,9 @@ class BP_Docs_Query {
 			'taxonomies'	=> array(),
 			'settings'		=> array(),
 			'parent_id'		=> 0,
-			'save_context'  => 'direct'
-			);
+			'save_context'  => 'direct',
+			'redirect_to'   => 'single',
+		);
 
 		$args = wp_parse_args( $passed_args, $defaults );
 
@@ -588,7 +590,14 @@ class BP_Docs_Query {
 					// Existing Doc updated.
 					$result['message'] = __( 'Doc successfully edited!', 'bp-docs' );
 				}
-				$result['redirect'] = 'single';
+
+				if ( 'edit' === $args['redirect_to'] ) {
+					$result['redirect'] = 'edit';
+				} else {
+					$result['redirect'] = 'single';
+				}
+
+				$message_type = 'success';
 
 				// Save settings. We append the notice message if necessary.
 				$access_setting_message = bp_docs_save_doc_access_settings( $this->doc_id, $args['author_id'], $args['settings'], $this->is_new_doc );
@@ -615,7 +624,9 @@ class BP_Docs_Query {
 		 */
 		do_action( 'bp_docs_after_save', $this->doc_id, $args );
 
-		$message_type = $result['redirect'] == 'single' ? 'success' : 'error';
+		if ( ! isset( $message_type ) ) {
+			$message_type = $result['redirect'] == 'single' ? 'success' : 'error';
+		}
 
 		// Stuff data into a cookie so it can be accessed on next page load
 		if ( 'error' === $message_type ) {
