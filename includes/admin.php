@@ -66,7 +66,9 @@ class BP_Docs_Admin {
 			'bp-docs-settings',
 			'bp-docs-general'
 		);
-		register_setting( 'bp-docs-settings', 'bp-docs-slug', 'rawurlencode' );
+		register_setting( 'bp-docs-settings', 'bp-docs-slug', array(
+			'sanitize_callback' => array( $this, 'sanitize_slug' ),
+		) );
 
 		// General - Excerpt length
 		add_settings_field(
@@ -145,7 +147,7 @@ class BP_Docs_Admin {
 		register_setting( 'bp-docs-settings', 'bp-docs-enable-attachments' );
 	}
 
-	public function general_section() {}
+	public function general_section() { settings_errors(); }
 	public function users_section() {}
 	public function groups_section() {}
 	public function attachments_section() {}
@@ -223,6 +225,14 @@ class BP_Docs_Admin {
 		<p class="description"><?php _e( "Allow users to add attachments to their Docs.", 'buddypress-docs' ) ?></p>
 
 		<?php
+	}
+
+	public function sanitize_slug( $value ) {
+		$value = rawurlencode( $value );
+
+		add_settings_error( 'bp-docs-settings', 'bp-docs-settings-saved', __( 'Settings updated.', 'buddypress-docs' ), 'updated' );
+
+		return $value;
 	}
 
 	function replace_recent_comments_dashboard_widget() {
