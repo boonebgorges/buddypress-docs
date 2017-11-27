@@ -1147,3 +1147,27 @@ function bp_docs_save_doc_via_post() {
 	$instance = new BP_Docs_Query;
 	return $instance->save( $args );
 }
+
+/**
+ * Set the 'bp-docs-last-docs-directory' cookie.
+ *
+ * @since 2.0.0
+ */
+function bp_docs_set_last_docs_directory_cookie() {
+	global $wp;
+
+	if ( ! is_user_logged_in() ) {
+		return;
+	}
+
+	$url = home_url( $wp->request );
+
+	if ( isset( $_COOKIE['bp-docs-last-docs-directory'] ) ) {
+		$existing = urldecode( $_COOKIE['bp-docs-last-docs-directory'] );
+		if ( $existing === $url ) {
+			return;
+		}
+	}
+
+	@setcookie( 'bp-docs-last-docs-directory', $url, 0, '/' );
+}
