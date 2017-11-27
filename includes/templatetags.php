@@ -2146,7 +2146,7 @@ function bp_docs_attachment_url( $attachment_id ) {
 
 		if ( bp_docs_attachment_protection() ) {
 			$attachment = get_post( $attachment_id );
-			$att_base   = basename( get_attached_file( $attachment_id ) );
+			$att_base   = wp_basename( get_attached_file( $attachment_id ) );
 			$doc_url    = bp_docs_get_doc_link( $attachment->post_parent );
 			$att_url    = add_query_arg( 'bp-attachment', $att_base, $doc_url );
 		} else {
@@ -2168,7 +2168,7 @@ function bp_docs_attachment_item_markup( $attachment_id, $format = 'full' ) {
 	$att_url    = bp_docs_get_attachment_url( $attachment_id );
 
 	$attachment = get_post( $attachment_id );
-	$att_base   = basename( get_attached_file( $attachment_id ) );
+	$att_base   = wp_basename( get_attached_file( $attachment_id ) );
 	$doc_url    = bp_docs_get_doc_link( $attachment->post_parent );
 
 	$attachment_ext = preg_replace( '/^.+?\.([^.]+)$/', '$1', $att_url );
