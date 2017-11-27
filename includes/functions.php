@@ -1103,8 +1103,9 @@ function bp_docs_save_doc_via_post() {
 		'taxonomies'   => array(),
 		'settings'     => array(),
 		'parent_id'    => 0,
-		'save_context' => 'post_data'
-		);
+		'save_context' => 'post_data',
+		'redirect_to'  => 'single',
+	);
 
 	if ( isset( $_POST['doc_id'] ) && 0 != $_POST['doc_id'] ) {
 		$args['doc_id'] = (int) $_POST['doc_id'];
@@ -1143,6 +1144,8 @@ function bp_docs_save_doc_via_post() {
 
 	// Calculate parent_id only if hierarchy addon is active.
 	$args['parent_id'] = apply_filters( 'bp_docs_get_parent_id_via_post', $args['parent_id'] );
+
+	$args['redirect_to'] = isset( $_POST['doc-edit-submit-continue'] ) ? 'edit' : 'single';
 
 	$instance = new BP_Docs_Query;
 	return $instance->save( $args );

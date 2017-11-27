@@ -381,7 +381,7 @@ class BP_Docs_Component extends BP_Component {
 	function catch_page_load() {
 		global $bp;
 
-		if ( !empty( $_POST['doc-edit-submit'] ) ) {
+		if ( ! empty( $_POST['doc-edit-submit'] ) || ! empty( $_POST['doc-edit-submit-continue'] ) ) {
 
 			// Existing Docs have a more specific permission check.
 			$doc = bp_docs_get_current_doc();
