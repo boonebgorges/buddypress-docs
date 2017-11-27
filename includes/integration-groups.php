@@ -1061,6 +1061,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 		$this->slug 			= bp_docs_get_docs_slug();
 
 		$this->enable_create_step	= $this->enable_create_step();
+		$this->enable_edit_item	= $this->enable_edit_item();
 		$this->create_step_position 	= 18;
 		$this->nav_item_position 	= 45;
 
@@ -1092,6 +1093,21 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	function enable_create_step() {
 		$enable_step = apply_filters( 'bp_docs_force_enable_at_group_creation', false ) ? false : true;
 		return apply_filters( 'bp_docs_enable_group_create_step', $enable_step );
+	}
+
+	/**
+	 * Show the edit menu item?
+	 *
+	 * The main purpose here is to provide a filtered value, so that plugins can choose to
+	 * hide the edit menu item, mainly so that the Docs tab will be enabled by default and can not be changed.
+	 *
+	 *
+	 * @since 1.9.1
+	 *
+	 * @return bool
+	 */
+	function enable_edit_item() {
+		return apply_filters( 'bp_docs_enable_group_edit_item', true, $this->group_id );
 	}
 
 	/**
