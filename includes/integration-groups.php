@@ -1008,8 +1008,10 @@ class BP_Docs_Groups_Integration {
 	 * @since 1.9.0
 	 */
 	public function	set_directory_cookie() {
+		global $wp;
+
 		if ( bp_docs_is_group_docs() ) {
-			@setcookie( 'bp-docs-last-docs-directory', home_url( $_SERVER['REQUEST_URI'] ), 0, '/' );
+			@setcookie( 'bp-docs-last-docs-directory', home_url( $wp->request ), 0, '/' );
 		}
 	}
 }
