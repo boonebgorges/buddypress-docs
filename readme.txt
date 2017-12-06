@@ -33,6 +33,10 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 2.1.0 =
+* Improved Doc search to match attachment filenames.
+* Added filters to modify default toggle open/closed state on Doc edit/create.
+
 = 2.0.0 =
 * Began using the WordPress.org translation service. This will require action by some users:
 *    If you use a custom translation, it must be renamed and moved to this location: wp-content/languages/plugins/buddypress-docs-LOCALE.mo. E.g., wp-content/languages/plugins/buddypress-docs-es_ES.mo

@@ -2367,10 +2367,19 @@ function bp_docs_is_doc_trashed( $doc_id = false ) {
  */
 function bp_docs_toggleable_open_or_closed_class() {
 	if ( bp_docs_is_doc_create() ) {
-		echo 'toggle-open';
+		$class = 'toggle-open';
 	} else {
-		echo 'toggle-closed';
+		$class = 'toggle-closed';
 	}
+
+	/**
+	 * Filters the open/closed class used for toggleable divs.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param string $class 'toggle-open' or 'toggle-closed'.
+	 */
+	echo esc_attr( apply_filters( 'bp_docs_toggleable_open_or_closed_class', $class ) );
 }
 
 /**
