@@ -224,9 +224,11 @@ class BP_Docs_Query {
 				if ( bp_docs_enable_attachments() ) {
 					add_filter( 'posts_clauses', '_filter_query_attachment_filenames' );
 					$attachment_posts = get_posts( array(
-						'post_type' => 'attachment',
-						'post_status' => 'inherit',
-						's' => $this->query_args['search_terms'],
+						'post_type'        => 'attachment',
+						'post_status'      => 'inherit',
+						's'                => $this->query_args['search_terms'],
+						'posts_per_page'   => -1,
+						'suppress_filters' => false,
 					) );
 
 					if ( $attachment_posts ) {
