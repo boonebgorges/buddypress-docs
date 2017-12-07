@@ -1450,10 +1450,27 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 		$d2 = $this->factory->doc->create();
 		$d3 = $this->factory->doc->create();
 
-		// Fake attachmentssss.
-		add_post_meta( $d1, '_wp_attached_file', '/foo/bar/baz.jpg' );
-		add_post_meta( $d2, '_wp_attached_file', '/foo/bar/baz.pdf' );
-		add_post_meta( $d3, '_wp_attached_file', '/foo/bar/quz.pdf' );
+		// Fake attachments.
+		$a1 = $this->factory->post->create( array(
+			'post_type' => 'attachment',
+			'post_status' => 'inherit',
+			'post_parent' => $d1,
+		) );
+		add_post_meta( $a1, '_wp_attached_file', '/foo/bar/baz.jpg' );
+
+		$a2 = $this->factory->post->create( array(
+			'post_type' => 'attachment',
+			'post_status' => 'inherit',
+			'post_parent' => $d2,
+		) );
+		add_post_meta( $a2, '_wp_attached_file', '/foo/bar/baz.pdf' );
+
+		$a3 = $this->factory->post->create( array(
+			'post_type' => 'attachment',
+			'post_status' => 'inherit',
+			'post_parent' => $d3,
+		) );
+		add_post_meta( $a3, '_wp_attached_file', '/foo/bar/quz.pdf' );
 
 		$q = new BP_Docs_Query( array(
 			'search_terms' => 'baz',
