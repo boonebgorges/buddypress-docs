@@ -715,9 +715,18 @@ class BP_Docs_Query {
 	protected function search_docs_for_attachment_matches( $search_term ) {
 		global $wpdb;
 
-		$like = '%' . $wpdb->esc_like( $search_term ) . '%';
+		$last_changed = wp_cache_get( 'last_changed', 'posts' );
+		$cache_key = md5( 'bp_docs_attachment_search_' . $search_term . $last_changed );
+		$cached = wp_cache_get( $cache_key, 'posts' );
+		if ( false === $cached ) {
+			$like = '%' . $wpdb->esc_like( $search_term ) . '%';
 
-		$doc_ids = $wpdb->get_col( $wpdb->prepare( "SELECT d.ID FROM {$wpdb->posts} d JOIN {$wpdb->posts} a ON ( d.ID = a.post_parent ) LEFT JOIN {$wpdb->postmeta} pm ON ( a.ID = pm.post_id AND pm.meta_key = '_wp_attached_file' ) WHERE d.post_type = %s AND a.post_type = 'attachment' AND pm.meta_value LIKE %s", bp_docs_get_post_type_name(), $like ) );
+			$doc_ids = $wpdb->get_col( $wpdb->prepare( "SELECT d.ID FROM {$wpdb->posts} d JOIN {$wpdb->posts} a ON ( d.ID = a.post_parent ) LEFT JOIN {$wpdb->postmeta} pm ON ( a.ID = pm.post_id AND pm.meta_key = '_wp_attached_file' ) WHERE d.post_type = %s AND a.post_type = 'attachment' AND pm.meta_value LIKE %s", bp_docs_get_post_type_name(), $like ) );
+
+			wp_cache_set( $cache_key, $doc_ids, $cached );
+		} else {
+			$doc_ids = $cached;
+		}
 
 		return array_map( 'intval', $doc_ids );
 	}

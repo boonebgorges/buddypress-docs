@@ -1473,7 +1473,7 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 		add_post_meta( $a3, '_wp_attached_file', '/foo/bar/quz.pdf' );
 
 		$q = new BP_Docs_Query( array(
-			'search_terms' => 'baz',
+			'search_terms' => 'baz.pdf',
 		) );
 
 		// Remove access protection for the moment because I'm lazy
@@ -1483,6 +1483,22 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 
 		$found = wp_list_pluck( $wp_query->posts, 'ID' );
 
-		$this->assertEqualSets( array( $d1, $d2 ), $found );
+		$this->assertEqualSets( array( $d2 ), $found );
+
+		// Test cache busting.
+		update_post_meta( $a3, '_wp_attached_file', '/foo/bar/baz.pdf' );
+
+		$q = new BP_Docs_Query( array(
+			'search_terms' => 'baz.pdf',
+		) );
+
+		// Remove access protection for the moment because I'm lazy
+		remove_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
+		$wp_query = $q->get_wp_query();
+		add_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
+
+		$found = wp_list_pluck( $wp_query->posts, 'ID' );
+
+		$this->assertEqualSets( array( $d2, $d3 ), $found );
 	}
 }
