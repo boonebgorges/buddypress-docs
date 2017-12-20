@@ -26,10 +26,6 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 
 	<div class="doc-content">
 
-	<div id="idle-warning" style="display:none">
-		<p><?php _e( 'You have been idle for <span id="idle-warning-time"></span>', 'buddypress-docs' ) ?></p>
-	</div>
-
 	<form action="" method="post" class="standard-form" id="doc-form">
 	    <div class="doc-header">
 		<?php if ( bp_docs_is_existing_doc() ) : ?>
