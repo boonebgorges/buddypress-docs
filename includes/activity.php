@@ -155,6 +155,11 @@ function bp_docs_post_activity( $query ) {
 		return;
 	}
 
+	// Don't create activity if the post is not "publish" status.
+	if ( 'publish' != $doc->post_status ) {
+		return;
+	}
+
 	// Set the action. Filterable so that other integration pieces can alter it
 	$action 	= '';
 	$user_link 	= bp_core_get_userlink( $last_editor );
@@ -221,10 +226,13 @@ function bp_docs_delete_doc_activity( $new_status, $old_status, $post ) {
 		return;
 	}
 
-	if ( 'trash' != $new_status ) {
+	/*
+	 * Only continue the activity deletion process  
+	 * if the doc is being switched to a non-public status.
+	 */
+	if ( ! in_array( $new_status, array( 'trash', 'bp_docs_pending', 'draft' ) ) ) {
 		return;
 	}
-
 
 	$activities = bp_activity_get(
 		array(

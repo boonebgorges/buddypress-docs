@@ -2318,8 +2318,11 @@ function bp_docs_get_container_class() {
 function bp_docs_doc_row_classes() {
 	$classes = array();
 
-	if ( get_post_status( get_the_ID() ) == 'trash' ) {
+	$status = get_post_status( get_the_ID() );
+	if ( 'trash' == $status ) {
 		$classes[] = 'bp-doc-trashed-doc';
+	} elseif ( 'bp_docs_pending' == $status ) {
+		$classes[] = 'bp-doc-pending-doc';
 	}
 
 	// Pass the classes out as an array for easy unsetting or adding new elements
@@ -2337,8 +2340,11 @@ function bp_docs_doc_row_classes() {
  * @since 1.5.5
  */
 function bp_docs_doc_trash_notice() {
-	if ( get_post_status( get_the_ID() ) == 'trash' ) {
+	$status = get_post_status( get_the_ID() );
+	if ( 'trash' == $status ) {
 		echo ' <span title="' . __( 'This Doc is in the Trash', 'buddypress-docs' ) . '" class="bp-docs-trashed-doc-notice">' . __( 'Trash', 'buddypress-docs' ) . '</span>';
+	} elseif ( 'bp_docs_pending' == $status  ) {
+		echo ' <span title="' . __( 'This Doc is awaiting moderation', 'buddypress-docs' ) . '" class="bp-docs-pending-doc-notice">' . __( 'Awaiting Moderation', 'buddypress-docs' ) . '</span>';
 	}
 }
 
