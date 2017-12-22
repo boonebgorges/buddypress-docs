@@ -33,6 +33,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 2.0.1 =
+* Fixed bug that caused original author info to be lost when a doc was edited by another user.
+
 = 2.0.0 =
 * Began using the WordPress.org translation service. This will require action by some users:
 *    If you use a custom translation, it must be renamed and moved to this location: wp-content/languages/plugins/buddypress-docs-LOCALE.mo. E.g., wp-content/languages/plugins/buddypress-docs-es_ES.mo
