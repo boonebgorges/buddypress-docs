@@ -18,13 +18,13 @@ class BP_Docs_Moderation {
 	}
 
 	/**
-	 * Hook the Folders functionality into Docs.
+	 * Add hooks for moderation functionality.
 	 *
 	 * @since 2.1.0
 	 */
 	public function add_hooks() {
 		// Register a custom status that's a lot like the built-in "pending" status.
-		add_action( 'bp_docs_init', array( $this, 'register_docs_pending_status' ), 9 );
+		add_action( 'bp_docs_init', array( $this, 'register_docs_pending_status' ) );
 
 		add_filter( 'display_post_states', array( $this, 'add_moderated_label' ), 10, 2 );
 	}
@@ -36,8 +36,8 @@ class BP_Docs_Moderation {
 	 */
 	public function register_docs_pending_status() {
 		$args = array(
-			'label'                     => _x( 'Awaiting Moderation', 'Status General Name', 'buddypress-docs' ),
-			'label_count'               => _n_noop( 'Awaiting Moderation (%s)',  'Pending (%s)', 'buddypress-docs' ),
+			'label'                     => _x( 'Awaiting Moderation', 'General name of pending doc status', 'buddypress-docs' ),
+			'label_count'               => _n_noop( 'Awaiting Moderation (%s)',  'Awaiting Moderation (%s)', 'buddypress-docs' ),
 			'public'                    => current_user_can( 'bp_moderate' ),
 			'show_in_admin_all_list'    => true,
 			'show_in_admin_status_list' => true,

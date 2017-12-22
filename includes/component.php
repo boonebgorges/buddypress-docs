@@ -767,7 +767,7 @@ class BP_Docs_Component extends BP_Component {
 	 * @return str $link The filtered permalink
 	 */
 	function filter_permalinks( $link, $post, $leavename, $sample ) {
-		if ( bp_docs_get_post_type_name() == $post->post_type && ! empty( $post->post_name ) ) {
+		if ( bp_docs_get_post_type_name() == $post->post_type ) {
 			$link = trailingslashit( bp_docs_get_archive_link() . $post->post_name );
 		}
 

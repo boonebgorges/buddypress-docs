@@ -557,7 +557,7 @@ class BP_Docs_Query {
 			 * @param array  $args The passed and filtered parameters for the doc
 			 *                     about to be saved.
 			 */
-			$r = apply_filters( 'bp_docs_args_before_save', $r, $this, $args );
+			$r = apply_filters( 'bp_docs_post_args_before_save', $r, $this, $args );
 
 			// Insert or update the post.
 			$this->doc_id = wp_insert_post( $r );

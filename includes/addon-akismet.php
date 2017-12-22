@@ -22,7 +22,7 @@ class BP_Docs_Akismet {
 	 */
 	public function add_hooks() {
 		// Check docs against the Akismet service.
-		add_filter( 'bp_docs_args_before_save', array( $this, 'check_for_spam'), 10, 3 );
+		add_filter( 'bp_docs_post_args_before_save', array( $this, 'check_for_spam'), 10, 3 );
 	}
 
 	/**
@@ -45,12 +45,15 @@ class BP_Docs_Akismet {
 		// Check with Akismet to see if this is spam.
 		$akismet_response = $this->send_akismet_request( $akismet_package, 'check', 'spam' );
 
-		// Spam.
-		if ( 'true' == $akismet_response['bp_docs_as_result'] ) {
+		/*
+		 * Spam.
+		 * Note that Akismet returns a true/false response as a string value.
+		 */
+		if ( 'true' === $akismet_response['bp_docs_as_result'] ) {
 			/**
-			 * Fires after a doc has been proven to be spam, but before officially being marked as spam.
+			 * Fires after a doc has been identified as spam, but before officially being marked as spam.
 			 *
-			 * @since 2.0.0
+			 * @since 2.1.0
 			 *
 			 * @param array  $doc              The parameters to be used in wp_insert_post().
 			 * @param array  $akismet_response Array of activity data for item including
@@ -135,7 +138,7 @@ class BP_Docs_Akismet {
 		$package['user_ip']      = bp_core_current_user_ip();
 
 		if ( Akismet::is_test_mode() ) {
-			$package['is_test'] = 'true';
+			$package['is_test'] = true;
 		}
 
 		// Keys to ignore.
