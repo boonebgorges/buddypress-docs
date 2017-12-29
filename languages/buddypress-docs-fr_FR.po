@@ -940,6 +940,22 @@ msgstr "Qui peut poster des commentaires sur ce document?"
 msgid "Who can view the history of this doc?"
 msgstr "Qui peut consulter l'historique de ce document?"
 
+#: includes/templatetags.php:1193
+msgid "Untrash"
+msgstr "Restaurer le document"
+
+#: includes/templatetags.php:1293
+msgid "Remove from Trash"
+msgstr "Retirer le document de la corbeille"
+
+#: includes/templatetags.php:1295 includes/templatetags.php:1300
+msgid "Permanently Delete"
+msgstr "Supprimer définitivement le document"
+
+#: includes/templatetags.php:1298
+msgid "Move to Trash"
+msgstr "Déplacer le document dans la corbeille"
+
 #: includes/addon-folders.php:1043
 msgid "You must provide a folder name."
 msgstr "Vous devez entrer un nom de dossier."
@@ -968,6 +984,14 @@ msgstr "Dossier supprimé."
 #: includes/addon-folders.php:1274
 msgid "Could not delete folder."
 msgstr "Impossible de supprimer ce dossier."
+
+#: includes/templates/docs/docs-folder-loop.php:83
+msgid "Viewing %1$s-%2$s of %3$s docs in this folder."
+msgstr "Visualisation %1$s-%2$s sur %3$s documents dans ce dossier."
+
+#: includes/templates/docs/docs-folder-loop.php:84
+msgid "View all docs in <strong>%s</strong>."
+msgstr "Visualiser tous les documents dans : <strong>%s</strong>."
 
 #: includes/addon-folders.php:1619
 msgid "My Folders"
