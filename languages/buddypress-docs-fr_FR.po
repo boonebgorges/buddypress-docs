@@ -640,9 +640,56 @@ msgstr ""
 "Il n'y a pas de document pour cette vue. Pourquoi ne pas en <a href=\"%s"
 "\">créer un</a>?"
 
+#: includes/templates/docs/manage-folders.php:3
+msgid "Delete Folder"
+msgstr "Supprimer le dossier"
+
+#: includes/templates/docs/manage-folders.php:7
+msgid "This does not appear to be a valid folder."
+msgstr "Il semble que ce ne soit pas un dossier valide."
+
+#: includes/templates/docs/manage-folders.php:13
+msgid "You are about to delete the folder %s."
+msgstr "Vous êtes sur le point de supprimer le dossier %s."
+
+#: includes/templates/docs/manage-folders.php:19
+msgid ""
+"<strong>WARNING:</strong> Deleting a folder will also delete all Docs and "
+"subfolders in the folder. This action cannot be undone. To preserve your "
+"content, remove everything from this folder before deleting it."
+msgstr ""
+"<strong>ATTENTION:</strong> Supprimer un dossier supprimera également tous les documents et "
+"sous-dossiers dans le dossier. Cette action ne peut pas être annulée. Pour préserver le "
+"contenu, vider ce dossier avant de le supprimer."
+
+#: includes/templates/docs/manage-folders.php:23
+msgid "I understand the consequences and wish to continue deleting this folder."
+msgstr "Je comprends les conséquences et souhaite continuer à supprimer ce dossier."
+
+#: includes/templates/docs/docs-loop-tree.php:7
+#: includes/templates/docs/docs-loop.php:27
+msgid "Manage Folders"
+msgstr "Gérer les dossiers"
+
+#: includes/templates/docs/docs-loop.php:32
+msgid "Hide Folders"
+msgstr "Cacher les dossiers"
+
+#: includes/templates/docs/docs-loop.php:33
+msgid "Show Folders"
+msgstr "Montrer les dossiers"
+
 #: includes/templates/docs/docs-loop.php:99
 msgid "There are no docs for this view."
 msgstr "Aucun document à afficher."
+
+#: includes/templates/docs/manage-folders.php:46
+msgid "Manage Existing Folders"
+msgstr "Gérer les dossiers existants"
+
+#: includes/templates/docs/manage-folders.php:55
+msgid "Create New Folder"
+msgstr "Créer un nouveau dossier"
 
 #: includes/templates/docs/index.php:23 includes/theme-bridge.php:165
 msgid "Docs Directory"
@@ -893,6 +940,39 @@ msgstr "Qui peut poster des commentaires sur ce document?"
 msgid "Who can view the history of this doc?"
 msgstr "Qui peut consulter l'historique de ce document?"
 
+#: includes/addon-folders.php:1043
+msgid "You must provide a folder name."
+msgstr "Vous devez entrer un nom de dossier."
+
+#: includes/addon-folders.php:1125 includes/addon-folders.php:1153
+#: includes/addon-folders.php:1181
+msgid "There was a problem editing that folder. Please try again."
+msgstr "Un problème est survenu durant l'édition de ce dossier. Veuillez réessayer."
+
+#: includes/addon-folders.php:1151
+msgid "Folder successfully updated."
+msgstr "Dossier mis à jour avec succès."
+
+#: includes/addon-folders.php:1221
+msgid "Folder successfully created."
+msgstr "Dossier créé avec succès."
+
+#: includes/addon-folders.php:1223
+msgid "There was a problem creating the folder. Please try again."
+msgstr "Un problème est survenu durant la création de ce dossier. Veuillez réessayer."
+
+#: includes/addon-folders.php:1272
+msgid "Folder deleted."
+msgstr "Dossier supprimé."
+
+#: includes/addon-folders.php:1274
+msgid "Could not delete folder."
+msgstr "Impossible de supprimer ce dossier."
+
+#: includes/addon-folders.php:1619
+msgid "My Folders"
+msgstr "Mes dossiers"
+
 #: includes/addon-folders.php:1652
 msgid " - None - "
 msgstr " - Aucun - "
@@ -928,6 +1008,12 @@ msgstr "Selectionner un dossier pour ce document."
 #: includes/addon-folders.php:1884
 msgid "Use an existing folder"
 msgstr "Utiliser un dossier existant"
+
+#: includes/addon-folders.php:2075
+msgid "You are viewing docs in the following folder: %s"
+msgid_plural "You are viewing docs in the following folders: %s"
+msgstr[0] "Vous visualisez les documents présents dans le dossier : %s"
+msgstr[1] "Vous visualisez les documents présents dans les dossiers : %s"
 
 #: includes/addon-folders.php:1897
 msgid "Create a new folder"
