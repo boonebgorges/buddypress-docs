@@ -364,18 +364,18 @@ function bp_docs_update_doc_count( $item_id = 0, $item_type = '' ) {
 
 	switch ( $item_type ) {
 		case 'group' :
-			$docs_args['author_id'] = '';
+			$docs_args['author_id'] = null;
 			$docs_args['group_id']  = $item_id;
 			break;
 
 		case 'user' :
 			$docs_args['author_id'] = $item_id;
-			$docs_args['group_id']  = '';
+			$docs_args['group_id']  = null;
 			break;
 
 		default :
-			$docs_args['author_id'] = '';
-			$docs_args['group_id']  = '';
+			$docs_args['author_id'] = null;
+			$docs_args['group_id']  = null;
 			break;
 	}
 
