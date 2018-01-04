@@ -181,7 +181,7 @@ class BP_Docs_Users_Integration {
 			$query_args['post_status'] = array( 'publish' );
 		} else if ( bp_docs_is_started_by() ) {
 			$query_args['author'] = bp_displayed_user_id();
-			$query_args['post_status'] = array( 'publish', 'trash' );
+			$query_args['post_status'] = array( 'publish', 'trash', 'bp_docs_pending' );
 		} else {
 			// Just in case
 			$query_args['post__in'] = array( 0 );
