@@ -2370,8 +2370,9 @@ function bp_docs_is_doc_trashed( $doc_id = false ) {
  * Output 'toggle-open' or 'toggle-closed' class for toggleable div.
  *
  * @since 1.8
+ * @since 2.1 Added $context parameter
  */
-function bp_docs_toggleable_open_or_closed_class() {
+function bp_docs_toggleable_open_or_closed_class( $context = 'unknown' ) {
 	if ( bp_docs_is_doc_create() ) {
 		$class = 'toggle-open';
 	} else {
@@ -2383,9 +2384,10 @@ function bp_docs_toggleable_open_or_closed_class() {
 	 *
 	 * @since 2.1.0
 	 *
-	 * @param string $class 'toggle-open' or 'toggle-closed'.
+	 * @param string $class   'toggle-open' or 'toggle-closed'.
+	 * @param string $context In what context is this function being called.
 	 */
-	echo esc_attr( apply_filters( 'bp_docs_toggleable_open_or_closed_class', $class ) );
+	echo esc_attr( apply_filters( 'bp_docs_toggleable_open_or_closed_class', $class, $context ) );
 }
 
 /**

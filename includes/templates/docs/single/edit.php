@@ -80,7 +80,7 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 				<?php do_action( 'bp_docs_before_assoc_groups_meta_box', $doc_id ); ?>
 
 				<div id="doc-associated-group" class="doc-meta-box">
-					<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class() ?>">
+					<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class( 'associated-group-meta-box' ) ?>">
 						<p class="toggle-switch" id="associated-group-toggle">
 							<span class="hide-if-js toggle-link-no-js"><?php _e( 'Associated Group', 'buddypress-docs' ) ?></span>
 							<a class="hide-if-no-js toggle-link" id="associated-toggle-link" href="#"><span class="show-pane plus-or-minus"></span><?php _e( 'Associated Group', 'buddypress-docs' ) ?></a>
@@ -101,7 +101,7 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 				<?php do_action( 'bp_docs_before_access_settings_meta_box', $doc_id ) ?>
 
 				<div id="doc-settings" class="doc-meta-box">
-					<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class() ?>">
+					<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class( 'access-meta-box' ) ?>">
 						<p class="toggle-switch" id="settings-toggle">
 							<span class="hide-if-js toggle-link-no-js"><?php _e( 'Access', 'buddypress-docs' ) ?></span>
 							<a class="hide-if-no-js toggle-link" id="settings-toggle-link" href="#"><span class="show-pane plus-or-minus"></span><?php _e( 'Access', 'buddypress-docs' ) ?></a>
@@ -121,7 +121,7 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 			<?php do_action( 'bp_docs_before_tags_meta_box', $doc_id ) ?>
 
 			<div id="doc-tax" class="doc-meta-box">
-				<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class() ?>">
+				<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class( 'tags-meta-box' ) ?>">
 					<p id="tags-toggle-edit" class="toggle-switch">
 						<span class="hide-if-js toggle-link-no-js"><?php _e( 'Tags', 'buddypress-docs' ) ?></span>
 						<a class="hide-if-no-js toggle-link" id="tags-toggle-link" href="#"><span class="show-pane plus-or-minus"></span><?php _e( 'Tags', 'buddypress-docs' ) ?></a>
@@ -150,7 +150,7 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 				<?php do_action( 'bp_docs_before_parent_meta_box', $doc_id ) ?>
 
 				<div id="doc-parent" class="doc-meta-box">
-					<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class() ?>">
+					<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class( 'parent-meta-box' ) ?>">
 						<p class="toggle-switch" id="parent-toggle">
 							<span class="hide-if-js toggle-link-no-js"><?php _e( 'Parent', 'buddypress-docs' ) ?></span>
 							<a class="hide-if-no-js toggle-link" id="parent-toggle-link" href="#"><span class="show-pane plus-or-minus"></span><?php _e( 'Parent', 'buddypress-docs' ) ?></a>

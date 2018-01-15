@@ -1877,7 +1877,7 @@ function bp_docs_folders_meta_box() {
 	?>
 
 	<div id="doc-folders" class="doc-meta-box">
-		<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class() ?>">
+		<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class( 'folders-meta-box' ) ?>">
 			<p id="folders-toggle-edit" class="toggle-switch">
 				<span class="hide-if-js toggle-link-no-js"><?php _e( 'Folders', 'buddypress-docs' ) ?></span>
 				<a class="hide-if-no-js toggle-link" id="folders-toggle-link" href="#"><span class="show-pane plus-or-minus"></span><span class="toggle-title"><?php _e( 'Folders', 'buddypress-docs' ) ?></span></a>
