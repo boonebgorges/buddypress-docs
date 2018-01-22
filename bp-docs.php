@@ -331,7 +331,7 @@ class BP_Docs {
 		register_taxonomy( $this->associated_item_tax_name, array( $this->post_type_name ), array(
 			'labels'       => $associated_item_labels,
 			'hierarchical' => true,
-			'show_ui'      => true,
+			'show_ui'      => false,
 			'query_var'    => true,
 			'rewrite'      => array( 'slug' => 'item' ),
 		) );
