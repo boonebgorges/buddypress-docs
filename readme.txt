@@ -34,7 +34,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 == Changelog ==
 
 = 2.0.1 =
-* Internationalization fixes.
+* Fixed bug that caused original author info to be lost when a doc was edited by another user.
 
 = 2.0.0 =
 * Began using the WordPress.org translation service. This will require action by some users:

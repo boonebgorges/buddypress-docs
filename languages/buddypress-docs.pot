@@ -1,31 +1,28 @@
-# Copyright (C) 2017 BuddyPress Docs
+# Copyright (C) 2017 Boone B Gorges, David Cavins
 # This file is distributed under the same license as the BuddyPress Docs package.
 msgid ""
 msgstr ""
-"Project-Id-Version: BuddyPress Docs 2.0.0\n"
+"Project-Id-Version: BuddyPress Docs 2.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/buddypress-docs\n"
-"POT-Creation-Date: 2017-11-29 17:09:46+00:00\n"
+"POT-Creation-Date: 2017-12-22 16:50:25+00:00\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "PO-Revision-Date: 2017-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-
-#: bp-docs.php:291
-msgctxt "post type general name"
-msgid "Docs"
-msgstr ""
-
-#: bp-docs.php:292
-msgctxt "post type singular name"
-msgid "Doc"
-msgstr ""
-
-#: bp-docs.php:293
-msgctxt "add new"
-msgid "Add New"
-msgstr ""
+"Language: en\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-Country: United States\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: "
+"__;_e;_x:1,2c;_ex:1,2c;_n:1,2;_nx:1,2,4c;_n_noop:1,2;_nx_noop:1,2,3c;esc_"
+"attr__;esc_html__;esc_attr_e;esc_html_e;esc_attr_x:1,2c;esc_html_x:1,2c;\n"
+"X-Poedit-Basepath: ../\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-Bookmarks: \n"
+"X-Textdomain-Support: yes\n"
+"X-Generator: grunt-wp-i18n1.0.1\n"
 
 #: bp-docs.php:294
 msgid "Add New Doc"
@@ -121,16 +118,6 @@ msgstr ""
 
 #: includes/addon-folders.php:44
 msgid "Docs Folder"
-msgstr ""
-
-#: includes/addon-folders.php:188
-msgctxt "Doc edit tab name"
-msgid "Folders"
-msgstr ""
-
-#: includes/addon-folders.php:189
-msgctxt "Doc edit tab name"
-msgid "Group Folders"
 msgstr ""
 
 #: includes/addon-folders.php:1055
@@ -276,23 +263,17 @@ msgstr ""
 msgid "Revision for &#8220;%1$s&#8221; created on %2$s"
 msgstr ""
 
-#. translators: post revision: 1: when, 2: author name
-#: includes/addon-history.php:351
-msgctxt "post revision"
-msgid "%1$s by %2$s"
-msgstr ""
-
 #: includes/addon-history.php:378
 msgid "Restore"
 msgstr ""
 
-#. translators: column name in revisons
 #: includes/addon-history.php:383 includes/addon-history.php:417
+#. translators: column name in revisons
 msgid "Old"
 msgstr ""
 
-#. translators: column name in revisons
 #: includes/addon-history.php:384 includes/addon-history.php:418
+#. translators: column name in revisons
 msgid "New"
 msgstr ""
 
@@ -300,8 +281,8 @@ msgstr ""
 msgid "Compare Revisions"
 msgstr ""
 
-#. translators: column name in revisons
 #: includes/addon-history.php:419
+#. translators: column name in revisons
 msgid "Date Created"
 msgstr ""
 
@@ -360,8 +341,8 @@ msgstr ""
 msgid "Most Used"
 msgstr ""
 
-#. translators: %s: add new taxonomy label
 #: includes/addon-taxonomy.php:582
+#. translators: %s: add new taxonomy label
 msgid "+ %s"
 msgstr ""
 
@@ -454,9 +435,9 @@ msgstr ""
 msgid ""
 "Change the word on the BuddyPress group tab from 'Docs' to whatever you'd "
 "like. Keep in mind that this will not change the text anywhere else on the "
-"page. For a more thorough text change, create a <a href='http://codex."
-"buddypress.org/extending-buddypress/customizing-labels-messages-and-"
-"urls/'>language file</a> for BuddyPress Docs."
+"page. For a more thorough text change, create a <a "
+"href='http://codex.buddypress.org/extending-buddypress/customizing-labels-"
+"messages-and-urls/'>language file</a> for BuddyPress Docs."
 msgstr ""
 
 #: includes/admin.php:209
@@ -465,11 +446,11 @@ msgstr ""
 
 #: includes/admin.php:211
 msgid ""
-"Change the word on users' Docs tabs from 'Docs' to whatever you'd like. Keep "
-"in mind that this will not change the text anywhere else on the page. For a "
-"more thorough text change, create a <a href='http://codex.buddypress.org/"
-"extending-buddypress/customizing-labels-messages-and-urls/'>language file</"
-"a> for BuddyPress Docs."
+"Change the word on users' Docs tabs from 'Docs' to whatever you'd like. "
+"Keep in mind that this will not change the text anywhere else on the page. "
+"For a more thorough text change, create a <a "
+"href='http://codex.buddypress.org/extending-buddypress/customizing-labels-"
+"messages-and-urls/'>language file</a> for BuddyPress Docs."
 msgstr ""
 
 #: includes/admin.php:220
@@ -554,17 +535,17 @@ msgstr ""
 
 #: includes/attachments.php:769
 msgid ""
-"It looks like you are running <strong>Apache</strong>. The most likely cause "
-"of your problem is that the <code>AllowOverride</code> directive has been "
-"disabled, either globally (<code>httpd.conf</code>) or in a "
+"It looks like you are running <strong>Apache</strong>. The most likely "
+"cause of your problem is that the <code>AllowOverride</code> directive has "
+"been disabled, either globally (<code>httpd.conf</code>) or in a "
 "<code>VirtualHost</code> definition. Contact your host for assistance."
 msgstr ""
 
 #: includes/attachments.php:775
 msgid ""
-"<strong>Your BuddyPress Docs attachments directory is publicly accessible.</"
-"strong> Doc attachments will not be properly protected from direct viewing, "
-"even if the parent Docs are non-public."
+"<strong>Your BuddyPress Docs attachments directory is publicly "
+"accessible.</strong> Doc attachments will not be properly protected from "
+"direct viewing, even if the parent Docs are non-public."
 msgstr ""
 
 #: includes/attachments.php:782
@@ -579,11 +560,6 @@ msgstr ""
 msgid ""
 "Displays the most recent BuddyPress Docs that the visitor can read. Shows "
 "only group-associated docs when used in a single groups sidebar."
-msgstr ""
-
-#: includes/class-wp-widget-recent-docs.php:45
-msgctxt "widget name"
-msgid "(BuddyPress Docs) Recent Docs"
 msgstr ""
 
 #: includes/class-wp-widget-recent-docs.php:70
@@ -602,9 +578,7 @@ msgstr ""
 msgid "Display post date?"
 msgstr ""
 
-#. #-#-#-#-#  buddypress-docs.pot (BuddyPress Docs 2.0.0)  #-#-#-#-#
 #. Plugin Name of the plugin/theme
-#: includes/component.php:42
 msgid "BuddyPress Docs"
 msgstr ""
 
@@ -630,8 +604,8 @@ msgstr ""
 msgid "My Docs "
 msgstr ""
 
-#. translators: group name
 #: includes/component.php:314 includes/integration-groups.php:1746
+#. translators: group name
 msgid "%s&#8217;s Docs"
 msgstr ""
 
@@ -713,13 +687,6 @@ msgstr ""
 msgid "and %d more"
 msgstr ""
 
-#: includes/functions.php:159
-msgctxt ""
-"Description for the associated-item taxonomy term. Of the form \"Docs "
-"associated with the [item-type] [item-name]\" - item-type is group, user, etc"
-msgid "Docs associated with the %1$s %2$s"
-msgstr ""
-
 #: includes/functions.php:548 includes/templatetags.php:1664
 msgid "Logged-in Users"
 msgstr ""
@@ -789,9 +756,9 @@ msgstr ""
 #: includes/integration-groups.php:1245
 msgid ""
 "Docs is a powerful tool for collaboration with members of your group. A "
-"cross between document editor and wiki, Docs allows you to co-author and co-"
-"edit documents with your fellow group members, which you can then sort and "
-"tag in a way that helps your group to get work done."
+"cross between document editor and wiki, Docs allows you to co-author and "
+"co-edit documents with your fellow group members, which you can then sort "
+"and tag in a way that helps your group to get work done."
 msgstr ""
 
 #: includes/integration-groups.php:1248
@@ -822,16 +789,6 @@ msgstr ""
 msgid "View Docs"
 msgstr ""
 
-#: includes/integration-groups.php:1694
-msgctxt "group Docs directory breadcrumb"
-msgid "%s&#8217;s Docs"
-msgstr ""
-
-#: includes/integration-users.php:296
-msgctxt "user Docs directory breadcrumb"
-msgid "%s&#8217;s Docs"
-msgstr ""
-
 #: includes/query-builder.php:483
 msgid "Unknown error. Please try again."
 msgstr ""
@@ -840,26 +797,26 @@ msgstr ""
 msgid "The title field is required."
 msgstr ""
 
-#: includes/query-builder.php:542
+#: includes/query-builder.php:545
 msgid "There was an error when creating the doc."
 msgstr ""
 
-#: includes/query-builder.php:545
+#: includes/query-builder.php:548
 msgid "There was an error when saving the doc."
 msgstr ""
 
-#: includes/query-builder.php:585
+#: includes/query-builder.php:588
 msgid "Doc successfully created!"
 msgstr ""
 
-#: includes/query-builder.php:588
+#: includes/query-builder.php:591
 msgid ""
 "You idled a bit too long while in Edit mode. In order to allow others to "
 "edit the doc you were working on, your changes have been autosaved. Click "
 "the Edit button to return to Edit mode."
 msgstr ""
 
-#: includes/query-builder.php:591
+#: includes/query-builder.php:594
 msgid "Doc successfully edited!"
 msgstr ""
 
@@ -928,11 +885,6 @@ msgstr ""
 msgid "Go up one folder"
 msgstr ""
 
-#: includes/templates/docs/docs-loop.php:82
-msgctxt "up one folder"
-msgid ".."
-msgstr ""
-
 #: includes/templates/docs/manage-folders.php:3
 msgid "Delete Folder"
 msgstr ""
@@ -953,8 +905,7 @@ msgid ""
 msgstr ""
 
 #: includes/templates/docs/manage-folders.php:23
-msgid ""
-"I understand the consequences and wish to continue deleting this folder."
+msgid "I understand the consequences and wish to continue deleting this folder."
 msgstr ""
 
 #: includes/templates/docs/manage-folders.php:28
@@ -1048,10 +999,10 @@ msgstr ""
 #: includes/templates/docs/single/edit.php:228
 msgid ""
 "In order to prevent overwriting content, only one person can edit a given "
-"doc at a time. For that reason, you must periodically ensure the system that "
-"you're still actively editing. If you are idle for more than 30 minutes, "
-"your changes will be auto-saved, and you'll be sent out of Edit mode so that "
-"others can access the doc."
+"doc at a time. For that reason, you must periodically ensure the system "
+"that you're still actively editing. If you are idle for more than 30 "
+"minutes, your changes will be auto-saved, and you'll be sent out of Edit "
+"mode so that others can access the doc."
 msgstr ""
 
 #: includes/templates/docs/single/edit.php:230
@@ -1077,8 +1028,7 @@ msgid "Newer: %s"
 msgstr ""
 
 #: includes/templates/docs/single/history.php:36
-msgid ""
-"You are currently viewing a revision titled \"%1$s\", saved on %2$s by %3$s"
+msgid "You are currently viewing a revision titled \"%1$s\", saved on %2$s by %3$s"
 msgstr ""
 
 #: includes/templates/docs/single/history.php:60
@@ -1101,8 +1051,8 @@ msgstr ""
 
 #: includes/templates/docs/single/index.php:21
 msgid ""
-"Please try again in a few minutes. Or, as an admin, you can <a href=\"%s"
-"\">force cancel</a> the edit lock."
+"Please try again in a few minutes. Or, as an admin, you can <a "
+"href=\"%s\">force cancel</a> the edit lock."
 msgstr ""
 
 #: includes/templates/docs/single/index.php:23
@@ -1118,8 +1068,7 @@ msgid "You are viewing <strong>all</strong> docs."
 msgstr ""
 
 #: includes/templatetags.php:267
-msgid ""
-"<strong><a href=\"%s\" title=\"View All Docs\">View All Docs</a></strong>"
+msgid "<strong><a href=\"%s\" title=\"View All Docs\">View All Docs</a></strong>"
 msgstr ""
 
 #: includes/templatetags.php:277
@@ -1360,4 +1309,63 @@ msgstr ""
 
 #. Author URI of the plugin/theme
 msgid "http://boone.gorg.es"
+msgstr ""
+
+#: bp-docs.php:291
+msgctxt "post type general name"
+msgid "Docs"
+msgstr ""
+
+#: bp-docs.php:292
+msgctxt "post type singular name"
+msgid "Doc"
+msgstr ""
+
+#: bp-docs.php:293
+msgctxt "add new"
+msgid "Add New"
+msgstr ""
+
+#: includes/addon-folders.php:188
+msgctxt "Doc edit tab name"
+msgid "Folders"
+msgstr ""
+
+#: includes/addon-folders.php:189
+msgctxt "Doc edit tab name"
+msgid "Group Folders"
+msgstr ""
+
+#: includes/addon-history.php:351
+#. translators: post revision: 1: when, 2: author name
+msgctxt "post revision"
+msgid "%1$s by %2$s"
+msgstr ""
+
+#: includes/class-wp-widget-recent-docs.php:45
+msgctxt "widget name"
+msgid "(BuddyPress Docs) Recent Docs"
+msgstr ""
+
+#: includes/functions.php:159
+msgctxt ""
+"Description for the associated-item taxonomy term. Of the form \"Docs "
+"associated with the [item-type] [item-name]\" - item-type is group, user, "
+"etc"
+msgid "Docs associated with the %1$s %2$s"
+msgstr ""
+
+#: includes/integration-groups.php:1694
+msgctxt "group Docs directory breadcrumb"
+msgid "%s&#8217;s Docs"
+msgstr ""
+
+#: includes/integration-users.php:296
+msgctxt "user Docs directory breadcrumb"
+msgid "%s&#8217;s Docs"
+msgstr ""
+
+#: includes/templates/docs/docs-loop.php:82
+msgctxt "up one folder"
+msgid ".."
 msgstr ""

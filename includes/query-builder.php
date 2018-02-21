@@ -526,15 +526,18 @@ class BP_Docs_Query {
 			);
 
 			if ( $this->is_new_doc ) {
-				// We only save the author for new docs.
+				// Save the author for new docs.
 				$r['post_author'] = $args['author_id'];
+
+				// Insert the post.
+				$this->doc_id = wp_insert_post( $r );
 			} else {
 				// Save pre-update post data, for comparison by callbacks.
 				$this->previous_revision = get_post( $args['doc_id'] );
-			}
 
-			// Insert or update the post.
-			$this->doc_id = wp_insert_post( $r );
+				// Update the post.
+				$this->doc_id = wp_update_post( $r );
+			}
 
 			if ( ! $this->doc_id ) {
 				// Failed to save. Set error message.
