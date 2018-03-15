@@ -2085,7 +2085,7 @@ function bp_docs_get_doc_attachments( $doc_id = null ) {
 
 	$cache_key = 'bp_docs_attachments:' . $doc_id;
 	$cached = wp_cache_get( $cache_key, 'bp_docs_nonpersistent' );
-	if ( false !== $cached ) {
+	if (count($cached) > 0 ) {
 		return $cached;
 	}
 
