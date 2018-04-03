@@ -556,7 +556,7 @@ function bp_docs_allow_activity_item_visibility( $allow, $activity_obj, $user_id
 		case 'bp_doc_created':
 		case 'bp_doc_edited':
 			$bp_docs_access_query = BP_Docs_Access_Query::init( $user_id );
-			$protected_doc_ids    = $bp_docs_access_query->get_doc_ids();
+			$protected_doc_ids    = $bp_docs_access_query->get_doc_ids($activity_obj->secondary_item_id);
 
 			// For bp_doc_created and bp_doc_edited, the secondary_item_id is the doc_id.
 			if ( in_array( $activity_obj->secondary_item_id, $protected_doc_ids ) ) {

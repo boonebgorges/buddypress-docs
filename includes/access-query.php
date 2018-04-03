@@ -134,7 +134,7 @@ class BP_Docs_Access_Query {
 	 *
 	 * @since 1.2.8
 	 */
-	public function get_doc_ids() {
+	public function get_doc_ids($id = false) {
 		// Check the cache first.
 		$last_changed = wp_cache_get( 'last_changed', 'bp_docs_nonpersistent' );
 		if ( false === $last_changed ) {
@@ -158,7 +158,8 @@ class BP_Docs_Access_Query {
 			if ( empty( $tax_query ) ) {
 				$protected_doc_ids = array( 0 );
 			} else {
-				$forbidden_fruit = new WP_Query( array(
+
+				$query_args = array(
 					'post_type' => bp_docs_get_post_type_name(),
 					'posts_per_page' => -1,
 					'nopaging' => true,
@@ -167,7 +168,14 @@ class BP_Docs_Access_Query {
 					'update_post_meta_cache' => false,
 					'no_found_rows' => 1,
 					'fields' => 'ids',
-				) );
+				);
+
+				if ( is_int( $id ) ) {
+					$query_args['post__in'] = array( $id );
+				}
+
+				$forbidden_fruit = new WP_Query( $query_args );
+
 				if ( $forbidden_fruit->posts ) {
 					$protected_doc_ids = $forbidden_fruit->posts;
 				} else {
@@ -175,7 +183,7 @@ class BP_Docs_Access_Query {
 					 * If no results are returned, we save a 0 value to avoid the
 					 * post__in => array() fetches everything problem.
 					 */
-				 	$protected_doc_ids = array( 0 );
+					$protected_doc_ids = array( 0 );
 				}
 			}
 
@@ -218,15 +226,15 @@ class BP_Docs_Access_Query {
 				$restricted_comment_doc_ids = array( 0 );
 			} else {
 				$forbidden_fruit = new WP_Query( array(
-					'post_type' => bp_docs_get_post_type_name(),
-					'posts_per_page' => -1,
-					'nopaging' => true,
-					'tax_query' => $tax_query,
-					'update_post_term_cache' => false,
-					'update_post_meta_cache' => false,
-					'no_found_rows' => 1,
-					'fields' => 'ids',
-				) );
+					                                 'post_type' => bp_docs_get_post_type_name(),
+					                                 'posts_per_page' => -1,
+					                                 'nopaging' => true,
+					                                 'tax_query' => $tax_query,
+					                                 'update_post_term_cache' => false,
+					                                 'update_post_meta_cache' => false,
+					                                 'no_found_rows' => 1,
+					                                 'fields' => 'ids',
+				                                 ) );
 				if ( $forbidden_fruit->posts ) {
 					$restricted_comment_doc_ids = $forbidden_fruit->posts;
 				} else {
@@ -234,7 +242,7 @@ class BP_Docs_Access_Query {
 					 * If no results are returned, we save a 0 value to avoid the
 					 * post__in => array() fetches everything problem.
 					 */
-				 	$restricted_comment_doc_ids = array( 0 );
+					$restricted_comment_doc_ids = array( 0 );
 				}
 			}
 
