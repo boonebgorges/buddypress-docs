@@ -905,7 +905,8 @@ class BP_Docs_Component extends BP_Component {
 		?>
 		<div id="docs-filter-section-search" class="docs-filter-section<?php if ( $has_search ) : ?> docs-filter-section-open<?php endif ?>">
 			<form action="" method="get">
-				<input name="s" value="<?php the_search_query() ?>">
+				<label for="docs-search" class="screen-reader-text"><?php echo esc_html_e( 'Search', 'buddypress-docs' ); ?></label>
+				<input id="docs-search" name="s" value="<?php the_search_query() ?>">
 				<input name="search_submit" type="submit" value="<?php _e( 'Search', 'buddypress-docs' ) ?>" />
 				<?php do_action( 'bp_docs_directory_filter_search_form' ) ?>
 			</form>
