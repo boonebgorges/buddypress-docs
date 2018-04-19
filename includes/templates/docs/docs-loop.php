@@ -35,7 +35,7 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 		</div>
 	<?php endif; ?>
 
-	<table class="doctable">
+	<table class="doctable" data-folder-id="0">
 
 	<thead>
 		<tr valign="bottom">
@@ -109,7 +109,7 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 	<?php if ( bp_docs_has_docs( array( 'update_attachment_cache' => true ) ) ) : ?>
 		<?php $has_docs = true ?>
 		<?php while ( bp_docs_has_docs() ) : bp_docs_the_doc() ?>
-			<tr<?php bp_docs_doc_row_classes(); ?>>
+			<tr<?php bp_docs_doc_row_classes(); ?> data-doc-id="<?php echo get_the_ID() ?>">
 				<?php if ( bp_docs_enable_attachments() ) : ?>
 					<td class="attachment-clip-cell">
 						<?php bp_docs_attachment_icon() ?>
@@ -151,6 +151,7 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 				</td>
 
 				<?php do_action( 'bp_docs_loop_additional_td' ) ?>
+				<?php wp_nonce_field( 'bp-docs-folder-drop-' . get_the_ID(), 'bp-docs-folder-drop-nonce-' . get_the_ID(), false, true ); ?>
 			</tr>
 		<?php endwhile ?>
 	<?php endif ?>

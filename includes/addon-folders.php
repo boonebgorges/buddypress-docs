@@ -150,6 +150,9 @@ class BP_Docs_Folders {
 
 		// Determine whether the directory view is filtered by a folder request.
 		add_filter( 'bp_docs_is_directory_view_filtered', 'bp_docs_is_directory_view_filtered_by_folder', 10, 2 );
+
+		// Add draggable/droppable classes to the docs loop items.
+		add_filter( 'bp_docs_doc_row_classes', 'bp_docs_item_add_draggable_class' );
 	}
 
 	/**
@@ -163,8 +166,6 @@ class BP_Docs_Folders {
 		$js_requirements = array(
 			'jquery',
 			'bp-docs-chosen',
-			'jquery-ui-draggable',
-			'jquery-ui-widget',
 			'jquery-ui-droppable',
 		);
 
@@ -1445,7 +1446,7 @@ function bp_docs_update_folder_type_for_group_cb() {
  */
 function bp_docs_process_folder_drop_cb() {
 	if ( empty( $_POST['doc_id'] ) ) {
-		die( '-1' );
+		wp_send_json_error( '-1' );
 	}
 
 	$doc_id = intval( $_POST['doc_id'] );
@@ -1453,27 +1454,32 @@ function bp_docs_process_folder_drop_cb() {
 	$nonce = isset( $_POST['nonce'] ) ? stripslashes( $_POST['nonce'] ) : '';
 
 	if ( ! wp_verify_nonce( $nonce, 'bp-docs-folder-drop-' . $doc_id ) ) {
-		die( '-1' );
+		wp_send_json_error( '-2' );
 	}
 
 	// @todo This needs testing with group admins, etc
 	if ( ! current_user_can( 'bp_docs_manage', bp_loggedin_user_id(), $doc_id ) ) {
-		die( '-1' );
+		wp_send_json_error( '-3' );
 	}
 
-	$folder_id = isset( $_POST['folder_id'] ) ? intval( $_POST['folder_id'] ) : 0;
-
-	// @todo Need to do permission tests for these folders
-	if ( empty( $folder_id ) ) {
-		die( '-1' );
+	// Folder ID must be set, but may be zero.
+	if ( ! isset( $_POST['folder_id'] ) ) {
+		wp_send_json_error( '-4' );
 	}
 
-	$success = bp_docs_add_doc_to_folder( $doc_id, $folder_id );
+	$folder_id = intval( $_POST['folder_id'] );
+
+	if ( 0 === $folder_id ) {
+		$existing_folder_id = bp_docs_get_doc_folder( $doc_id );
+		$success = bp_docs_remove_doc_from_folder( $doc_id, $existing_folder_id );
+	} else {
+		$success = bp_docs_add_doc_to_folder( $doc_id, $folder_id );
+	}
 
 	if ( $success ) {
-		die( '1' );
+		wp_send_json_success( '1' );
 	} else {
-		die( '-1' );
+		wp_send_json_error( '-1' );
 	}
 }
 
@@ -2182,6 +2188,22 @@ function bp_docs_is_directory_view_filtered_by_folder( $is_filtered, $exclude ) 
 		$is_filtered = true;
 	}
     return $is_filtered;
+}
+
+/**
+ * Add the draggable item class to docs in the directory view.
+ *
+ * @since 2.1.0
+ *
+ * @param array $classes Array of classes to apply to the doc item.
+ *
+ * @return array $classes
+ */
+function bp_docs_item_add_draggable_class( $classes ) {
+	if ( current_user_can( 'bp_docs_edit', get_the_ID() ) ) {
+		$classes[] = 'doc-in-folder';
+	}
+	return $classes;
 }
 
 /**
