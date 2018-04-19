@@ -172,7 +172,11 @@ class BP_Docs_Folders {
 		wp_enqueue_script( 'bp-docs-folders', plugins_url() . '/buddypress-docs/includes/js/folders.js', $js_requirements );
 
 		wp_register_style( 'bp-docs-chosen', plugins_url() . '/buddypress-docs/lib/css/chosen/chosen.min.css' );
-		wp_enqueue_style( 'bp-docs-folders', plugins_url() . '/buddypress-docs/includes/css/folders.css', array( 'bp-docs-chosen' ) );
+		if ( is_rtl() ) {
+			wp_enqueue_style( 'bp-docs-folders', plugins_url() . '/buddypress-docs/includes/css-rtl/folders.css', array( 'bp-docs-chosen' ) );
+		} else {
+			wp_enqueue_style( 'bp-docs-folders', plugins_url() . '/buddypress-docs/includes/css/folders.css', array( 'bp-docs-chosen' ) );
+		}
 
 		/**
 		 * Filter whether Folders metabox should be force-shown.

@@ -1007,11 +1007,19 @@ class BP_Docs_Component extends BP_Component {
 
 		// Load the main CSS only on the proper pages
 		if ( in_array( bp_docs_get_docs_slug(), $this->slugstocheck ) || bp_docs_is_docs_component() ) {
-			wp_enqueue_style( 'bp-docs-css', $this->includes_url . 'css/screen.css' );
+			if ( is_rtl() ) {
+				wp_enqueue_style( 'bp-docs-css', $this->includes_url . 'css-rtl/screen.css' );
+			} else {
+				wp_enqueue_style( 'bp-docs-css', $this->includes_url . 'css/screen.css' );
+			}
 		}
 
 		if ( bp_docs_is_doc_edit() || bp_docs_is_doc_create() ) {
-			wp_enqueue_style( 'bp-docs-edit-css', $this->includes_url . 'css/edit.css' );
+			if ( is_rtl() ) {
+				wp_enqueue_style( 'bp-docs-edit-css', $this->includes_url . 'css-rtl/edit.css' );
+			} else {
+				wp_enqueue_style( 'bp-docs-edit-css', $this->includes_url . 'css/edit.css' );
+			}
 			wp_enqueue_style( 'thickbox' );
 		}
 	}
