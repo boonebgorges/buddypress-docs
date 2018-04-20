@@ -547,6 +547,7 @@
 				fetching_folder_contents = false;
 				container.removeClass( 'loading' );
 				// Reinitialize the doc draggable interface.
+				init_doc_drag();
 			}
 
 		} );
