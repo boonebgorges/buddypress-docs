@@ -685,7 +685,7 @@ class BP_Docs_Component extends BP_Component {
 		$post = get_post( $comment->comment_post_ID );
 
 		if ( $bp->bp_docs->post_type_name == $post->post_type ) {
-			add_filter( 'pre_option_comments_notify', create_function( false, 'return 0;' ) );
+			add_filter( 'pre_option_comments_notify', '__return_zero' );
 		}
 	}
 
