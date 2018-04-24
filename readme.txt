@@ -36,6 +36,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 = 2.1.0 =
 * Improved Doc search to match attachment filenames.
 * Added filters to modify default toggle open/closed state on Doc edit/create.
+* Improved compatibility with PHP 7.2+.
 
 = 2.0.0 =
 * Began using the WordPress.org translation service. This will require action by some users:
