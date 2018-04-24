@@ -412,7 +412,7 @@ class BP_Docs_Component extends BP_Component {
 				// The user can edit, so we check for edit locks
 				// Because we're not using WP autosave at the moment, ensure that
 				// the lock interval always returns as in process
-				add_filter( 'wp_check_post_lock_window', create_function( false, 'return time();' ) );
+				add_filter( 'wp_check_post_lock_window', 'time' );
 
 				if ( $doc ) {
 					$lock = bp_docs_check_post_lock( $doc->ID );
