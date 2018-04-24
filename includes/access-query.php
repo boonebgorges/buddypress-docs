@@ -324,11 +324,18 @@ function bp_docs_general_access_protection( $query ) {
 	$pt = bp_docs_get_post_type_name();
 	$is_bp_doc_query = is_array( $queried_post_type ) ? in_array( $pt, $queried_post_type ) : $pt == $queried_post_type;
 
-	if ( ! $queried_post_type ||
-	     'any' == $queried_post_type ||
-	     $is_bp_doc_query
-	) {
+	$filter_query = false;
 
+	// 'pagename' queries always fetch pages.
+	if ( ! $queried_post_type && ! $query->get( 'pagename' ) ) {
+		$filter_query = true;
+	} elseif ( 'any' === $queried_post_type ) {
+		$filter_query = true;
+	} elseif ( $is_bp_doc_query ) {
+		$filter_query = true;
+	}
+
+	if ( $filter_query ) {
 		$bp_docs_access_query = bp_docs_access_query();
 
 		if ( $pt == $queried_post_type ) {
