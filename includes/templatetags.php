@@ -725,6 +725,10 @@ function bp_docs_directory_breadcrumb() {
 
 		$crumbs = apply_filters( 'bp_docs_directory_breadcrumb', $crumbs );
 
+		if ( ! $crumbs ) {
+			return '';
+		}
+
 		// Last item is the "current" item
 		$last = array_pop( $crumbs );
 		$last = strip_tags( $last, '<i>' );

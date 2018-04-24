@@ -12,9 +12,12 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 	<?php bp_locate_template( 'docs/manage-folders.php', true ) ?>
 <?php else : ?>
 
-	<h2 class="directory-title">
-		<?php bp_docs_directory_breadcrumb() ?>
-	</h2>
+	<?php $breadcrumb = bp_docs_get_directory_breadcrumb(); ?>
+	<?php if ( $breadcrumb ) : ?>
+		<h2 class="directory-title">
+			<?php echo $breadcrumb; ?>
+		</h2>
+	<?php endif; ?>
 
 	<div class="docs-info-header">
 		<?php bp_docs_info_header() ?>
