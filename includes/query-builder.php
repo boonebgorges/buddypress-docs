@@ -591,8 +591,12 @@ class BP_Docs_Query {
 				}
 
 				// Increment the revision count
-				$revision_count = get_post_meta( $this->doc_id, 'bp_docs_revision_count', true );
-				update_post_meta( $this->doc_id, 'bp_docs_revision_count', intval( $revision_count ) + 1 );
+				$revision_count = 0;
+				$revisions = wp_get_post_revisions( $this->doc_id );
+				if ( $revisions ) {
+					$revision_count = count( $revisions );
+				}
+				update_post_meta( $this->doc_id, 'bp_docs_revision_count', $revision_count );
 
 				/**
 				 * Fires after the doc has been successfully saved.
