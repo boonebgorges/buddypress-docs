@@ -1,12 +1,16 @@
 <?php
+$doc_id = 0;
+$current_doc = bp_docs_get_current_doc();
+if ( $current_doc ) {
+	$doc_id = $current_doc->ID;
+}
+
 $bp_docs_do_theme_compat = is_buddypress() && bp_docs_do_theme_compat( 'single/edit.php' );
 if ( ! $bp_docs_do_theme_compat ) : ?>
 <div id="buddypress">
 <?php endif; ?>
 
 <div class="<?php bp_docs_container_class(); ?>">
-	<?php $doc_id = get_the_ID(); ?>
-
 	<?php include( bp_docs_locate_template( 'single/sidebar.php' ) ) ?>
 
 	<?php include( apply_filters( 'bp_docs_header_template', bp_docs_locate_template( 'docs-header.php' ) ) ) ?>
