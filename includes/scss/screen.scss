@@ -1138,6 +1138,39 @@ body.bp-docs-body-theme-twentysixteen article.type-bp_doc .entry-content {
 	}
 }
 
+// BuddyPress Nouveau Template Pack
+.bp-nouveau {
+	.bp-docs .buddypress-wrap {
+		a.button {
+			background: #fff;
+			/* Old browsers */
+			border-color: #ccc;
+			border-style: solid;
+			border-width: 1px;
+			color: #555;
+			cursor: pointer;
+			font-size: inherit;
+			font-weight: 400;
+			outline: none;
+			padding: 0.3em 0.5em;
+			text-align: center;
+			text-decoration: none;
+			width: auto;
+		}
+		a.button:focus,
+		a.button:hover {
+			background: #ededed;
+			border-color: #999999;
+			color: #333;
+			outline: none;
+			text-decoration: none;
+		}
+		a.button {
+			transition: all 0.1s ease-in-out 0.1s;
+		}
+	}
+}
+
 // Genericons
 @font-face {
     font-family: 'Genericons';
