@@ -39,6 +39,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Fixed bug that caused revision count to be incorrect in some cases.
 * Added filters to modify default toggle open/closed state on Doc edit/create.
 * Improved compatibility with PHP 7.2+.
+* Added right-to-left versions of stylesheets.
 
 = 2.0.0 =
 * Began using the WordPress.org translation service. This will require action by some users:
