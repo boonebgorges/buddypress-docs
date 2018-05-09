@@ -174,6 +174,37 @@ body.js {
 }
 
 // Folder expansion/toggling in doctable.
+.doctable {
+	border: 1px dashed transparent;
+	&.hover {
+		border: 1px dashed gray;
+	}
+	&.successful-drop {
+		animation: success-drop 2s ease-in-out 0s;
+	}
+	&.failed-drop {
+		animation: fail-drop 2s ease-in-out 0s;
+	}
+}
+@keyframes success-drop {
+	from {
+		border-color: green;
+	}
+	to {
+		border-color: transparent;
+	}
+}
+@keyframes fail-drop {
+	from {
+		border-color: red;
+	}
+	to {
+		border-color: transparent;
+	}
+}
+.draggable-in-flux {
+	opacity: .4;
+}
 .folder-row {
 	.toggle-content {
 		background-color: white;
