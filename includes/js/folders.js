@@ -321,15 +321,7 @@
 
 				// Drops to the same folder don't require the API call.
 				if ( move_to_folder === current_folder ) {
-					// Remove the inline positioning styles
-					ui.draggable.removeAttr( 'style' );
-					ui.draggable.css( "position", "relative" );
-
-					// Provide visual feedback that the drop failed.
-					$( event.target ).addClass( "failed-drop" );
-
-					// Remove all hover classes, just in case
-					$( '.hover' ).removeClass( 'hover' );
+					process_doc_drop_table_failure( event, ui )
 					return false;
 				} else {
 					$.ajax( {
@@ -344,32 +336,12 @@
 						success: function( response ) {
 							if ( response.success ) {
 								process_doc_drop_table( event, ui );
-
-								// Provide visual feedback that the drop was successful.
-								$( event.target ).addClass( "successful-drop" );
-
-								// If the source folder table is now empty, add an empty row.
-								if ( 0 == $(".doctable[data-folder-id='" + current_folder + "']").find(" > tbody > tr.doc-in-folder").length ) {
-									// @TODO: Internationalize this.
-									$(".doctable[data-folder-id='" + current_folder + "']").find(" > tbody").append( "<tr><td><p class='no-docs'>There are no docs for this view.</p></td></tr>" );
-								}
 							} else {
-								ui.draggable.removeAttr( 'style' );
-								ui.draggable.css( "position", "relative" );
-
-								// Provide visual feedback that the drop failed.
-								$( event.target ).addClass( "failed-drop" );
+								process_doc_drop_table_failure( event, ui )
 							}
 						},
 						error: function( response ) {
-							ui.draggable.removeAttr( 'style' );
-							ui.draggable.css( "position", "relative" );
-
-							// Provide visual feedback that the drop failed.
-							$( event.target ).addClass( "failed-drop" );
-
-							// Remove all hover classes, just in case
-							$( '.hover' ).removeClass( 'hover' );
+							process_doc_drop_table_failure( event, ui )
 						}
 					} );
 				}
@@ -457,6 +429,9 @@
 	}
 
 	function process_doc_drop_table( event, ui ) {
+		// Provide visual feedback that the drop was successful.
+		$( event.target ).addClass( "successful-drop" );
+
 		// Create a clone of original for appending
 		$doc_clone = ui.draggable.clone();
 
@@ -488,6 +463,18 @@
 
 		// Reinit draggables
 		init_doc_drag();
+	}
+
+	function process_doc_drop_table_failure( event, ui ) {
+		// Provide visual feedback that the drop failed.
+		$( event.target ).addClass( "failed-drop" );
+
+		// Remove the inline positioning styles
+		ui.draggable.removeAttr( 'style' );
+		ui.draggable.css( "position", "relative" );
+
+		// Remove all hover classes, just in case
+		$( '.hover' ).removeClass( 'hover' );
 	}
 
 	function process_doc_drop( event, ui ) {
