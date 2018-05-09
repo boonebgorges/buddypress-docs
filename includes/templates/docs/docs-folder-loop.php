@@ -1,13 +1,11 @@
 <?php $current_folder_id = isset( $_GET['folder'] ) ? absint( $_GET['folder'] ) : 0; ?>
 <table class="doctable" data-folder-id="<?php echo $current_folder_id; ?>">
 <tbody>
+<?php $has_folders = false; ?>
 <?php if ( bp_docs_enable_folders_for_current_context() ) : ?>
 	<?php if ( bp_docs_include_folders_in_loop_view() ) : ?>
-		<?php foreach ( bp_docs_get_folders() as $folder ) :
-			$folder_title = esc_html( $folder->post_title );
-			$folder_id    = $folder->ID;
-			$folder_url   = esc_url( bp_docs_get_folder_url( $folder_id ) );
-		?>
+		<?php foreach ( bp_docs_get_folders() as $folder ) : ?>
+			<?php $has_folders  = true; ?>
 			<tr class="folder-row">
 				<?php /* Just to keep things even */ ?>
 				<?php if ( bp_docs_enable_attachments() ) : ?>
@@ -90,7 +88,7 @@
 		</tr>
 <?php endif; ?>
 	<?php // Add the "no docs" message as the last row, for easy toggling. ?>
-	<tr class="no-docs-row<?php if ( $has_docs ) { echo ' hide'; } ?>">
+	<tr class="no-docs-row<?php if ( $has_docs || $has_folders ) { echo ' hide'; } ?>">
 		<?php if ( bp_docs_enable_attachments() ) : ?>
 			<td class="attachment-clip-cell"></td>
 		<?php endif ?>

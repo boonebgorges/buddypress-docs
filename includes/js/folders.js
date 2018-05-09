@@ -461,8 +461,8 @@
 
 		// Update the "no docs" message in each table
 		$( ".doctable" ).each( function() {
-			var has_docs = $( this ).find(" > tbody > tr.doc-in-folder").length ? true : false;
-			$( this ).find(" > tbody > tr.no-docs-row").toggleClass( "hide", has_docs );
+			var has_contents = $( this ).find(" > tbody > tr.folder-row, > tbody > tr.doc-in-folder").length ? true : false;
+			$( this ).find(" > tbody > tr.no-docs-row").toggleClass( "hide", has_contents );
 		});
 
 		// Reinit draggables
