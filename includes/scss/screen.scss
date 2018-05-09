@@ -123,6 +123,9 @@ body.bp-docs div.page ul {
 	td {
 		// width: 25%;
 	}
+	.no-docs-row.hide {
+		display: none;
+	}
 }
 
 .bp-docs-trashed-doc-notice {
