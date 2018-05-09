@@ -292,25 +292,28 @@
 	 * Set up draggable/droppable
 	 */
 	function init_doc_drag() {
-		// Add doc-in-folder data attribute to each doc.
+		// Add in-folder data attribute to each doc.
 		$( ".doctable" ).each( function(i,e){
 			var in_folder = $( this ).data( "folder-id" );
-			$( this ).find("> tbody > .doc-in-folder").data( "doc-in-folder", in_folder );
+			$( this ).find("> tbody > .doc-in-folder").data( "in-folder", in_folder );
 		} );
 
 		$( '.doc-in-folder' ).draggable({
 			helper: 'clone',
-			revert: 'invalid'
+			revert: 'invalid',
+			start: function( event, ui ) {
+				$( event.target ).addClass( "draggable-in-flux" );
+				$( '.failed-drop' ).removeClass( 'failed-drop' );
+				$( '.successful-drop' ).removeClass( 'successful-drop' );
+			},
+			stop: function( event, ui ) {
+				$( event.target ).removeClass( "draggable-in-flux" );
+			}
 		});
 
 		// Code for table view
 		$( '.doctable' ).droppable( {
 		    accept: ".doc-in-folder",
-		    // @TODO: Why aren't classes applied? Works with standard jquery-ui...
-			classes: {
-				"ui-droppable-hover": "highlight",
-				"ui-droppable-active": "active"
-			},
 			drop: function( event, ui ) {
 				doc_id = ui.draggable.data( "doc-id" );
 				current_folder = ui.draggable.data( "in-folder" );
@@ -322,37 +325,54 @@
 					ui.draggable.removeAttr( 'style' );
 					ui.draggable.css( "position", "relative" );
 
+					// Provide visual feedback that the drop failed.
+					$( event.target ).addClass( "failed-drop" );
+
 					// Remove all hover classes, just in case
 					$( '.hover' ).removeClass( 'hover' );
-					return;
-				}
-				$.ajax( {
-					url: ajaxurl,
-					type: 'POST',
-					data: {
-						doc_id: doc_id,
-						folder_id: $( event.target ).data( 'folder-id' ),
-						action: 'bp_docs_process_folder_drop',
-						nonce: ui.draggable.find( '#bp-docs-folder-drop-nonce-' + doc_id ).val()
-					},
-					success: function( response ) {
-						console.log( response );
-						process_doc_drop_table( event, ui );
+					return false;
+				} else {
+					$.ajax( {
+						url: ajaxurl,
+						type: 'POST',
+						data: {
+							doc_id: doc_id,
+							folder_id: $( event.target ).data( 'folder-id' ),
+							action: 'bp_docs_process_folder_drop',
+							nonce: ui.draggable.find( '#bp-docs-folder-drop-nonce-' + doc_id ).val()
+						},
+						success: function( response ) {
+							if ( response.success ) {
+								process_doc_drop_table( event, ui );
 
-						// If the source folder table is now empty, add an empty row.
-						if ( 0 == $(".doctable[data-folder-id='" + current_folder + "']").find(" > tbody > tr.doc-in-folder").length ) {
-							// @TODO: Internationalize this.
-							$(".doctable[data-folder-id='" + current_folder + "']").find(" > tbody").append( "<tr><td><p class='no-docs'>There are no docs for this view.</p></td></tr>" );
+								// Provide visual feedback that the drop was successful.
+								$( event.target ).addClass( "successful-drop" );
+
+								// If the source folder table is now empty, add an empty row.
+								if ( 0 == $(".doctable[data-folder-id='" + current_folder + "']").find(" > tbody > tr.doc-in-folder").length ) {
+									// @TODO: Internationalize this.
+									$(".doctable[data-folder-id='" + current_folder + "']").find(" > tbody").append( "<tr><td><p class='no-docs'>There are no docs for this view.</p></td></tr>" );
+								}
+							} else {
+								ui.draggable.removeAttr( 'style' );
+								ui.draggable.css( "position", "relative" );
+
+								// Provide visual feedback that the drop failed.
+								$( event.target ).addClass( "failed-drop" );
+							}
+						},
+						error: function( response ) {
+							ui.draggable.removeAttr( 'style' );
+							ui.draggable.css( "position", "relative" );
+
+							// Provide visual feedback that the drop failed.
+							$( event.target ).addClass( "failed-drop" );
+
+							// Remove all hover classes, just in case
+							$( '.hover' ).removeClass( 'hover' );
 						}
-					},
-					error: function( response ) {
-						ui.draggable.removeAttr( 'style' );
-						ui.draggable.css( "position", "relative" );
-
-						// Remove all hover classes, just in case
-						$( '.hover' ).removeClass( 'hover' );
-					}
-				} );
+					} );
+				}
 			},
 			greedy: true, // Don't bubble up in nested folder lists
 			over: function( event, ui ) {
