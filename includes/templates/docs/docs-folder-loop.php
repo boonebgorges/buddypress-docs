@@ -1,4 +1,5 @@
-<table class="doctable">
+<?php $current_folder_id = isset( $_GET['folder'] ) ? absint( $_GET['folder'] ) : 0; ?>
+<table class="doctable" data-folder-id="<?php echo $current_folder_id; ?>">
 <tbody>
 <?php if ( bp_docs_enable_folders_for_current_context() ) : ?>
 	<?php if ( bp_docs_include_folders_in_loop_view() ) : ?>
@@ -28,7 +29,7 @@
 
 <?php if ( bp_docs_has_docs() ) : ?>
 	<?php while ( bp_docs_has_docs() ) : bp_docs_the_doc() ?>
-		<tr<?php bp_docs_doc_row_classes(); ?>>
+		<tr<?php bp_docs_doc_row_classes(); ?> data-doc-id="<?php echo get_the_ID() ?>">
 			<?php if ( bp_docs_enable_attachments() ) : ?>
 				<td class="attachment-clip-cell">
 					<?php bp_docs_attachment_icon() ?>
@@ -70,6 +71,7 @@
 			</td>
 
 			<?php do_action( 'bp_docs_loop_additional_td' ) ?>
+			<?php wp_nonce_field( 'bp-docs-folder-drop-' . get_the_ID(), 'bp-docs-folder-drop-nonce-' . get_the_ID(), false, true ); ?>
 		</tr>
 	<?php endwhile ?>
 
@@ -81,7 +83,7 @@
 			<?php endif ?>
 			<td class="folder-meta-info-statement" colspan=10>
 				<?php printf( __( 'Viewing %1$s-%2$s of %3$s docs in this folder.', 'buddypress-docs' ), bp_docs_get_current_docs_start(), bp_docs_get_current_docs_end(), bp_docs_get_total_docs_num() ) ?> <br/>
-				<a href="<?php echo esc_url( bp_docs_get_folder_url( $_GET['folder'] ) ); ?>"><?php printf( __( 'View all docs in <strong>%s</strong>.', 'buddypress-docs' ), get_the_title( $_GET['folder'] ) ); ?></a>
+				<a href="<?php echo esc_url( bp_docs_get_folder_url( $current_folder_id ) ); ?>"><?php printf( __( 'View all docs in <strong>%s</strong>.', 'buddypress-docs' ), get_the_title( $current_folder_id ) ); ?></a>
 			</td>
 		</tr>
 <?php else: ?>

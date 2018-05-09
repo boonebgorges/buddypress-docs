@@ -1,6 +1,8 @@
 ( function( $ ) {
 	var date,
 		doc_id,
+		current_folder,
+		move_to_folder,
 		folder_tab_name = '',
 		hover_element = '',
 		hover_time = '',
@@ -287,13 +289,82 @@
 	}
 
 	/**
-	 * Set up draggable/droppable for tree view
+	 * Set up draggable/droppable
 	 */
 	function init_doc_drag() {
-		$( '.doc-in-folder' ).draggable( {
-			revert: 'invalid'
+		// Add doc-in-folder data attribute to each doc.
+		$( ".doctable" ).each( function(i,e){
+			var in_folder = $( this ).data( "folder-id" );
+			$( this ).find("> tbody > .doc-in-folder").data( "doc-in-folder", in_folder );
 		} );
 
+		$( '.doc-in-folder' ).draggable({
+			helper: 'clone',
+			revert: 'invalid'
+		});
+
+		// Code for table view
+		$( '.doctable' ).droppable( {
+		    accept: ".doc-in-folder",
+		    // @TODO: Why aren't classes applied? Works with standard jquery-ui...
+			classes: {
+				"ui-droppable-hover": "highlight",
+				"ui-droppable-active": "active"
+			},
+			drop: function( event, ui ) {
+				doc_id = ui.draggable.data( "doc-id" );
+				current_folder = ui.draggable.data( "in-folder" );
+				move_to_folder = $(event.target).data( "folder-id" );
+
+				// Drops to the same folder don't require the API call.
+				if ( move_to_folder === current_folder ) {
+					// Remove the inline positioning styles
+					ui.draggable.removeAttr( 'style' );
+					ui.draggable.css( "position", "relative" );
+
+					// Remove all hover classes, just in case
+					$( '.hover' ).removeClass( 'hover' );
+					return;
+				}
+				$.ajax( {
+					url: ajaxurl,
+					type: 'POST',
+					data: {
+						doc_id: doc_id,
+						folder_id: $( event.target ).data( 'folder-id' ),
+						action: 'bp_docs_process_folder_drop',
+						nonce: ui.draggable.find( '#bp-docs-folder-drop-nonce-' + doc_id ).val()
+					},
+					success: function( response ) {
+						console.log( response );
+						process_doc_drop_table( event, ui );
+
+						// If the source folder table is now empty, add an empty row.
+						if ( 0 == $(".doctable[data-folder-id='" + current_folder + "']").find(" > tbody > tr.doc-in-folder").length ) {
+							// @TODO: Internationalize this.
+							$(".doctable[data-folder-id='" + current_folder + "']").find(" > tbody").append( "<tr><td><p class='no-docs'>There are no docs for this view.</p></td></tr>" );
+						}
+					},
+					error: function( response ) {
+						ui.draggable.removeAttr( 'style' );
+						ui.draggable.css( "position", "relative" );
+
+						// Remove all hover classes, just in case
+						$( '.hover' ).removeClass( 'hover' );
+					}
+				} );
+			},
+			greedy: true, // Don't bubble up in nested folder lists
+			over: function( event, ui ) {
+				$( event.target ).addClass( 'hover' );
+			},
+			out: function( event, ui ) {
+				$( event.target ).removeClass( 'hover' );
+			}
+
+		} );
+
+		// Code for tree view
 		$( '.docs-folder-tree li.folder' ).droppable( {
 			accept: '.doc-in-folder',
 			drop: function( event, ui ) {
@@ -363,6 +434,40 @@
 			$( '#toggle-folders-hide' ).show();
 			$( '#toggle-folders-show' ).hide();
 		}
+	}
+
+	function process_doc_drop_table( event, ui ) {
+		// Create a clone of original for appending
+		$doc_clone = ui.draggable.clone();
+
+		// Remove the inline positioning styles
+		$doc_clone.removeAttr( 'style' );
+		$doc_clone.css( "position", "relative" );
+
+		// Add to the new folder list
+		var folder_id = $( event.target ).data("folder-id");
+
+		// Some cases:
+		// for subfolders that have the meta-info row
+		// another for "no results" tables or the top-level folder
+		if ( $( event.target ).find(" > tbody > tr.folder-meta-info").length ) {
+			$( event.target ).find(" > tbody > tr.folder-meta-info").before( $doc_clone );
+		} else {
+			// Maybe remove the no docs message.
+			$( event.target ).find(" > tbody > tr .no-docs").closest("tr").remove();
+			$( event.target ).find(" > tbody").append( $doc_clone );
+		}
+
+	    $doc_clone.data( 'in-folder', folder_id );
+
+		// Remove the original
+		ui.draggable.remove();
+
+		// Remove all hover classes, just in case
+		$( '.hover' ).removeClass( 'hover' );
+
+		// Reinit draggables
+		init_doc_drag();
 	}
 
 	function process_doc_drop( event, ui ) {
@@ -441,6 +546,8 @@
 				set_folder_related_colspans();
 				fetching_folder_contents = false;
 				container.removeClass( 'loading' );
+				// Reinitialize the doc draggable interface.
+				init_doc_drag();
 			}
 
 		} );
