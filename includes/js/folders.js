@@ -448,9 +448,7 @@
 		if ( $( event.target ).find(" > tbody > tr.folder-meta-info").length ) {
 			$( event.target ).find(" > tbody > tr.folder-meta-info").before( $doc_clone );
 		} else {
-			// Maybe remove the no docs message.
-			$( event.target ).find(" > tbody > tr .no-docs").closest("tr").remove();
-			$( event.target ).find(" > tbody").append( $doc_clone );
+			$( event.target ).find(" > tbody > tr.no-docs-row").before( $doc_clone );
 		}
 
 	    $doc_clone.data( 'in-folder', folder_id );
@@ -460,6 +458,12 @@
 
 		// Remove all hover classes, just in case
 		$( '.hover' ).removeClass( 'hover' );
+
+		// Update the "no docs" message in each table
+		$( ".doctable" ).each( function() {
+			var has_docs = $( this ).find(" > tbody > tr.doc-in-folder").length ? true : false;
+			$( this ).find(" > tbody > tr.no-docs-row").toggleClass( "hide", has_docs );
+		});
 
 		// Reinit draggables
 		init_doc_drag();

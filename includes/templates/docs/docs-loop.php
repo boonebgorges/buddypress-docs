@@ -155,6 +155,27 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 			</tr>
 		<?php endwhile ?>
 	<?php endif ?>
+		<?php // Add the "no docs" message as the last row, for easy toggling. ?>
+		<tr class="no-docs-row<?php if ( $has_docs ) { echo ' hide'; } ?>">
+			<?php if ( bp_docs_enable_attachments() ) : ?>
+				<td class="attachment-clip-cell"></td>
+			<?php endif ?>
+
+			<td class="title-cell">
+				<?php if ( bp_docs_current_user_can_create_in_context() ) : ?>
+					<p class="no-docs"><?php printf( __( 'There are no docs for this view. Why not <a href="%s">create one</a>?', 'buddypress-docs' ), bp_docs_get_create_link() ); ?>
+				<?php else : ?>
+					<p class="no-docs"><?php _e( 'There are no docs for this view.', 'buddypress-docs' ); ?></p>
+				<?php endif; ?>
+			</td>
+
+			<?php if ( ! bp_docs_is_started_by() ) : ?>
+				<td class="author-cell"></td>
+			<?php endif; ?>
+
+			<td class="date-cell created-date-cell"></td>
+			<td class="date-cell edited-date-cell"></td>
+		</tr>
 	</tbody>
 	</table>
 
@@ -168,12 +189,6 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 				<?php bp_docs_paginate_links(); ?>
 			</div>
 		</div>
-	<?php else : ?>
-	    <?php if ( bp_docs_current_user_can_create_in_context() ) : ?>
-	        <p class="no-docs"><?php printf( __( 'There are no docs for this view. Why not <a href="%s">create one</a>?', 'buddypress-docs' ), bp_docs_get_create_link() ); ?>
-		<?php else : ?>
-			<p class="no-docs"><?php _e( 'There are no docs for this view.', 'buddypress-docs' ); ?></p>
-	    <?php endif; ?>
 	<?php endif; ?>
 <?php endif; ?>
 <?php bp_docs_ajax_value_inputs(); ?>
