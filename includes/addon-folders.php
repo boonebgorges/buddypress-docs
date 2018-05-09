@@ -1010,6 +1010,30 @@ function bp_docs_folders_map_meta_caps( $caps, $cap, $user_id, $args ) {
 		case 'bp_docs_change_folder_type' :
 			$caps = array( 'bp_moderate' );
 			break;
+
+		case 'bp_docs_add_items_to_folders_in_context' :
+			$caps = array( 'do_not_allow' );
+
+			if ( user_can( $user_id, 'bp_moderate' ) ) {
+				$caps = array( 'exist' );
+
+			// Group
+			} else if ( function_exists( 'bp_is_group' ) && bp_is_group() ) {
+				if ( groups_is_user_member( $user_id, bp_get_current_group_id() ) ) {
+					$caps = array( 'exist' );
+				}
+			// User
+			} else if ( bp_is_user() ) {
+				if ( bp_displayed_user_id() == $user_id ) {
+					$caps = array( 'exist' );
+				}
+			// Global
+			} else if ( bp_docs_is_global_directory() ) {
+				if ( is_user_logged_in() ) {
+					$caps = array( 'exist' );
+				}
+			}
+			break;
 	}
 
 	return $caps;
@@ -2204,7 +2228,7 @@ function bp_docs_is_directory_view_filtered_by_folder( $is_filtered, $exclude ) 
  * @return array $classes
  */
 function bp_docs_item_add_draggable_class( $classes ) {
-	if ( current_user_can( 'bp_docs_edit', get_the_ID() ) ) {
+	if ( current_user_can( 'bp_docs_edit', get_the_ID() ) && current_user_can( 'bp_docs_add_items_to_folders_in_context' ) ) {
 		$classes[] = 'doc-in-folder';
 	}
 	return $classes;
