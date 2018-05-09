@@ -181,14 +181,16 @@ body.js {
 	}
 	&.successful-drop {
 		animation: success-drop 2s ease-in-out 0s;
+		border-style: solid;
 	}
 	&.failed-drop {
 		animation: fail-drop 2s ease-in-out 0s;
+		border-style: dotted;
 	}
 }
 @keyframes success-drop {
 	from {
-		border-color: green;
+		border-color: YellowGreen;
 	}
 	to {
 		border-color: transparent;
@@ -196,7 +198,7 @@ body.js {
 }
 @keyframes fail-drop {
 	from {
-		border-color: red;
+		border-color: DarkRed;
 	}
 	to {
 		border-color: transparent;
