@@ -40,6 +40,8 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Added filters to modify default toggle open/closed state on Doc edit/create.
 * Improved compatibility with PHP 7.2+.
 * Added right-to-left versions of stylesheets.
+* Use Akismet to check new Docs for spam content.
+* Move Docs between folders using drag and drop.
 
 = 2.0.0 =
 * Began using the WordPress.org translation service. This will require action by some users:
