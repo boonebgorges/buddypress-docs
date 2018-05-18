@@ -1184,7 +1184,7 @@ function bp_docs_force_unique_slugs( $slug, $post_ID, $post_status, $post_type, 
 	global $wpdb;
 
 	if ( bp_docs_get_post_type_name() !== $post_type ) {
-		return $is_bad_slug;
+		return $slug;
 	}
 
 	$check_sql = "SELECT post_name FROM $wpdb->posts WHERE post_name = %s AND post_type = %s AND ID != %d LIMIT 1";
