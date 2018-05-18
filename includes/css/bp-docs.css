@@ -671,10 +671,6 @@ div.hidden {
 	display: none;
 }
 
-table.group-docs-options td.label {
-	width: 200px;
-}
-
 /* HISTORY */
 
 table.diff {
