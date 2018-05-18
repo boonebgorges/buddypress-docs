@@ -520,16 +520,16 @@ class BP_Docs_Query {
 		} else {
 			// Use the passed permalink if it exists, otherwise create one
 			if ( ! empty( $args['permalink'] ) ) {
-				$args['permalink'] = sanitize_title( $args['permalink'] );
+				$slug = sanitize_title( $args['permalink'] );
 			} else {
-				$args['permalink'] = sanitize_title( $args['title'] );
+				$slug = sanitize_title( $args['title'] );
 			}
 
 			$r = array(
 				'ID'           => absint( $args['doc_id'] ),
 				'post_type'    => $this->post_type_name,
 				'post_title'   => $args['title'],
-				'post_name'    => $args['permalink'],
+				'post_name'    => $slug,
 				'post_content' => $args['content'],
 				'post_status'  => 'publish',
 				'post_parent'  => $args['parent_id']
