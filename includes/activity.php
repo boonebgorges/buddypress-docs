@@ -227,7 +227,7 @@ function bp_docs_delete_doc_activity( $new_status, $old_status, $post ) {
 	}
 
 	/*
-	 * Only continue the activity deletion process  
+	 * Only continue the activity deletion process
 	 * if the doc is being switched to a non-public status.
 	 */
 	if ( ! in_array( $new_status, array( 'trash', 'bp_docs_pending', 'draft' ) ) ) {
