@@ -39,6 +39,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Fixed bug that caused revision count to be incorrect in some cases.
 * Added filters to modify default toggle open/closed state on Doc edit/create.
 * Fixed bug that caused Docs activity filters to appear in groups where Docs was not enabled.
+* Search terms are now highlighted on search results page.
 * Improved compatibility with PHP 7.2+.
 * Added right-to-left versions of stylesheets.
 * Fixed bug that caused Docs with identical slugs to have conflicting URLs.
