@@ -153,14 +153,23 @@ jQuery(document).ready(function($){
 
 	/* Docs search highlighting */
 	var searchTerm = bpdocs_get_query_var( 's' );
-	console.log(searchTerm);
 	if ( searchTerm ) {
-		$('.doctable tbody .title-cell a').html(function(index,html){
+		// escape for use in regex
+		var searchRegExpPattern = '(<?\\w*(' + searchTerm.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + ')\\w*)'
+		var searchRegExp = new RegExp( searchRegExpPattern );
+		$('.doctable tbody .title-cell > a').html(function(index,html){
 			return html.replace(searchTerm, '<span class="search-term-match">' + searchTerm + '</span>');
 		});
 
 		$('.bp-docs-attachment-drawer li a').html(function(index,html){
-			var newHtml = html.replace(searchTerm, '<span class="search-term-match">' + searchTerm + '</span>');
+			var newHtml = html.replace(searchRegExp, function( match, a, b, c ) {
+				// Yikes. Skip if the match is on a 'span'.
+				if ( '<span' === a ) {
+					return match;
+				}
+
+				return match.replace( b, '<span class="search-term-match">' + b + '</span>' );
+			});
 
 			// Open the drawer.
 			if ( newHtml !== html ) {
