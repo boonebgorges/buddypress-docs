@@ -134,6 +134,13 @@ body.bp-docs div.page ul {
 	font-style: italic;
 }
 
+/* Search term match highlighting */
+.search-term-match {
+	background-color: #ffff00;
+	display: inline-block;
+	padding: 3px;
+}
+
 /* Theme compat overrides */
 #buddypress {
 	#bp-docs-all-docs li {

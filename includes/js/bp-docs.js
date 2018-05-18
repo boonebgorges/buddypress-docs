@@ -151,6 +151,19 @@ jQuery(document).ready(function($){
 		return false;
 	});
 
+  /* Docs search highlighting */
+	var searchTerm = bpdocs_get_query_var( 's' );
+	console.log(searchTerm);
+	if ( searchTerm ) {
+		$('.doctable tbody .title-cell a').html(function(index,html){
+			return html.replace(searchTerm, '<span class="search-term-match">' + searchTerm + '</span>');
+		});
+
+		$('.bp-docs-attachment-drawer li a').html(function(index,html){
+			return html.replace(searchTerm, '<span class="search-term-match">' + searchTerm + '</span>');
+		});
+	}
+
 	// Set the interval and the namespace event
 	if ( typeof wp != 'undefined' && typeof wp.heartbeat != 'undefined' && typeof bp_docs.pulse != 'undefined' ) {
 
@@ -281,5 +294,34 @@ function bp_docs_load_idle() {
 				}
 			});
 		});
+	}
+}
+
+/**
+ * Get a querystring parameter from a URL.
+ *
+ * @param {String} Query string parameter name.
+ * @param {String} URL to parse. Defaults to current URL.
+ */
+function bpdocs_get_query_var( param, url ) {
+	var qs = {};
+
+	// Use current URL if no URL passed.
+	if ( typeof url === 'undefined' ) {
+		url = location.search.substr(1).split('&');
+	} else {
+		url = url.split('?')[1].split('&');
+	}
+
+	// Parse querystring into object props.
+	// http://stackoverflow.com/a/21152762
+	url.forEach(function(item) {
+		qs[item.split('=')[0]] = item.split('=')[1] && decodeURIComponent( item.split('=')[1] );
+	});
+
+	if ( qs.hasOwnProperty( param ) && qs[param] != null ) {
+		return qs[param];
+	} else {
+		return false;
 	}
 }
