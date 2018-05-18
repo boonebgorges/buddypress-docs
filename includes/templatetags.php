@@ -2065,7 +2065,11 @@ function bp_docs_media_buttons( $editor_id ) {
 
 	$img = '<span class="wp-media-buttons-icon"></span> ';
 
-	echo '<a href="#" id="insert-media-button" class="button add-attachment add_media" data-editor="' . esc_attr( $editor_id ) . '" title="' . esc_attr__( 'Add Files', 'buddypress-docs' ) . '">' . $img . __( 'Add Files', 'buddypress-docs' ) . '</a>';
+	?>
+	<div class="add-files-button">
+		<button id="insert-media-button" class="button add-attachment add_media" data-editor="<?php echo esc_attr( $editor_id ); ?>" title="<?php esc_attr_e( 'Add Files', 'buddypress-docs' ); ?>"><?php echo $img; ?><?php esc_html_e( 'Add Files', 'buddypress-docs' ); ?></button>
+	</div>
+	<?php
 }
 
 /**
