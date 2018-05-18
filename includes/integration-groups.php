@@ -1245,7 +1245,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 		<p><?php _e( 'Docs is a powerful tool for collaboration with members of your group. A cross between document editor and wiki, Docs allows you to co-author and co-edit documents with your fellow group members, which you can then sort and tag in a way that helps your group to get work done.', 'buddypress-docs' ) ?></p>
 
 		<p>
-			 <label for="bp-docs[group-enable]"> <input type="checkbox" name="bp-docs[group-enable]" id="bp-docs-group-enable" value="1" <?php checked( $group_enable, true ) ?> /> <?php _e( 'Enable Docs for this group', 'buddypress-docs' ) ?></label>
+			 <label for="bp-docs-group-enable"> <input type="checkbox" name="bp-docs[group-enable]" id="bp-docs-group-enable" value="1" <?php checked( $group_enable, true ) ?> /> <?php _e( 'Enable Docs for this group', 'buddypress-docs' ) ?></label>
 		</p>
 
 		<div id="group-doc-options" <?php if ( !$group_enable ) : ?>class="hidden"<?php endif ?>>
