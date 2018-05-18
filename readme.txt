@@ -44,6 +44,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Added right-to-left versions of stylesheets.
 * Fixed bug that caused Docs with identical slugs to have conflicting URLs.
 * Fixed bug that caused 'View All Docs' link on search results to paginate incorrectly.
+* Fixed bug that caused new directory searches not to reset pagination.
 * Use Akismet to check new Docs for spam content.
 * Move Docs between folders using drag and drop.
 * Improved support for themes that don't use BP theme compatibility.
