@@ -43,6 +43,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Added right-to-left versions of stylesheets.
 * Use Akismet to check new Docs for spam content.
 * Move Docs between folders using drag and drop.
+* Improved support for themes that don't use BP theme compatibility.
 * Accessibility improvements.
 
 = 2.0.0 =
