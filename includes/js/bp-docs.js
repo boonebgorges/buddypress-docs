@@ -151,7 +151,7 @@ jQuery(document).ready(function($){
 		return false;
 	});
 
-  /* Docs search highlighting */
+	/* Docs search highlighting */
 	var searchTerm = bpdocs_get_query_var( 's' );
 	console.log(searchTerm);
 	if ( searchTerm ) {
@@ -160,7 +160,20 @@ jQuery(document).ready(function($){
 		});
 
 		$('.bp-docs-attachment-drawer li a').html(function(index,html){
-			return html.replace(searchTerm, '<span class="search-term-match">' + searchTerm + '</span>');
+			var newHtml = html.replace(searchTerm, '<span class="search-term-match">' + searchTerm + '</span>');
+
+			// Open the drawer.
+			if ( newHtml !== html ) {
+				var $thisDrawer = $(this).closest('.bp-docs-attachment-drawer');
+				if ( ! $thisDrawer.is(':visible') ) {
+					var drawerDocId = $thisDrawer.attr('id').substr(26);
+					if ( drawerDocId ) {
+						$('#bp-docs-attachment-clip-' + drawerDocId).trigger('click');
+					}
+				}
+			}
+
+			return newHtml;
 		});
 	}
 
