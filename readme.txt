@@ -38,6 +38,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Improved Doc search to match attachment filenames.
 * Fixed bug that caused revision count to be incorrect in some cases.
 * Added filters to modify default toggle open/closed state on Doc edit/create.
+* Fixed bug that caused Docs activity filters to appear in groups where Docs was not enabled.
 * Improved compatibility with PHP 7.2+.
 * Added right-to-left versions of stylesheets.
 * Use Akismet to check new Docs for spam content.
