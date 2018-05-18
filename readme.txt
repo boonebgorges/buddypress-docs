@@ -41,6 +41,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Fixed bug that caused Docs activity filters to appear in groups where Docs was not enabled.
 * Improved compatibility with PHP 7.2+.
 * Added right-to-left versions of stylesheets.
+* Fixed bug that caused Docs with identical slugs to have conflicting URLs.
 * Use Akismet to check new Docs for spam content.
 * Move Docs between folders using drag and drop.
 * Improved support for themes that don't use BP theme compatibility.
