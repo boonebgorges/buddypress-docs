@@ -902,9 +902,21 @@ class BP_Docs_Component extends BP_Component {
 
 	public static function filter_markup() {
 		$has_search = ! empty( $_GET['s'] );
+
+		$form_action = bp_get_requested_url();
+		$form_action = remove_query_arg(
+			array(
+				'search_submit',
+				's',
+				'paged',
+			),
+			$form_action
+		);
+		$form_action = preg_replace( '|page/[0-9]+/|', '', $form_action );
+
 		?>
 		<div id="docs-filter-section-search" class="docs-filter-section<?php if ( $has_search ) : ?> docs-filter-section-open<?php endif ?>">
-			<form action="" method="get">
+			<form action="<?php echo esc_url( $form_action ); ?>" method="get">
 				<label for="docs-search" class="screen-reader-text"><?php echo esc_html_e( 'Search', 'buddypress-docs' ); ?></label>
 				<input id="docs-search" name="s" value="<?php the_search_query() ?>">
 				<input name="search_submit" type="submit" value="<?php _e( 'Search', 'buddypress-docs' ) ?>" />
