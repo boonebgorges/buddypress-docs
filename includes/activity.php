@@ -421,6 +421,10 @@ add_filter( 'bp_activity_prefetch_object_data', 'bp_docs_prefetch_activity_objec
  * @since 1.0-beta
  */
 function bp_docs_activity_filter_options() {
+	if ( function_exists( 'bp_is_group' ) && bp_is_group() && ! bp_docs_is_docs_enabled_for_group( bp_get_current_group_id() ) ) {
+		return;
+	}
+
 	?>
 
 	<option value="bp_doc_created"><?php _e( 'New Docs', 'buddypress-docs' ); ?></option>
