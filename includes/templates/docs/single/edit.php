@@ -1,12 +1,16 @@
 <?php
+$doc_id = 0;
+$current_doc = bp_docs_get_current_doc();
+if ( $current_doc ) {
+	$doc_id = $current_doc->ID;
+}
+
 $bp_docs_do_theme_compat = is_buddypress() && bp_docs_do_theme_compat( 'single/edit.php' );
 if ( ! $bp_docs_do_theme_compat ) : ?>
 <div id="buddypress">
 <?php endif; ?>
 
 <div class="<?php bp_docs_container_class(); ?>">
-	<?php $doc_id = get_the_ID(); ?>
-
 	<?php include( bp_docs_locate_template( 'single/sidebar.php' ) ) ?>
 
 	<?php include( apply_filters( 'bp_docs_header_template', bp_docs_locate_template( 'docs-header.php' ) ) ) ?>
@@ -25,10 +29,6 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 	<?php do_action( 'template_notices' ) ?>
 
 	<div class="doc-content">
-
-	<div id="idle-warning" style="display:none">
-		<p><?php _e( 'You have been idle for <span id="idle-warning-time"></span>', 'buddypress-docs' ) ?></p>
-	</div>
 
 	<form action="" method="post" class="standard-form" id="doc-form">
 	    <div class="doc-header">
@@ -80,11 +80,11 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 		<div id="doc-meta">
 			<?php do_action( 'bp_docs_opening_meta_box', $doc_id ) ?>
 
-			<?php if ( bp_is_active( 'groups' ) && current_user_can( 'bp_docs_manage', get_the_ID() ) && apply_filters( 'bp_docs_allow_associated_group', true ) ) : ?>
+			<?php if ( bp_is_active( 'groups' ) && current_user_can( 'bp_docs_manage', $doc_id ) && apply_filters( 'bp_docs_allow_associated_group', true ) ) : ?>
 				<?php do_action( 'bp_docs_before_assoc_groups_meta_box', $doc_id ); ?>
 
 				<div id="doc-associated-group" class="doc-meta-box">
-					<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class() ?>">
+					<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class( 'associated-group-meta-box' ) ?>">
 						<p class="toggle-switch" id="associated-group-toggle">
 							<span class="hide-if-js toggle-link-no-js"><?php _e( 'Associated Group', 'buddypress-docs' ) ?></span>
 							<a class="hide-if-no-js toggle-link" id="associated-toggle-link" href="#"><span class="show-pane plus-or-minus"></span><?php _e( 'Associated Group', 'buddypress-docs' ) ?></a>
@@ -101,11 +101,11 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 				<?php do_action( 'bp_docs_after_assoc_groups_meta_box', $doc_id ); ?>
 			<?php endif ?>
 
-			<?php if ( current_user_can( 'bp_docs_manage', get_the_ID() ) && apply_filters( 'bp_docs_allow_access_settings', true ) ) : ?>
+			<?php if ( current_user_can( 'bp_docs_manage', $doc_id ) && apply_filters( 'bp_docs_allow_access_settings', true ) ) : ?>
 				<?php do_action( 'bp_docs_before_access_settings_meta_box', $doc_id ) ?>
 
 				<div id="doc-settings" class="doc-meta-box">
-					<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class() ?>">
+					<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class( 'access-meta-box' ) ?>">
 						<p class="toggle-switch" id="settings-toggle">
 							<span class="hide-if-js toggle-link-no-js"><?php _e( 'Access', 'buddypress-docs' ) ?></span>
 							<a class="hide-if-no-js toggle-link" id="settings-toggle-link" href="#"><span class="show-pane plus-or-minus"></span><?php _e( 'Access', 'buddypress-docs' ) ?></a>
@@ -125,7 +125,7 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 			<?php do_action( 'bp_docs_before_tags_meta_box', $doc_id ) ?>
 
 			<div id="doc-tax" class="doc-meta-box">
-				<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class() ?>">
+				<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class( 'tags-meta-box' ) ?>">
 					<p id="tags-toggle-edit" class="toggle-switch">
 						<span class="hide-if-js toggle-link-no-js"><?php _e( 'Tags', 'buddypress-docs' ) ?></span>
 						<a class="hide-if-no-js toggle-link" id="tags-toggle-link" href="#"><span class="show-pane plus-or-minus"></span><?php _e( 'Tags', 'buddypress-docs' ) ?></a>
@@ -154,7 +154,7 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 				<?php do_action( 'bp_docs_before_parent_meta_box', $doc_id ) ?>
 
 				<div id="doc-parent" class="doc-meta-box">
-					<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class() ?>">
+					<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class( 'parent-meta-box' ) ?>">
 						<p class="toggle-switch" id="parent-toggle">
 							<span class="hide-if-js toggle-link-no-js"><?php _e( 'Parent', 'buddypress-docs' ) ?></span>
 							<a class="hide-if-no-js toggle-link" id="parent-toggle-link" href="#"><span class="show-pane plus-or-minus"></span><?php _e( 'Parent', 'buddypress-docs' ) ?></a>

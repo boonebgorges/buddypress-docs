@@ -81,15 +81,23 @@ class BP_Docs_Widget_Recent_Docs extends WP_Widget {
 		$doc_args = array(
 			'posts_per_page' => $number,
 			'post_status'    => array( 'publish' ),
+			'group_id'       => null,
+			'folder_id'      => null,
 		);
 
-		/* If this widget appears on a single user's profile, we want to
-		 * limit the returned posts to those started by the displayed user.
-		 * If viewing another user's profile, doc access will kick in.
+		/**
+		 * Filters the args passed to `bp_docs_has_docs()` in the Recent Docs widget.
+		 *
+		 * @since 2.1.0
+		 *
+		 * @param array {
+		 *     @type int    $posts_per_page
+		 *     @type string $post_status
+		 *     @type int    $group_id
+		 *     @type int    $folder_id
+		 * }
 		 */
-		if ( bp_is_user() ) {
-			$doc_args['author_id'] = bp_displayed_user_id();
-		}
+		$doc_args = apply_filters( 'bp_docs_widget_query_args', $doc_args );
 
 		if ( bp_docs_has_docs( $doc_args ) ) :
 			echo $args['before_widget'];

@@ -155,6 +155,11 @@ function bp_docs_post_activity( $query ) {
 		return;
 	}
 
+	// Don't create activity if the post is not "publish" status.
+	if ( 'publish' != $doc->post_status ) {
+		return;
+	}
+
 	// Set the action. Filterable so that other integration pieces can alter it
 	$action 	= '';
 	$user_link 	= bp_core_get_userlink( $last_editor );
@@ -221,10 +226,13 @@ function bp_docs_delete_doc_activity( $new_status, $old_status, $post ) {
 		return;
 	}
 
-	if ( 'trash' != $new_status ) {
+	/*
+	 * Only continue the activity deletion process
+	 * if the doc is being switched to a non-public status.
+	 */
+	if ( ! in_array( $new_status, array( 'trash', 'bp_docs_pending', 'draft' ) ) ) {
 		return;
 	}
-
 
 	$activities = bp_activity_get(
 		array(
@@ -413,6 +421,10 @@ add_filter( 'bp_activity_prefetch_object_data', 'bp_docs_prefetch_activity_objec
  * @since 1.0-beta
  */
 function bp_docs_activity_filter_options() {
+	if ( function_exists( 'bp_is_group' ) && bp_is_group() && ! bp_docs_is_docs_enabled_for_group( bp_get_current_group_id() ) ) {
+		return;
+	}
+
 	?>
 
 	<option value="bp_doc_created"><?php _e( 'New Docs', 'buddypress-docs' ); ?></option>

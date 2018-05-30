@@ -6,7 +6,7 @@
 	<thead>
 		<tr valign="bottom">
 			<?php if ( bp_docs_enable_attachments() ) : ?>
-				<th scope="col" class="attachment-clip-cell"> </th>
+				<th scope="column" class="attachment-clip-cell">&nbsp;<span class="screen-reader-text"><?php esc_html_e( 'Has attachment', 'buddypress-docs' ); ?></span></th>
 			<?php endif ?>
 
 			<th scope="column" class="title-cell<?php bp_docs_is_current_orderby_class( 'title' ) ?>">

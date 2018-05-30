@@ -1442,4 +1442,101 @@ class BP_Docs_Tests extends BP_Docs_TestCase {
 		remove_filter( 'comment_flood_filter', '__return_false' );
 	}
 
+	/**
+	 * @ticket 592
+	 */
+	public function test_search_should_match_attachment_filename() {
+		$d1 = $this->factory->doc->create();
+		$d2 = $this->factory->doc->create();
+		$d3 = $this->factory->doc->create();
+
+		// Fake attachments.
+		$a1 = $this->factory->post->create( array(
+			'post_type' => 'attachment',
+			'post_status' => 'inherit',
+			'post_parent' => $d1,
+		) );
+		add_post_meta( $a1, '_wp_attached_file', '/foo/bar/baz.jpg' );
+
+		$a2 = $this->factory->post->create( array(
+			'post_type' => 'attachment',
+			'post_status' => 'inherit',
+			'post_parent' => $d2,
+		) );
+		add_post_meta( $a2, '_wp_attached_file', '/foo/bar/baz.pdf' );
+
+		$a3 = $this->factory->post->create( array(
+			'post_type' => 'attachment',
+			'post_status' => 'inherit',
+			'post_parent' => $d3,
+		) );
+		add_post_meta( $a3, '_wp_attached_file', '/foo/bar/quz.pdf' );
+
+		$q = new BP_Docs_Query( array(
+			'search_terms' => 'baz.pdf',
+		) );
+
+		// Remove access protection for the moment because I'm lazy
+		remove_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
+		$wp_query = $q->get_wp_query();
+		add_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
+
+		$found = wp_list_pluck( $wp_query->posts, 'ID' );
+
+		$this->assertEqualSets( array( $d2 ), $found );
+
+		// Test cache busting.
+		update_post_meta( $a3, '_wp_attached_file', '/foo/bar/baz.pdf' );
+
+		$q = new BP_Docs_Query( array(
+			'search_terms' => 'baz.pdf',
+		) );
+
+		// Remove access protection for the moment because I'm lazy
+		remove_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
+		$wp_query = $q->get_wp_query();
+		add_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
+
+		$found = wp_list_pluck( $wp_query->posts, 'ID' );
+
+		$this->assertEqualSets( array( $d2, $d3 ), $found );
+	}
+
+	/*
+	 * @group BP_Docs_Query
+	 */
+	public function test_doc_update_should_maintain_original_author() {
+		$old_current_user = get_current_user_id();
+
+		$u1 = $this->factory->user->create();
+		$u2 = $this->factory->user->create();
+
+		$args = array(
+			'title' 	=> 'Blue Skirt Waltz',
+			'content'	=> 'I remember that night with you, lady, when first we met...',
+			'author_id' => $u1,
+		);
+
+		$query = new BP_Docs_Query;
+		$save_result = $query->save( $args );
+		$doc_id = $save_result['doc_id'];
+
+		// wp_insert_post is current_user sensitive.
+		$this->set_current_user( $u2 );
+
+		$args = array(
+			'doc_id'	=> $doc_id,
+			'title' 	=> 'Blue Skirt Waltz',
+			'content'	=> 'We danced in a world of blue, how could my heart forget...',
+			'author_id' => $u2,
+		);
+
+		$query = new BP_Docs_Query;
+		$save_result = $query->save( $args );
+
+		$doc = get_post( $doc_id );
+		$this->assertEquals( $u1, $doc->post_author );
+
+		$this->set_current_user( $old_current_user );
+	}
 }

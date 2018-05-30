@@ -412,7 +412,7 @@ class BP_Docs_Component extends BP_Component {
 				// The user can edit, so we check for edit locks
 				// Because we're not using WP autosave at the moment, ensure that
 				// the lock interval always returns as in process
-				add_filter( 'wp_check_post_lock_window', create_function( false, 'return time();' ) );
+				add_filter( 'wp_check_post_lock_window', 'time' );
 
 				if ( $doc ) {
 					$lock = bp_docs_check_post_lock( $doc->ID );
@@ -685,7 +685,7 @@ class BP_Docs_Component extends BP_Component {
 		$post = get_post( $comment->comment_post_ID );
 
 		if ( $bp->bp_docs->post_type_name == $post->post_type ) {
-			add_filter( 'pre_option_comments_notify', create_function( false, 'return 0;' ) );
+			add_filter( 'pre_option_comments_notify', '__return_zero' );
 		}
 	}
 
@@ -902,10 +902,23 @@ class BP_Docs_Component extends BP_Component {
 
 	public static function filter_markup() {
 		$has_search = ! empty( $_GET['s'] );
+
+		$form_action = bp_get_requested_url();
+		$form_action = remove_query_arg(
+			array(
+				'search_submit',
+				's',
+				'paged',
+			),
+			$form_action
+		);
+		$form_action = preg_replace( '|page/[0-9]+/|', '', $form_action );
+
 		?>
 		<div id="docs-filter-section-search" class="docs-filter-section<?php if ( $has_search ) : ?> docs-filter-section-open<?php endif ?>">
-			<form action="" method="get">
-				<input name="s" value="<?php the_search_query() ?>">
+			<form action="<?php echo esc_url( $form_action ); ?>" method="get">
+				<label for="docs-search" class="screen-reader-text"><?php echo esc_html_e( 'Search', 'buddypress-docs' ); ?></label>
+				<input id="docs-search" name="s" value="<?php the_search_query() ?>">
 				<input name="search_submit" type="submit" value="<?php _e( 'Search', 'buddypress-docs' ) ?>" />
 				<?php do_action( 'bp_docs_directory_filter_search_form' ) ?>
 			</form>
@@ -1006,11 +1019,19 @@ class BP_Docs_Component extends BP_Component {
 
 		// Load the main CSS only on the proper pages
 		if ( in_array( bp_docs_get_docs_slug(), $this->slugstocheck ) || bp_docs_is_docs_component() ) {
-			wp_enqueue_style( 'bp-docs-css', $this->includes_url . 'css/screen.css' );
+			if ( is_rtl() ) {
+				wp_enqueue_style( 'bp-docs-css', $this->includes_url . 'css-rtl/screen.css' );
+			} else {
+				wp_enqueue_style( 'bp-docs-css', $this->includes_url . 'css/screen.css' );
+			}
 		}
 
 		if ( bp_docs_is_doc_edit() || bp_docs_is_doc_create() ) {
-			wp_enqueue_style( 'bp-docs-edit-css', $this->includes_url . 'css/edit.css' );
+			if ( is_rtl() ) {
+				wp_enqueue_style( 'bp-docs-edit-css', $this->includes_url . 'css-rtl/edit.css' );
+			} else {
+				wp_enqueue_style( 'bp-docs-edit-css', $this->includes_url . 'css/edit.css' );
+			}
 			wp_enqueue_style( 'thickbox' );
 		}
 	}

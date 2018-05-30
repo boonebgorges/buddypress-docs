@@ -1245,29 +1245,22 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 		<p><?php _e( 'Docs is a powerful tool for collaboration with members of your group. A cross between document editor and wiki, Docs allows you to co-author and co-edit documents with your fellow group members, which you can then sort and tag in a way that helps your group to get work done.', 'buddypress-docs' ) ?></p>
 
 		<p>
-			 <label for="bp-docs[group-enable]"> <input type="checkbox" name="bp-docs[group-enable]" id="bp-docs-group-enable" value="1" <?php checked( $group_enable, true ) ?> /> <?php _e( 'Enable Docs for this group', 'buddypress-docs' ) ?></label>
+			 <label for="bp-docs-group-enable"> <input type="checkbox" name="bp-docs[group-enable]" id="bp-docs-group-enable" value="1" <?php checked( $group_enable, true ) ?> /> <?php _e( 'Enable Docs for this group', 'buddypress-docs' ) ?></label>
 		</p>
 
 		<div id="group-doc-options" <?php if ( !$group_enable ) : ?>class="hidden"<?php endif ?>>
 			<h3><?php _e( 'Options', 'buddypress-docs' ) ?></h3>
 
-			<table class="group-docs-options">
-				<tr>
-					<td class="label">
-						<label for="bp-docs-can-create"><?php _e( 'Minimum role to associate Docs with this group:', 'buddypress-docs' ) ?></label>
-					</td>
-
-					<td>
-						<select name="bp-docs[can-create]" id="bp-docs-can-create">
-							<option value="admin" <?php selected( $can_create, 'admin' ) ?>><?php _e( 'Group admin', 'buddypress-docs' ) ?></option>
-							<option value="mod" <?php selected( $can_create, 'mod' ) ?>><?php _e( 'Group moderator', 'buddypress-docs' ) ?></option>
-							<option value="member" <?php selected( $can_create, 'member' ) ?>><?php _e( 'Group member', 'buddypress-docs' ) ?></option>
-						</select>
-					</td>
-				</tr>
-
-			</table>
+			<label for="bp-docs-can-create"><?php _e( 'Minimum role to associate Docs with this group:', 'buddypress-docs' ) ?></label>
+			<select name="bp-docs[can-create]" id="bp-docs-can-create">
+				<option value="admin" <?php selected( $can_create, 'admin' ) ?>><?php _e( 'Group admin', 'buddypress-docs' ) ?></option>
+				<option value="mod" <?php selected( $can_create, 'mod' ) ?>><?php _e( 'Group moderator', 'buddypress-docs' ) ?></option>
+				<option value="member" <?php selected( $can_create, 'member' ) ?>><?php _e( 'Group member', 'buddypress-docs' ) ?></option>
+			</select>
 		</div>
+
+		<?php /* History's laziest way to create spacing without loading stylesheet */ ?>
+		<p></p>
 
 		<?php
 	}

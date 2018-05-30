@@ -1,0 +1,21 @@
+{
+  "name": "buddyPressDocs",
+  "devDependencies": {
+    "grunt": "latest",
+    "grunt-postcss": "latest",
+    "autoprefixer": "latest",
+    "grunt-cssnano": "latest",
+    "grunt-contrib-imagemin": "latest",
+    "grunt-contrib-jshint": "latest",
+    "grunt-contrib-uglify": "latest",
+    "grunt-contrib-watch": "latest",
+    "grunt-jsvalidate": "latest",
+    "grunt-sass": "latest",
+    "grunt-rtlcss": "latest",
+    "grunt-wp-i18n": "latest",
+    "load-grunt-tasks": "latest",
+    "matchdep": "latest"
+  },
+  "license": "GPL-2.0+",
+  "version": "2.0.1"
+}

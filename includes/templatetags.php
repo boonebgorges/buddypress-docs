@@ -264,7 +264,13 @@ function bp_docs_info_header() {
 			$filter_args = wp_list_pluck( $filter_args, 'query_arg' );
 			$filter_args = array_merge( $filter_args, array( 'search_submit', 'folder' ) );
 
-			$message .= ' - ' . sprintf( __( '<strong><a href="%s" title="View All Docs">View All Docs</a></strong>', 'buddypress-docs' ), remove_query_arg( $filter_args ) );
+			$view_all_url = remove_query_arg( $filter_args );
+
+			// Try to remove any pagination arguments.
+			$view_all_url = remove_query_arg( 'p', $view_all_url );
+			$view_all_url = preg_replace( '|page/[0-9]+/|', '', $view_all_url );
+
+			$message .= ' - ' . sprintf( __( '<strong><a href="%s" title="View All Docs">View All Docs</a></strong>', 'buddypress-docs' ), $view_all_url );
 		}
 
 		?>
@@ -724,6 +730,10 @@ function bp_docs_directory_breadcrumb() {
 		$crumbs = array();
 
 		$crumbs = apply_filters( 'bp_docs_directory_breadcrumb', $crumbs );
+
+		if ( ! $crumbs ) {
+			return '';
+		}
 
 		// Last item is the "current" item
 		$last = array_pop( $crumbs );
@@ -1550,32 +1560,21 @@ function bp_docs_get_docs_slug() {
  * @todo Get the group stuff out
  */
 function bp_docs_tabs( $show_create_button = true ) {
+	$theme_package = bp_get_theme_package_id();
 
-	?>
+	switch ( bp_get_theme_package_id() ) {
+		case 'nouveau' :
+			$template = 'tabs-nouveau.php';
+		break;
 
-	<ul id="bp-docs-all-docs">
-		<li<?php if ( bp_docs_is_global_directory() ) : ?> class="current"<?php endif; ?>><a href="<?php bp_docs_archive_link() ?>"><?php _e( 'All Docs', 'buddypress-docs' ) ?></a></li>
+		default :
+			$template = 'tabs-legacy.php';
+		break;
+	}
 
-		<?php if ( is_user_logged_in() ) : ?>
-			<?php if ( function_exists( 'bp_is_group' ) && bp_is_group() ) : ?>
-				<li<?php if ( bp_is_current_action( BP_DOCS_SLUG ) ) : ?> class="current"<?php endif ?>><a href="<?php bp_group_permalink( groups_get_current_group() ) ?><?php bp_docs_slug() ?>"><?php printf( __( "%s's Docs", 'buddypress-docs' ), bp_get_current_group_name() ) ?></a></li>
-			<?php else : ?>
-				<li><a href="<?php bp_docs_mydocs_started_link() ?>"><?php _e( 'Started By Me', 'buddypress-docs' ) ?></a></li>
-				<li><a href="<?php bp_docs_mydocs_edited_link() ?>"><?php _e( 'Edited By Me', 'buddypress-docs' ) ?></a></li>
-
-				<?php if ( bp_is_active( 'groups' ) ) : ?>
-					<li<?php if ( bp_docs_is_mygroups_docs() ) : ?> class="current"<?php endif; ?>><a href="<?php bp_docs_mygroups_link() ?>"><?php _e( 'My Groups', 'buddypress-docs' ) ?></a></li>
-				<?php endif ?>
-			<?php endif ?>
-
-		<?php endif ?>
-
-		<?php if ( $show_create_button ) : ?>
-			<?php bp_docs_create_button() ?>
-		<?php endif ?>
-
-	</ul>
-	<?php
+	// Calling `include` here so `$show_create_button` is in template scope.
+	$located = bp_docs_locate_template( $template );
+	include( $located );
 }
 
 /**
@@ -2072,7 +2071,11 @@ function bp_docs_media_buttons( $editor_id ) {
 
 	$img = '<span class="wp-media-buttons-icon"></span> ';
 
-	echo '<a href="#" id="insert-media-button" class="button add-attachment add_media" data-editor="' . esc_attr( $editor_id ) . '" title="' . esc_attr__( 'Add Files', 'buddypress-docs' ) . '">' . $img . __( 'Add Files', 'buddypress-docs' ) . '</a>';
+	?>
+	<div class="add-files-button">
+		<button id="insert-media-button" class="button add-attachment add_media" data-editor="<?php echo esc_attr( $editor_id ); ?>" title="<?php esc_attr_e( 'Add Files', 'buddypress-docs' ); ?>"><?php echo $img; ?><?php esc_html_e( 'Add Files', 'buddypress-docs' ); ?></button>
+	</div>
+	<?php
 }
 
 /**
@@ -2318,8 +2321,11 @@ function bp_docs_get_container_class() {
 function bp_docs_doc_row_classes() {
 	$classes = array();
 
-	if ( get_post_status( get_the_ID() ) == 'trash' ) {
+	$status = get_post_status( get_the_ID() );
+	if ( 'trash' == $status ) {
 		$classes[] = 'bp-doc-trashed-doc';
+	} elseif ( 'bp_docs_pending' == $status ) {
+		$classes[] = 'bp-doc-pending-doc';
 	}
 
 	// Pass the classes out as an array for easy unsetting or adding new elements
@@ -2337,8 +2343,11 @@ function bp_docs_doc_row_classes() {
  * @since 1.5.5
  */
 function bp_docs_doc_trash_notice() {
-	if ( get_post_status( get_the_ID() ) == 'trash' ) {
+	$status = get_post_status( get_the_ID() );
+	if ( 'trash' == $status ) {
 		echo ' <span title="' . __( 'This Doc is in the Trash', 'buddypress-docs' ) . '" class="bp-docs-trashed-doc-notice">' . __( 'Trash', 'buddypress-docs' ) . '</span>';
+	} elseif ( 'bp_docs_pending' == $status  ) {
+		echo ' <span title="' . __( 'This Doc is awaiting moderation', 'buddypress-docs' ) . '" class="bp-docs-pending-doc-notice">' . __( 'Awaiting Moderation', 'buddypress-docs' ) . '</span>';
 	}
 }
 
@@ -2364,13 +2373,24 @@ function bp_docs_is_doc_trashed( $doc_id = false ) {
  * Output 'toggle-open' or 'toggle-closed' class for toggleable div.
  *
  * @since 1.8
+ * @since 2.1 Added $context parameter
  */
-function bp_docs_toggleable_open_or_closed_class() {
+function bp_docs_toggleable_open_or_closed_class( $context = 'unknown' ) {
 	if ( bp_docs_is_doc_create() ) {
-		echo 'toggle-open';
+		$class = 'toggle-open';
 	} else {
-		echo 'toggle-closed';
+		$class = 'toggle-closed';
 	}
+
+	/**
+	 * Filters the open/closed class used for toggleable divs.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @param string $class   'toggle-open' or 'toggle-closed'.
+	 * @param string $context In what context is this function being called.
+	 */
+	echo esc_attr( apply_filters( 'bp_docs_toggleable_open_or_closed_class', $class, $context ) );
 }
 
 /**

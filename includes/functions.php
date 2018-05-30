@@ -364,18 +364,18 @@ function bp_docs_update_doc_count( $item_id = 0, $item_type = '' ) {
 
 	switch ( $item_type ) {
 		case 'group' :
-			$docs_args['author_id'] = '';
+			$docs_args['author_id'] = null;
 			$docs_args['group_id']  = $item_id;
 			break;
 
 		case 'user' :
 			$docs_args['author_id'] = $item_id;
-			$docs_args['group_id']  = '';
+			$docs_args['group_id']  = null;
 			break;
 
 		default :
-			$docs_args['author_id'] = '';
-			$docs_args['group_id']  = '';
+			$docs_args['author_id'] = null;
+			$docs_args['group_id']  = null;
 			break;
 	}
 
@@ -1174,3 +1174,33 @@ function bp_docs_set_last_docs_directory_cookie() {
 
 	@setcookie( 'bp-docs-last-docs-directory', $url, 0, '/' );
 }
+
+/**
+ * Force unique slugs across all Docs hierarchies.
+ *
+ * @since 2.1.0
+ */
+function bp_docs_force_unique_slugs( $slug, $post_ID, $post_status, $post_type, $post_parent, $original_slug ) {
+	global $wpdb;
+
+	if ( bp_docs_get_post_type_name() !== $post_type ) {
+		return $slug;
+	}
+
+	$check_sql = "SELECT post_name FROM $wpdb->posts WHERE post_name = %s AND post_type = %s AND ID != %d LIMIT 1";
+	$post_name_check = $wpdb->get_var( $wpdb->prepare( $check_sql, $slug, bp_docs_get_post_type_name(), $post_ID ) );
+
+	if ( ! $post_name_check ) {
+		return $slug;
+	}
+
+	$suffix = 2;
+	do {
+		$alt_post_name = _truncate_post_slug( $original_slug, 200 - ( strlen( $suffix ) + 1 ) ) . "-$suffix";
+		$post_name_check = $wpdb->get_var( $wpdb->prepare( $check_sql, $alt_post_name, $post_type, $post_ID ) );
+		$suffix++;
+	} while ( $post_name_check );
+
+	return $alt_post_name;
+}
+add_filter( 'wp_unique_post_slug', 'bp_docs_force_unique_slugs', 10, 6 );

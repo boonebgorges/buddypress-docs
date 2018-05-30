@@ -13,7 +13,7 @@
 
 	<div id="bp-docs-single-doc-header">
 		<?php if ( ! bp_docs_is_theme_compat_active() ) : ?>
-			<h2 class="doc-title"><?php bp_docs_the_breadcrumb() ?><?php if ( bp_docs_is_doc_trashed() ) : ?> <span class="bp-docs-trashed-doc-notice" title="<?php esc_html_e( 'This Doc is in the Trash', 'buddypress-docs' ) ?>">Trash</span><?php endif ?></h2>
+			<h2 class="doc-title"><?php bp_docs_the_breadcrumb() ?><?php if ( bp_docs_is_doc_trashed() ) : ?> <span class="bp-docs-trashed-doc-notice" title="<?php esc_html_e( 'This Doc is in the Trash', 'buddypress-docs' ) ?>"><?php esc_html_e( 'Trash', 'buddypress-docs' ); ?></span><?php endif ?></h2>
 		<?php endif ?>
 
 		<?php do_action( 'bp_docs_single_doc_header_fields' ) ?>

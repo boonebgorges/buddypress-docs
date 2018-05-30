@@ -123,12 +123,22 @@ body.bp-docs div.page ul {
 	td {
 		// width: 25%;
 	}
+	.no-docs-row.hide {
+		display: none;
+	}
 }
 
 .bp-docs-trashed-doc-notice {
 	color: red;
 	font-size: .9em;
 	font-style: italic;
+}
+
+/* Search term match highlighting */
+.search-term-match {
+	background-color: #ffff00;
+	display: inline-block;
+	padding: 3px;
 }
 
 /* Theme compat overrides */
@@ -1135,6 +1145,39 @@ body.bp-docs-body-theme-twentysixteen article.type-bp_doc .entry-content {
 	@media screen and (min-width: 61.5625em) {
 		float: none;
 		width: 100%;
+	}
+}
+
+// BuddyPress Nouveau Template Pack
+.bp-nouveau {
+	.bp-docs .buddypress-wrap {
+		a.button {
+			background: #fff;
+			/* Old browsers */
+			border-color: #ccc;
+			border-style: solid;
+			border-width: 1px;
+			color: #555;
+			cursor: pointer;
+			font-size: inherit;
+			font-weight: 400;
+			outline: none;
+			padding: 0.3em 0.5em;
+			text-align: center;
+			text-decoration: none;
+			width: auto;
+		}
+		a.button:focus,
+		a.button:hover {
+			background: #ededed;
+			border-color: #999999;
+			color: #333;
+			outline: none;
+			text-decoration: none;
+		}
+		a.button {
+			transition: all 0.1s ease-in-out 0.1s;
+		}
 	}
 }
 
