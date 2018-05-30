@@ -2,8 +2,8 @@
 Contributors: boonebgorges, cuny-academic-commons, dcavins
 Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
-Requires at least: WordPress 3.3, BuddyPress 1.5
-Tested up to: WordPress 4.9, BuddyPress 2.9
+Requires at least: 3.3
+Tested up to: 4.9
 Stable tag: 2.0.0
 
 Adds collaborative Docs to BuddyPress.
@@ -33,6 +33,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+<<<<<<< HEAD
 = 2.1.0 =
 * Improved support for BuddyPress 3.0 and the Nouveau template pack.
 * Improved Doc search to match attachment filenames.
@@ -49,6 +50,10 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Move Docs between folders using drag and drop.
 * Improved support for themes that don't use BP theme compatibility.
 * Accessibility improvements.
+=======
+= 2.0.1 =
+* Fixed bug that caused original author info to be lost when a doc was edited by another user.
+>>>>>>> 2.0.x
 
 = 2.0.0 =
 * Began using the WordPress.org translation service. This will require action by some users:

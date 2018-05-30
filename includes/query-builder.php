@@ -536,11 +536,12 @@ class BP_Docs_Query {
 			);
 
 			if ( $this->is_new_doc ) {
-				// We only save the author for new docs.
+				// Save the author for new docs.
 				$r['post_author'] = $args['author_id'];
 			} else {
 				// Save pre-update post data, for comparison by callbacks.
 				$this->previous_revision = get_post( $args['doc_id'] );
+
 				// If this post is "pending," leave it pending.
 				if ( $this->previous_revision->post_status === 'bp_docs_pending' ) {
 					$r['post_status'] = 'bp_docs_pending';
@@ -559,8 +560,11 @@ class BP_Docs_Query {
 			 */
 			$r = apply_filters( 'bp_docs_post_args_before_save', $r, $this, $args );
 
-			// Insert or update the post.
-			$this->doc_id = wp_insert_post( $r );
+			if ( $this->is_new_doc ) {
+				$this->doc_id = wp_insert_post( $r );
+			} else {
+				$this->doc_id = wp_update_post( $r );
+			}
 
 			if ( ! $this->doc_id ) {
 				// Failed to save. Set error message.
