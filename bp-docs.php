@@ -399,10 +399,13 @@ class BP_Docs {
 		 *
 		 * @param bool $use Whether we want to use Akismet for BP Docs.
 		 */
-		if ( apply_filters( 'bp_docs_use_akismet', true ) && defined( 'AKISMET_VERSION' ) && class_exists( 'Akismet' ) && ( ! empty( bp_get_option( 'wordpress_api_key' ) ) || defined( 'WPCOM_API_KEY' ) ) ) {
-			require_once( BP_DOCS_INCLUDES_PATH . 'addon-akismet.php' );
-			$this->akismet = new BP_Docs_Akismet();
-			$this->akismet->add_hooks();
+		if ( apply_filters( 'bp_docs_use_akismet', true ) && defined( 'AKISMET_VERSION' ) && class_exists( 'Akismet' ) ) {
+			$wordpress_api_key = bp_get_option( 'wordpress_api_key' );
+			if ( ! empty( $wordpress_api_key ) || defined( 'WPCOM_API_KEY' ) ) {
+				require_once( BP_DOCS_INCLUDES_PATH . 'addon-akismet.php' );
+				$this->akismet = new BP_Docs_Akismet();
+				$this->akismet->add_hooks();
+			}
 		}
 
 		// Load the Moderation addon.
