@@ -616,13 +616,13 @@ class BP_Docs_Query {
 				// Set successful save message.
 				if ( $this->is_new_doc ) {
 					// New doc saved.
-					$result['message'] = __( 'Doc successfully created!', 'bp-docs' );
+					$result['message'] = __( 'Doc successfully created!', 'buddypress-docs' );
 				} elseif ( $args['is_auto'] ) {
 					// Doc update was an autosave.
-					$result['message'] = __( 'You idled a bit too long while in Edit mode. In order to allow others to edit the doc you were working on, your changes have been autosaved. Click the Edit button to return to Edit mode.', 'bp-docs' );
+					$result['message'] = __( 'You idled a bit too long while in Edit mode. In order to allow others to edit the doc you were working on, your changes have been autosaved. Click the Edit button to return to Edit mode.', 'buddypress-docs' );
 				} else {
 					// Existing Doc updated.
-					$result['message'] = __( 'Doc successfully edited!', 'bp-docs' );
+					$result['message'] = __( 'Doc successfully edited!', 'buddypress-docs' );
 				}
 
 				if ( 'edit' === $args['redirect_to'] ) {
