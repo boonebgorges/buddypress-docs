@@ -1117,7 +1117,10 @@ function bp_docs_doc_settings_markup( $doc_id = 0, $group_id = 0 ) {
 	global $bp;
 
 	if ( ! $doc_id ) {
-		$doc_id = is_singular() ? get_the_ID() : 0;
+		$doc = bp_docs_get_current_doc();
+		if ( $doc ) {
+			$doc_id = $doc->ID;
+		}
 	}
 
 	$doc_settings = bp_docs_get_doc_settings( $doc_id, 'default', $group_id );
