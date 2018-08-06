@@ -90,6 +90,11 @@ function bp_docs_map_meta_caps( $caps, $cap, $user_id, $args ) {
 			switch ( $doc_settings[ $cap_name ] ) {
 				case 'anyone' :
 					$caps[] = 'exist';
+
+					// Anonymous comment posting should respect site-wide setting.
+					if ( 'bp_docs_post_comments' == $cap_name && get_option( 'comment_registration' ) ) {
+						$caps = array();
+					}
 					break;
 
 				case 'loggedin' :
