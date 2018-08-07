@@ -11,7 +11,7 @@
  *
  * @since 1.0-beta
  *
- * @param obj $comment_id The id of the comment that's just been saved
+ * @param int $comment_id The comment ID.
  * @return int $activity_id The id number of the activity created
  */
 function bp_docs_post_comment_activity( $comment_id ) {
@@ -36,9 +36,6 @@ function bp_docs_post_comment_activity( $comment_id ) {
 	if ( ! $doc_id ) {
 		return false;
 	}
-
-	// Make sure that BP doesn't record this comment with its native functions
-	remove_action( 'comment_post', 'bp_blogs_record_comment', 10, 2 );
 
 	// See if we're associated with a group
 	$group_id = bp_is_active( 'groups' ) ? bp_docs_get_associated_group_id( $doc_id ) : 0;
@@ -96,7 +93,24 @@ function bp_docs_post_comment_activity( $comment_id ) {
 
 	return $activity_id;
 }
-add_action( 'comment_post', 'bp_docs_post_comment_activity', 8 );
+// Catch comments that are moving from moderation to approved status.
+add_action( 'comment_approved_', 'bp_docs_post_comment_activity', 8 );
+
+/**
+ * Pass new comments to our activity creation function, if they are approved.
+ *
+ * @since 2.2
+ *
+ * @param int $comment_id         The comment ID.
+ * @param mixed $comment_approved 1 if the comment is approved, 0 if not, 'spam' if spam.
+ * @return int $activity_id The id number of the activity created
+ */
+function bp_docs_post_comment_activity_if_approved( $comment_id, $comment_approved ) {
+	if ( 1 === $comment_approved ) {
+		bp_docs_post_comment_activity( $comment_id );
+	}
+}
+add_action( 'comment_post', 'bp_docs_post_comment_activity_if_approved', 8, 2 );
 
 /**
  * Post an activity item on doc save.

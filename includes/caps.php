@@ -52,7 +52,6 @@ function bp_docs_map_meta_caps( $caps, $cap, $user_id, $args ) {
 		// Special cases: logged-in users only.
 		case 'bp_docs_edit' :
 		case 'bp_docs_manage' :
-		case 'bp_docs_post_comments' :
 			if ( ! $user_id ) {
 				return array( 'do_not_allow' );
 			}
@@ -61,6 +60,7 @@ function bp_docs_map_meta_caps( $caps, $cap, $user_id, $args ) {
 
 		case 'bp_docs_read' :
 		case 'bp_docs_view_history' :
+		case 'bp_docs_post_comments' :
 		case 'bp_docs_read_comments' :
 			// Reset all caps. We bake from scratch
 			$caps = array();
@@ -90,6 +90,11 @@ function bp_docs_map_meta_caps( $caps, $cap, $user_id, $args ) {
 			switch ( $doc_settings[ $cap_name ] ) {
 				case 'anyone' :
 					$caps[] = 'exist';
+
+					// Anonymous comment posting should respect site-wide setting.
+					if ( 'bp_docs_post_comments' == $cap_name && get_option( 'comment_registration' ) ) {
+						$caps = array();
+					}
 					break;
 
 				case 'loggedin' :

@@ -563,7 +563,10 @@ function bp_docs_get_access_options( $settings_field, $doc_id = 0, $group_id = 0
 	}
 
 	// Allow anonymous reading
-	if ( in_array( $settings_field, array( 'read', 'read_comments', 'post_comments', 'view_history' ) ) ) {
+	if ( in_array( $settings_field, array( 'read', 'read_comments', 'view_history' ) )
+		// Allow anonymous comment posting setting if site option allows it.
+		|| ( 'post_comments' == $settings_field && ! get_option( 'comment_registration' ) )
+		) {
 		$options[10] = array(
 			'name'  => 'anyone',
 			'label' => __( 'Anyone', 'buddypress-docs' ),
