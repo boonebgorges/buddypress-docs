@@ -33,6 +33,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 2.1.1 =
+* Fixed regression in BuddyPress that prevented access to author-only documents in some cases.
+
 = 2.1.0 =
 * Improved support for BuddyPress 3.0 and the Nouveau template pack.
 * Improved Doc search to match attachment filenames.
