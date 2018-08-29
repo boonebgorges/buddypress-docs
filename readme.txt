@@ -34,6 +34,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 == Changelog ==
 
 = 2.1.1 =
+* Improved behavior of "anyone can comment" setting.
+* Fixed regression in Docs 2.1.0 that broke compatibility with PHP 5.3 and PHP 5.4.
+* Fixed bug that could cause access settings to be rendered incorrectly in some cases where `bp_docs_get_current_doc()` is filtered by a plugin.
 * Fixed regression in BuddyPress that prevented access to author-only documents in some cases.
 
 = 2.1.0 =
