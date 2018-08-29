@@ -1257,6 +1257,19 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 				<option value="mod" <?php selected( $can_create, 'mod' ) ?>><?php _e( 'Group moderator', 'buddypress-docs' ) ?></option>
 				<option value="member" <?php selected( $can_create, 'member' ) ?>><?php _e( 'Group member', 'buddypress-docs' ) ?></option>
 			</select>
+
+			<?php
+
+			/**
+			 * Fires after the default group admin options on the admin/create screen.
+			 *
+			 * @since 2.2.0
+			 *
+			 * @param int $group_id ID of the current group.
+			 */
+			do_action( 'bp_docs_after_group_admin_options', $group_id );
+			?>
+
 		</div>
 
 		<?php /* History's laziest way to create spacing without loading stylesheet */ ?>
