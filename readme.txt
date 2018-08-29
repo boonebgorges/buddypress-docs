@@ -33,6 +33,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 2.2.0 =
+* Improved hooks for customizing the Docs group admin/create panel.
+
 = 2.1.0 =
 * Improved support for BuddyPress 3.0 and the Nouveau template pack.
 * Improved Doc search to match attachment filenames.
