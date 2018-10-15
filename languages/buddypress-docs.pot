@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BuddyPress Docs 2.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/buddypress-docs\n"
-"POT-Creation-Date: 2018-05-30 17:36:18+00:00\n"
+"POT-Creation-Date: 2018-10-15 17:59:45+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -71,39 +71,43 @@ msgstr ""
 msgid "Associated Item"
 msgstr ""
 
-#: includes/activity.php:69 includes/activity.php:365
+#: bp-docs.php:628
+msgid "You do not have permission to do that."
+msgstr ""
+
+#: includes/activity.php:66 includes/activity.php:383
 msgid "%1$s commented on the doc %2$s"
 msgstr ""
 
-#: includes/activity.php:170 includes/activity.php:305
+#: includes/activity.php:188 includes/activity.php:323
 msgid "%1$s created the doc %2$s"
 msgstr ""
 
-#: includes/activity.php:172 includes/activity.php:334
+#: includes/activity.php:190 includes/activity.php:352
 msgid "%1$s edited the doc %2$s"
 msgstr ""
 
-#: includes/activity.php:261
+#: includes/activity.php:279
 msgid "Created a Doc"
 msgstr ""
 
-#: includes/activity.php:268
+#: includes/activity.php:286
 msgid "Edited a Doc"
 msgstr ""
 
-#: includes/activity.php:275
+#: includes/activity.php:293
 msgid "Commented on a Doc"
 msgstr ""
 
-#: includes/activity.php:430
+#: includes/activity.php:448
 msgid "New Docs"
 msgstr ""
 
-#: includes/activity.php:431
+#: includes/activity.php:449
 msgid "Doc Edits"
 msgstr ""
 
-#: includes/activity.php:432
+#: includes/activity.php:450
 msgid "Doc Comments"
 msgstr ""
 
@@ -225,13 +229,13 @@ msgid "Type"
 msgstr ""
 
 #: includes/addon-folders.php:2373
-#: includes/templates/docs/manage-folders.php:27 includes/templatetags.php:2189
+#: includes/templates/docs/manage-folders.php:27 includes/templatetags.php:2192
 msgid "Delete"
 msgstr ""
 
 #: includes/addon-folders.php:2397 includes/integration-groups.php:973
-#: includes/templates/docs/docs-header.php:30 includes/templatetags.php:1207
-#: includes/templatetags.php:1766
+#: includes/templates/docs/docs-header.php:30 includes/templatetags.php:1210
+#: includes/templatetags.php:1769
 msgid "Edit"
 msgstr ""
 
@@ -315,7 +319,7 @@ msgid "Actions"
 msgstr ""
 
 #: includes/addon-history.php:448 includes/integration-groups.php:975
-#: includes/templatetags.php:1211
+#: includes/templatetags.php:1214
 msgid "History"
 msgstr ""
 
@@ -330,7 +334,7 @@ msgid_plural "Awaiting Moderation (%s)"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/addon-moderation.php:59 includes/templatetags.php:2350
+#: includes/addon-moderation.php:59 includes/templatetags.php:2353
 msgid "Awaiting Moderation"
 msgstr ""
 
@@ -420,9 +424,9 @@ msgstr ""
 msgid "Group Tab Name"
 msgstr ""
 
-#: includes/admin.php:134 includes/attachments.php:571
+#: includes/admin.php:134 includes/attachments.php:574
 #: includes/templates/docs/single/edit.php:75
-#: includes/templates/docs/single/index.php:39 includes/templatetags.php:2262
+#: includes/templates/docs/single/index.php:39 includes/templatetags.php:2265
 msgid "Attachments"
 msgstr ""
 
@@ -519,55 +523,55 @@ msgstr ""
 msgid "File not found."
 msgstr ""
 
-#: includes/attachments.php:341
+#: includes/attachments.php:344
 msgid "Attachment deleted"
 msgstr ""
 
-#: includes/attachments.php:343
+#: includes/attachments.php:346
 msgid "Could not delete attachment"
 msgstr ""
 
-#: includes/attachments.php:390 includes/component.php:996
+#: includes/attachments.php:393 includes/component.php:1005
 msgid "Upload File"
 msgstr ""
 
-#: includes/attachments.php:391 includes/component.php:997
+#: includes/attachments.php:394 includes/component.php:1006
 msgid "OK"
 msgstr ""
 
-#: includes/attachments.php:587
+#: includes/attachments.php:590
 msgid "Has attachment?"
 msgstr ""
 
-#: includes/attachments.php:589
+#: includes/attachments.php:592
 msgid "Yes"
 msgstr ""
 
-#: includes/attachments.php:590
+#: includes/attachments.php:593
 msgid "No"
 msgstr ""
 
-#: includes/attachments.php:591
+#: includes/attachments.php:594
 msgid "Doesn&#8217;t matter"
 msgstr ""
 
-#: includes/attachments.php:593
+#: includes/attachments.php:596
 msgid "Filter"
 msgstr ""
 
-#: includes/attachments.php:747
+#: includes/attachments.php:750
 msgid ""
 "It looks like you are running <strong>nginx</strong>. We recommend the "
 "following setting in your site configuration file:"
 msgstr ""
 
-#: includes/attachments.php:757
+#: includes/attachments.php:760
 msgid ""
 "It looks like you are running <strong>IIS 7</strong>. We recommend the "
 "following setting in your Web.config file:"
 msgstr ""
 
-#: includes/attachments.php:769
+#: includes/attachments.php:772
 msgid ""
 "It looks like you are running <strong>Apache</strong>. The most likely cause "
 "of your problem is that the <code>AllowOverride</code> directive has been "
@@ -575,18 +579,18 @@ msgid ""
 "<code>VirtualHost</code> definition. Contact your host for assistance."
 msgstr ""
 
-#: includes/attachments.php:775
+#: includes/attachments.php:778
 msgid ""
 "<strong>Your BuddyPress Docs attachments directory is publicly accessible.</"
 "strong> Doc attachments will not be properly protected from direct viewing, "
 "even if the parent Docs are non-public."
 msgstr ""
 
-#: includes/attachments.php:782
+#: includes/attachments.php:785
 msgid "See <a href=\"%s\">this wiki page</a> for more information."
 msgstr ""
 
-#: includes/attachments.php:785
+#: includes/attachments.php:788
 msgid "Dismiss this message"
 msgstr ""
 
@@ -639,7 +643,7 @@ msgstr ""
 msgid "Edited By Me"
 msgstr ""
 
-#: includes/component.php:213 includes/templatetags.php:1587
+#: includes/component.php:213 includes/templatetags.php:1590
 msgid "Create New Doc"
 msgstr ""
 
@@ -718,16 +722,16 @@ msgstr ""
 msgid "You do not have permission to remove that Doc from this group."
 msgstr ""
 
-#: includes/component.php:897 includes/component.php:920
-#: includes/component.php:922
+#: includes/component.php:906 includes/component.php:929
+#: includes/component.php:931
 msgid "Search"
 msgstr ""
 
-#: includes/component.php:998
+#: includes/component.php:1007
 msgid "Still working?"
 msgstr ""
 
-#: includes/component.php:999
+#: includes/component.php:1008
 msgid "and %d more"
 msgstr ""
 
@@ -738,25 +742,25 @@ msgctxt ""
 msgid "Docs associated with the %1$s %2$s"
 msgstr ""
 
-#: includes/functions.php:548 includes/templatetags.php:1663
+#: includes/functions.php:548 includes/templatetags.php:1666
 msgid "Logged-in Users"
 msgstr ""
 
-#: includes/functions.php:553 includes/templatetags.php:1665
+#: includes/functions.php:553 includes/templatetags.php:1668
 msgid "The Doc author only"
 msgstr ""
 
-#: includes/functions.php:569 includes/templatetags.php:1662
+#: includes/functions.php:572 includes/templatetags.php:1665
 msgid "Anyone"
 msgstr ""
 
-#: includes/functions.php:645
+#: includes/functions.php:648
 msgid ""
 "Your Doc was successfully saved, but some of your access settings have been "
 "changed to match the Doc's permissions."
 msgstr ""
 
-#: includes/functions.php:1074
+#: includes/functions.php:1077
 msgid "Docs Directory"
 msgstr ""
 
@@ -901,15 +905,15 @@ msgstr ""
 msgid "There are no docs for this view."
 msgstr ""
 
-#: includes/templates/docs/docs-header.php:16 includes/templatetags.php:2348
+#: includes/templates/docs/docs-header.php:16 includes/templatetags.php:2351
 msgid "This Doc is in the Trash"
 msgstr ""
 
-#: includes/templates/docs/docs-header.php:16 includes/templatetags.php:2348
+#: includes/templates/docs/docs-header.php:16 includes/templatetags.php:2351
 msgid "Trash"
 msgstr ""
 
-#: includes/templates/docs/docs-header.php:25 includes/templatetags.php:1204
+#: includes/templates/docs/docs-header.php:25 includes/templatetags.php:1207
 msgid "Read"
 msgstr ""
 
@@ -1203,127 +1207,127 @@ msgstr ""
 msgid "Hidden Group"
 msgstr ""
 
-#: includes/templatetags.php:1128
+#: includes/templatetags.php:1131
 msgid "Who can read this doc?"
 msgstr ""
 
-#: includes/templatetags.php:1132
+#: includes/templatetags.php:1135
 msgid "Who can edit this doc?"
 msgstr ""
 
-#: includes/templatetags.php:1136
+#: includes/templatetags.php:1139
 msgid "Who can read comments on this doc?"
 msgstr ""
 
-#: includes/templatetags.php:1140
+#: includes/templatetags.php:1143
 msgid "Who can post comments on this doc?"
 msgstr ""
 
-#: includes/templatetags.php:1144
+#: includes/templatetags.php:1147
 msgid "Who can view the history of this doc?"
 msgstr ""
 
-#: includes/templatetags.php:1215
+#: includes/templatetags.php:1218
 msgid "Untrash"
 msgstr ""
 
-#: includes/templatetags.php:1315
+#: includes/templatetags.php:1318
 msgid "Remove from Trash"
 msgstr ""
 
-#: includes/templatetags.php:1317 includes/templatetags.php:1322
+#: includes/templatetags.php:1320 includes/templatetags.php:1325
 msgid "Permanently Delete"
 msgstr ""
 
-#: includes/templatetags.php:1320
+#: includes/templatetags.php:1323
 msgid "Move to Trash"
 msgstr ""
 
-#: includes/templatetags.php:1375
+#: includes/templatetags.php:1378
 msgid "&laquo;"
 msgstr ""
 
-#: includes/templatetags.php:1376
+#: includes/templatetags.php:1379
 msgid "&raquo;"
 msgstr ""
 
-#: includes/templatetags.php:1648
+#: includes/templatetags.php:1651
 msgid "Group: "
 msgstr ""
 
-#: includes/templatetags.php:1650
+#: includes/templatetags.php:1653
 msgid " %s"
 msgstr ""
 
-#: includes/templatetags.php:1664
+#: includes/templatetags.php:1667
 msgid "My Friends"
 msgstr ""
 
-#: includes/templatetags.php:1666
+#: includes/templatetags.php:1669
 msgid "Just Me"
 msgstr ""
 
-#: includes/templatetags.php:1670
+#: includes/templatetags.php:1673
 msgid "Members of: %s"
 msgstr ""
 
-#: includes/templatetags.php:1671
+#: includes/templatetags.php:1674
 msgid "Admins and mods of the group %s"
 msgstr ""
 
-#: includes/templatetags.php:1675
+#: includes/templatetags.php:1678
 msgid "The Doc author only (that's you!)"
 msgstr ""
 
-#: includes/templatetags.php:1682
+#: includes/templatetags.php:1685
 msgid "This Doc can be read by: <strong>%s</strong>"
 msgstr ""
 
-#: includes/templatetags.php:1686
+#: includes/templatetags.php:1689
 msgid "This Doc can be edited by: <strong>%s</strong>"
 msgstr ""
 
-#: includes/templatetags.php:1690
+#: includes/templatetags.php:1693
 msgid "Comments are visible to: <strong>%s</strong>"
 msgstr ""
 
-#: includes/templatetags.php:1694
+#: includes/templatetags.php:1697
 msgid "Comments can be posted by: <strong>%s</strong>"
 msgstr ""
 
-#: includes/templatetags.php:1698
+#: includes/templatetags.php:1701
 msgid "History can be viewed by: <strong>%s</strong>"
 msgstr ""
 
-#: includes/templatetags.php:1740
+#: includes/templatetags.php:1743
 msgid "Private"
 msgstr ""
 
-#: includes/templatetags.php:1743
+#: includes/templatetags.php:1746
 msgid "Public"
 msgstr ""
 
-#: includes/templatetags.php:1746
+#: includes/templatetags.php:1749
 msgid "Limited"
 msgstr ""
 
-#: includes/templatetags.php:1751
+#: includes/templatetags.php:1754
 msgid "Access: <strong>%s</strong>"
 msgstr ""
 
-#: includes/templatetags.php:1752
+#: includes/templatetags.php:1755
 msgid "Show Details"
 msgstr ""
 
-#: includes/templatetags.php:1768
+#: includes/templatetags.php:1771
 msgid "Hide Details"
 msgstr ""
 
-#: includes/templatetags.php:2076
+#: includes/templatetags.php:2079
 msgid "Add Files"
 msgstr ""
 
-#: includes/templatetags.php:2350
+#: includes/templatetags.php:2353
 msgid "This Doc is awaiting moderation"
 msgstr ""
 
