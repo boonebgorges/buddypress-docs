@@ -475,10 +475,45 @@ add_action( 'bp_screens', 'bp_docs_load_activity_filter_options', 1 );
  * Users should not see activity related to docs to which they do not have access.
  *
  * @since 2.0
+ * @since 2.1.2 Avoids filtering when activity scope doesn't include Docs-related items.
  *
  * @param $where_conditions
  */
-function bp_docs_access_protection_for_activity_feed( $where_conditions ) {
+function bp_docs_access_protection_for_activity_feed( $where_conditions, $r ) {
+	$is_docs_query = true;
+
+	/*
+	 * Err on the side of caution: it's a Docs query if the string appears anywhere,
+	 * or if component + type are empty - ie, no restrictions on query.
+	 */
+	$contains_docs = false;
+	$has_type      = false;
+	$has_component = false;
+
+	$exclude_clauses = array( 'excluded_types', 'spam_sql', 'hidden_sql' );
+
+	foreach ( $where_conditions as $condition_type => $condition ) {
+		if ( in_array( $condition_type, $exclude_clauses, true ) ) {
+			continue;
+		}
+
+		if ( false !== strpos( $condition, 'bp_doc' ) ) {
+			$contains_docs = true;
+		}
+
+		if ( false !== strpos( $condition, 'component' ) ) {
+			$has_component = true;
+		}
+
+		if ( false !== strpos( $condition, 'type' ) ) {
+			$has_type = true;
+		}
+	}
+
+	if ( ! $contains_docs && ( $has_type || $has_component ) ) {
+		return $where_conditions;
+	}
+
 	$bp_docs_access_query  = bp_docs_access_query();
 	$protected_doc_ids     = $bp_docs_access_query->get_doc_ids();
 	$protected_comment_ids = $bp_docs_access_query->get_comment_ids();
@@ -528,7 +563,7 @@ function bp_docs_access_protection_for_activity_feed( $where_conditions ) {
 	}
 	return $where_conditions;
 }
-add_filter( 'bp_activity_get_where_conditions', 'bp_docs_access_protection_for_activity_feed' );
+add_filter( 'bp_activity_get_where_conditions', 'bp_docs_access_protection_for_activity_feed', 10, 2 );
 
 /**
  * Keep some activity items out of Group Email Subscription "all activity" emails.
