@@ -151,11 +151,12 @@ function bp_docs_has_docs( $args = array() ) {
 					'post_parent__in' => $doc_ids,
 					'update_post_term_cache' => false,
 					'posts_per_page' => -1,
+					'post_status' => 'inherit'
 				), $doc_ids );
 
-				$attachments = get_posts( $attachment_args );
+				$atts_query = new WP_Query( $attachment_args );
 
-				foreach ( $attachments as $a ) {
+				foreach ( $atts_query->posts as $a ) {
 					$att_hash[ $a->post_parent ][] = $a;
 				}
 
