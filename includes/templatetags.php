@@ -151,11 +151,12 @@ function bp_docs_has_docs( $args = array() ) {
 					'post_parent__in' => $doc_ids,
 					'update_post_term_cache' => false,
 					'posts_per_page' => -1,
+					'post_status' => 'inherit'
 				), $doc_ids );
 
-				$attachments = get_posts( $attachment_args );
+				$atts_query = new WP_Query( $attachment_args );
 
-				foreach ( $attachments as $a ) {
+				foreach ( $atts_query->posts as $a ) {
 					$att_hash[ $a->post_parent ][] = $a;
 				}
 
@@ -2120,10 +2121,11 @@ function bp_docs_get_doc_attachments( $doc_id = null ) {
 		'update_post_meta_cache' => true,
 		'update_post_term_cache' => false,
 		'posts_per_page' => -1,
+		'post_status' => 'inherit',
 	), $doc_id );
 
-	$atts = get_posts( $atts_args );
-	$atts = apply_filters( 'bp_docs_get_doc_attachments', $atts, $doc_id );
+	$atts_query = new WP_Query( $atts_args );
+	$atts = apply_filters( 'bp_docs_get_doc_attachments', $atts_query->posts, $doc_id );
 
 	wp_cache_set( $cache_key, $atts, 'bp_docs_nonpersistent' );
 
