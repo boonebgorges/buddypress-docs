@@ -14,7 +14,9 @@ class BP_Docs_Attachments {
 
 		add_action( 'template_redirect', array( $this, 'catch_attachment_request' ), 20 );
 		add_filter( 'redirect_canonical', array( $this, 'redirect_canonical' ), 10, 2 );
-		add_filter( 'upload_dir', array( $this, 'filter_upload_dir' ) );
+		add_action( 'setup_theme', function() {
+			add_filter( 'upload_dir', array( $this, 'filter_upload_dir' ) );
+		} );
 		add_action( 'bp_docs_doc_saved', array( $this, 'check_privacy' ) );
 		add_filter( 'wp_handle_upload_prefilter', array( $this, 'maybe_create_rewrites' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ), 20 );
