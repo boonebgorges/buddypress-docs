@@ -8,3 +8,5 @@ config.codekit
 
 node_modules
 
+
+/vendor/
