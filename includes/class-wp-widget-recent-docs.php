@@ -41,7 +41,7 @@ class BP_Docs_Widget_Recent_Docs extends WP_Widget {
 		$widget_ops = array(
 			// Use the class `widget_recent_entries` to inherit WP Recent Posts widget styling.
 			'classname' => 'widget_recent_entries widget_recent_bp_docs',
-			'description' => __( 'Displays the most recent BuddyPress Docs that the visitor can read. Shows only group-associated docs when used in a single groups sidebar.', 'buddypress-docs' ) );
+			'description' => __( 'Displays the most recent BuddyPress Docs that the visitor can read.' ) );
 		parent::__construct( 'widget_recent_bp_docs', _x( '(BuddyPress Docs) Recent Docs', 'widget name', 'buddypress-docs' ), $widget_ops);
 		$this->alt_option_name = 'widget_recent_bp_docs';
 	}
@@ -84,6 +84,28 @@ class BP_Docs_Widget_Recent_Docs extends WP_Widget {
 			'group_id'       => null,
 			'folder_id'      => null,
 		);
+
+		/**
+		 * Limit to docs associated with the current group
+		 * if the widget has been set to be group context aware
+		 * and we're in a group.
+		 */
+		if ( isset( $instance['group_aware'] )
+			&& $instance['group_aware']
+			&& bp_is_group() ) {
+			$doc_args['group_id'] = bp_get_current_group_id();
+		}
+
+		/**
+		 * Limit to docs associated with the displayed user
+		 * if the widget has been set to be user context aware
+		 * and we're viewing a user's profile.
+		 */
+		if ( isset( $instance['user_profile_aware'] )
+			&& $instance['user_profile_aware']
+			&& bp_is_user() ) {
+			$doc_args['author_id'] = bp_displayed_user_id();
+		}
 
 		/**
 		 * Filters the args passed to `bp_docs_has_docs()` in the Recent Docs widget.
@@ -140,6 +162,8 @@ class BP_Docs_Widget_Recent_Docs extends WP_Widget {
 		$instance['title']     = sanitize_text_field( $new_instance['title'] );
 		$instance['number']    = (int) $new_instance['number'];
 		$instance['show_date'] = isset( $new_instance['show_date'] ) ? (bool) $new_instance['show_date'] : false;
+		$instance['group_aware'] = isset( $new_instance['group_aware'] );
+		$instance['user_profile_aware'] = isset( $new_instance['user_profile_aware'] );
 		return $instance;
 	}
 
@@ -152,9 +176,11 @@ class BP_Docs_Widget_Recent_Docs extends WP_Widget {
 	 * @param array $instance Current settings.
 	 */
 	public function form( $instance ) {
-		$title     = isset( $instance['title'] ) ? esc_attr( $instance['title'] ) : '';
-		$number    = isset( $instance['number'] ) ? absint( $instance['number'] ) : 5;
-		$show_date = isset( $instance['show_date'] ) ? (bool) $instance['show_date'] : false;
+		$title       = isset( $instance['title'] ) ? esc_attr( $instance['title'] ) : '';
+		$number      = isset( $instance['number'] ) ? absint( $instance['number'] ) : 5;
+		$show_date   = isset( $instance['show_date'] ) ? (bool) $instance['show_date'] : false;
+		$group_aware = isset( $instance['group_aware'] ) ? (bool) $instance['group_aware'] : false;
+		$user_profile_aware = isset( $instance['user_profile_aware'] ) ? (bool) $instance['user_profile_aware'] : false;
 		?>
 		<p><label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:', 'buddypress-docs' ); ?></label>
 		<input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo $title; ?>" /></p>
@@ -164,6 +190,12 @@ class BP_Docs_Widget_Recent_Docs extends WP_Widget {
 
 		<p><input class="checkbox" type="checkbox"<?php checked( $show_date ); ?> id="<?php echo $this->get_field_id( 'show_date' ); ?>" name="<?php echo $this->get_field_name( 'show_date' ); ?>" />
 		<label for="<?php echo $this->get_field_id( 'show_date' ); ?>"><?php _e( 'Display post date?', 'buddypress-docs' ); ?></label></p>
+
+		<p><input class="checkbox" type="checkbox"<?php checked( $group_aware ); ?> id="<?php echo $this->get_field_id( 'group_aware' ); ?>" name="<?php echo $this->get_field_name( 'group_aware' ); ?>" />
+		<label for="<?php echo $this->get_field_id( 'group_aware' ); ?>"><?php _e( 'When used within a group, limit docs to the current group&rsquo;s docs.', 'buddypress-docs' ); ?></label></p>
+
+		<p><input class="checkbox" type="checkbox"<?php checked( $user_profile_aware ); ?> id="<?php echo $this->get_field_id( 'user_profile_aware' ); ?>" name="<?php echo $this->get_field_name( 'user_profile_aware' ); ?>" />
+		<label for="<?php echo $this->get_field_id( 'user_profile_aware' ); ?>"><?php _e( 'When used within a user profile, limit docs to the displayed user&rsquo;s docs.', 'buddypress-docs' ); ?></label></p>
 		<?php
 	}
 }
