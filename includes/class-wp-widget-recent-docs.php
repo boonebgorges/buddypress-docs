@@ -139,7 +139,7 @@ class BP_Docs_Widget_Recent_Docs extends WP_Widget {
 		$instance              = $old_instance;
 		$instance['title']     = sanitize_text_field( $new_instance['title'] );
 		$instance['number']    = (int) $new_instance['number'];
-		$instance['show_date'] = isset( $new_instance['show_date'] ) ? (bool) $new_instance['show_date'] : false;
+		$instance['show_date'] = isset( $new_instance['show_date'] );
 		return $instance;
 	}
 
