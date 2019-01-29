@@ -44,8 +44,11 @@ before_script:
     # prepare for running the tests
     - cd $plugin_dir
     - pwd
+    - composer install
 
-script: phpunit
+script:
+    - ./vendor/bin/phpcs -p bp-docs.php includes loader.php --standard=PHPCompatibilityWP --runtime-set testVersion=5.3- --extensions=php
+    - phpunit
 
 # wordpress-plugin-tests specific config
 # Tells Travis CI not to run unit tests against the setup branch
