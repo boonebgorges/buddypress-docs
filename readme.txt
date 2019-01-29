@@ -3,8 +3,8 @@ Contributors: boonebgorges, cuny-academic-commons, dcavins
 Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: 3.3
-Tested up to: 4.9
-Stable tag: 2.1.1
+Tested up to: 5.0
+Stable tag: 2.1.2
 
 Adds collaborative Docs to BuddyPress.
 
@@ -32,6 +32,14 @@ This plugin is in active development. For feature requests and bug reports, visi
 1. Sit back and watch the jack roll in.
 
 == Changelog ==
+
+= 2.1.2 =
+* Added context-awareness option for Docs widget
+* Improved compatibility checks for various PHP versions.
+* Improved compatibility with Smart Slider plugin and other plugins leveraging 'upload_dir' filter.
+* Improved compatibility with WP_Query post caching.
+* Improved performance when filtering activity queries for off-limits Docs activity.
+* Fixed a broken textdomain
 
 = 2.1.1 =
 * Improved behavior of "anyone can comment" setting.
