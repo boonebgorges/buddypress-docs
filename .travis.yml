@@ -47,7 +47,7 @@ before_script:
     - composer install
 
 script:
-    - ./vendor/bin/phpcs -p bp-docs.php includes loader.php --standard=PHPCompatibilityWP --runtime-set testVersion=5.3- --extensions=php
+    - ./vendor/bin/phpcs -p bp-docs.php includes loader.php --standard=PHPCompatibilityWP --extensions=php --runtime-set testVersion=5.3-
     - phpunit
 
 # wordpress-plugin-tests specific config
