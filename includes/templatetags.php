@@ -1007,8 +1007,9 @@ function bp_docs_doc_associated_group_markup() {
 
 	// Last check: if this is a second attempt at a newly created Doc,
 	// there may be a previously submitted value
-	if ( empty( $selected_group ) && ! empty( buddypress()->bp_docs->submitted_data->associated_group_id ) ) {
-		$selected_group = buddypress()->bp_docs->submitted_data->associated_group_id;
+	$associated_group_id = isset( buddypress()->bp_docs->submitted_data->associated_group_id ) ? buddypress()->bp_docs_submitted_data->associated_group_id : null;
+	if ( empty( $selected_group ) && ! empty( $associated_group_id ) ) {
+		$selected_group = $associated_group_id;
 	}
 
 	$selected_group = intval( $selected_group );
@@ -1167,8 +1168,9 @@ function bp_docs_access_options_helper( $settings_field, $doc_id = 0, $group_id 
 	$doc_settings = bp_docs_get_doc_settings( $doc_id, $settings_type, $group_id );
 
 	// If this is a failed form submission, check the submitted values first
-	if ( ! empty( buddypress()->bp_docs->submitted_data->settings->{$settings_field['name']} ) ) {
-		$setting = buddypress()->bp_docs->submitted_data->settings->{$settings_field['name']};
+	$field_name = isset( buddypress()->bp_docs->submitted_data->settings->{$settings_field['name']} ) ? buddypress()->bp_docs->submitted_data->setings->{$settings_field['name']} : null;
+	if ( ! empty( $field_name ) ) {
+		$setting = $field_name;
 	} else {
 		$setting = isset( $doc_settings[ $settings_field['name'] ] ) ? $doc_settings[ $settings_field['name'] ] : '';
 	}
