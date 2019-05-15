@@ -63,8 +63,11 @@ class BP_Docs_History {
 		// Try to get the revision id out of the URL. If it's not provided, default to the
 		// current post
 		$this->revision_id = !empty( $_GET['revision'] ) ? (int)$_GET['revision'] : false;
-		if ( !$this->revision_id ) {
-			$this->revision_id = get_the_ID();
+		if ( ! $this->revision_id ) {
+			$current_doc = bp_docs_get_current_doc();
+			if ( $current_doc ) {
+				$this->revision_id = $current_doc->ID;
+			}
 		}
 	}
 
