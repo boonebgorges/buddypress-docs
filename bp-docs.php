@@ -142,6 +142,9 @@ class BP_Docs {
 		// class-wp-widget-recent-docs.php adds a widget to show recently created docs.
 		require( BP_DOCS_INCLUDES_PATH . 'class-wp-widget-recent-docs.php' );
 
+		// Adds a shortcode to show recently created docs.
+		require( BP_DOCS_INCLUDES_PATH . 'shortcode.php' );
+
 		// Dashboard-specific functions
 		if ( is_admin() ) {
 			require( BP_DOCS_INCLUDES_PATH . 'admin.php' );
