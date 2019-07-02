@@ -35,6 +35,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 = 2.2.0 =
 * Improved hooks for customizing the Docs group admin/create panel.
+* Added a shortcode, `bp_docs_recent_docs`, to output a simple list of docs similar to the Recent Docs widget.
 
 = 2.1.0 =
 * Improved support for BuddyPress 3.0 and the Nouveau template pack.
