@@ -4,11 +4,16 @@
 # Tell Travis CI we're using PHP
 language: php
 
+services:
+    - mysql
+
 # Versions of PHP to test against
 php:
   - 5.6
   - 7.0
   - 7.1
+  - 7.2
+  - 7.3
 
 # Specify versions of WordPress to test against
 # WP_VERSION = WordPress version number (use "master" for SVN trunk)
