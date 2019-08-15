@@ -587,7 +587,13 @@ class BP_Docs_Attachments {
 		$filesize = filesize( $filename );
 		$headers['Content-Length'] = $filesize;
 
-		return $headers;
+		/**
+		 * Filters the headers sent when downloading an attachment.
+		 *
+		 * @param array  $headers
+		 * @param string $filename
+		 */
+		return apply_filters( 'bp_docs_attachments_http_headers', $headers, $filename );
 	}
 
 	public static function icon_dir( $dir ) {
