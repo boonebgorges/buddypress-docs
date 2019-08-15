@@ -3,8 +3,8 @@ Contributors: boonebgorges, cuny-academic-commons, dcavins
 Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: 3.3
-Tested up to: 5.0
-Stable tag: 2.1.2
+Tested up to: 5.2
+Stable tag: 2.1.3
 
 Adds collaborative Docs to BuddyPress.
 
@@ -32,6 +32,10 @@ This plugin is in active development. For feature requests and bug reports, visi
 1. Sit back and watch the jack roll in.
 
 == Changelog ==
+
+= 2.1.3 =
+* Better compatibility with themes that load the WP Media modal early
+* Fixed bug with the "Most recent" check on the History tab.
 
 = 2.1.2 =
 * Added context-awareness option for Docs widget
