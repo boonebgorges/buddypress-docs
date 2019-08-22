@@ -1,0 +1,12 @@
+{
+    "name": "boonebgorges/buddypress-docs",
+    "description": "Collaborative document editing for BuddyPress",
+    "type": "project",
+    "license": "GPLv3",
+    "require": {},
+    "require-dev": {
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.4.3",
+        "phpcompatibility/phpcompatibility-wp": "*",
+        "wp-coding-standards/wpcs": "*"
+    }
+}

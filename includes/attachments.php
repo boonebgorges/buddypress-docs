@@ -14,10 +14,12 @@ class BP_Docs_Attachments {
 
 		add_action( 'template_redirect', array( $this, 'catch_attachment_request' ), 20 );
 		add_filter( 'redirect_canonical', array( $this, 'redirect_canonical' ), 10, 2 );
-		add_filter( 'upload_dir', array( $this, 'filter_upload_dir' ) );
+		add_action( 'setup_theme', array( $this, 'set_up_upload_dir_filter' ) );
 		add_action( 'bp_docs_doc_saved', array( $this, 'check_privacy' ) );
 		add_filter( 'wp_handle_upload_prefilter', array( $this, 'maybe_create_rewrites' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ), 20 );
+
+		add_filter( 'media_view_settings', array( $this, 'media_view_settings_filter' ), 10, 2 );
 
 		add_action( 'pre_get_posts', array( $this, 'filter_gallery_posts' ) );
 		add_action( 'pre_get_posts', array( $this, 'filter_directory_posts' ), 48 );
@@ -43,6 +45,40 @@ class BP_Docs_Attachments {
 		add_action( 'admin_init', array( $this, 'admin_notice_init' ) );
 
 		require( dirname( __FILE__ ) . '/attachments-ajax.php' );
+	}
+
+	/**
+	 * Set up upload dir filter.
+	 *
+	 * Run in a 'setup_theme' callback to avoid conflicts with other plugins.
+	 */
+	public function set_up_upload_dir_filter() {
+		add_filter( 'upload_dir', array( $this, 'filter_upload_dir' ) );
+	}
+
+	/**
+	 * Ensures that the media modal is initialized with the proper values on Docs.
+	 *
+	 * @param array   $settings
+	 * @param WP_Post $post
+	 */
+	public function media_view_settings_filter( $settings, $post ) {
+		if ( ! bp_docs_is_existing_doc() ) {
+			return $settings;
+		}
+
+		if ( ! empty( $settings['post']['id'] ) ) {
+			return $settings;
+		}
+
+		$current_doc = bp_docs_get_current_doc();
+
+		$settings['post'] = array(
+			'id'    => $current_doc->ID,
+			'nonce' => wp_create_nonce( 'update-post_' . $current_doc->ID ),
+		);
+
+		return $settings;
 	}
 
 	/**
@@ -551,7 +587,13 @@ class BP_Docs_Attachments {
 		$filesize = filesize( $filename );
 		$headers['Content-Length'] = $filesize;
 
-		return $headers;
+		/**
+		 * Filters the headers sent when downloading an attachment.
+		 *
+		 * @param array  $headers
+		 * @param string $filename
+		 */
+		return apply_filters( 'bp_docs_attachments_http_headers', $headers, $filename );
 	}
 
 	public static function icon_dir( $dir ) {

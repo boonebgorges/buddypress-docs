@@ -37,6 +37,25 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Improved hooks for customizing the Docs group admin/create panel.
 * Added a shortcode, `bp_docs_recent_docs`, to output a simple list of docs similar to the Recent Docs widget.
 
+= 2.1.3 =
+* Better compatibility with themes that load the WP Media modal early
+* Fixed bug with the "Most recent" check on the History tab.
+
+= 2.1.2 =
+* Added context-awareness option for Docs widget
+* Improved compatibility checks for various PHP versions.
+* Improved compatibility with Smart Slider plugin and other plugins leveraging 'upload_dir' filter.
+* Improved compatibility with WP_Query post caching.
+* Improved performance when filtering activity queries for off-limits Docs activity.
+* Fixed a broken textdomain
+
+= 2.1.1 =
+* Improved behavior of "anyone can comment" setting.
+* Fixed regression in Docs 2.1.0 that broke compatibility with PHP 5.3 and PHP 5.4.
+* Fixed bug that could cause access settings to be rendered incorrectly in some cases where `bp_docs_get_current_doc()` is filtered by a plugin.
+* Fixed regression in BuddyPress that prevented access to author-only documents in some cases.
+
+
 = 2.1.0 =
 * Improved support for BuddyPress 3.0 and the Nouveau template pack.
 * Improved Doc search to match attachment filenames.

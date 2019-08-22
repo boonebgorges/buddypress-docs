@@ -11,7 +11,7 @@
  *
  * @since 1.0-beta
  *
- * @param obj $comment_id The id of the comment that's just been saved
+ * @param int $comment_id The comment ID.
  * @return int $activity_id The id number of the activity created
  */
 function bp_docs_post_comment_activity( $comment_id ) {
@@ -36,9 +36,6 @@ function bp_docs_post_comment_activity( $comment_id ) {
 	if ( ! $doc_id ) {
 		return false;
 	}
-
-	// Make sure that BP doesn't record this comment with its native functions
-	remove_action( 'comment_post', 'bp_blogs_record_comment', 10, 2 );
 
 	// See if we're associated with a group
 	$group_id = bp_is_active( 'groups' ) ? bp_docs_get_associated_group_id( $doc_id ) : 0;
@@ -96,7 +93,28 @@ function bp_docs_post_comment_activity( $comment_id ) {
 
 	return $activity_id;
 }
-add_action( 'comment_post', 'bp_docs_post_comment_activity', 8 );
+/**
+ * Catch comments that are moving from moderation to approved status.
+ * This hook is a dynamic hook: comment_{$new_status}_{$comment->comment_type}
+ * where $comment->comment_type is an empty string in the case of standard comments.
+ */
+add_action( 'comment_approved_', 'bp_docs_post_comment_activity', 8 );
+
+/**
+ * Pass new comments to our activity creation function, if they are approved.
+ *
+ * @since 2.2
+ *
+ * @param int $comment_id         The comment ID.
+ * @param mixed $comment_approved 1 if the comment is approved, 0 if not, 'spam' if spam.
+ * @return int $activity_id The id number of the activity created
+ */
+function bp_docs_post_comment_activity_if_approved( $comment_id, $comment_approved ) {
+	if ( 1 === $comment_approved ) {
+		bp_docs_post_comment_activity( $comment_id );
+	}
+}
+add_action( 'comment_post', 'bp_docs_post_comment_activity_if_approved', 8, 2 );
 
 /**
  * Post an activity item on doc save.
@@ -457,10 +475,45 @@ add_action( 'bp_screens', 'bp_docs_load_activity_filter_options', 1 );
  * Users should not see activity related to docs to which they do not have access.
  *
  * @since 2.0
+ * @since 2.1.2 Avoids filtering when activity scope doesn't include Docs-related items.
  *
  * @param $where_conditions
  */
-function bp_docs_access_protection_for_activity_feed( $where_conditions ) {
+function bp_docs_access_protection_for_activity_feed( $where_conditions, $r ) {
+	$is_docs_query = true;
+
+	/*
+	 * Err on the side of caution: it's a Docs query if the string appears anywhere,
+	 * or if component + type are empty - ie, no restrictions on query.
+	 */
+	$contains_docs = false;
+	$has_type      = false;
+	$has_component = false;
+
+	$exclude_clauses = array( 'excluded_types', 'spam_sql', 'hidden_sql' );
+
+	foreach ( $where_conditions as $condition_type => $condition ) {
+		if ( in_array( $condition_type, $exclude_clauses, true ) ) {
+			continue;
+		}
+
+		if ( false !== strpos( $condition, 'bp_doc' ) ) {
+			$contains_docs = true;
+		}
+
+		if ( false !== strpos( $condition, 'component' ) ) {
+			$has_component = true;
+		}
+
+		if ( false !== strpos( $condition, 'type' ) ) {
+			$has_type = true;
+		}
+	}
+
+	if ( ! $contains_docs && ( $has_type || $has_component ) ) {
+		return $where_conditions;
+	}
+
 	$bp_docs_access_query  = bp_docs_access_query();
 	$protected_doc_ids     = $bp_docs_access_query->get_doc_ids();
 	$protected_comment_ids = $bp_docs_access_query->get_comment_ids();
@@ -510,7 +563,7 @@ function bp_docs_access_protection_for_activity_feed( $where_conditions ) {
 	}
 	return $where_conditions;
 }
-add_filter( 'bp_activity_get_where_conditions', 'bp_docs_access_protection_for_activity_feed' );
+add_filter( 'bp_activity_get_where_conditions', 'bp_docs_access_protection_for_activity_feed', 10, 2 );
 
 /**
  * Keep some activity items out of Group Email Subscription "all activity" emails.

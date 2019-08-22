@@ -81,7 +81,7 @@ class BP_Docs_Component extends BP_Component {
 		// Redirect to the correct place after a comment
 		add_action( 'comment_post_redirect', array( &$this, 'comment_post_redirect' ), 99, 2 );
 
-		// Doc comments are always from trusted members (for the moment), so approve them
+		// Doc comments are often from trusted members, so approve them pretty often.
 		add_action( 'pre_comment_approved', array( $this, 'approve_doc_comments' ), 999, 2 );
 
 		// Filter the location of the comments template to allow it to be included with
@@ -582,21 +582,30 @@ class BP_Docs_Component extends BP_Component {
 	/**
 	 * Approve Doc comments as necessary.
 	 *
-	 * Docs handles its own comment permissions, so we override WP's value
+	 * Docs handles its own comment permissions,
+	 * so we override WP's value in some instances.
 	 *
 	 * @since 1.3.3
-	 * @param string $approved
-	 * @param array $commentdata
-	 * @return string $approved
+	 * @param mixed $approved The approval status. Values: 1, 0, 'spam' or WP_Error.
+	 * @param array $commentdata Comment data.
+	 * @return mixed $approved
 	 */
 	public function approve_doc_comments( $approved, $commentdata ) {
 		$post = get_post( $commentdata['comment_post_ID'] );
-		if ( bp_docs_get_post_type_name() === $post->post_type ) {
-			if ( bp_docs_user_can( 'post_comments', bp_loggedin_user_id(), $post->ID ) ) {
-				$approved = 1;
-			} else {
-				$approved = 0;
-			}
+
+		/**
+		 * Maybe force comment approval. Only act if:
+		 * the approval status is currently 0 (not approved, but not spam or a WP_Error)
+		 * and the comment is on a BP Doc,
+		 * the user is logged in
+		 * the user can post comments on this particular doc.
+		 */
+		if ( $approved === 0
+			&& bp_docs_get_post_type_name() === $post->post_type
+			&& bp_loggedin_user_id()
+			&& bp_docs_user_can( 'post_comments', bp_loggedin_user_id(), $post->ID )
+		) {
+			$approved = 1;
 		}
 
 		return $approved;
@@ -992,12 +1001,14 @@ class BP_Docs_Component extends BP_Component {
 			wp_enqueue_script( 'bp-docs-js' );
 			wp_enqueue_script( 'comment-reply' );
 
+			$submitted_data = isset( buddypress()->bp_docs->submitted_data ) ? buddypress()->bp_docs->submitted_data : null;
+
 			$strings = array(
 				'upload_title' => __( 'Upload File', 'buddypress-docs' ),
 				'upload_button' => __( 'OK', 'buddypress-docs' ),
 				'still_working'	=> __( 'Still working?', 'buddypress-docs' ),
 				'and_x_more' => __( 'and %d more', 'buddypress-docs' ),
-				'failed_submission' => ! empty( buddypress()->bp_docs->submitted_data ) ? 1 : 0,
+				'failed_submission' => ! empty( $submitted_data ) ? 1 : 0,
 			);
 
 			if ( bp_docs_is_doc_edit() ) {

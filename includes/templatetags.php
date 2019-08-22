@@ -151,11 +151,12 @@ function bp_docs_has_docs( $args = array() ) {
 					'post_parent__in' => $doc_ids,
 					'update_post_term_cache' => false,
 					'posts_per_page' => -1,
+					'post_status' => 'inherit'
 				), $doc_ids );
 
-				$attachments = get_posts( $attachment_args );
+				$atts_query = new WP_Query( $attachment_args );
 
-				foreach ( $attachments as $a ) {
+				foreach ( $atts_query->posts as $a ) {
 					$att_hash[ $a->post_parent ][] = $a;
 				}
 
@@ -1006,8 +1007,9 @@ function bp_docs_doc_associated_group_markup() {
 
 	// Last check: if this is a second attempt at a newly created Doc,
 	// there may be a previously submitted value
-	if ( empty( $selected_group ) && ! empty( buddypress()->bp_docs->submitted_data->associated_group_id ) ) {
-		$selected_group = buddypress()->bp_docs->submitted_data->associated_group_id;
+	$associated_group_id = isset( buddypress()->bp_docs->submitted_data->associated_group_id ) ? buddypress()->bp_docs_submitted_data->associated_group_id : null;
+	if ( empty( $selected_group ) && ! empty( $associated_group_id ) ) {
+		$selected_group = $associated_group_id;
 	}
 
 	$selected_group = intval( $selected_group );
@@ -1166,8 +1168,9 @@ function bp_docs_access_options_helper( $settings_field, $doc_id = 0, $group_id 
 	$doc_settings = bp_docs_get_doc_settings( $doc_id, $settings_type, $group_id );
 
 	// If this is a failed form submission, check the submitted values first
-	if ( ! empty( buddypress()->bp_docs->submitted_data->settings->{$settings_field['name']} ) ) {
-		$setting = buddypress()->bp_docs->submitted_data->settings->{$settings_field['name']};
+	$field_name = isset( buddypress()->bp_docs->submitted_data->settings->{$settings_field['name']} ) ? buddypress()->bp_docs->submitted_data->setings->{$settings_field['name']} : null;
+	if ( ! empty( $field_name ) ) {
+		$setting = $field_name;
 	} else {
 		$setting = isset( $doc_settings[ $settings_field['name'] ] ) ? $doc_settings[ $settings_field['name'] ] : '';
 	}
@@ -2120,10 +2123,11 @@ function bp_docs_get_doc_attachments( $doc_id = null ) {
 		'update_post_meta_cache' => true,
 		'update_post_term_cache' => false,
 		'posts_per_page' => -1,
+		'post_status' => 'inherit',
 	), $doc_id );
 
-	$atts = get_posts( $atts_args );
-	$atts = apply_filters( 'bp_docs_get_doc_attachments', $atts, $doc_id );
+	$atts_query = new WP_Query( $atts_args );
+	$atts = apply_filters( 'bp_docs_get_doc_attachments', $atts_query->posts, $doc_id );
 
 	wp_cache_set( $cache_key, $atts, 'bp_docs_nonpersistent' );
 

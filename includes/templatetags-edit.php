@@ -25,7 +25,7 @@ function bp_docs_edit_doc_title() {
 	function bp_docs_get_edit_doc_title() {
 		// If a previously-submitted value is found, prefer it. It
 		// means that there was a failed submission just prior to this
-		if ( ! empty( buddypress()->bp_docs->submitted_data->doc->title ) ) {
+		if ( isset( buddypress()->bp_docs->submitted_data->doc->title ) && buddypress()->bp_docs->submitted_data->doc->title ) {
 			$title = buddypress()->bp_docs->submitted_data->doc->title;
 		} else {
 			$title = bp_docs_is_existing_doc() ? get_the_title() : '';
@@ -61,7 +61,7 @@ function bp_docs_edit_doc_slug() {
 
 		// If a previously-submitted value is found, prefer it. It
 		// means that there was a failed submission just prior to this
-		if ( ! empty( buddypress()->bp_docs->submitted_data->doc->permalink ) ) {
+		if ( isset( buddypress()->bp_docs->submitted_data->doc->permalink ) && buddypress()->bp_docs->submitted_data->doc->permalink ) {
 			$slug = buddypress()->bp_docs->submitted_data->doc->permalink;
 		} else {
 			$slug = isset( $post->post_name ) ? $post->post_name : '';
@@ -88,7 +88,7 @@ function bp_docs_edit_doc_content() {
 	function bp_docs_get_edit_doc_content() {
 		global $post;
 
-		if ( ! empty( buddypress()->bp_docs->submitted_data->doc_content ) ) {
+		if ( isset( buddypress()->bp_docs->submitted_data->doc_content ) && buddypress()->bp_docs->submitted_data->doc_content ) {
 			$content = buddypress()->bp_docs->submitted_data->doc_content;
 		} else {
 			$content = bp_docs_is_existing_doc() ? $post->post_content : '';

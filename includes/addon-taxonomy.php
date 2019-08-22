@@ -514,7 +514,7 @@ function bp_docs_post_tags_meta_box() {
 	$taxonomy = get_taxonomy( $taxonomy );
 
 	// If this is a failed submission, use the value from the POST cookie
-	if ( ! empty( buddypress()->bp_docs->submitted_data->{$tax_name} ) ) {
+	if ( isset( buddypress()->bp_docs->submitted_data->{$tax_name} ) ) {
 		$terms = buddypress()->bp_docs->submitted_data->{$tax_name};
 
 	// If it's an existing Doc, look up the terms

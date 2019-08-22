@@ -616,13 +616,20 @@ class BP_Docs {
 			return;
 		}
 
-		if ( ! current_user_can( $action ) ) {
+		if ( current_user_can( $action ) ) {
+			return;
+		}
+
+		if ( ! is_user_logged_in() ) {
 			$redirect_to = bp_docs_get_doc_link();
 
 			bp_core_no_access( array(
 				'mode' => 2,
 				'redirect' => $redirect_to,
 			) );
+		} else {
+			bp_core_add_message( __( 'You do not have permission to do that.', 'buddypress-docs' ), 'error' );
+			bp_core_redirect( bp_get_root_domain() );
 		}
 	}
 
