@@ -753,7 +753,7 @@ class BP_Docs_Attachments {
 		}
 
 		// Nothing to see here
-		if ( $this->check_is_protected() ) {
+		if ( $this->check_is_protected( false ) ) {
 			return;
 		}
 
@@ -835,11 +835,14 @@ class BP_Docs_Attachments {
 	public function check_is_protected( $force_check = true ) {
 		global $is_apache;
 
-		// Fall back on cached value if it exists
+		// Fall back on cached value if it exists and is still in effect.
 		if ( ! $force_check ) {
-			$is_protected = bp_get_option( 'bp_docs_attachment_protection' );
-			if ( '' !== $is_protected ) {
-				return (bool) $is_protected;
+			$expiry = bp_get_option( 'bp_docs_attachment_protection_expiry' );
+			if ( $expiry && time() < $expiry ) {
+				$is_protected = bp_get_option( 'bp_docs_attachment_protection' );
+				if ( '' !== $is_protected ) {
+					return (bool) $is_protected;
+				}
 			}
 		}
 
@@ -890,6 +893,8 @@ class BP_Docs_Attachments {
 		// Cache
 		$cache = $is_protected ? '1' : '0';
 		bp_update_option( 'bp_docs_attachment_protection', $cache );
+		// Put off the next check for 24 hours.
+		bp_update_option( 'bp_docs_attachment_protection_expiry', time() + 86400 );
 
 		return $is_protected;
 	}
