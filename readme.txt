@@ -33,6 +33,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 2.1.4 =
+* Fixed bug that could cause Doc links to be incorrectly generated in some cases where Doc IDs are filtered by another plugin.
+
 = 2.1.3 =
 * Better compatibility with themes that load the WP Media modal early
 * Fixed bug with the "Most recent" check on the History tab.

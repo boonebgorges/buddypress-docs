@@ -482,10 +482,9 @@ function bp_docs_doc_link( $doc_id = false ) {
 	 */
 	function bp_docs_get_doc_link( $doc_id = false ) {
 		if ( false === $doc_id ) {
-			if ( is_singular( bp_docs_get_post_type_name() ) && $q = get_queried_object() ) {
-				$doc_id = isset( $q->ID ) ? $q->ID : 0;
-			} else if ( get_the_ID() ) {
-				$doc_id = get_the_ID();
+			$doc = bp_docs_get_current_doc();
+			if ( $doc ) {
+				$doc_id = $doc->ID;
 			}
 		}
 
