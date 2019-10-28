@@ -108,7 +108,7 @@ class BP_Docs_Attachments {
 				wp_die( __( 'File not found.', 'buddypress-docs' ) );
 			}
 
-			$uploads = wp_upload_dir();
+			$uploads = wp_upload_dir( null, false );
 			$filepath = $uploads['path'] . DIRECTORY_SEPARATOR . $fn;
 
 			if ( ! file_exists( $filepath ) ) {
@@ -152,13 +152,6 @@ class BP_Docs_Attachments {
 
 	/**
 	 * Attempts to customize upload_dir with our attachment paths
-	 *
-	 * @todo There's a quirk in wp_upload_dir() that will create the
-	 *   attachment directory if it doesn't already exist. This normally
-	 *   isn't a problem, because wp_upload_dir() is generally only called
-	 *   when a credentialed user is logged in and viewing the admin side.
-	 *   But the current code will force a folder to be created the first
-	 *   time the doc is viewed at all. Not sure whether this merits fixing
 	 *
 	 * @since 1.4
 	 */
@@ -278,6 +271,7 @@ class BP_Docs_Attachments {
 			if ( ! function_exists( 'insert_with_markers' ) ) {
 				require_once( ABSPATH . 'wp-admin/includes/misc.php' );
 			}
+
 			insert_with_markers( $htaccess_path, 'BuddyPress Docs', $rules );
 		}
 	}
@@ -781,7 +775,7 @@ class BP_Docs_Attachments {
 			switch_to_blog( bp_get_root_blog_id() );
 		}
 
-		$upload_dir = $this->mod_upload_dir( wp_upload_dir() );
+		$upload_dir = $this->mod_upload_dir( wp_upload_dir( null, false ) );
 		$att_url = str_replace( get_option( 'home' ), '', $upload_dir['url'] );
 
 		restore_current_blog();
@@ -853,7 +847,7 @@ class BP_Docs_Attachments {
 			}
 		}
 
-		$uploads = wp_upload_dir();
+		$uploads = wp_upload_dir( null, false );
 
 		$test_dir = $uploads['basedir'] . DIRECTORY_SEPARATOR . 'bp-attachments' . DIRECTORY_SEPARATOR . '0';
 		$test_file_dir = $test_dir . DIRECTORY_SEPARATOR . 'test.html';
