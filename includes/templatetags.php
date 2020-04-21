@@ -1007,7 +1007,7 @@ function bp_docs_doc_associated_group_markup() {
 
 	// Last check: if this is a second attempt at a newly created Doc,
 	// there may be a previously submitted value
-	$associated_group_id = isset( buddypress()->bp_docs->submitted_data->associated_group_id ) ? buddypress()->bp_docs_submitted_data->associated_group_id : null;
+	$associated_group_id = isset( buddypress()->bp_docs->submitted_data->group_id ) ? buddypress()->bp_docs->submitted_data->group_id : null;
 	if ( empty( $selected_group ) && ! empty( $associated_group_id ) ) {
 		$selected_group = $associated_group_id;
 	}
