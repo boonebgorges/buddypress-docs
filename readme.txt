@@ -36,6 +36,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 = 2.1.4 =
 * Fixed bug that could cause Doc links to be incorrectly generated in some cases where Doc IDs are filtered by another plugin.
 * Fixed bug that could cause empty attachment directories to be incorrectly created in some cases.
+* Fixed bug that caused group checkbox not to be checked properly after failed form submission.
 
 = 2.1.3 =
 * Better compatibility with themes that load the WP Media modal early
