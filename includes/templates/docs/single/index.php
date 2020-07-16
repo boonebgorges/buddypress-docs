@@ -17,7 +17,7 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 			<div class="toggle-content">
 				<p><?php printf( __( 'This doc is currently being edited by %1$s. In order to prevent edit conflicts, only one user can edit a doc at a time.', 'buddypress-docs' ), bp_docs_get_current_doc_locker_name() ) ?></p>
 
-				<?php if ( is_super_admin() || bp_group_is_admin() ) : ?>
+				<?php if ( is_super_admin() || ( bp_is_active( 'groups' ) && bp_is_group() && bp_group_is_admin() ) ) : ?>
 					<p><?php printf( __( 'Please try again in a few minutes. Or, as an admin, you can <a href="%s">force cancel</a> the edit lock.', 'buddypress-docs' ), bp_docs_get_force_cancel_edit_lock_link() ) ?></p>
 				<?php else : ?>
 					<p><?php _e( 'Please try again in a few minutes.', 'buddypress-docs' ) ?></p>

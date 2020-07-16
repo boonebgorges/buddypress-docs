@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 === BuddyPress Docs  ===
 Contributors: boonebgorges, cuny-academic-commons, dcavins
 Donate link: http://teleogistic.net/donate
@@ -36,6 +37,46 @@ This plugin is in active development. For feature requests and bug reports, visi
 = 2.2.0 =
 * Improved hooks for customizing the Docs group admin/create panel.
 * Added a shortcode, `bp_docs_recent_docs`, to output a simple list of docs similar to the Recent Docs widget.
+=======
+=== BuddyPress Docs  ===
+Contributors: boonebgorges, cuny-academic-commons, dcavins
+Donate link: http://teleogistic.net/donate
+Tags: buddypress, docs, wiki, documents, collaboration
+Requires at least: 3.3
+Tested up to: 5.5
+Stable tag: 2.1.4
+
+Adds collaborative Docs to BuddyPress.
+
+== Description ==
+
+BuddyPress Docs adds collaborative work spaces to your BuddyPress community. Part wiki, part document editing, part shared dropbox, think of these Docs as a BuddyPress version of the Docs service offered by the Big G *ifyouknowwhatimean*
+
+Features include:
+
+* Docs that can be linked to groups or users, with a variety of privacy levels
+* Support for fully-private document uploads
+* Doc taxonomy, using tags
+* Fully sortable and filterable doc lists
+* TinyMCE front-end doc editing
+* One-editor-at-a-time prevention against overwrites, plus idle detection/autosave
+* Full access to revision history
+* Dashboard access and management of Docs for the site admin
+
+This plugin is in active development. For feature requests and bug reports, visit http://github.com/boonebgorges/buddypress-docs. If you have translated the plugin and would like to provide your translation for distribution with BuddyPress Docs, please contact the plugin author.
+
+== Installation ==
+
+1. Install
+1. Activate
+1. Sit back and watch the jack roll in.
+
+== Changelog ==
+
+= 2.1.4 =
+* Fixed bug that could cause Doc links to be incorrectly generated in some cases where Doc IDs are filtered by another plugin.
+* Fixed bug that could cause empty attachment directories to be incorrectly created in some cases.
+* Fixed bug that caused group checkbox not to be checked properly after failed form submission.
 
 = 2.1.3 =
 * Better compatibility with themes that load the WP Media modal early
@@ -54,7 +95,6 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Fixed regression in Docs 2.1.0 that broke compatibility with PHP 5.3 and PHP 5.4.
 * Fixed bug that could cause access settings to be rendered incorrectly in some cases where `bp_docs_get_current_doc()` is filtered by a plugin.
 * Fixed regression in BuddyPress that prevented access to author-only documents in some cases.
-
 
 = 2.1.0 =
 * Improved support for BuddyPress 3.0 and the Nouveau template pack.

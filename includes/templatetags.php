@@ -482,10 +482,9 @@ function bp_docs_doc_link( $doc_id = false ) {
 	 */
 	function bp_docs_get_doc_link( $doc_id = false ) {
 		if ( false === $doc_id ) {
-			if ( is_singular( bp_docs_get_post_type_name() ) && $q = get_queried_object() ) {
-				$doc_id = isset( $q->ID ) ? $q->ID : 0;
-			} else if ( get_the_ID() ) {
-				$doc_id = get_the_ID();
+			$doc = bp_docs_get_current_doc();
+			if ( $doc ) {
+				$doc_id = $doc->ID;
 			}
 		}
 
@@ -1007,7 +1006,7 @@ function bp_docs_doc_associated_group_markup() {
 
 	// Last check: if this is a second attempt at a newly created Doc,
 	// there may be a previously submitted value
-	$associated_group_id = isset( buddypress()->bp_docs->submitted_data->associated_group_id ) ? buddypress()->bp_docs_submitted_data->associated_group_id : null;
+	$associated_group_id = isset( buddypress()->bp_docs->submitted_data->group_id ) ? buddypress()->bp_docs->submitted_data->group_id : null;
 	if ( empty( $selected_group ) && ! empty( $associated_group_id ) ) {
 		$selected_group = $associated_group_id;
 	}
