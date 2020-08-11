@@ -10,9 +10,6 @@ window.wp = window.wp || {};
 
 		event.preventDefault();
 
-		// Change to upload mode
-		Library.frame.content.mode('upload');
-
 		// Open the dialog
 		file_frame.open();
 
@@ -21,12 +18,12 @@ window.wp = window.wp || {};
 
 	// Upload handler. Sends attached files to the list
 	wp.Uploader.prototype.success = function(r) {
-		$.ajax( ajaxurl, { 
+		$.ajax( ajaxurl, {
 			type: 'POST',
 			data: {
 				'action': 'doc_attachment_item_markup',
 				'attachment_id': r.id,
-				
+
 			},
 			success: function(s) {
 				$('#doc-attachments-ul').prepend(s.data);
@@ -36,16 +33,7 @@ window.wp = window.wp || {};
 	};
 
 	// Extension of the WP media view for our use
-	BP_Docs_MediaFrame = wp.media.view.MediaFrame.Select.extend({
-		browseRouter: function( view ) {
-			view.set({
-				upload: {
-					text:     wp.media.view.l10n.uploadFilesTitle,
-					priority: 20
-				}
-			});
-		}
-	});
+	BP_Docs_MediaFrame = wp.media.view.MediaFrame.Select.extend();
 
 	doc_id = wp.media.model.settings.post.id;
 
@@ -70,5 +58,10 @@ window.wp = window.wp || {};
 		});
 
 		Library = file_frame.states.get('library');
+
+		// Set the mode to "upload" every time the media modal is opened.
+		file_frame.on( "open", function() {
+			Library.frame.content.mode('upload');
+		} );
 	});
 })(jQuery);
