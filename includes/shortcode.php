@@ -62,22 +62,19 @@ function bp_docs_recent_docs_shortcode_handler( $atts ) {
 	$temp_doc_query = isset( $bp->bp_docs->doc_query ) ? $bp->bp_docs->doc_query : null;
 	$bp->bp_docs->doc_query = null;
 
+	// Prepare the arguments array to pass to the template.
+	$loop_args = array(
+		'show_date' => $a['show_date'],
+		'has_docs'  => false,
+	);
+
 	ob_start();
 
 	if ( bp_docs_has_docs( $doc_args ) ) :
-	?>
-		<ul>
-		<?php while ( bp_docs_has_docs() ) : bp_docs_the_doc(); ?>
-			<li>
-				<a href="<?php the_permalink(); ?>"><?php get_the_title() ? the_title() : the_ID(); ?></a>
-			<?php if ( $a['show_date'] ) : ?>
-				<span class="post-date"><?php echo get_the_date(); ?></span>
-			<?php endif; ?>
-			</li>
-		<?php endwhile; ?>
-	</ul>
-
-	<?php
+		$loop_args['has_docs'] = true;
+		bp_docs_locate_template( 'shortcode-loop.php', true, false, $loop_args );
+	else :
+	 	bp_docs_locate_template( 'shortcode-loop.php', true, false, $loop_args );
 	endif;
 
 	$retval = ob_get_clean();
