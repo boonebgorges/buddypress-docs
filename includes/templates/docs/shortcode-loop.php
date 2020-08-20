@@ -1,5 +1,9 @@
 <?php
 // Set defaults from arguments passed to template.
+// $args won't exist in WP <5.5
+if ( ! isset( $args ) ) {
+	$args = array();
+}
 $args = wp_parse_args(
     $args,
     array(
