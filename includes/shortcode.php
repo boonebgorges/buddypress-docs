@@ -5,13 +5,14 @@
  * but as a shortcode.
  *
  * @package BuddyPressDocs
- * @since 2.3
+ * @since 2.2
  */
 
 function bp_docs_recent_docs_shortcode_handler( $atts ) {
     $a = shortcode_atts( array(
         'number'        => 5,
         'show_date'     => false,
+        'class'         => '',
         'author_id'     => null,
         'group_id'      => null,
         'folder_id'     => null,
@@ -44,7 +45,7 @@ function bp_docs_recent_docs_shortcode_handler( $atts ) {
 	/**
 	 * Filters the args passed to `bp_docs_has_docs()` in the Recent Docs shortcode.
 	 *
-	 * @since 2.3.0
+	 * @since 2.2
 	 *
 	 * @param array {
 	 *     @type int    $posts_per_page
@@ -65,6 +66,7 @@ function bp_docs_recent_docs_shortcode_handler( $atts ) {
 	// Prepare the arguments array to pass to the template.
 	$loop_args = array(
 		'show_date' => $a['show_date'],
+		'class'     => $a['class'],
 		'has_docs'  => false,
 	);
 
