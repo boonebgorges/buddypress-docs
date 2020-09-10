@@ -4,7 +4,7 @@ Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: 3.3
 Tested up to: 5.5
-Stable tag: 2.1.4
+Stable tag: 2.1.5
 
 Adds collaborative Docs to BuddyPress.
 
@@ -32,6 +32,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 1. Sit back and watch the jack roll in.
 
 == Changelog ==
+
+= 2.1.5 =
+* Fixed bug that caused Attachments button not to work properly in some cases on WP 5.3+.
 
 = 2.1.4 =
 * Fixed bug that could cause Doc links to be incorrectly generated in some cases where Doc IDs are filtered by another plugin.
