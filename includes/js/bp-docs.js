@@ -129,7 +129,7 @@ jQuery(document).ready(function($){
 	$('.docs-filter-title').on('click',function(e){
 		var filter_title = $(this);
 		var filter_title_id = filter_title.attr('id');
-		var filter_id = filter_title_id.split('-').pop();
+		var filter_id = filter_title_id.replace('docs-filter-title-', '');
 		var filter_to_show_id = 'docs-filter-section-' + filter_id;
 		var showing_filter_id = $('.docs-filter-section-open').attr('id');
 
