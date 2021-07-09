@@ -955,7 +955,8 @@ function bp_docs_folders_map_meta_caps( $caps, $cap, $user_id, $args ) {
 
 			// Group
 			} else if ( function_exists( 'bp_is_group' ) && bp_is_group() ) {
-				if ( groups_is_user_member( $user_id, bp_get_current_group_id() ) ) {
+				$group_id = bp_get_current_group_id();
+				if ( groups_is_user_admin( $user_id, $group_id ) || groups_is_user_mod( $user_id, $group_id ) ) {
 					$caps = array( 'exist' );
 				}
 			// User
