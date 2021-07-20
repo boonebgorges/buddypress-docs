@@ -2180,10 +2180,10 @@ function bp_docs_attachment_item_markup( $attachment_id, $format = 'full' ) {
 	$att_base   = wp_basename( get_attached_file( $attachment_id ) );
 	$doc_url    = bp_docs_get_doc_link( $attachment->post_parent );
 
-	$attachment_ext = preg_replace( '/^.+?\.([^.]+)$/', '$1', $att_url );
+	$attachment_ext         = preg_replace( '/^.+?\.([^.]+)$/', '$1', $att_url );
+	$attachment_delete_html = '';
 
 	if ( 'full' === $format ) {
-		$attachment_delete_html = '';
 		if ( current_user_can( 'bp_docs_edit' ) && ( bp_docs_is_doc_edit() || bp_docs_is_doc_create() ) ) {
 			$attachment_delete_url = wp_nonce_url( $doc_url, 'bp_docs_delete_attachment_' . $attachment_id );
 			$attachment_delete_url = add_query_arg( array(
@@ -2216,7 +2216,24 @@ function bp_docs_attachment_item_markup( $attachment_id, $format = 'full' ) {
 		);
 	}
 
-	return $markup;
+	$filter_args = array(
+		'format'      => $format,
+		'att_id'      => $attachment_id,
+		'att_ext'     => $attachment_ext,
+		'att_url'     => $att_url,
+		'title_attr'  => esc_attr( $att_base ),
+		'link_text'   => esc_html( $att_base ),
+		'delete_link' => $attachment_delete_html
+	);
+	/**
+	 * Filters attachment list item output.
+	 *
+	 * @since 2.2.0
+	 *
+	 * @param string $markup HTML markup of list item.
+	 * @param array  $screen Arguments used to create markup.
+	 */
+	return apply_filters( 'bp_docs_attachment_item_markup', $markup, $filter_args );
 }
 
 /**
