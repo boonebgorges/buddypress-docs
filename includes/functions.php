@@ -180,12 +180,14 @@ function bp_docs_get_item_term_id( $item_id, $item_type, $item_name = '' ) {
  * the found template.
  *
  * @since 1.0.5
+ * @since 7.0.0 Added $args parameter.
  *
- * @param str $template This string should be of the format 'edit-docs.php'. Ie, you need '.php',
- *                      but you don't need the leading '/docs/'
+ * @param str   $template This string should be of the format 'edit-docs.php'. Ie, you need '.php',
+ *                        but you don't need the leading '/docs/'
+ * @param array $args     Extra args to pass to locate_template().
  * @return str $template_path The absolute path of the located template file.
  */
-function bp_docs_locate_template( $template = '', $load = false, $require_once = true ) {
+function bp_docs_locate_template( $template = '', $load = false, $require_once = true, $args = array() ) {
 	if ( empty( $template ) )
 		return false;
 
@@ -200,11 +202,11 @@ function bp_docs_locate_template( $template = '', $load = false, $require_once =
 	else
 		$template_path = BP_DOCS_INCLUDES_PATH . 'templates/docs/' . $template;
 
-	$template_path = apply_filters( 'bp_docs_locate_template', $template_path, $template );
+	$template_path = apply_filters( 'bp_docs_locate_template', $template_path, $template, $args );
 
 	if ( $template_path ) {
 		if ( $load ) {
-			load_template( $template_path, $require_once );
+			load_template( $template_path, $require_once, $args );
 		} else {
 			return $template_path;
 		}
