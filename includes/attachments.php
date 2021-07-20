@@ -31,10 +31,6 @@ class BP_Docs_Attachments {
 		// Determine whether the directory view is filtered by 'has-attachment' status.
 		add_filter( 'bp_docs_is_directory_view_filtered', array( $this, 'is_directory_view_filtered' ), 10, 2 );
 
-		// Icon display
-		add_filter( 'icon_dir', 'BP_Docs_Attachments::icon_dir' );
-		add_filter( 'icon_dir_uri', 'BP_Docs_Attachments::icon_dir_uri' );
-
 		// Catch delete request
 		add_action( 'bp_actions', array( $this, 'catch_delete_request' ) );
 
@@ -590,17 +586,17 @@ class BP_Docs_Attachments {
 		return apply_filters( 'bp_docs_attachments_http_headers', $headers, $filename );
 	}
 
+	/**
+	 * No longer used.
+	 */
 	public static function icon_dir( $dir ) {
-		if ( bp_docs_is_docs_component() ) {
-			$dir = BP_DOCS_INSTALL_PATH . 'lib/nuvola';
-		}
 		return $dir;
 	}
 
+	/**
+	 * No longer used.
+	 */
 	public static function icon_dir_uri( $url ) {
-		if ( bp_docs_is_docs_component() ) {
-			$url = plugins_url( BP_DOCS_PLUGIN_SLUG . '/lib/nuvola' );
-		}
 		return $url;
 	}
 

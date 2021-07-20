@@ -233,11 +233,14 @@ function bp_docs_add_external_tinymce_buttons_row1( $buttons ) {
 
 	if ( $justify_right_key !== 0 ) {
 		// Shift the buttons one to the right and remove from original array
-		$count = count( $buttons );
 		$new_buttons = array();
-		for ( $i = $justify_right_key + 1; $i < $count; $i++ ) {
-			$new_buttons[] = $buttons[$i];
-			unset( $buttons[$i] );
+		foreach ( $buttons as $bkey => $bvalue ) {
+			if ( $bkey <= $justify_right_key ) {
+				continue;
+			}
+
+			$new_buttons[] = $bvalue;
+			unset( $buttons[ $bkey ] );
 		}
 
 		// Put the three pieces together
