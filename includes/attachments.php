@@ -752,8 +752,15 @@ class BP_Docs_Attachments {
 			return;
 		}
 
+		// Is the user manually running an access protection check?
+		$force_check = false;
+		if ( isset( $_GET['bpdocs-check-attachment-protection'] ) ) {
+			check_admin_referer( 'bpdocs-check-attachment-protection' );
+			$force_check = true;
+		}
+
 		// Nothing to see here
-		if ( $this->check_is_protected( false ) ) {
+		if ( $this->check_is_protected( $force_check ) ) {
 			return;
 		}
 
@@ -804,6 +811,11 @@ class BP_Docs_Attachments {
 			$help_p = __( 'It looks like you are running <strong>Apache</strong>. The most likely cause of your problem is that the <code>AllowOverride</code> directive has been disabled, either globally (<code>httpd.conf</code>) or in a <code>VirtualHost</code> definition. Contact your host for assistance.', 'buddypress-docs' );
 		}
 
+		$expiry_time     = absint( bp_get_option( 'bp_docs_attachment_protection_expiry' ) );
+		$expiry_stamp    = wp_date( 'Y-m-d g:i:s A', $expiry_time );
+		$last_check_time = wp_date( 'Y-m-d g:i:s A', $expiry_time - 86400 );
+		$force_check_url = add_query_arg( 'bpdocs-check-attachment-protection', '1', $_SERVER['REQUEST_URI'] );
+		$force_check_url = wp_nonce_url( $force_check_url, 'bpdocs-check-attachment-protection' );
 		?>
 
 		<div class="message error">
@@ -812,6 +824,15 @@ class BP_Docs_Attachments {
 			<?php if ( $help_p ) : ?>
 				<p><?php echo $help_p ?></p>
 			<?php endif ?>
+
+			<p><?php
+				printf(
+					__( 'Access protection was last checked %s and will be checked again %s. <a href="%s">Test access protection now.</a>', 'buddypress-docs' ),
+					$last_check_time,
+					$expiry_stamp,
+					$force_check_url
+				);
+			?></p>
 
 			<?php if ( $help_url ) : ?>
 				<p><?php printf( __( 'See <a href="%s">this wiki page</a> for more information.', 'buddypress-docs' ), $help_url ) ?></p>
