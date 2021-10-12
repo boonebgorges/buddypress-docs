@@ -7,10 +7,22 @@ class BP_Docs_Attachments {
 	protected $is_private;
 	protected $htaccess_path;
 
+	protected $check_interval = 86400;
+
 	function __construct() {
 		if ( ! bp_docs_enable_attachments() ) {
 			return;
 		}
+
+		/**
+		 * Filters the number of seconds between attachment protection checks.
+		 *
+		 * @since 2.2.0
+		 *
+		 * @param bool $value How long between attachment protection checks, in seconds.
+		 *                    Default value is once per day.
+		 */
+		$this->check_interval = (int) apply_filters( 'bpdocs_check_attachment_protection_interval', $this->check_interval );
 
 		add_action( 'template_redirect', array( $this, 'catch_attachment_request' ), 20 );
 		add_filter( 'redirect_canonical', array( $this, 'redirect_canonical' ), 10, 2 );
@@ -759,6 +771,22 @@ class BP_Docs_Attachments {
 			$force_check = true;
 		}
 
+		/**
+		 * Filters whether attachment protection checks should be allowed.
+		 *
+		 * @since 2.2.0
+		 *
+		 * @param bool $value Whether the attachment protection check
+		 *                    should be allowed. Manual checks will always
+		 *                    be allowed.
+		 */
+		$allow_check = apply_filters( 'bpdocs_check_attachment_protection', true );
+
+		// Manual checks are always allowed to proceed.
+		if ( ! $allow_check && ! $force_check ) {
+			return;
+		}
+
 		// Nothing to see here
 		if ( $this->check_is_protected( $force_check ) ) {
 			return;
@@ -813,7 +841,7 @@ class BP_Docs_Attachments {
 
 		$expiry_time     = absint( bp_get_option( 'bp_docs_attachment_protection_expiry' ) );
 		$expiry_stamp    = wp_date( 'Y-m-d g:i:s A', $expiry_time );
-		$last_check_time = wp_date( 'Y-m-d g:i:s A', $expiry_time - 86400 );
+		$last_check_time = wp_date( 'Y-m-d g:i:s A', $expiry_time - $this->check_interval );
 		$force_check_url = add_query_arg( 'bpdocs-check-attachment-protection', '1', $_SERVER['REQUEST_URI'] );
 		$force_check_url = wp_nonce_url( $force_check_url, 'bpdocs-check-attachment-protection' );
 		?>
@@ -915,7 +943,7 @@ class BP_Docs_Attachments {
 		$cache = $is_protected ? '1' : '0';
 		bp_update_option( 'bp_docs_attachment_protection', $cache );
 		// Put off the next check for 24 hours.
-		bp_update_option( 'bp_docs_attachment_protection_expiry', time() + 86400 );
+		bp_update_option( 'bp_docs_attachment_protection_expiry', time() + $this->check_interval );
 
 		return $is_protected;
 	}
