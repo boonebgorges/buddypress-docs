@@ -56,11 +56,11 @@ class BP_Docs_Wikitext {
 		}
 
 		// Look for a page with this title. WP_Query does not allow this for some reason
-		$docs = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->posts WHERE post_title = %s AND post_type = %s {$in_clause}", $link_page, bp_docs_get_post_type_name() ) );
+		$docs = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->posts WHERE post_title = %s AND post_type = %s", $link_page, bp_docs_get_post_type_name() ) );
 
 		// If none were found, do the same query with page slugs
 		if ( empty( $docs ) ) {
-			$docs = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->posts WHERE post_name = %s AND post_type = %s {$in_clause}", sanitize_title_with_dashes( $link_page ), bp_docs_get_post_type_name() ) );
+			$docs = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->posts WHERE post_name = %s AND post_type = %s", sanitize_title_with_dashes( $link_page ), bp_docs_get_post_type_name() ) );
 		}
 
 		// Filter the docs. This will be used to exclude docs that do not belong to a group
