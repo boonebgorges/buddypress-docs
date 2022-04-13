@@ -7,7 +7,19 @@
  */
 class BP_Docs_Moderation {
 
+	/**
+	 * Our pending post status.
+	 *
+	 * @var string
+	 */
 	public $pending_status = 'bp_docs_pending';
+
+	/**
+	 * Our internal post type.
+	 *
+	 * @var string
+	 */
+	protected $post_type = '';
 
 	/**
 	 * Constructor.
@@ -15,6 +27,7 @@ class BP_Docs_Moderation {
 	 * @since 2.1.0
 	 */
 	public function __construct() {
+		$this->post_type = $GLOBALS['bp_docs']->post_type_name;
 	}
 
 	/**
@@ -23,10 +36,47 @@ class BP_Docs_Moderation {
 	 * @since 2.1.0
 	 */
 	public function add_hooks() {
-		// Register a custom status that's a lot like the built-in "pending" status.
-		add_action( 'bp_docs_init', array( $this, 'register_docs_pending_status' ) );
+		// Register status on our post type admin page.
+		add_action( 'current_screen', array( $this, 'register_status_in_admin_area' ) );
+
+		// Register status when querying for our post type.
+		add_action( 'pre_get_posts', array( $this, 'register_status_during_wp_query' ) );
 
 		add_filter( 'display_post_states', array( $this, 'add_moderated_label' ), 10, 2 );
+	}
+
+	/**
+	 * Only register post status if we are on our post type admin page.
+	 *
+	 * @since X
+	 *
+	 * @param WP_Screen $screen Current screen instance.
+	 */
+	public function register_status_in_admin_area( $screen ) {
+		// If not on our post type, bail.
+		if ( $this->post_type !== $screen->post_type ) {
+			return;
+		}
+
+		// Register our post status.
+		$this->register_docs_pending_status();
+	}
+
+	/**
+	 * Only register post status if we are querying for our post type.
+	 *
+	 * @since X
+	 *
+	 * @param WP_Query $q WP_Query instance
+	 */
+	public function register_status_during_wp_query( $q ) {
+		// If not on our post type, bail.
+		if ( ! in_array( $this->post_type, (array) $q->get( 'post_type' ) ) ) {
+			return;
+		}
+
+		// Register our post status.
+		$this->register_docs_pending_status();
 	}
 
 	/**
