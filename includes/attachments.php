@@ -324,7 +324,10 @@ class BP_Docs_Attachments {
 
 			if ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) {
 				if ( bp_docs_is_existing_doc() ) {
-					$this->doc_id = get_queried_object_id();
+					$current_doc = bp_docs_get_current_doc();
+					if ( $current_doc ) {
+						$this->doc_id = $current_doc->ID;
+					}
 				}
 			} else {
 				// AJAX
