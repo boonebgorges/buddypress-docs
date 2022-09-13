@@ -353,7 +353,7 @@ class BP_Docs_Query {
 				 * Load the template tags for the edit screen
 				 */
 				if ( !function_exists( 'wp_tiny_mce' ) ) {
-					$this->define_wp_tiny_mce();
+					self::define_wp_tiny_mce();
 				}
 
 				require_once( BP_DOCS_INCLUDES_PATH . 'templatetags-edit.php' );
@@ -698,7 +698,7 @@ class BP_Docs_Query {
 	 *
 	 * @since 1.1.19
 	 */
-	function define_wp_tiny_mce() {
+	static function define_wp_tiny_mce() {
 		function wp_tiny_mce() {
 			return;
 		}
