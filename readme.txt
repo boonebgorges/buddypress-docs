@@ -5,6 +5,8 @@ Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: 3.3
 Tested up to: 6.0
 Stable tag: 2.1.7
+License: GPLv3
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 Adds collaborative Docs to BuddyPress.
 
