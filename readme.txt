@@ -3,7 +3,7 @@ Contributors: boonebgorges, cuny-academic-commons, dcavins
 Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: 3.3
-Tested up to: 6.0
+Tested up to: 6.1
 Stable tag: 2.1.8
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
