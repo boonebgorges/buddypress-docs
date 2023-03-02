@@ -94,6 +94,7 @@ class BP_Docs_Taxonomy {
 			'show_ui' 	=> true,
 			'query_var' 	=> true,
 			'rewrite' 	=> array( 'slug' => 'item' ),
+			'publicly_queryable' => false,
 		) );
 	}
 
