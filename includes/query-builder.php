@@ -55,20 +55,21 @@ class BP_Docs_Query {
 		$this->doc_slug = $this->get_doc_slug();
 
 		$defaults = array(
-			'doc_id'	 => array(),     // Array or comma-separated string
-			'doc_slug'	 => $this->doc_slug, // String
-			'group_id'	 => null,     // Array or comma-separated string
-			'parent_id'	 => 0,		 // int
-			'author_id'	 => array(),     // Array or comma-separated string
-			'folder_id'      => null,
-			'edited_by_id'   => array(),     // Array or comma-separated string
-			'tags'		 => array(),     // Array or comma-separated string
-			'order'		 => 'ASC',       // ASC or DESC
-			'orderby'	 => 'modified',  // 'modified', 'title', 'author', 'created'
-			'paged'		 => 1,
-			'posts_per_page' => 10,
-			'search_terms'   => '',
-			'status'         => 'publish',
+			'doc_id'	      => array(),     // Array or comma-separated string
+			'doc_slug'	      => $this->doc_slug, // String
+			'group_id'	      => null,     // Array or comma-separated string
+			'parent_id'	      => 0,		 // int
+			'author_id'	      => array(),     // Array or comma-separated string
+			'folder_id'       => null,
+			'edited_by_id'    => array(),     // Array or comma-separated string
+			'tags'		      => array(),     // Array or comma-separated string
+			'order'		      => 'ASC',       // ASC or DESC
+			'orderby'	      => 'modified',  // 'modified', 'title', 'author', 'created'
+			'paged'		      => 1,
+			'posts_per_page'  => 10,
+			'search_terms'    => '',
+			'status'          => 'publish',
+			'recurse_folders' => false,
 		);
 		$r = wp_parse_args( $args, $defaults );
 
@@ -248,6 +249,21 @@ class BP_Docs_Query {
 				$wp_query_args['post__in'] = $this->get_edited_by_post_ids();
 			}
 
+			if ( $this->query_args['recurse_folders'] && $this->query_args['group_id'] ) {
+				if ( $this->query_args['folder_id'] ) {
+					$folder_ids = (array) $this->query_args['folder_id'];
+				} else {
+					$folder_ids = [ 0 ];
+				}
+
+				$descendant_ids = [ 0 ];
+				foreach ( $folder_ids as $folder_id ) {
+					$descendant_ids = array_merge( $descendant_ids, bp_docs_folders_get_folder_descendants( $folder_id, $this->query_args['group_id'] ) );
+				}
+
+				$this->query_args['folder_id'] = array_unique( array_merge( $folder_ids, $descendant_ids ) );
+			}
+
 			// Access queries are handled at pre_get_posts, using bp_docs_general_access_protection()
 
 			// Set the taxonomy query. Filtered so that plugins can alter the query
@@ -257,6 +273,7 @@ class BP_Docs_Query {
 			if ( !empty( $this->query_args['parent_id'] ) ) {
 				$wp_query_args['post_parent'] = $this->query_args['parent_id'];
 			}
+
 		}
 
 		// Filter these arguments just before they're sent to WP_Query

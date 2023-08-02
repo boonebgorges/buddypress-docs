@@ -90,6 +90,9 @@ function bp_docs_has_docs( $args = array() ) {
 			$d_folder_id = 0;
 		}
 
+		// When searching in a folder context, return results in subfolders as well.
+		$d_recurse_folders = null !== $d_folder_id && ! empty( $d_search_terms );
+
 		// Page number, posts per page
 		$d_paged = 1;
 		if ( ! empty( $_GET['paged'] ) ) {
@@ -108,19 +111,20 @@ function bp_docs_has_docs( $args = array() ) {
 		$d_doc_slug = !empty( $bp->bp_docs->query->doc_slug ) ? $bp->bp_docs->query->doc_slug : '';
 
 		$defaults = array(
-			'doc_id'         => array(),      // Array or comma-separated string
-			'doc_slug'       => $d_doc_slug,  // String (post_name/slug)
-			'group_id'       => $d_group_id,  // Array or comma-separated string
-			'parent_id'      => $d_parent_id, // int
-			'folder_id'      => $d_folder_id, // array or comma-separated string
-			'author_id'      => $d_author_id, // Array or comma-separated string
-			'edited_by_id'   => $d_edited_by_id, // Array or comma-separated string
-			'tags'           => $d_tags,      // Array or comma-separated string
-			'order'          => $d_order,        // ASC or DESC
-			'orderby'        => $d_orderby,   // 'modified', 'title', 'author', 'created'
-			'paged'	         => $d_paged,
-			'posts_per_page' => $d_posts_per_page,
-			'search_terms'   => $d_search_terms,
+			'doc_id'                  => array(),      // Array or comma-separated string
+			'doc_slug'                => $d_doc_slug,  // String (post_name/slug)
+			'group_id'                => $d_group_id,  // Array or comma-separated string
+			'parent_id'               => $d_parent_id, // int
+			'folder_id'               => $d_folder_id, // array or comma-separated string
+			'author_id'               => $d_author_id, // Array or comma-separated string
+			'edited_by_id'            => $d_edited_by_id, // Array or comma-separated string
+			'tags'                    => $d_tags,      // Array or comma-separated string
+			'order'                   => $d_order,        // ASC or DESC
+			'orderby'                 => $d_orderby,   // 'modified', 'title', 'author', 'created'
+			'paged'	                  => $d_paged,
+			'posts_per_page'          => $d_posts_per_page,
+			'search_terms'            => $d_search_terms,
+			'recurse_folders'         => $d_recurse_folders,
 			'update_attachment_cache' => false,
 		);
 

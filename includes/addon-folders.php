@@ -745,6 +745,7 @@ function bp_docs_delete_folder_contents( $folder_id ) {
  *     @type bool $force_all_folders Optional. Set to 'true' to include all
  *           folders, 'false' to exclude folders associated with users or
  *           groups (ie, include only "global" folders). Default: false.
+ *     @type int  $parent_id Optional.
  * }
  * @return array
  */
@@ -2780,3 +2781,25 @@ function bp_docs_folders_update_folder_modified_date_on_deleted_term_relationshi
 }
 add_action( 'deleted_term_relationships', 'bp_docs_folders_update_folder_modified_date_on_deleted_term_relationships', 10, 3 );
 
+/**
+ * Gets a list of folder IDs for all descendants of a given folder.
+ */
+function bp_docs_folders_get_folder_descendants( $folder_id, $group_id ) {
+	$descendant_ids = [];
+
+	$args = [
+		'group_id'     => $group_id,
+		'parent_id'    => $folder_id,
+		'search_terms' => '',
+	];
+
+	$children = bp_docs_get_folders( $args );
+
+	$children_ids   = wp_list_pluck( $children, 'ID' );
+	$descendant_ids = $children_ids;
+	foreach ( $children_ids as $child_id ) {
+		$descendant_ids = array_merge( $descendant_ids, bp_docs_folders_get_folder_descendants( $child_id, $group_id ) );
+	}
+
+	return $descendant_ids;
+}
