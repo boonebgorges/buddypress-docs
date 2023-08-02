@@ -91,7 +91,7 @@ function bp_docs_has_docs( $args = array() ) {
 		}
 
 		// When searching in a folder context, return results in subfolders as well.
-		$d_recurse_folders = null !== $d_folder_id && ! empty( $d_search_terms );
+		$d_recurse_folders = null !== $d_folder_id && 0 !== $d_folder_id && ! empty( $d_search_terms );
 
 		// Page number, posts per page
 		$d_paged = 1;
