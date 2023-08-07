@@ -1,0 +1,1167 @@
+# Copyright (C) 2015 BuddyPress Docs
+# This file is distributed under the same license as the BuddyPress Docs package.
+msgid ""
+msgstr ""
+"Project-Id-Version: BuddyPress Docs 1.8.8\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/buddypress-docs\n"
+"POT-Creation-Date: 2016-01-24 17:35+0100\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2016-02-03 11:23+0100\n"
+"Language-Team: KRAFTBIT <info@kraftbit.com>\n"
+"X-Generator: Poedit 1.8.6\n"
+"Last-Translator: Mijo Dzalto <mijo@kraftbit.com>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Language: hr\n"
+
+#: bp-docs.php:267
+msgctxt "post type general name"
+msgid "BuddyPress Docs"
+msgstr "BuddyPress Docs"
+
+#: bp-docs.php:268
+msgctxt "post type singular name"
+msgid "Doc"
+msgstr "Dokument"
+
+#: bp-docs.php:269
+msgctxt "add new"
+msgid "Add New"
+msgstr "Dodajte novi"
+
+#: bp-docs.php:270
+msgid "Add New Doc"
+msgstr "Dodajte novi dokument"
+
+#: bp-docs.php:271
+msgid "Edit Doc"
+msgstr "Uredite dokument"
+
+#: bp-docs.php:272 includes/integration-groups.php:913
+#: includes/integration-groups.php:1396
+#: includes/templates/docs/docs-header.php:40
+msgid "New Doc"
+msgstr "Novi dokument"
+
+#: bp-docs.php:273
+msgid "View Doc"
+msgstr "Pregledajte dokument"
+
+#: bp-docs.php:274
+msgid "Search Docs"
+msgstr "Pretraga dokumenata"
+
+#: bp-docs.php:275
+msgid "No Docs found"
+msgstr "Nisu pronađeni dokumenti"
+
+#: bp-docs.php:276
+msgid "No Docs found in Trash"
+msgstr "Nisu pronađeni dokumenti u Otpadu"
+
+#. Plugin Name of the plugin/theme
+#: bp-docs.php:283 includes/component.php:41
+#: includes/integration-groups.php:1187
+msgid "BuddyPress Docs"
+msgstr "BuddyPress Docs"
+
+#: bp-docs.php:302
+msgid "Associated Items"
+msgstr "Povezane stavke"
+
+#: bp-docs.php:303
+msgid "Associated Item"
+msgstr "Povezana stavka"
+
+#: includes/activity.php:79 includes/activity.php:338
+msgid "%1$s commented on the doc %2$s"
+msgstr "%1$s komentira dokument %2$s"
+
+#: includes/activity.php:170 includes/activity.php:294
+msgid "%1$s created the doc %2$s"
+msgstr "%1$s kreira dokument %2$s"
+
+#: includes/activity.php:172 includes/activity.php:315
+msgid "%1$s edited the doc %2$s"
+msgstr "%1$s uređuje dokument %2$s"
+
+#: includes/activity.php:258
+msgid "Created a Doc"
+msgstr "Kreira dokument"
+
+#: includes/activity.php:265
+msgid "Edited a Doc"
+msgstr "Uređuje dokument"
+
+#: includes/activity.php:272
+msgid "Commented on a Doc"
+msgstr "Komentira dokument"
+
+#: includes/activity.php:400
+msgid "New Docs"
+msgstr "Novi dokumenti"
+
+#: includes/activity.php:401
+msgid "Doc Edits"
+msgstr "Uređivanja dokumenta"
+
+#: includes/activity.php:402
+msgid "Doc Comments"
+msgstr "Komentari dokumenta"
+
+#: includes/addon-hierarchy.php:135
+msgid "Parent: "
+msgstr "Nadređeni: "
+
+#: includes/addon-hierarchy.php:186
+msgid "Children: "
+msgstr "Podređeni: "
+
+#: includes/addon-history.php:117
+msgid "You have successfully restored the Doc to the revision from %s."
+msgstr "Uspješno ste vratili reviziju dokumenta od %s."
+
+#: includes/addon-history.php:165
+msgid "Compare Revisions of &#8220;%1$s&#8221;"
+msgstr "Usporedite revizije od &#8220;%1$s&#8221;"
+
+#: includes/addon-history.php:166 includes/addon-history.php:195
+msgid "Revisions"
+msgstr "Revizije"
+
+#: includes/addon-history.php:194
+msgid "Revision for &#8220;%1$s&#8221; created on %2$s"
+msgstr "Revizije za &#8220;%1$s&#8221; kreirane %2$s"
+
+#. translators: post revision: 1: when, 2: author name
+#: includes/addon-history.php:360
+msgctxt "post revision"
+msgid "%1$s by %2$s"
+msgstr "%1$s od %2$s"
+
+#: includes/addon-history.php:387
+msgid "Restore"
+msgstr "Povrati"
+
+#. translators: column name in revisons
+#: includes/addon-history.php:392 includes/addon-history.php:426
+msgid "Old"
+msgstr "Staro"
+
+#. translators: column name in revisons
+#: includes/addon-history.php:393 includes/addon-history.php:427
+msgid "New"
+msgstr "Novo"
+
+#: includes/addon-history.php:410
+msgid "Compare Revisions"
+msgstr "Usporedite revizije"
+
+#. translators: column name in revisons
+#: includes/addon-history.php:428
+msgid "Date Created"
+msgstr "Datum kreiranja"
+
+#: includes/addon-history.php:429 includes/templates/docs/docs-loop.php:23
+msgid "Author"
+msgstr "Autor"
+
+#: includes/addon-history.php:430
+msgid "Actions"
+msgstr "Akcije"
+
+#: includes/addon-history.php:458 includes/integration-groups.php:922
+#: includes/templatetags.php:1002
+msgid "History"
+msgstr "Povijest"
+
+#: includes/addon-taxonomy.php:84
+msgid "Docs Tags"
+msgstr "Oznake dokumenta"
+
+#: includes/addon-taxonomy.php:85
+msgid "Docs Tag"
+msgstr "Oznaka  dokumenta"
+
+#: includes/addon-taxonomy.php:187
+msgid "Tags: %s"
+msgstr "Oznake: %s"
+
+#: includes/addon-taxonomy.php:269 includes/templates/docs/single/edit.php:124
+#: includes/templates/docs/single/edit.php:125
+msgid "Tags"
+msgstr "Oznake"
+
+#: includes/addon-taxonomy.php:321
+msgid "You are viewing docs with the following tags: %s"
+msgstr "Pregledavate dokumente sa oznakama:"
+
+#: includes/addon-taxonomy.php:330
+msgid "Tag"
+msgstr "Oznaka"
+
+#: includes/addon-taxonomy.php:370
+msgid "(%d)"
+msgstr "(%d)"
+
+#: includes/addon-taxonomy.php:375
+msgid "No tags to show."
+msgstr "Nema pronađenih oznaka."
+
+#: includes/addon-taxonomy.php:452
+msgid "Docs tagged %s"
+msgstr "Dokumenti  označeni %s"
+
+#: includes/addon-taxonomy.php:526
+msgid "Most Used"
+msgstr "Najkorištenije"
+
+#. translators: %s: add new taxonomy label
+#: includes/addon-taxonomy.php:550
+msgid "+ %s"
+msgstr "+ %s"
+
+#: includes/admin.php:32 includes/admin.php:44
+msgid "BuddyPress Docs Settings"
+msgstr "BuddyPress Docs Postavke"
+
+#: includes/admin.php:33
+msgid "Settings"
+msgstr "Postavke"
+
+#: includes/admin.php:57
+msgid "General"
+msgstr "Generalno"
+
+#: includes/admin.php:65
+msgid "Slug"
+msgstr "Url  adresa"
+
+#: includes/admin.php:75
+msgid "Directory Excerpt Length"
+msgstr "Duljina izvadka direktorija"
+
+#: includes/admin.php:85
+msgid "Users"
+msgstr "Korisnici"
+
+#: includes/admin.php:93
+msgid "User Tab Name"
+msgstr "Naziv korisničke kartice"
+
+#: includes/admin.php:104
+msgid "Groups"
+msgstr "Grupe"
+
+#: includes/admin.php:112
+msgid "Group Tab Name"
+msgstr "Naziv grupne kartice"
+
+#: includes/admin.php:123 includes/attachments.php:571
+#: includes/templates/docs/single/edit.php:69
+#: includes/templates/docs/single/index.php:33 includes/templatetags.php:1990
+msgid "Attachments"
+msgstr "Privitci"
+
+#: includes/admin.php:131
+msgid "Enable Attachments"
+msgstr "Omogući privitke"
+
+#: includes/admin.php:151 includes/admin.php:153
+msgid "Change the slug used to build Docs URLs."
+msgstr "Promjena izvadka koji kreira URL dokumenata."
+
+#: includes/admin.php:153
+msgid ""
+"You have already defined this value in <code>wp-config.php</code>, so it "
+"cannot be edited here."
+msgstr ""
+"Već ste definirali ovu vrijednost u <code>wp-config.php</code>, tako da ne "
+"može biti uređena ovdje."
+
+#: includes/admin.php:162
+msgid "Change the value for longer or shorter excerpts."
+msgstr "Promijenite vrijednost za dulje ili kraće izvatke."
+
+#: includes/admin.php:164
+msgid ""
+"Excerpts are shown on Docs directories, to provide better context. If your "
+"theme or language requires longer or shorter excerpts, change this value. "
+"Set to <code>0</code> to disable these excerpts."
+msgstr ""
+"Izvatci se prikazuju u direktorijima Dokumenata, da bi pružili bolji "
+"kontekst. Ako Vaša tema ili jezik zahtjeva dulji ili kraći izvadak, "
+"promijenite ovu vrijednost. Postavite na <code>0</code> da onemogućite "
+"izvatke."
+
+#: includes/admin.php:173
+msgid "Change the word on groups' Docs tab."
+msgstr "Promijenite naslov na gupnoj kartici Dokumenata."
+
+#: includes/admin.php:175
+msgid ""
+"Change the word on the BuddyPress group tab from 'Docs' to whatever you'd "
+"like. Keep in mind that this will not change the text anywhere else on the "
+"page. For a more thorough text change, create a <a href='http://codex."
+"buddypress.org/extending-buddypress/customizing-labels-messages-and-"
+"urls/'>language file</a> for BuddyPress Docs."
+msgstr ""
+"Promijenite naziv na grupnoj kartici BuddyPress Docs iz 'Docs' u bilo što. "
+"Imajte u vidu da ovo neće promijeniti tekst negdje drugo na stranici. Za "
+"detaljniju promjenu tekstova, kreirajte <a href='http://codex.buddypress.org/"
+"extending-buddypress/customizing-labels-messages-and-urls/'>novu jezičnu "
+"datoteku</a> za BuddyPress Docs."
+
+#: includes/admin.php:184
+msgid "Change the word on users' Docs tab."
+msgstr "Promijenite naziv na korisničkoj kartici Dokumenata."
+
+#: includes/admin.php:186
+msgid ""
+"Change the word on users' Docs tabs from 'Docs' to whatever you'd like. Keep "
+"in mind that this will not change the text anywhere else on the page. For a "
+"more thorough text change, create a <a href='http://codex.buddypress.org/"
+"extending-buddypress/customizing-labels-messages-and-urls/'>language file</"
+"a> for BuddyPress Docs."
+msgstr ""
+"Promijenite naziv na korisničkoj kartici BuddyPress Docs iz 'Docs' u bilo "
+"što. Imajte u vidu da ovo neće promijeniti tekst negdje drugo na stranici. "
+"Za detaljniju promjenu tekstova, kreirajte <a href='http://codex.buddypress."
+"org/extending-buddypress/customizing-labels-messages-and-urls/'>novu jezičnu "
+"datoteku</a> za BuddyPress Docs."
+
+#: includes/admin.php:195
+msgid "Allow users to add attachments."
+msgstr "Dopustite korisnicima da dodaju privitke"
+
+#: includes/admin.php:197
+msgid "Enabled"
+msgstr "Omogućeno"
+
+#: includes/admin.php:198
+msgid "Disabled"
+msgstr "Onemogućeno"
+
+#: includes/admin.php:200
+msgid "Allow users to add attachments to their Docs."
+msgstr "Dopustite korisnicima da dodaju privitke u njihovim Dokumentima."
+
+#: includes/admin.php:234
+msgid "Recent Comments"
+msgstr "Nedavni komentari"
+
+#: includes/admin.php:309
+msgid "No comments yet."
+msgstr "Još nema komentara."
+
+#: includes/attachments.php:69 includes/attachments.php:76
+msgid "File not found."
+msgstr "Datoteka nije pronađena."
+
+#: includes/attachments.php:342
+msgid "Attachment deleted"
+msgstr "Privitak izbrisan"
+
+#: includes/attachments.php:344
+msgid "Could not delete attachment"
+msgstr "Nije moguće izbrisati privitak"
+
+#: includes/attachments.php:391 includes/component.php:944
+msgid "Upload File"
+msgstr "Prenesite datoteku"
+
+#: includes/attachments.php:392 includes/component.php:945
+msgid "OK"
+msgstr "OK"
+
+#: includes/attachments.php:587
+msgid "Has attachment?"
+msgstr "Ima li privitak?"
+
+#: includes/attachments.php:589
+msgid "Yes"
+msgstr "Da"
+
+#: includes/attachments.php:590
+msgid "No"
+msgstr "Ne"
+
+#: includes/attachments.php:591
+msgid "Doesn&#8217;t matter"
+msgstr "Nije važno"
+
+#: includes/attachments.php:593
+msgid "Filter"
+msgstr "Filter"
+
+#: includes/attachments.php:723
+msgid ""
+"It looks like you are running <strong>nginx</strong>. We recommend the "
+"following setting in your site configuration file:"
+msgstr ""
+"Izgleda kao da koristite <strong>nginx</strong>. Preporučujemo slijedeću "
+"postavku u konfiguracijskoj datoteci Vaše web stranice:"
+
+#: includes/attachments.php:733
+msgid ""
+"It looks like you are running <strong>IIS 7</strong>. We recommend the "
+"following setting in your Web.config file:"
+msgstr ""
+"Izgleda kao da koristite <strong>IIS 7</strong>. Preporučujemo slijedeću "
+"postavku u Vašoj Web.config datoteci:"
+
+#: includes/attachments.php:745
+msgid ""
+"It looks like you are running <strong>Apache</strong>. The most likely cause "
+"of your problem is that the <code>AllowOverride</code> directive has been "
+"disabled, either globally (<code>httpd.conf</code>) or in a "
+"<code>VirtualHost</code> definition. Contact your host for assistance."
+msgstr ""
+"Izgleda kao da koristite <strong>Apache</strong>. Najvjerojatniji uzrok "
+"problema jest ako je <code>AllowOverride</code> direktiva onemogućena, na "
+"globalnoj (<code>httpd.conf</code>) ili <code>VirtualHost</code> razini. "
+"Kontaktirajte Vašu hosting kompaniju za pomoć-"
+
+#: includes/attachments.php:751
+msgid ""
+"<strong>Your BuddyPress Docs attachments directory is publicly accessible.</"
+"strong> Doc attachments will not be properly protected from direct viewing, "
+"even if the parent Docs are non-public."
+msgstr ""
+"<strong>Vaš BuddyPress Docs direktorij za privitke ima javno dozvoljen "
+"pristup.</strong> Privitci dokumenata nisu ispravno zaštićeni od direktno "
+"pristupa, čak i ako njihovi matično dokumenti nisu javni."
+
+#: includes/attachments.php:758
+msgid "See <a href=\"%s\">this wiki page</a> for more information."
+msgstr "Pogledajte <a href=\"%s\">ovu stranicu</a> za više informacija."
+
+#: includes/attachments.php:761
+msgid "Dismiss this message"
+msgstr "Odbacite ovu obavijest"
+
+#: includes/component.php:143
+msgid "Search Docs..."
+msgstr "Pretraga Dokumenata..."
+
+#: includes/component.php:189 includes/component.php:309
+#: includes/templatetags.php:1327
+msgid "Started By Me"
+msgstr "Moji dokumenti"
+
+#: includes/component.php:196 includes/component.php:318
+#: includes/templatetags.php:1328
+msgid "Edited By Me"
+msgstr "Moja uređivanja"
+
+#: includes/component.php:203 includes/templatetags.php:1352
+msgid "Create New Doc"
+msgstr "Kreirajte novi dokument"
+
+#: includes/component.php:306
+msgid "My Docs "
+msgstr "Moji dokumenti"
+
+#: includes/component.php:306
+msgid "%s&#8217;s Docs"
+msgstr "%s&#8217;s Dokumenti"
+
+#: includes/component.php:309
+msgid "Started By %s"
+msgstr "Kreirani od %s"
+
+#: includes/component.php:318
+msgid "Edited By %s"
+msgstr "Uređivani od %s"
+
+#: includes/component.php:407
+msgid ""
+"This doc is currently being edited by %s. To prevent overwrites, you cannot "
+"edit until that user has finished. Please try again in a few minutes."
+msgstr ""
+"Ovaj dokument se trenutno uređuje od strane korisnika %s. Da bismo "
+"spriječili poništavanja, Vi ne možete uređivati dok taj korisnik ne završi. "
+"Molimo Vas pokušajte ponovo za nekoliko minuta."
+
+#: includes/component.php:419
+msgid "You do not have permission to edit the doc."
+msgstr "Vi nemate dozvolu za uređivanje ovog dokumenta."
+
+#: includes/component.php:433
+msgid "You do not have permission to create a Doc in this group."
+msgstr "Vi nemate dozvolu za stvaranje dokumenata u ovoj grupi."
+
+#: includes/component.php:449
+msgid "You do not have permission to view this Doc's history."
+msgstr "Vi nemate dozvolu za pregledavanje povijesti ovog dokumenta."
+
+#: includes/component.php:473
+msgid "Lock successfully removed"
+msgstr "Zaključavanje uspješno uklonjeno."
+
+#: includes/component.php:500
+msgid "Doc successfully deleted!"
+msgstr "Dokument uspješno izbrisan!"
+
+#: includes/component.php:502
+msgid "Could not delete doc."
+msgstr "Nije moguće izbrisati dokument."
+
+#: includes/component.php:505
+msgid "You do not have permission to delete that doc."
+msgstr "Vi nemate dozvolu za brisanje ovog dokumenta."
+
+#: includes/component.php:519
+msgid "Doc successfully removed from Trash!"
+msgstr "Dokument uspješno uklonjen iz Otpada!"
+
+#: includes/component.php:521
+msgid "Could not remove Doc from Trash."
+msgstr "Nije moguće ukloniti dokument iz Otpada."
+
+#: includes/component.php:524
+msgid "You do not have permission to remove that Doc from the Trash."
+msgstr "Vi nemate dozvolu da uklonite ovaj dokument iz Otpada."
+
+#: includes/component.php:539
+msgid "Doc successfully removed from the group"
+msgstr "Dokument uspješno uklonjen iz grupe."
+
+#: includes/component.php:541
+msgid "Could not remove Doc from the group."
+msgstr "Nije moguće ukloniti dokument iz grupe."
+
+#: includes/component.php:544
+msgid "You do not have permission to remove that Doc from this group."
+msgstr "Vi nemate dozvolu da uklonite ovaj dokument iz ove grupe."
+
+#: includes/component.php:880 includes/component.php:892
+msgid "Search"
+msgstr "Pretraga"
+
+#: includes/component.php:946
+msgid "Still working?"
+msgstr "Još obrađujete?"
+
+#: includes/component.php:947
+msgid "and %d more"
+msgstr "i %d više"
+
+#: includes/functions.php:155
+msgctxt ""
+"Description for the associated-item taxonomy term. Of the form \"Docs "
+"associated with the [item-type] [item-name]\" - item-type is group, user, etc"
+msgid "Docs associated with the %1$s %2$s"
+msgstr "Dokumenti povezani sa %1$s %2$s"
+
+#: includes/functions.php:524 includes/templatetags.php:1428
+msgid "Logged-in Users"
+msgstr "Prijavljeni Korisnici"
+
+#: includes/functions.php:529 includes/templatetags.php:1430
+msgid "The Doc author only"
+msgstr "Samo autor ovog dokumenta"
+
+#: includes/functions.php:545 includes/templatetags.php:1427
+msgid "Anyone"
+msgstr "Bilo tko"
+
+#: includes/functions.php:611
+msgid ""
+"Your Doc was successfully saved, but some of your access settings have been "
+"changed to match the Doc's permissions."
+msgstr ""
+"Vaš dokument je uspješno spremljen, ali neke pristupne postavke su "
+"promijenjene da bi se poklapale sa dozvolama dokumenta."
+
+#: includes/integration-groups.php:486
+msgid "Members of %s"
+msgstr "Članovi %s"
+
+#: includes/integration-groups.php:498
+msgid "Admins and mods of %s"
+msgstr "Administratori i moderatori %s"
+
+#: includes/integration-groups.php:585
+msgid "%1$s created the doc %2$s in the group %3$s"
+msgstr "%1$s kreira dokument %2$s u grupi %3$s"
+
+#: includes/integration-groups.php:587
+msgid "%1$s edited the doc %2$s in the group %3$s"
+msgstr "%1$s uređuje dokument %2$s u grupi %3$s"
+
+#: includes/integration-groups.php:643
+msgid "%1$s commented on the doc %2$s in the group %3$s"
+msgstr "%1$s komentira dokument %2$s u grupi %3$s"
+
+#: includes/integration-groups.php:717
+msgid "Group"
+msgstr "Grupa"
+
+#: includes/integration-groups.php:793
+msgid "Unlink from Group"
+msgstr "Ukloni iz ove grupe"
+
+#: includes/integration-groups.php:885
+msgid "%s <span>%d</span>"
+msgstr "%s <span>%d</span>"
+
+#: includes/integration-groups.php:907 includes/integration-groups.php:995
+#: includes/integration-groups.php:1625 includes/integration-users.php:261
+msgid "Docs"
+msgstr "Dokumenti"
+
+#: includes/integration-groups.php:920
+#: includes/templates/docs/docs-header.php:30 includes/templatetags.php:998
+#: includes/templatetags.php:1531
+msgid "Edit"
+msgstr "Uredi"
+
+#: includes/integration-groups.php:1096
+msgid "Save Changes"
+msgstr "Spremi promjene"
+
+#: includes/integration-groups.php:1121
+msgid "There was an error saving, please try again"
+msgstr "Dogodila se pogreška u spremanju, pokušajte ponovo"
+
+#: includes/integration-groups.php:1123
+msgid "Settings saved successfully"
+msgstr "Postavke uspješno spremljene"
+
+#: includes/integration-groups.php:1189
+msgid ""
+"BuddyPress Docs is a powerful tool for collaboration with members of your "
+"group. A cross between document editor and wiki, BuddyPress Docs allows you "
+"to co-author and co-edit documents with your fellow group members, which you "
+"can then sort and tag in a way that helps your group to get work done."
+msgstr ""
+"BuddyPress Docs je moćan alaz za kolaboraciju sa članovima Vaše grupe. Sa "
+"mogućnostima uređivanja dokumenata i wiki-ja, BuddyPress Docs Vam "
+"omogućavaju da stvarata i uređujete dokumente sa kolegama iz Vaše grupe, "
+"koje možete sortirati i označiti na način koji pomaže Vašoj grupi da posao "
+"bude obavljen."
+
+#: includes/integration-groups.php:1192
+msgid "Enable BuddyPress Docs for this group"
+msgstr "Omogućite BuddyPress Docs za ovu grupu"
+
+#: includes/integration-groups.php:1196
+msgid "Options"
+msgstr "Opcije"
+
+#: includes/integration-groups.php:1201
+msgid "Minimum role to associate Docs with this group:"
+msgstr "Minimalna uloga za povezivanje Dokumenata sa ovom grupom:"
+
+#: includes/integration-groups.php:1206
+msgid "Group admin"
+msgstr "Administrator grupe"
+
+#: includes/integration-groups.php:1207
+msgid "Group moderator"
+msgstr "Moderator grupe"
+
+#: includes/integration-groups.php:1208
+msgid "Group member"
+msgstr "Član grupe"
+
+#: includes/integration-groups.php:1393
+msgid "View Docs"
+msgstr "Pregled dokumenata"
+
+#: includes/query-builder.php:424
+msgid "Unknown error. Please try again."
+msgstr "Nepoznata pogreška. Molimo pokušajte ponovo."
+
+#: includes/query-builder.php:445
+msgid "You are not allowed to associate a Doc with that group."
+msgstr "Vi nemate dozvolu da povežete dokument sa tom grupom."
+
+#: includes/query-builder.php:455
+msgid "The title field is required."
+msgstr "Polje naziva je obavezno."
+
+#: includes/query-builder.php:484
+msgid "There was an error when creating the doc."
+msgstr "Dogodila se pogreška prilikom kreiranja dokumenta."
+
+#: includes/query-builder.php:493
+msgid "Doc successfully created!"
+msgstr "Dokument uspješno kreiran!"
+
+#: includes/query-builder.php:514
+msgid "There was an error when saving the doc."
+msgstr "Dogodila se pogreška prilikom spremanja dokumenta."
+
+#: includes/query-builder.php:524
+msgid ""
+"You idled a bit too long while in Edit mode. In order to allow others to "
+"edit the doc you were working on, your changes have been autosaved. Click "
+"the Edit button to return to Edit mode."
+msgstr ""
+"Bili ste predugo neaktivni prilikom uređivanja dokumenta. Da bi ostali "
+"korisnici mogli uređivati dokument na kojem ste radili, Vaše promjene su "
+"automatski spremljene. Kliknite dugme za uređivanje da se vratite ponovo na "
+"uređivanje."
+
+#: includes/query-builder.php:527
+msgid "Doc successfully edited!"
+msgstr "Dokument je uspješno uređen."
+
+#: includes/templates/docs/docs-header.php:16 includes/templatetags.php:2032
+msgid "This Doc is in the Trash"
+msgstr "Ovaj dokument je u  Otpadu"
+
+#: includes/templates/docs/docs-header.php:25 includes/templatetags.php:995
+msgid "Read"
+msgstr "Pročitajte"
+
+#: includes/templates/docs/docs-loop.php:19
+#: includes/templates/docs/single/edit.php:35
+msgid "Title"
+msgstr "Naziv"
+
+#: includes/templates/docs/docs-loop.php:27
+msgid "Created"
+msgstr "Kreirano"
+
+#: includes/templates/docs/docs-loop.php:31
+msgid "Last Edited"
+msgstr "Posljednje uređivanje"
+
+#: includes/templates/docs/docs-loop.php:84
+msgid "Viewing %1$s-%2$s of %3$s docs"
+msgstr "Pregledavate %1$s-%2$s od %3$s dokumenata"
+
+#: includes/templates/docs/docs-loop.php:95
+msgid "There are no docs for this view. Why not <a href=\"%s\">create one</a>?"
+msgstr ""
+"Nema dokumenata za ovaj pregled. Zašto ne biste <a href=\"%s\">kreirali "
+"jedan</a>?"
+
+#: includes/templates/docs/docs-loop.php:97
+msgid "There are no docs for this view."
+msgstr "Nema dokumenata za ovaj pregled."
+
+#: includes/templates/docs/index.php:25 includes/theme-bridge.php:194
+msgid "Docs Directory"
+msgstr "Direktorij dokumenata"
+
+#: includes/templates/docs/single/comments.php:27
+msgid "Discussion (%d)"
+msgstr "Rasprava (%d)"
+
+#: includes/templates/docs/single/comments.php:49
+msgid "There are no comments for this doc yet."
+msgstr "Još nema komentara za ovaj dokument."
+
+#: includes/templates/docs/single/comments.php:58
+msgid "Comment display has been disabled on this doc."
+msgstr "Prikaz komentara za ovaj dokument je onemogućen."
+
+#: includes/templates/docs/single/comments.php:67
+msgid "Comment posting has been disabled on this doc."
+msgstr "Dodavanje komentara za ovaj dokument je onemogućeno."
+
+#: includes/templates/docs/single/edit.php:24
+msgid "You have been idle for <span id=\"idle-warning-time\"></span>"
+msgstr "Neaktivni ste već <span id=\"idle-warning-time\"></span>"
+
+#: includes/templates/docs/single/edit.php:41
+msgid "Permalink"
+msgstr "Link"
+
+#: includes/templates/docs/single/edit.php:49
+msgid "Content"
+msgstr "Sadržaj"
+
+#: includes/templates/docs/single/edit.php:83
+#: includes/templates/docs/single/edit.php:84
+msgid "Associated Group"
+msgstr "Povezana grupa"
+
+#: includes/templates/docs/single/edit.php:104
+#: includes/templates/docs/single/edit.php:105
+msgid "Access"
+msgstr "Pristup"
+
+#: includes/templates/docs/single/edit.php:132
+msgid "Tags are words or phrases that help to describe and organize your Docs."
+msgstr ""
+"Oznake su termini ili fraze koje pomažu u opisu i organizaciji dokumenata."
+
+#: includes/templates/docs/single/edit.php:133
+msgid ""
+"Separate tags with commas (for example: <em>orchestra, snare drum, piccolo, "
+"Brahms</em>)"
+msgstr ""
+"Razdvojite oznake zarezom (npr: <em>pravilnik, naputak, pravna služba, "
+"propis</em>)"
+
+#: includes/templates/docs/single/edit.php:152
+#: includes/templates/docs/single/edit.php:153
+msgid "Parent"
+msgstr "Nadređeni: "
+
+#: includes/templates/docs/single/edit.php:160
+msgid "Select a parent for this Doc."
+msgstr "Odaberite nadređeni dokument za ovaj."
+
+#: includes/templates/docs/single/edit.php:162
+msgid ""
+"(Optional) Assigning a parent Doc means that a link to the parent will "
+"appear at the bottom of this Doc, and a link to this Doc will appear at the "
+"bottom of the parent."
+msgstr "(Neobavezno) Odabir nadređenog "
+
+#: includes/templates/docs/single/edit.php:185
+msgid "Save"
+msgstr "Spremi"
+
+#: includes/templates/docs/single/edit.php:185
+msgid "Cancel"
+msgstr "Otkaži"
+
+#: includes/templates/docs/single/edit.php:218
+msgid "Are you still there?"
+msgstr "Jeste li još tu?"
+
+#: includes/templates/docs/single/edit.php:220
+msgid ""
+"In order to prevent overwriting content, only one person can edit a given "
+"doc at a time. For that reason, you must periodically ensure the system that "
+"you're still actively editing. If you are idle for more than 30 minutes, "
+"your changes will be auto-saved, and you'll be sent out of Edit mode so that "
+"others can access the doc."
+msgstr ""
+"Da bismo spriječili poništavanje sadržaja, samo jedan korisnik može "
+"uređivati dokument. Zbog tog razloga, morate povremeno uvjeriti sistem da "
+"ste još aktivni na uređivanju dokumenta. Ako ste neaktivni više od 30 "
+"minuta, Vaše promjene će biti automatski spremljene a Vi ćete biti "
+"odjavljeni iz uređivanja dokumenta kako bi drugi korisnici mogli pristupiti "
+"uređivanju."
+
+#: includes/templates/docs/single/edit.php:222
+msgid "I'm still editing!"
+msgstr "Još uvijek uređujem!"
+
+#: includes/templates/docs/single/history.php:9
+msgid "Click on a revision date from the list below to view that revision."
+msgstr "Kliknite na datum revizije iz liste ispod da pogledate tu reviziju."
+
+#: includes/templates/docs/single/history.php:11
+msgid ""
+"Alternatively, you can compare two revisions by selecting them in the 'Old' "
+"and 'New' columns, and clicking 'Compare Revisions'."
+msgstr ""
+"Alternativno, možete usporediti dvije revizije odabirajući ih u 'Staro' i "
+"'Novo' kolumnama, te klikom na 'Usporedite revizije'."
+
+#: includes/templates/docs/single/history.php:22
+msgid "Older: %s"
+msgstr "Starije: %s"
+
+#: includes/templates/docs/single/history.php:23
+msgid "Newer: %s"
+msgstr "Novije: %s"
+
+#: includes/templates/docs/single/history.php:30
+msgid ""
+"You are currently viewing a revision titled \"%1$s\", saved on %2$s by %3$s"
+msgstr ""
+"Trenutno pregledavate reviziju naziva \"%1$s\", spremljenu %2$s od %3$s"
+
+#: includes/templates/docs/single/history.php:54
+msgid "These revisions are identical."
+msgstr "Ove revizije su identične."
+
+#: includes/templates/docs/single/index.php:10
+msgid "Locked"
+msgstr "Zaključano"
+
+#: includes/templates/docs/single/index.php:10
+msgid "(click for more info)"
+msgstr "(kliknite za više informacija)"
+
+#: includes/templates/docs/single/index.php:12
+msgid ""
+"This doc is currently being edited by %1$s. In order to prevent edit "
+"conflicts, only one user can edit a doc at a time."
+msgstr ""
+"Ovaj dokument trenutno uređuje %1$s. Da bismo spriječili konflikte u "
+"uređivanju, samo jedan korisnik može uređivati dokument."
+
+#: includes/templates/docs/single/index.php:15
+msgid ""
+"Please try again in a few minutes. Or, as an admin, you can <a href=\"%s"
+"\">force cancel</a> the edit lock."
+msgstr ""
+"Molimo pokušajte za par minuta. Ili, ako ste administrator, možete <a href="
+"\"%s\">prisilno otkazati</a> zaključavanje dokumenta."
+
+#: includes/templates/docs/single/index.php:17
+msgid "Please try again in a few minutes."
+msgstr "Molimo pokušajte za par minuta."
+
+#: includes/templatetags-edit.php:148
+msgid "(no parent)"
+msgstr "(nema nadređenog)"
+
+#: includes/templatetags.php:202
+msgid "You are viewing <strong>all</strong> docs."
+msgstr "Pregledavate <strong>sve</strong> dokumente."
+
+#: includes/templatetags.php:216
+msgid ""
+"<strong><a href=\"%s\" title=\"View All Docs\">View All Docs</a></strong>"
+msgstr ""
+"<strong><a href=\"%s\" title=\"Pregledajte  sve dokumente\">Pregledajte  sve "
+"dokumente</a></strong>"
+
+#: includes/templatetags.php:226
+msgid "Filter by: %s"
+msgstr "Filtrirajte prema: %s"
+
+#: includes/templatetags.php:303
+msgid "You are searching for docs containing the term <em>%s</em>"
+msgstr "Vi pretražujete dokumente koji sadrže termin <em>%s</em>"
+
+#: includes/templatetags.php:812
+msgid "Which group should this Doc be associated with?"
+msgstr "Sa kojom grupom ovaj dokument treba biti povezan?"
+
+#: includes/templatetags.php:813
+msgid ""
+"(Optional) Note that the Access settings available for this Doc may be "
+"limited by the privacy settings of the group you choose."
+msgstr ""
+"(Neobavezno) Imajte na umu da pristupne postavke za ovaj dokument mogu biti "
+"ograničene pristupnim postavkama grupe koju odaberete."
+
+#: includes/templatetags.php:818
+msgid "None"
+msgstr "Nijedan"
+
+#: includes/templatetags.php:867
+msgid "%s member"
+msgstr "%s korisnik"
+
+#: includes/templatetags.php:867
+msgid "%s members"
+msgstr "%s korisnici"
+
+#: includes/templatetags.php:871
+msgid "Public Group"
+msgstr "Javna grupa"
+
+#: includes/templatetags.php:875
+msgid "Private Group"
+msgstr "Privatna grupa"
+
+#: includes/templatetags.php:879
+msgid "Hidden Group"
+msgstr "Skrivena grupa"
+
+#: includes/templatetags.php:918
+msgid "Who can read this doc?"
+msgstr "Tko može pregledavati ovaj dokument?"
+
+#: includes/templatetags.php:922
+msgid "Who can edit this doc?"
+msgstr "Tko može uređivati ovaj dokument?"
+
+#: includes/templatetags.php:926
+msgid "Who can read comments on this doc?"
+msgstr "Tko može čitati komentare na ovom dokumentu?"
+
+#: includes/templatetags.php:930
+msgid "Who can post comments on this doc?"
+msgstr "Tko može komentirati ovaj dokument?"
+
+#: includes/templatetags.php:934
+msgid "Who can view the history of this doc?"
+msgstr "Tko može pregledavati povijest ovog dokumenta?"
+
+#: includes/templatetags.php:1006
+msgid "Untrash"
+msgstr "Vrati iz Otpada"
+
+#: includes/templatetags.php:1100
+msgid "Remove from Trash"
+msgstr "Ukloni iz Otpada"
+
+#: includes/templatetags.php:1102 includes/templatetags.php:1917
+msgid "Delete"
+msgstr "Izbriši"
+
+#: includes/templatetags.php:1122
+msgid "&laquo;"
+msgstr "&laquo;"
+
+#: includes/templatetags.php:1123
+msgid "&raquo;"
+msgstr "&raquo;"
+
+#: includes/templatetags.php:1321
+msgid "All Docs"
+msgstr "Svi dokumenti"
+
+#: includes/templatetags.php:1325
+msgid "%s's Docs"
+msgstr "%s Dokumenti"
+
+#: includes/templatetags.php:1331
+msgid "My Groups"
+msgstr "Moje grupe"
+
+#: includes/templatetags.php:1413
+msgid "Group: "
+msgstr "Grupa:"
+
+#: includes/templatetags.php:1415
+msgid " %s"
+msgstr " %s"
+
+#: includes/templatetags.php:1429
+msgid "My Friends"
+msgstr "Moji prijatelji"
+
+#: includes/templatetags.php:1431
+msgid "Just Me"
+msgstr "Samo ja"
+
+#: includes/templatetags.php:1435
+msgid "Members of: %s"
+msgstr "Članovi iz: %s"
+
+#: includes/templatetags.php:1436
+msgid "Admins and mods of the group %s"
+msgstr "Administratori i moderatori grupe %s"
+
+#: includes/templatetags.php:1440
+msgid "The Doc author only (that's you!)"
+msgstr "Samo autor dokumenta (to ste Vi!)"
+
+#: includes/templatetags.php:1447
+msgid "This Doc can be read by: <strong>%s</strong>"
+msgstr "Ovaj dokument može pregledavati: <strong>%s</strong>"
+
+#: includes/templatetags.php:1451
+msgid "This Doc can be edited by: <strong>%s</strong>"
+msgstr "Ovaj dokument može uređivati: <strong>%s</strong>"
+
+#: includes/templatetags.php:1455
+msgid "Comments are visible to: <strong>%s</strong>"
+msgstr "Komentari ovog dokumenta su vidljivi: <strong>%s</strong>"
+
+#: includes/templatetags.php:1459
+msgid "Comments can be posted by: <strong>%s</strong>"
+msgstr "Ovaj dokument može komentirati: <strong>%s</strong>"
+
+#: includes/templatetags.php:1463
+msgid "History can be viewed by: <strong>%s</strong>"
+msgstr "Povijest dokumenta može vidjeti: <strong>%s</strong>"
+
+#: includes/templatetags.php:1505
+msgid "Private"
+msgstr "Privatno"
+
+#: includes/templatetags.php:1508
+msgid "Public"
+msgstr "Javno"
+
+#: includes/templatetags.php:1511
+msgid "Limited"
+msgstr "Ograničeno"
+
+#: includes/templatetags.php:1516
+msgid "Access: <strong>%s</strong>"
+msgstr "Pristup: <strong>%s</strong>"
+
+#: includes/templatetags.php:1517
+msgid "Show Details"
+msgstr "Prikaži detalje"
+
+#: includes/templatetags.php:1533
+msgid "Hide Details"
+msgstr "Sakrij detalje"
+
+#: includes/templatetags.php:1823
+msgid "Add Files"
+msgstr "Dodajte datoteke"
+
+#: includes/templatetags.php:2032
+msgid "Trash"
+msgstr "Otpad"
+
+#: includes/theme-bridge.php:252
+msgid "Create a Doc"
+msgstr "Kreirajte dokument"
+
+#: includes/upgrade.php:40
+msgid "Upgrade complete!"
+msgstr "Nadogradnaj završena!"
+
+#: includes/upgrade.php:61 includes/upgrade.php:99
+msgid ""
+"Thanks for updating BuddyPress Docs. We need to run a few quick operations "
+"before your new Docs is ready to use."
+msgstr ""
+"Hvala Vam što ste nadogradili BuddyPress Docs. Trebao odraditi još nekoliko "
+"brzih operacija prije nego Dokumenti budu spremni za korištenje."
+
+#: includes/upgrade.php:62
+msgid "Click here to start the upgrade."
+msgstr "Kliknite ovdje da započnete nadogradnju."
+
+#: includes/upgrade.php:70 includes/upgrade.php:91
+msgid "BuddyPress Docs Upgrade"
+msgstr "BuddyPress Docs Nadogradnja"
+
+#: includes/upgrade.php:71
+msgid "Upgrade"
+msgstr "Nadogradi"
+
+#: includes/upgrade.php:101
+msgid "Start the upgrade"
+msgstr "Započnite nadogradnju"
+
+#: includes/upgrade.php:107
+msgid "Migrating..."
+msgstr "Migracija..."
+
+#: includes/upgrade.php:138
+msgid "Migration complete! <a href=\"%s\">Dashboard</a>"
+msgstr "Migracija završena! <a href=\"%s\">Kontrolna ploča</a>"
+
+#: includes/upgrade.php:243
+msgid "Docs associated with the group %s"
+msgstr "Dokumenti povezani sa grupom %s"
+
+#: includes/upgrade.php:258
+msgid "Group terms migrated. Now migrating Doc access terms...."
+msgstr ""
+"Grupni termini migrirani. Sada migriramo pristupne termine Dokumenata...."
+
+#: includes/upgrade.php:306
+msgid "Migrated %s of %s Docs. Migrating...."
+msgstr "Migracija %s od %s Dokumenata. Migracija..."
+
+#. Plugin URI of the plugin/theme
+msgid "http://github.com/boonebgorges/buddypress-docs"
+msgstr "http://github.com/boonebgorges/buddypress-docs"
+
+#. Description of the plugin/theme
+msgid "Adds collaborative Docs to BuddyPress"
+msgstr "Dodaje Dokumente za suradnju u BuddyPress"
+
+#. Author of the plugin/theme
+msgid "Boone B Gorges"
+msgstr "Boone B Gorges"
+
+#. Author URI of the plugin/theme
+msgid "http://boone.gorg.es"
+msgstr "http://boone.gorg.es"
