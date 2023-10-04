@@ -35,6 +35,10 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 2.1.9 =
+* Improved compatibility with WP 6.3 in the History tab.
+* Prevent Docs tag archive from being access via the template hierarchy, rather than through the dedicated Docs interface.
+
 = 2.1.8 =
 * Better compatibility with third-party plugins when serving attachments.
 * Improved PHP 8 compatibility.
