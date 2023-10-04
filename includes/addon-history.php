@@ -221,14 +221,14 @@ class BP_Docs_History {
 
 		foreach ( _wp_post_revision_fields() as $field => $field_title ) {
 			if ( 'diff' == bp_docs_history_action() ) {
-				$left_content = apply_filters( "_wp_post_revision_field_$field", $this->left_revision->$field, $field );
-				$right_content = apply_filters( "_wp_post_revision_field_$field", $this->right_revision->$field, $field );
+				$left_content = apply_filters( "_wp_post_revision_field_$field", $this->left_revision->$field, $field, $this->left_revision, 'from' );
+				$right_content = apply_filters( "_wp_post_revision_field_$field", $this->right_revision->$field, $field, $this->right_revision, 'to' );
 				if ( !$content = wp_text_diff( $left_content, $right_content ) )
 					continue; // There is no difference between left and right
 				$this->revisions_are_identical = false;
 			} else if ( isset( $this->revision ) && is_object( $this->revision ) && isset( $this->revision->$field ) ) {
 				add_filter( "_wp_post_revision_field_$field", 'htmlspecialchars' );
-				$content = apply_filters( "_wp_post_revision_field_$field", $this->revision->$field, $field );
+				$content = apply_filters( "_wp_post_revision_field_$field", $this->revision->$field, $field, $this->revision, 'from' );
 			}
 		}
 	}
