@@ -6,6 +6,48 @@
  * @package BuddyPressDocs
  */
 class BP_Docs {
+	/**
+	 * Akismet addon object.
+	 *
+	 * @var BP_Docs_Akismet
+	 */
+	public $akismet;
+
+	/**
+	 * Moderation addon object.
+	 *
+	 * @var BP_Docs_Moderation
+	 */
+	public $moderation;
+
+	/**
+	 * WikiText addon object.
+	 *
+	 * @var BP_Docs_Wikitext
+	 */
+	public $wikitext;
+
+	/**
+	 * History addon object.
+	 *
+	 * @var BP_Docs_History
+	 */
+	public $history;
+
+	/**
+	 * Hierarchy addon object.
+	 *
+	 * @var BP_Docs_Hierarchy
+	 */
+	public $hierarchy;
+
+	/**
+	 * Taxonomy addon object.
+	 *
+	 * @var BP_Docs_Taxonomy
+	 */
+	public $taxonomy;
+
 	var $post_type_name;
 	var $associated_item_tax_name;
 	var $access_tax_name;
