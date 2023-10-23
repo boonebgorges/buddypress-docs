@@ -651,6 +651,7 @@ function bp_docs_create_link() {
  * Echoes the output of bp_docs_get_item_docs_link()
  *
  * @since 1.0-beta
+ * @deprecated 2.2.0
  */
 function bp_docs_item_docs_link() {
 	echo bp_docs_get_item_docs_link();
@@ -659,56 +660,13 @@ function bp_docs_item_docs_link() {
 	 * Get the link to the docs section of an item
 	 *
 	 * @since 1.0-beta
+	 * @deprecated 2.2.0
 	 *
-	 * @return array $filters
+	 * @return array $args
 	 */
 	function bp_docs_get_item_docs_link( $args = array() ) {
-		global $bp;
-
-		// @todo Disabling for now!!
-		return;
-
-		$d_item_type = '';
-		if ( bp_is_user() ) {
-			$d_item_type = 'user';
-		} else if ( bp_is_active( 'groups' ) && bp_is_group() ) {
-			$d_item_type = 'group';
-		}
-
-		switch ( $d_item_type ) {
-			case 'user' :
-				$d_item_id = bp_displayed_user_id();
-				break;
-			case 'group' :
-				$d_item_id = bp_get_current_group_id();
-				break;
-		}
-
-		$defaults = array(
-			'item_id'   => $d_item_id,
-			'item_type' => $d_item_type,
-		);
-
-		$r = wp_parse_args( $args, $defaults );
-		extract( $r, EXTR_SKIP );
-
-		if ( !$item_id || !$item_type )
-			return false;
-
-		switch ( $item_type ) {
-			case 'group' :
-				if ( !$group = $bp->groups->current_group )
-					$group = groups_get_group( array( 'group_id' => $item_id ) );
-
-				$base_url = bp_get_group_permalink( $group );
-				break;
-
-			case 'user' :
-				$base_url = bp_core_get_user_domain( $item_id );
-				break;
-		}
-
-		return apply_filters( 'bp_docs_get_item_docs_link', $base_url . $bp->bp_docs->slug . '/', $base_url, $r );
+		_deprecated_function( __FUNCTION__, '2.2.0', 'bp_docs_get_group_docs_url()' );
+		return '';
 	}
 
 /**
