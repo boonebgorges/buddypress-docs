@@ -14,15 +14,71 @@ if ( !class_exists( 'BP_Component' ) ) {
 }
 
 class BP_Docs_Component extends BP_Component {
-	var $groups_integration;
+	/**
+	 * WP_Query object for the docs query.
+	 *
+	 * @var WP_Query
+	 */
+	public $doc_query;
+
+	/**
+	 * Docs slug.
+	 *
+	 * @var string
+	 */
+	public $doc_slug;
+
+	/**
+	 * Docs tag tax name.
+	 *
+	 * @var string
+	 */
+	public $docs_tag_tax_name;
+
+	/**
+	 * History addon object.
+	 *
+	 * @var BP_Docs_History
+	 */
+	public $history;
+
+	/**
+	 * Attachments addon object.
+	 *
+	 * @var BP_Docs_Attachments
+	 */
+	public $attachments;
+
+	/**
+	 * Users integration object.
+	 *
+	 * @var BP_Docs_Users_Integration
+	 */
+	public $users_integration;
+
+	/**
+	 * Groups integration object.
+	 *
+	 * @var BP_Docs_Groups_Integration
+	 */
+	public $groups_integration;
+
+	/**
+	 * Item type.
+	 *
+	 * @var string
+	 */
+	public $item_type;
+
 	var $submitted_data = array();
 
 	var $post_type_name;
 	var $associated_tax_name;
+	public $associated_item_tax_name;
 	var $access_tax_name;
 	var $comment_access_tax_name;
 
-	var $slugtocheck = array();
+	public $slugstocheck = array();
 	var $query;
 	var $includes_url;
 
