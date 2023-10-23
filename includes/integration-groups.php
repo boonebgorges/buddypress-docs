@@ -631,8 +631,8 @@ class BP_Docs_Groups_Integration {
 				return $action;
 			}
 
-			$group_url  = bp_get_group_permalink( $group );
-			$group_link = '<a href="' . $group_url . '">' . $group->name . '</a>';
+			$group_url  = bp_get_group_url( $group );
+			$group_link = '<a href="' . esc_url( $group_url ) . '">' . esc_html( $group->name ) . '</a>';
 
 			if ( $is_new_doc ) {
 				$action = sprintf( __( '%1$s created the doc %2$s in the group %3$s', 'buddypress-docs' ), $user_link, $doc_link, $group_link );
@@ -689,8 +689,8 @@ class BP_Docs_Groups_Integration {
 				return $action;
 			}
 
-			$group_url  = bp_get_group_permalink( $group );
-			$group_link = '<a href="' . $group_url . '">' . $group->name . '</a>';
+			$group_url  = bp_get_group_url( $group );
+			$group_link = '<a href="' . esc_url( $group_url ) . '">' . esc_html( $group->name ) . '</a>';
 
 			$action 	= sprintf( __( '%1$s commented on the doc %2$s in the group %3$s', 'buddypress-docs' ), $user_link, $comment_link, $group_link );
 		}
@@ -815,9 +815,9 @@ class BP_Docs_Groups_Integration {
 						}
 					}
 
-					$group_permalink = bp_get_group_permalink( $group ) ?>
+					$group_permalink = bp_get_group_url( $group ) ?>
 
-					<li><a href="<?php echo $group_permalink ?>">
+					<li><a href="<?php echo esc_url( $group_permalink ); ?>">
 						<?php echo bp_core_fetch_avatar( array(
 							'item_id'    => $group_id,
 							'object'     => 'group',
@@ -827,7 +827,7 @@ class BP_Docs_Groups_Integration {
 							'height'     => '30',
 							'title'      => $group->name
 						) ) ?>
-						<?php echo $group->name ?>
+						<?php echo esc_html( $group->name ); ?>
 					</a></li>
 				<?php endforeach ?>
 				</ul>
@@ -1516,7 +1516,10 @@ function bp_docs_group_doc_permalink() {
 		else
 			return false;
 
-		return apply_filters( 'bp_docs_get_doc_permalink', $group_permalink . $bp->bp_docs->slug . '/' . $doc_slug );
+		$group_docs_permalink = bp_docs_get_group_docs_url( $group->id );
+
+		// @todo This concatenation will not work in BP 12.0.
+		return apply_filters( 'bp_docs_get_doc_permalink', trailingslashit( $group_docs_permalink ) . trailingslashit( $doc_slug ) );
 	}
 
 /**
@@ -1719,7 +1722,7 @@ function bp_docs_group_directory_breadcrumb( $crumbs ) {
 		$group_crumbs = array(
 			sprintf(
 				'<a href="%s">%s</a>',
-				bp_get_group_permalink( groups_get_current_group() ) . bp_docs_get_slug() . '/',
+				esc_url( bp_docs_get_group_docs_url() ),
 				sprintf( _x( '%s&#8217;s Docs', 'group Docs directory breadcrumb', 'buddypress-docs' ), esc_html( bp_get_current_group_name() ) )
 			),
 		);
@@ -1770,7 +1773,7 @@ function bp_docs_group_single_breadcrumb( $crumbs, $doc = null ) {
 		$group_crumbs = array(
 			sprintf(
 				'<a href="%s">%s</a>',
-				bp_get_group_permalink( $group ) . bp_docs_get_slug() . '/',
+				esc_url( bp_docs_get_group_docs_url() ),
 				/* translators: group name */
 				sprintf( esc_html__( '%s&#8217;s Docs', 'buddypress-docs' ), esc_html( $group->name ) )
 			),
