@@ -574,7 +574,7 @@ function bp_docs_mydocs_link() {
          * @since 1.2
          */
 	function bp_docs_get_mydocs_link() {
-		return apply_filters( 'bp_docs_get_mydocs_link', trailingslashit( bp_loggedin_user_domain() . bp_docs_get_docs_slug() ) );
+		return apply_filters( 'bp_docs_get_mydocs_link', trailingslashit( bp_docs_get_user_docs_url( bp_loggedin_user_id() ) ) );
 	}
 
 /**
@@ -625,7 +625,7 @@ function bp_docs_displayed_user_docs_started_link() {
      * @since 1.9
      */
 	function bp_docs_get_displayed_user_docs_started_link() {
-		return apply_filters( 'bp_docs_get_displayed_user_docs_started_link', user_trailingslashit( trailingslashit( bp_displayed_user_domain() . bp_docs_get_docs_slug() ) . BP_DOCS_STARTED_SLUG ) );
+		return apply_filters( 'bp_docs_get_displayed_user_docs_started_link', user_trailingslashit( trailingslashit( bp_docs_get_user_docs_url( bp_displayed_user_id() ) ) . BP_DOCS_STARTED_SLUG ) );
 	}
 
 /**
@@ -642,7 +642,7 @@ function bp_docs_displayed_user_docs_edited_link() {
      * @since 1.9
      */
 	function bp_docs_get_displayed_user_docs_edited_link() {
-		return apply_filters( 'bp_docs_get_displayed_user_docs_edited_link', user_trailingslashit( trailingslashit( bp_displayed_user_domain() . bp_docs_get_docs_slug() ) . BP_DOCS_EDITED_SLUG ) );
+		return apply_filters( 'bp_docs_get_displayed_user_docs_edited_link', user_trailingslashit( trailingslashit( bp_docs_get_user_docs_url( bp_displayed_user_id() ) ) . BP_DOCS_EDITED_SLUG ) );
 	}
 
 /**
