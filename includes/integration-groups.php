@@ -1466,20 +1466,21 @@ function bp_docs_group_tabs( $group = false ) {
  *
  * @since 2.2.0
  *
- * @param int $group_id Optional. The ID of the group. Defaults to the current group.
+ * @param int|BP_Groups_Group $group Optional. The ID of the group, or the group object.
+ *                                   Defaults to the current group.
  * @return string The URL for the Docs tab of the group.
  */
-function bp_docs_get_group_docs_url( $group_id = null ) {
-	if ( ! $group_id ) {
-		$group_id = bp_get_current_group_id();
+function bp_docs_get_group_docs_url( $group = null ) {
+	if ( ! $group ) {
+		$group = groups_get_current_group();
 	}
 
-	if ( ! $group_id ) {
+	if ( ! $group ) {
 		return '';
 	}
 
 	return bp_get_group_url(
-		$group_id,
+		$group,
 		bp_groups_get_path_chunks( array( bp_docs_get_slug() ) )
 	);
 }
