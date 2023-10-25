@@ -667,19 +667,17 @@ class BP_Docs_Query {
 			setcookie( 'bp-docs-submit-data', json_encode( $args ), time() + 30, '/' );
 		}
 
-		$redirect_base = trailingslashit( bp_get_root_domain() );
-		if ( $wp_rewrite->using_index_permalinks() ) {
-			$redirect_base .= 'index.php/';
-		}
-
-		$redirect_url = apply_filters( 'bp_docs_post_save_redirect_base', trailingslashit( $redirect_base . bp_docs_get_docs_slug() ) );
+		/**
+		 * Since 2.2.0 and BuddyPress 12.0, we no longer concatenate this URL.
+		 */
+		apply_filters_deprecated( 'bp_docs_post_save_redirect_base', '', '2.2.0', '', __( 'No longer used.', 'buddypress-docs' ) );
 
 		if ( $result['redirect'] == 'single' ) {
-			$redirect_url .= $this->doc_slug;
+			$redirect_url = bp_docs_get_archive_link();
 		} elseif ( $result['redirect'] == 'edit' ) {
-			$redirect_url .= $this->doc_slug . '/' . BP_DOCS_EDIT_SLUG;
+			$redirect_url = bp_docs_get_doc_edit_link( $this->doc_id );
 		} elseif ( $result['redirect'] == 'create' ) {
-			$redirect_url .= BP_DOCS_CREATE_SLUG;
+			$redirect_url = bp_docs_get_create_link();
 		}
 
 		$retval = array(
