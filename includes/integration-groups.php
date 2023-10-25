@@ -1165,8 +1165,6 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	 * @since 1.0-beta
 	 */
 	function edit_screen_save( $group_id = null ) {
-		global $bp;
-
 		if ( !isset( $_POST['save'] ) )
 			return false;
 
@@ -1180,7 +1178,12 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 		else
 			bp_core_add_message( __( 'Settings saved successfully', 'buddypress-docs' ) );
 
-		bp_core_redirect( bp_get_group_permalink( $bp->groups->current_group ) . 'admin/' . $this->slug );
+		$redirect_url = bp_groups_get_group_manage_url(
+			bp_get_current_group_id(),
+			bp_groups_get_path_chunks( array( $this->slug ), 'manage' )
+		);
+
+		bp_core_redirect( $redirect_url );
 	}
 
 	/**
