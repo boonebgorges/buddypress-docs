@@ -546,6 +546,21 @@ function bp_docs_mygroups_link() {
 	}
 
 /**
+ * Gets the URL of a user's Docs tab.
+ *
+ * @since 2.2.0
+ *
+ * @param int $user_id ID of the user.
+ * @return string
+ */
+function bp_docs_get_user_docs_url( $user_id ) {
+	return bp_members_get_url(
+		$url,
+		bp_members_get_path_chunks( array( bp_docs_get_slug() ) )
+	);
+}
+
+/**
  * Echoes the output of bp_docs_get_mydocs_link()
  *
  * @since 1.2
