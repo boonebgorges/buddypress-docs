@@ -365,7 +365,7 @@ class BP_Docs_Component extends BP_Component {
 			'default_subnav_slug' => BP_DOCS_STARTED_SLUG
 		);
 
-		$parent_url = trailingslashit( bp_displayed_user_domain() . bp_docs_get_docs_slug() );
+		$parent_url = bp_docs_get_user_docs_url( bp_displayed_user_id() );
 
 		$mydocs_label = bp_is_my_profile() ? __( 'My Docs ', 'buddypress-docs' ) : sprintf( __( '%s&#8217;s Docs', 'buddypress-docs' ), bp_get_user_firstname( bp_get_displayed_user_fullname() ) );
 
