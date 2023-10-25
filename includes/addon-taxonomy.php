@@ -462,18 +462,18 @@ function bp_docs_get_tag_link( $args = array() ) {
 
 	if ( bp_is_user() ) {
 		$current_action = bp_current_action();
-		$item_docs_url = bp_displayed_user_domain() . bp_docs_get_docs_slug() . '/';
+		$item_docs_url  = bp_docs_get_user_docs_url( bp_displayed_user_id()  );
 		if ( empty( $current_action ) || BP_DOCS_STARTED_SLUG == $current_action ) {
 			$item_docs_url = bp_docs_get_displayed_user_docs_started_link();
 		} elseif ( BP_DOCS_EDITED_SLUG == $current_action ) {
 			$item_docs_url = bp_docs_get_displayed_user_docs_edited_link();
 		}
-	} elseif ( bp_is_active( 'groups' ) && $current_group = groups_get_current_group() ) {
+	} elseif ( bp_is_active( 'groups' ) && bp_is_group() ) {
 		/*
-		 * Pass the group object to bp_get_group_permalink() so that it works
+		 * Pass the group object to bp_get_group_url() so that it works
 		 * when $groups_template may not be set, like during AJAX requests.
 		 */
-		$item_docs_url = trailingslashit( bp_get_group_permalink( $current_group ) . bp_docs_get_docs_slug() );
+		$item_docs_url = bp_docs_get_group_docs_url( groups_get_current_group() );
 	} else {
 		$item_docs_url = bp_docs_get_archive_link();
 	}
