@@ -671,7 +671,7 @@ class BP_Docs {
 			) );
 		} else {
 			bp_core_add_message( __( 'You do not have permission to do that.', 'buddypress-docs' ), 'error' );
-			bp_core_redirect( bp_get_root_domain() );
+			bp_core_redirect( bp_get_root_url() );
 		}
 	}
 
