@@ -58,7 +58,7 @@
 
 			<?php if ( ! bp_docs_is_started_by() ) : ?>
 				<td class="author-cell">
-					<a href="<?php echo bp_core_get_user_domain( get_the_author_meta( 'ID' ) ) ?>" title="<?php echo bp_core_get_user_displayname( get_the_author_meta( 'ID' ) ) ?>"><?php echo bp_core_get_user_displayname( get_the_author_meta( 'ID' ) ) ?></a>
+					<a href="<?php echo esc_url( bp_members_get_user_url( get_the_author_meta( 'ID' ) ) ); ?>" title="<?php echo esc_attr( bp_core_get_user_displayname( get_the_author_meta( 'ID' ) ) ); ?>"><?php echo esc_html( bp_core_get_user_displayname( get_the_author_meta( 'ID' ) ) ); ?></a>
 				</td>
 			<?php endif; ?>
 
