@@ -1502,24 +1502,22 @@ function bp_docs_group_doc_permalink() {
 	 * @return str Permalink for the group doc
 	 */
 	function bp_docs_get_group_doc_permalink( $doc_id = false ) {
-		global $post, $bp;
+		global $post;
 
-		$group			= $bp->groups->current_group;
-		$group_permalink 	= bp_get_group_permalink( $group );
-
-		if ( $doc_id )
+		if ( $doc_id ) {
 			$the_post = get_post( $doc_id );
-		else
+		} else {
 			$the_post = $post;
+		}
 
-		if ( !empty( $the_post->post_name ) )
+		if ( ! empty( $the_post->post_name ) ) {
 			$doc_slug = $the_post->post_name;
-		else
-			return false;
+		} else {
+			return '';
+		}
 
-		$group_docs_permalink = bp_docs_get_group_docs_url( $group->id );
+		$group_docs_permalink = bp_docs_get_group_docs_url( bp_get_current_group_id() );
 
-		// @todo This concatenation will not work in BP 12.0.
 		return apply_filters( 'bp_docs_get_doc_permalink', trailingslashit( $group_docs_permalink ) . trailingslashit( $doc_slug ) );
 	}
 
