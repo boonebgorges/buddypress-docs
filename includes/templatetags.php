@@ -566,13 +566,15 @@ function bp_docs_get_user_docs_url( $user_id ) {
  * @since 1.2
  */
 function bp_docs_mydocs_link() {
-        echo bp_docs_get_mydocs_link();
+	echo bp_docs_get_mydocs_link();
 }
 	/**
-         * Get the link to the My Docs tab of the logged in user
-         *
-         * @since 1.2
-         */
+	 * Get the link to the My Docs tab of the logged in user
+	 *
+	 * @since 1.2
+	 *
+	 * @return string
+	 */
 	function bp_docs_get_mydocs_link() {
 		return apply_filters( 'bp_docs_get_mydocs_link', trailingslashit( bp_docs_get_user_docs_url( bp_loggedin_user_id() ) ) );
 	}
@@ -583,13 +585,15 @@ function bp_docs_mydocs_link() {
  * @since 1.2
  */
 function bp_docs_mydocs_started_link() {
-        echo bp_docs_get_mydocs_started_link();
+	echo bp_docs_get_mydocs_started_link();
 }
 	/**
-         * Get the link to the Started By Me tab of the logged in user
-         *
-         * @since 1.2
-         */
+	 * Get the link to the Started By Me tab of the logged in user
+	 *
+	 * @since 1.2
+	 *
+	 * @return string
+	 */
 	function bp_docs_get_mydocs_started_link() {
 		return apply_filters( 'bp_docs_get_mydocs_started_link', trailingslashit( bp_docs_get_mydocs_link() . BP_DOCS_STARTED_SLUG ) );
 	}
@@ -600,13 +604,15 @@ function bp_docs_mydocs_started_link() {
  * @since 1.2
  */
 function bp_docs_mydocs_edited_link() {
-        echo bp_docs_get_mydocs_edited_link();
+	echo bp_docs_get_mydocs_edited_link();
 }
 	/**
-         * Get the link to the Edited By Me tab of the logged in user
-         *
-         * @since 1.2
-         */
+	 * Get the link to the Edited By Me tab of the logged in user
+	 *
+	 * @since 1.2
+	 *
+	 * @return string
+	 */
 	function bp_docs_get_mydocs_edited_link() {
 		return apply_filters( 'bp_docs_get_mydocs_edited_link', trailingslashit( bp_docs_get_mydocs_link() . BP_DOCS_EDITED_SLUG ) );
 	}
@@ -634,12 +640,14 @@ function bp_docs_displayed_user_docs_started_link() {
  * @since 1.9
  */
 function bp_docs_displayed_user_docs_edited_link() {
-        echo bp_docs_get_displayed_user_docs_edited_link();
+	echo bp_docs_get_displayed_user_docs_edited_link();
 }
 	/**
      * Get the link to the Edited By tab of the displayed user
      *
      * @since 1.9
+	 *
+	 * @return string
      */
 	function bp_docs_get_displayed_user_docs_edited_link() {
 		return apply_filters( 'bp_docs_get_displayed_user_docs_edited_link', user_trailingslashit( trailingslashit( bp_docs_get_user_docs_url( bp_displayed_user_id() ) ) . BP_DOCS_EDITED_SLUG ) );
@@ -651,13 +659,15 @@ function bp_docs_displayed_user_docs_edited_link() {
  * @since 1.2
  */
 function bp_docs_create_link() {
-        echo bp_docs_get_create_link();
+	echo bp_docs_get_create_link();
 }
 	/**
-         * Get the link to create a Doc
-         *
-         * @since 1.2
-         */
+	 * Get the link to create a Doc
+	 *
+	 * @since 1.2
+	 *
+	 * @return string
+	 */
 	function bp_docs_get_create_link() {
 		return apply_filters( 'bp_docs_get_create_link', trailingslashit( bp_docs_get_archive_link() . BP_DOCS_CREATE_SLUG ) );
 	}
