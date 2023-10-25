@@ -554,7 +554,7 @@ function bp_docs_mygroups_link() {
  * @return string
  */
 function bp_docs_get_user_docs_url( $user_id ) {
-	return bp_members_get_url(
+	return bp_members_get_user_url(
 		$url,
 		bp_members_get_path_chunks( array( bp_docs_get_slug() ) )
 	);
