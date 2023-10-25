@@ -503,10 +503,8 @@ class BP_Docs_Component extends BP_Component {
 
 				bp_core_add_message( __( 'You do not have permission to create a Doc in this group.', 'buddypress-docs' ), 'error' );
 
-				$group_permalink = bp_get_group_permalink( $bp->groups->current_group );
-
 				// Redirect back to the Doc list view
-				bp_core_redirect( $group_permalink . $bp->bp_docs->slug . '/' );
+				bp_core_redirect( bp_docs_get_group_docs_url( groups_get_current_group() ) );
 				die();
 			}
 		}
@@ -626,7 +624,7 @@ class BP_Docs_Component extends BP_Component {
 			} else {
 				bp_core_add_message( __( 'You do not have permission to remove that Doc from this group.', 'buddypress-docs' ), 'error' );
 			}
-			bp_core_redirect( bp_get_group_permalink( groups_get_group( array( 'group_id' => $unlink_group_id ) ) ) . $bp->bp_docs->slug . '/' );
+			bp_core_redirect( bp_docs_get_group_docs_url( $unlink_group_id ) );
 			die();
 		}
 	}
