@@ -1316,15 +1316,12 @@ function bp_docs_delete_doc_button( $doc_id = false ) {
 function bp_docs_get_directory_url( $item_type = 'global', $item_id = 0 ) {
 	switch ( $item_type ) {
 		case 'user' :
-			$url = bp_core_get_user_domain( $item_id ) . bp_docs_get_slug() . '/';
+			$url = bp_docs_get_user_docs_url( $item_id );
 			break;
 
 		case 'group' :
 			if ( bp_is_active( 'groups' ) ) {
-				$group = groups_get_group( array(
-					'group_id' => $item_id,
-				) );
-				$url = bp_get_group_permalink( $group ) . bp_docs_get_slug() . '/';
+				$url = bp_docs_get_group_docs_url( $item_id );
 				break;
 			}
 			// otherwise fall through
