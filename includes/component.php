@@ -122,6 +122,8 @@ class BP_Docs_Component extends BP_Component {
 			require( BP_DOCS_INCLUDES_PATH . 'activity.php' );
 		}
 
+		add_action( 'bp_parse_query', array( $this, 'set_up_post_query_globals' ) );
+
 		add_action( 'bp_actions', array( &$this, 'catch_page_load' ), 1 );
 
 		$this->attachments = new BP_Docs_Attachments();
@@ -222,7 +224,16 @@ class BP_Docs_Component extends BP_Component {
 		$this->slugstocheck 	= bp_action_variables() ? bp_action_variables() : array();
 		$this->slugstocheck[] 	= bp_current_component();
 		$this->slugstocheck[] 	= bp_current_action();
+	}
 
+	/**
+	 * Sets up globals that depend on BP's query parsing.
+	 *
+	 * @since 2.2.0 Broken out from setup_globals() to support load order in BuddyPress 12.0.
+	 *
+	 * @return void
+	 */
+	public function set_up_post_query_globals() {
 		$this->set_current_item_type();
 		$this->set_current_view();
 	}
