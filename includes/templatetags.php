@@ -1617,7 +1617,8 @@ function bp_docs_doc_permissions_snapshot( $args = array() ) {
 
 		// First set up the Group snapshot, if there is one
 		if ( ! empty( $doc_groups ) ) {
-			$group_link = bp_get_group_permalink( $doc_groups[0] );
+			$group_link = bp_get_group_url( $doc_groups[0] );
+
 			$html .= '<div id="doc-group-summary">';
 
 			$html .= $summary_before_content ;
