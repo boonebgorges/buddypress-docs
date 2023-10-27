@@ -667,11 +667,6 @@ class BP_Docs_Query {
 			setcookie( 'bp-docs-submit-data', json_encode( $args ), time() + 30, '/' );
 		}
 
-		/**
-		 * Since 2.2.0 and BuddyPress 12.0, we no longer concatenate this URL.
-		 */
-		apply_filters_deprecated( 'bp_docs_post_save_redirect_base', '', '2.2.0', '', __( 'No longer used.', 'buddypress-docs' ) );
-
 		if ( $result['redirect'] == 'single' ) {
 			$redirect_url = bp_docs_get_archive_link();
 		} elseif ( $result['redirect'] == 'edit' ) {
