@@ -70,6 +70,13 @@ class BP_Docs_Component extends BP_Component {
 	 */
 	public $item_type;
 
+	/**
+	 * Current doc lock.
+	 *
+	 * @var bool
+	 */
+	public $current_doc_lock;
+
 	var $submitted_data = array();
 
 	var $post_type_name;
