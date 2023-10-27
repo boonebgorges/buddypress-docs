@@ -95,6 +95,12 @@ function bp_docs_do_theme_compat( $template = false ) {
  * @since 1.3
  */
 class BP_Docs_Theme_Compat {
+	/**
+	 * Single content template.
+	 *
+	 * @var string
+	 */
+	public $single_content_template;
 
 	/**
 	 * Setup the members component theme compatibility
