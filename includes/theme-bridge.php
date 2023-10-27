@@ -231,6 +231,7 @@ class BP_Docs_Theme_Compat {
 	 */
 	public function directory_content() {
 		bp_buffer_template_part( 'docs/docs-loop' );
+		return '';
 	}
 
 	/** Single ****************************************************************/
@@ -250,15 +251,11 @@ class BP_Docs_Theme_Compat {
 	/**
 	 * Filter the_content with the single doc template part
 	 *
-	 * We return ' ' as a hack, to make sure that the_content doesn't
-	 * display extra crap at the end of our documents
-	 *
 	 * @since 1.3
 	 */
 	public function single_content() {
-
 		bp_buffer_template_part( $this->single_content_template );
-		return ' ';
+		return '';
 	}
 
 	/** Create ****************************************************************/
@@ -289,6 +286,7 @@ class BP_Docs_Theme_Compat {
 	 */
 	public function create_content() {
 		bp_buffer_template_part( 'docs/single/edit' );
+		return '';
 	}
 }
 new BP_Docs_Theme_Compat();
