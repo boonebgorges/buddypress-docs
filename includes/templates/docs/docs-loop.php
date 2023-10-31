@@ -179,6 +179,8 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 
 			<td class="date-cell created-date-cell"></td>
 			<td class="date-cell edited-date-cell"></td>
+
+			<?php do_action( 'bp_docs_loop_additional_td' ) ?>
 		</tr>
 	</tbody>
 	</table>
