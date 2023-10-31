@@ -4,8 +4,46 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3259f5d876071b8daee9544262ae30b6",
-    "packages": [],
+    "content-hash": "cceea10df92b2eede2782b2a4bb9671a",
+    "packages": [
+        {
+            "name": "hard-g/buddypress-12.0-url-polyfills",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/hard-g/buddypress-12.0-url-polyfills.git",
+                "reference": "e61685bec96f2673b6b225510eec8b74c3d6a2cf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/hard-g/buddypress-12.0-url-polyfills/zipball/e61685bec96f2673b6b225510eec8b74c3d6a2cf",
+                "reference": "e61685bec96f2673b6b225510eec8b74c3d6a2cf",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "HardG\\BuddyPress120URLPolyfills\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Boone B Gorges",
+                    "email": "boonebgorges@gmail.com"
+                }
+            ],
+            "description": "Polyfills for URL-related functions introduced in BuddyPress 12.0.",
+            "support": {
+                "issues": "https://github.com/hard-g/buddypress-12.0-url-polyfills/issues",
+                "source": "https://github.com/hard-g/buddypress-12.0-url-polyfills/tree/1.0.1"
+            },
+            "time": "2023-10-30T23:18:59+00:00"
+        }
+    ],
     "packages-dev": [
         {
             "name": "dealerdirect/phpcodesniffer-composer-installer",

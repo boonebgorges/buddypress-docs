@@ -17,6 +17,10 @@ It's on like Donkey Kong
 
 define( 'BP_DOCS_VERSION', '2.1.8' );
 
+require_once __DIR__ . '/vendor/autoload.php';
+
+HardG\BuddyPress120URLPolyfills\Loader::init();
+
 /*
  * BuddyPress Docs introduces a lot of overhead. Unless otherwise specified,
  * don't load the plugin on subsites of an MS install
