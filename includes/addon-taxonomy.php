@@ -526,11 +526,13 @@ function bp_docs_post_tags_meta_box() {
 	} else {
 		$terms = '';
 	}
-?>
-	<textarea name="<?php echo "$tax_name"; ?>" class="the-tags" id="tax-input-<?php echo $tax_name; ?>"><?php echo esc_textarea( $terms ); ?></textarea>
-<?php
-}
 
+	?>
+
+	<label for="tax-input-<?php echo esc_attr( $tax_name ); ?>" class="screen-reader-text"><?php echo esc_html( $taxonomy->labels->name ); ?></label>
+	<textarea name="<?php echo esc_attr( $tax_name ); ?>" class="the-tags" id="tax-input-<?php echo esc_attr( $tax_name ); ?>"><?php echo esc_textarea( $terms ); ?></textarea>
+	<?php
+}
 
 /**
  * Display post categories form fields. Borrowed from WP. Not currently used.
