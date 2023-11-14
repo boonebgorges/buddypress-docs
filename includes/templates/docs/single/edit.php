@@ -7,7 +7,7 @@ if ( $current_doc ) {
 
 $bp_docs_do_theme_compat = is_buddypress() && bp_docs_do_theme_compat( 'single/edit.php' );
 if ( ! $bp_docs_do_theme_compat ) : ?>
-<div id="buddypress">
+<div id="buddypress" class="<?php bp_docs_buddypress_container_class(); ?>">
 <?php endif; ?>
 
 <div class="<?php bp_docs_container_class(); ?>">

@@ -2313,7 +2313,48 @@ function bp_docs_get_container_class() {
 	 */
 	$classes = apply_filters( 'bp_docs_get_container_classes', $classes );
 
-	return implode( ' ', array_unique( $classes ) );
+	$classes = array_unique( array_map( 'sanitize_html_class', $classes ) );
+
+	return implode( ' ', $classes );
+}
+
+/**
+ * Echo the classes for the bp-docs BuddyPress container element.
+ *
+ *
+ * @since 1.9.0
+ */
+function bp_docs_buddypress_container_class() {
+	echo esc_attr( bp_docs_get_buddypress_container_class() );
+}
+
+/**
+ * Generate the classes for the bp-docs BuddyPress container element.
+ *
+ * All Docs content appears in a div.bp-docs. Classes are also included for current theme/parent theme, eg
+ * 'bp-docs-theme-twentytwelve'.
+ *
+ * @since 1.9.0
+ */
+function bp_docs_get_buddypress_container_class() {
+	$classes = array( get_template() );
+
+	if ( bp_docs_theme_supports_wide_layout() ) {
+		$classes[] = 'alignwide';
+	}
+
+	/**
+	 * Filter the classes for the bp-docs BuddyPress container element.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param array $classes Array of classes.
+	 */
+	$classes = apply_filters( 'bp_docs_get_buddypress_container_class', $classes );
+
+	$classes = array_unique( array_map( 'sanitize_html_class', $classes ) );
+
+	return implode( ' ',  $classes );
 }
 
 /**
@@ -2476,3 +2517,34 @@ function bp_docs_genericon( $glyph_name, $object_id = null ) {
 		$icon_markup = '<i class="genericon genericon-' . $glyph_name . '"></i>';
 		return apply_filters( 'bp_docs_get_genericon', $icon_markup, $glyph_name, $object_id );
 	}
+
+/**
+ * Retuns the theme layout available widths.
+ * Idea comes directly from the BP Nouveau template pack.
+ *
+ * @since 2.2
+ *
+ * @return bool $go_wide Whether the theme supports wide content width.
+ */
+function bp_docs_theme_supports_wide_layout() {
+	$go_wide = false;
+
+	if ( current_theme_supports( 'align-wide' ) ) {
+		$go_wide = true;
+	} else if ( function_exists( 'wp_get_global_settings' ) ) {
+		$theme_layouts = wp_get_global_settings( array( 'layout' ) );
+
+		if ( isset( $theme_layouts['wideSize'] ) && $theme_layouts['wideSize'] ) {
+			$go_wide = true;
+		}
+	}
+
+	/**
+	 * Filter here to edit whether we should allow a wide layout or not.
+	 *
+	 * @since 2.2
+	 *
+	 * @param bool $go_wide Whether the theme supports wide content width.
+	 */
+	return apply_filters( 'bp_docs_theme_supports_wide_layout', $go_wide );
+}
