@@ -230,8 +230,7 @@ class BP_Docs_Theme_Compat {
 	 * @since 1.3
 	 */
 	public function directory_content() {
-		bp_buffer_template_part( 'docs/docs-loop' );
-		return '';
+		return bp_buffer_template_part( 'docs/docs-loop', null, false );
 	}
 
 	/** Single ****************************************************************/
@@ -254,8 +253,7 @@ class BP_Docs_Theme_Compat {
 	 * @since 1.3
 	 */
 	public function single_content() {
-		bp_buffer_template_part( $this->single_content_template );
-		return '';
+		return bp_buffer_template_part( $this->single_content_template, null, false );
 	}
 
 	/** Create ****************************************************************/
@@ -285,8 +283,7 @@ class BP_Docs_Theme_Compat {
 	 * @since 1.3
 	 */
 	public function create_content() {
-		bp_buffer_template_part( 'docs/single/edit' );
-		return '';
+		return bp_buffer_template_part( 'docs/single/edit', null, false );
 	}
 }
 new BP_Docs_Theme_Compat();
