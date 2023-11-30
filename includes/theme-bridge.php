@@ -90,6 +90,28 @@ function bp_docs_do_theme_compat( $template = false ) {
 }
 
 /**
+ * Tell BP to enqueue its 'community' assets.
+ *
+ * Since version 12.0, BuddyPress does not enqueue its CSS and JS assets on
+ * non-BuddyPress pages. This includes CPT pages like those used by Docs.
+ *
+ * @since 2.2.0
+ *
+ * @param bool $enqueue Whether to enqueue the assets.
+ * @return bool
+ */
+function bp_docs_enqueue_community_assets( $enqueue ) {
+	if ( bp_docs_is_docs_component() ) {
+		// Return `false` because the filter asks whether assets should *only* be
+		// enqueued on BP pages. We want to say no, enqueue them elsewhere too.
+		return false;
+	}
+
+	return $enqueue;
+}
+add_filter( 'bp_enqueue_assets_in_bp_pages_only', 'bp_docs_enqueue_community_assets' );
+
+/**
  * Theme Compat
  *
  * @since 1.3
