@@ -5,14 +5,13 @@
  * but as a shortcode.
  *
  * @package BuddyPressDocs
- * @since 2.2
+ * @since 2.3
  */
 
 function bp_docs_recent_docs_shortcode_handler( $atts ) {
     $a = shortcode_atts( array(
         'number'        => 5,
         'show_date'     => false,
-        'class'         => '',
         'author_id'     => null,
         'group_id'      => null,
         'folder_id'     => null,
@@ -45,7 +44,7 @@ function bp_docs_recent_docs_shortcode_handler( $atts ) {
 	/**
 	 * Filters the args passed to `bp_docs_has_docs()` in the Recent Docs shortcode.
 	 *
-	 * @since 2.2
+	 * @since 2.3.0
 	 *
 	 * @param array {
 	 *     @type int    $posts_per_page
@@ -63,20 +62,22 @@ function bp_docs_recent_docs_shortcode_handler( $atts ) {
 	$temp_doc_query = isset( $bp->bp_docs->doc_query ) ? $bp->bp_docs->doc_query : null;
 	$bp->bp_docs->doc_query = null;
 
-	// Prepare the arguments array to pass to the template.
-	$loop_args = array(
-		'show_date' => $a['show_date'],
-		'class'     => $a['class'],
-		'has_docs'  => false,
-	);
-
 	ob_start();
 
 	if ( bp_docs_has_docs( $doc_args ) ) :
-		$loop_args['has_docs'] = true;
-		bp_docs_locate_template( 'shortcode-loop.php', true, false, $loop_args );
-	else :
-	 	bp_docs_locate_template( 'shortcode-loop.php', true, false, $loop_args );
+	?>
+		<ul>
+		<?php while ( bp_docs_has_docs() ) : bp_docs_the_doc(); ?>
+			<li>
+				<a href="<?php the_permalink(); ?>"><?php get_the_title() ? the_title() : the_ID(); ?></a>
+			<?php if ( $a['show_date'] ) : ?>
+				<span class="post-date"><?php echo get_the_date(); ?></span>
+			<?php endif; ?>
+			</li>
+		<?php endwhile; ?>
+	</ul>
+
+	<?php
 	endif;
 
 	$retval = ob_get_clean();

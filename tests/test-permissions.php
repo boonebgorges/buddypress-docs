@@ -1213,7 +1213,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$u1 = $this->factory->user->create();
 
 		$this->set_current_user( $u1 );
-		$this->go_to( bp_get_group_permalink( groups_get_group( array( 'group_id' => $g ) ) ) );
+		$this->go_to( bp_get_group_url( $g ) );
 		// $this->go_to( bp_docs_get_doc_link( $post_id ) );
 		$this->assertFalse( current_user_can( 'bp_docs_dissociate_from_group' ) );
 	}
@@ -1231,7 +1231,7 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 		$gm1->promote( 'admin' );
 
 		$this->set_current_user( $u1 );
-		$this->go_to( bp_get_group_permalink( groups_get_group( array( 'group_id' => $g ) ) ) );
+		$this->go_to( bp_get_group_url( $g ) );
 		// $this->go_to( bp_docs_get_doc_link( $post_id ) );
 		$this->assertTrue( current_user_can( 'bp_docs_dissociate_from_group' ) );
 	}

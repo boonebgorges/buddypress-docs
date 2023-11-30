@@ -7,10 +7,22 @@ class BP_Docs_Attachments {
 	protected $is_private;
 	protected $htaccess_path;
 
+	protected $check_interval = 86400;
+
 	function __construct() {
 		if ( ! bp_docs_enable_attachments() ) {
 			return;
 		}
+
+		/**
+		 * Filters the number of seconds between attachment protection checks.
+		 *
+		 * @since 2.2.0
+		 *
+		 * @param bool $value How long between attachment protection checks, in seconds.
+		 *                    Default value is once per day.
+		 */
+		$this->check_interval = (int) apply_filters( 'bpdocs_check_attachment_protection_interval', $this->check_interval );
 
 		add_action( 'template_redirect', array( $this, 'catch_attachment_request' ), 20 );
 		add_filter( 'redirect_canonical', array( $this, 'redirect_canonical' ), 10, 2 );
@@ -324,7 +336,10 @@ class BP_Docs_Attachments {
 
 			if ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) {
 				if ( bp_docs_is_existing_doc() ) {
-					$this->doc_id = get_queried_object_id();
+					$current_doc = bp_docs_get_current_doc();
+					if ( $current_doc ) {
+						$this->doc_id = $current_doc->ID;
+					}
 				}
 			} else {
 				// AJAX
@@ -752,8 +767,31 @@ class BP_Docs_Attachments {
 			return;
 		}
 
+		// Is the user manually running an access protection check?
+		$force_check = false;
+		if ( isset( $_GET['bpdocs-check-attachment-protection'] ) ) {
+			check_admin_referer( 'bpdocs-check-attachment-protection' );
+			$force_check = true;
+		}
+
+		/**
+		 * Filters whether attachment protection checks should be allowed.
+		 *
+		 * @since 2.2.0
+		 *
+		 * @param bool $value Whether the attachment protection check
+		 *                    should be allowed. Manual checks will always
+		 *                    be allowed.
+		 */
+		$allow_check = apply_filters( 'bpdocs_check_attachment_protection', true );
+
+		// Manual checks are always allowed to proceed.
+		if ( ! $allow_check && ! $force_check ) {
+			return;
+		}
+
 		// Nothing to see here
-		if ( $this->check_is_protected() ) {
+		if ( $this->check_is_protected( $force_check ) ) {
 			return;
 		}
 
@@ -804,6 +842,11 @@ class BP_Docs_Attachments {
 			$help_p = __( 'It looks like you are running <strong>Apache</strong>. The most likely cause of your problem is that the <code>AllowOverride</code> directive has been disabled, either globally (<code>httpd.conf</code>) or in a <code>VirtualHost</code> definition. Contact your host for assistance.', 'buddypress-docs' );
 		}
 
+		$expiry_time     = absint( bp_get_option( 'bp_docs_attachment_protection_expiry' ) );
+		$expiry_stamp    = wp_date( 'Y-m-d g:i:s A', $expiry_time );
+		$last_check_time = wp_date( 'Y-m-d g:i:s A', $expiry_time - $this->check_interval );
+		$force_check_url = add_query_arg( 'bpdocs-check-attachment-protection', '1', $_SERVER['REQUEST_URI'] );
+		$force_check_url = wp_nonce_url( $force_check_url, 'bpdocs-check-attachment-protection' );
 		?>
 
 		<div class="message error">
@@ -812,6 +855,15 @@ class BP_Docs_Attachments {
 			<?php if ( $help_p ) : ?>
 				<p><?php echo $help_p ?></p>
 			<?php endif ?>
+
+			<p><?php
+				printf(
+					__( 'Access protection was last checked %s and will be checked again %s. <a href="%s">Test access protection now.</a>', 'buddypress-docs' ),
+					$last_check_time,
+					$expiry_stamp,
+					$force_check_url
+				);
+			?></p>
 
 			<?php if ( $help_url ) : ?>
 				<p><?php printf( __( 'See <a href="%s">this wiki page</a> for more information.', 'buddypress-docs' ), $help_url ) ?></p>
@@ -835,11 +887,14 @@ class BP_Docs_Attachments {
 	public function check_is_protected( $force_check = true ) {
 		global $is_apache;
 
-		// Fall back on cached value if it exists
+		// Fall back on cached value if it exists and is still in effect.
 		if ( ! $force_check ) {
-			$is_protected = bp_get_option( 'bp_docs_attachment_protection' );
-			if ( '' !== $is_protected ) {
-				return (bool) $is_protected;
+			$expiry = bp_get_option( 'bp_docs_attachment_protection_expiry' );
+			if ( $expiry && time() < $expiry ) {
+				$is_protected = bp_get_option( 'bp_docs_attachment_protection' );
+				if ( '' !== $is_protected ) {
+					return (bool) $is_protected;
+				}
 			}
 		}
 
@@ -890,6 +945,8 @@ class BP_Docs_Attachments {
 		// Cache
 		$cache = $is_protected ? '1' : '0';
 		bp_update_option( 'bp_docs_attachment_protection', $cache );
+		// Put off the next check for 24 hours.
+		bp_update_option( 'bp_docs_attachment_protection_expiry', time() + $this->check_interval );
 
 		return $is_protected;
 	}

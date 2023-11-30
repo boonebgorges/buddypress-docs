@@ -90,11 +90,39 @@ function bp_docs_do_theme_compat( $template = false ) {
 }
 
 /**
+ * Tell BP to enqueue its 'community' assets.
+ *
+ * Since version 12.0, BuddyPress does not enqueue its CSS and JS assets on
+ * non-BuddyPress pages. This includes CPT pages like those used by Docs.
+ *
+ * @since 2.2.0
+ *
+ * @param bool $enqueue Whether to enqueue the assets.
+ * @return bool
+ */
+function bp_docs_enqueue_community_assets( $enqueue ) {
+	if ( bp_docs_is_docs_component() ) {
+		// Return `false` because the filter asks whether assets should *only* be
+		// enqueued on BP pages. We want to say no, enqueue them elsewhere too.
+		return false;
+	}
+
+	return $enqueue;
+}
+add_filter( 'bp_enqueue_assets_in_bp_pages_only', 'bp_docs_enqueue_community_assets' );
+
+/**
  * Theme Compat
  *
  * @since 1.3
  */
 class BP_Docs_Theme_Compat {
+	/**
+	 * Single content template.
+	 *
+	 * @var string
+	 */
+	public $single_content_template;
 
 	/**
 	 * Setup the members component theme compatibility
@@ -225,6 +253,7 @@ class BP_Docs_Theme_Compat {
 	 */
 	public function directory_content() {
 		bp_buffer_template_part( 'docs/docs-loop' );
+		return '';
 	}
 
 	/** Single ****************************************************************/
@@ -244,15 +273,11 @@ class BP_Docs_Theme_Compat {
 	/**
 	 * Filter the_content with the single doc template part
 	 *
-	 * We return ' ' as a hack, to make sure that the_content doesn't
-	 * display extra crap at the end of our documents
-	 *
 	 * @since 1.3
 	 */
 	public function single_content() {
-
 		bp_buffer_template_part( $this->single_content_template );
-		return ' ';
+		return '';
 	}
 
 	/** Create ****************************************************************/
@@ -283,6 +308,7 @@ class BP_Docs_Theme_Compat {
 	 */
 	public function create_content() {
 		bp_buffer_template_part( 'docs/single/edit' );
+		return '';
 	}
 }
 new BP_Docs_Theme_Compat();

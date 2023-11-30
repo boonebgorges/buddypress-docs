@@ -14,15 +14,78 @@ if ( !class_exists( 'BP_Component' ) ) {
 }
 
 class BP_Docs_Component extends BP_Component {
-	var $groups_integration;
+	/**
+	 * WP_Query object for the docs query.
+	 *
+	 * @var WP_Query
+	 */
+	public $doc_query;
+
+	/**
+	 * Docs slug.
+	 *
+	 * @var string
+	 */
+	public $doc_slug;
+
+	/**
+	 * Docs tag tax name.
+	 *
+	 * @var string
+	 */
+	public $docs_tag_tax_name;
+
+	/**
+	 * History addon object.
+	 *
+	 * @var BP_Docs_History
+	 */
+	public $history;
+
+	/**
+	 * Attachments addon object.
+	 *
+	 * @var BP_Docs_Attachments
+	 */
+	public $attachments;
+
+	/**
+	 * Users integration object.
+	 *
+	 * @var BP_Docs_Users_Integration
+	 */
+	public $users_integration;
+
+	/**
+	 * Groups integration object.
+	 *
+	 * @var BP_Docs_Groups_Integration
+	 */
+	public $groups_integration;
+
+	/**
+	 * Item type.
+	 *
+	 * @var string
+	 */
+	public $item_type;
+
+	/**
+	 * Current doc lock.
+	 *
+	 * @var bool
+	 */
+	public $current_doc_lock;
+
 	var $submitted_data = array();
 
 	var $post_type_name;
 	var $associated_tax_name;
+	public $associated_item_tax_name;
 	var $access_tax_name;
 	var $comment_access_tax_name;
 
-	var $slugtocheck = array();
+	public $slugstocheck = array();
 	var $query;
 	var $includes_url;
 
@@ -65,6 +128,8 @@ class BP_Docs_Component extends BP_Component {
 		if ( bp_is_active( 'activity' ) ) {
 			require( BP_DOCS_INCLUDES_PATH . 'activity.php' );
 		}
+
+		add_action( 'bp_parse_query', array( $this, 'set_up_post_query_globals' ) );
 
 		add_action( 'bp_actions', array( &$this, 'catch_page_load' ), 1 );
 
@@ -166,7 +231,16 @@ class BP_Docs_Component extends BP_Component {
 		$this->slugstocheck 	= bp_action_variables() ? bp_action_variables() : array();
 		$this->slugstocheck[] 	= bp_current_component();
 		$this->slugstocheck[] 	= bp_current_action();
+	}
 
+	/**
+	 * Sets up globals that depend on BP's query parsing.
+	 *
+	 * @since 2.2.0 Broken out from setup_globals() to support load order in BuddyPress 12.0.
+	 *
+	 * @return void
+	 */
+	public function set_up_post_query_globals() {
 		$this->set_current_item_type();
 		$this->set_current_view();
 	}
@@ -309,7 +383,7 @@ class BP_Docs_Component extends BP_Component {
 			'default_subnav_slug' => BP_DOCS_STARTED_SLUG
 		);
 
-		$parent_url = trailingslashit( bp_displayed_user_domain() . bp_docs_get_docs_slug() );
+		$parent_url = bp_docs_get_user_docs_url( bp_displayed_user_id() );
 
 		$mydocs_label = bp_is_my_profile() ? __( 'My Docs ', 'buddypress-docs' ) : sprintf( __( '%s&#8217;s Docs', 'buddypress-docs' ), bp_get_user_firstname( bp_get_displayed_user_fullname() ) );
 
@@ -447,10 +521,8 @@ class BP_Docs_Component extends BP_Component {
 
 				bp_core_add_message( __( 'You do not have permission to create a Doc in this group.', 'buddypress-docs' ), 'error' );
 
-				$group_permalink = bp_get_group_permalink( $bp->groups->current_group );
-
 				// Redirect back to the Doc list view
-				bp_core_redirect( $group_permalink . $bp->bp_docs->slug . '/' );
+				bp_core_redirect( bp_docs_get_group_docs_url( groups_get_current_group() ) );
 				die();
 			}
 		}
@@ -570,7 +642,7 @@ class BP_Docs_Component extends BP_Component {
 			} else {
 				bp_core_add_message( __( 'You do not have permission to remove that Doc from this group.', 'buddypress-docs' ), 'error' );
 			}
-			bp_core_redirect( bp_get_group_permalink( groups_get_group( array( 'group_id' => $unlink_group_id ) ) ) . $bp->bp_docs->slug . '/' );
+			bp_core_redirect( bp_docs_get_group_docs_url( $unlink_group_id ) );
 			die();
 		}
 	}
@@ -988,7 +1060,13 @@ class BP_Docs_Component extends BP_Component {
 			// Edit mode requires bp-docs-js to be dependent on TinyMCE, so we must
 			// reregister bp-docs-js with the correct dependencies
 			wp_deregister_script( 'bp-docs-js' );
-			wp_register_script( 'bp-docs-js', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/bp-docs.js' ), array( 'jquery', 'editor', 'heartbeat' ) );
+			wp_register_script(
+				'bp-docs-js',
+				plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/bp-docs.js' ),
+				array( 'jquery', 'editor' ),
+				'',
+				true
+			);
 
 			wp_register_script( 'word-counter', site_url() . '/wp-admin/js/word-count.js', array( 'jquery' ) );
 
@@ -997,8 +1075,9 @@ class BP_Docs_Component extends BP_Component {
 
 		// Only load our JS on the right sorts of pages. Generous to account for
 		// different item types
-		if ( in_array( bp_docs_get_docs_slug(), $this->slugstocheck ) || bp_docs_is_single_doc() || bp_docs_is_global_directory() || bp_docs_is_mygroups_directory() || bp_docs_is_doc_create() ) {
+		if ( in_array( bp_docs_get_docs_slug(), $this->slugstocheck ) || bp_docs_is_single_doc() || bp_docs_is_global_directory() || bp_docs_is_mygroups_directory() || bp_docs_is_group_docs() || bp_docs_is_doc_create() ) {
 			wp_enqueue_script( 'bp-docs-js' );
+			wp_enqueue_script( 'heartbeat' );
 			wp_enqueue_script( 'comment-reply' );
 
 			$submitted_data = isset( buddypress()->bp_docs->submitted_data ) ? buddypress()->bp_docs->submitted_data : null;

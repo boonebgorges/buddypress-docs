@@ -45,7 +45,7 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 		<?php if ( bp_docs_is_existing_doc() ) : ?>
 			<div id="doc-content-permalink">
 				<label for="doc-permalink"><?php _e( 'Permalink', 'buddypress-docs' ) ?></label>
-				<code><?php echo trailingslashit( bp_get_root_domain() ) . bp_docs_get_docs_slug() . '/' ?></code><input type="text" id="doc-permalink" name="doc[permalink]" class="long" value="<?php bp_docs_edit_doc_slug() ?>" />
+				<code><?php echo esc_html( bp_docs_get_archive_link() ); ?></code><input type="text" id="doc-permalink" name="doc[permalink]" class="long" value="<?php bp_docs_edit_doc_slug() ?>" />
 			</div>
 		<?php endif ?>
 

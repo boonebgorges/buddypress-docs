@@ -546,20 +546,37 @@ function bp_docs_mygroups_link() {
 	}
 
 /**
+ * Gets the URL of a user's Docs tab.
+ *
+ * @since 2.2.0
+ *
+ * @param int $user_id ID of the user.
+ * @return string
+ */
+function bp_docs_get_user_docs_url( $user_id ) {
+	return bp_members_get_user_url(
+		$user_id,
+		bp_members_get_path_chunks( array( bp_docs_get_slug() ) )
+	);
+}
+
+/**
  * Echoes the output of bp_docs_get_mydocs_link()
  *
  * @since 1.2
  */
 function bp_docs_mydocs_link() {
-        echo bp_docs_get_mydocs_link();
+	echo bp_docs_get_mydocs_link();
 }
 	/**
-         * Get the link to the My Docs tab of the logged in user
-         *
-         * @since 1.2
-         */
+	 * Get the link to the My Docs tab of the logged in user
+	 *
+	 * @since 1.2
+	 *
+	 * @return string
+	 */
 	function bp_docs_get_mydocs_link() {
-		return apply_filters( 'bp_docs_get_mydocs_link', trailingslashit( bp_loggedin_user_domain() . bp_docs_get_docs_slug() ) );
+		return apply_filters( 'bp_docs_get_mydocs_link', trailingslashit( bp_docs_get_user_docs_url( bp_loggedin_user_id() ) ) );
 	}
 
 /**
@@ -568,13 +585,15 @@ function bp_docs_mydocs_link() {
  * @since 1.2
  */
 function bp_docs_mydocs_started_link() {
-        echo bp_docs_get_mydocs_started_link();
+	echo bp_docs_get_mydocs_started_link();
 }
 	/**
-         * Get the link to the Started By Me tab of the logged in user
-         *
-         * @since 1.2
-         */
+	 * Get the link to the Started By Me tab of the logged in user
+	 *
+	 * @since 1.2
+	 *
+	 * @return string
+	 */
 	function bp_docs_get_mydocs_started_link() {
 		return apply_filters( 'bp_docs_get_mydocs_started_link', trailingslashit( bp_docs_get_mydocs_link() . BP_DOCS_STARTED_SLUG ) );
 	}
@@ -585,13 +604,15 @@ function bp_docs_mydocs_started_link() {
  * @since 1.2
  */
 function bp_docs_mydocs_edited_link() {
-        echo bp_docs_get_mydocs_edited_link();
+	echo bp_docs_get_mydocs_edited_link();
 }
 	/**
-         * Get the link to the Edited By Me tab of the logged in user
-         *
-         * @since 1.2
-         */
+	 * Get the link to the Edited By Me tab of the logged in user
+	 *
+	 * @since 1.2
+	 *
+	 * @return string
+	 */
 	function bp_docs_get_mydocs_edited_link() {
 		return apply_filters( 'bp_docs_get_mydocs_edited_link', trailingslashit( bp_docs_get_mydocs_link() . BP_DOCS_EDITED_SLUG ) );
 	}
@@ -610,7 +631,7 @@ function bp_docs_displayed_user_docs_started_link() {
      * @since 1.9
      */
 	function bp_docs_get_displayed_user_docs_started_link() {
-		return apply_filters( 'bp_docs_get_displayed_user_docs_started_link', user_trailingslashit( trailingslashit( bp_displayed_user_domain() . bp_docs_get_docs_slug() ) . BP_DOCS_STARTED_SLUG ) );
+		return apply_filters( 'bp_docs_get_displayed_user_docs_started_link', user_trailingslashit( trailingslashit( bp_docs_get_user_docs_url( bp_displayed_user_id() ) ) . BP_DOCS_STARTED_SLUG ) );
 	}
 
 /**
@@ -619,15 +640,17 @@ function bp_docs_displayed_user_docs_started_link() {
  * @since 1.9
  */
 function bp_docs_displayed_user_docs_edited_link() {
-        echo bp_docs_get_displayed_user_docs_edited_link();
+	echo bp_docs_get_displayed_user_docs_edited_link();
 }
 	/**
      * Get the link to the Edited By tab of the displayed user
      *
      * @since 1.9
+	 *
+	 * @return string
      */
 	function bp_docs_get_displayed_user_docs_edited_link() {
-		return apply_filters( 'bp_docs_get_displayed_user_docs_edited_link', user_trailingslashit( trailingslashit( bp_displayed_user_domain() . bp_docs_get_docs_slug() ) . BP_DOCS_EDITED_SLUG ) );
+		return apply_filters( 'bp_docs_get_displayed_user_docs_edited_link', user_trailingslashit( trailingslashit( bp_docs_get_user_docs_url( bp_displayed_user_id() ) ) . BP_DOCS_EDITED_SLUG ) );
 	}
 
 /**
@@ -636,13 +659,15 @@ function bp_docs_displayed_user_docs_edited_link() {
  * @since 1.2
  */
 function bp_docs_create_link() {
-        echo bp_docs_get_create_link();
+	echo bp_docs_get_create_link();
 }
 	/**
-         * Get the link to create a Doc
-         *
-         * @since 1.2
-         */
+	 * Get the link to create a Doc
+	 *
+	 * @since 1.2
+	 *
+	 * @return string
+	 */
 	function bp_docs_get_create_link() {
 		return apply_filters( 'bp_docs_get_create_link', trailingslashit( bp_docs_get_archive_link() . BP_DOCS_CREATE_SLUG ) );
 	}
@@ -651,6 +676,7 @@ function bp_docs_create_link() {
  * Echoes the output of bp_docs_get_item_docs_link()
  *
  * @since 1.0-beta
+ * @deprecated 2.2.0
  */
 function bp_docs_item_docs_link() {
 	echo bp_docs_get_item_docs_link();
@@ -659,56 +685,13 @@ function bp_docs_item_docs_link() {
 	 * Get the link to the docs section of an item
 	 *
 	 * @since 1.0-beta
+	 * @deprecated 2.2.0
 	 *
-	 * @return array $filters
+	 * @return array $args
 	 */
 	function bp_docs_get_item_docs_link( $args = array() ) {
-		global $bp;
-
-		// @todo Disabling for now!!
-		return;
-
-		$d_item_type = '';
-		if ( bp_is_user() ) {
-			$d_item_type = 'user';
-		} else if ( bp_is_active( 'groups' ) && bp_is_group() ) {
-			$d_item_type = 'group';
-		}
-
-		switch ( $d_item_type ) {
-			case 'user' :
-				$d_item_id = bp_displayed_user_id();
-				break;
-			case 'group' :
-				$d_item_id = bp_get_current_group_id();
-				break;
-		}
-
-		$defaults = array(
-			'item_id'   => $d_item_id,
-			'item_type' => $d_item_type,
-		);
-
-		$r = wp_parse_args( $args, $defaults );
-		extract( $r, EXTR_SKIP );
-
-		if ( !$item_id || !$item_type )
-			return false;
-
-		switch ( $item_type ) {
-			case 'group' :
-				if ( !$group = $bp->groups->current_group )
-					$group = groups_get_group( array( 'group_id' => $item_id ) );
-
-				$base_url = bp_get_group_permalink( $group );
-				break;
-
-			case 'user' :
-				$base_url = bp_core_get_user_domain( $item_id );
-				break;
-		}
-
-		return apply_filters( 'bp_docs_get_item_docs_link', $base_url . $bp->bp_docs->slug . '/', $base_url, $r );
+		_deprecated_function( __FUNCTION__, '2.2.0', 'bp_docs_get_group_docs_url()' );
+		return '';
 	}
 
 /**
@@ -1062,7 +1045,8 @@ function bp_docs_associated_group_summary( $group_id = 0 ) {
 		$group = groups_get_group( array( 'group_id' => $group_id ) );
 
 		if ( ! empty( $group->name ) ) {
-			$group_link = esc_url( bp_get_group_permalink( $group ) );
+			$group_link = bp_get_group_url( $group );
+
 			$group_avatar = bp_core_fetch_avatar( array(
 				'item_id' => $group_id,
 				'object' => 'group',
@@ -1096,10 +1080,10 @@ function bp_docs_associated_group_summary( $group_id = 0 ) {
 					break;
 			}
 
-			$html .= '<a href="' . $group_link . '">' . $group_avatar . '</a>';
+			$html .= '<a href="' . esc_url( $group_link ) . '">' . $group_avatar . '</a>';
 
 			$html .= '<div class="item">';
-			$html .= '<a href="' . $group_link . '">' . esc_html( $group->name ) . '</a>';
+			$html .= '<a href="' . esc_url( $group_link ) . '">' . esc_html( $group->name ) . '</a>';
 			$html .= '<div class="meta">' . $group_type_string . ' / ' . $group_member_count . '</div>';
 			$html .= '</div>';
 		}
@@ -1342,15 +1326,12 @@ function bp_docs_delete_doc_button( $doc_id = false ) {
 function bp_docs_get_directory_url( $item_type = 'global', $item_id = 0 ) {
 	switch ( $item_type ) {
 		case 'user' :
-			$url = bp_core_get_user_domain( $item_id ) . bp_docs_get_slug() . '/';
+			$url = bp_docs_get_user_docs_url( $item_id );
 			break;
 
 		case 'group' :
 			if ( bp_is_active( 'groups' ) ) {
-				$group = groups_get_group( array(
-					'group_id' => $item_id,
-				) );
-				$url = bp_get_group_permalink( $group ) . bp_docs_get_slug() . '/';
+				$url = bp_docs_get_group_docs_url( $item_id );
 				break;
 			}
 			// otherwise fall through
@@ -1646,7 +1627,8 @@ function bp_docs_doc_permissions_snapshot( $args = array() ) {
 
 		// First set up the Group snapshot, if there is one
 		if ( ! empty( $doc_groups ) ) {
-			$group_link = bp_get_group_permalink( $doc_groups[0] );
+			$group_link = bp_get_group_url( $doc_groups[0] );
+
 			$html .= '<div id="doc-group-summary">';
 
 			$html .= $summary_before_content ;
@@ -2180,10 +2162,10 @@ function bp_docs_attachment_item_markup( $attachment_id, $format = 'full' ) {
 	$att_base   = wp_basename( get_attached_file( $attachment_id ) );
 	$doc_url    = bp_docs_get_doc_link( $attachment->post_parent );
 
-	$attachment_ext = preg_replace( '/^.+?\.([^.]+)$/', '$1', $att_url );
+	$attachment_ext         = preg_replace( '/^.+?\.([^.]+)$/', '$1', $att_url );
+	$attachment_delete_html = '';
 
 	if ( 'full' === $format ) {
-		$attachment_delete_html = '';
 		if ( current_user_can( 'bp_docs_edit' ) && ( bp_docs_is_doc_edit() || bp_docs_is_doc_create() ) ) {
 			$attachment_delete_url = wp_nonce_url( $doc_url, 'bp_docs_delete_attachment_' . $attachment_id );
 			$attachment_delete_url = add_query_arg( array(
@@ -2216,7 +2198,24 @@ function bp_docs_attachment_item_markup( $attachment_id, $format = 'full' ) {
 		);
 	}
 
-	return $markup;
+	$filter_args = array(
+		'format'      => $format,
+		'att_id'      => $attachment_id,
+		'att_ext'     => $attachment_ext,
+		'att_url'     => $att_url,
+		'title_attr'  => esc_attr( $att_base ),
+		'link_text'   => esc_html( $att_base ),
+		'delete_link' => $attachment_delete_html
+	);
+	/**
+	 * Filters attachment list item output.
+	 *
+	 * @since 2.2.0
+	 *
+	 * @param string $markup HTML markup of list item.
+	 * @param array  $screen Arguments used to create markup.
+	 */
+	return apply_filters( 'bp_docs_attachment_item_markup', $markup, $filter_args );
 }
 
 /**

@@ -130,7 +130,7 @@ class BP_Docs_Users_Integration {
 				bp_core_new_subnav_item( array(
 					'name'            => $doc->post_title,
 					'slug'            => $doc->post_name,
-					'parent_url'      => trailingslashit( bp_loggedin_user_domain() . bp_docs_get_docs_slug() ),
+					'parent_url'      => trailingslashit( bp_docs_get_user_docs_url( bp_loggedin_user_id() ) ),
 					'parent_slug'     => bp_docs_get_docs_slug(),
 					'screen_function' => array( $bp->bp_docs, 'template_loader' ),
 					'position'        => 30,
@@ -292,7 +292,7 @@ function bp_docs_user_directory_breadcrumb( $crumbs ) {
 		$user_crumbs = array(
 			sprintf(
 				'<a href="%s">%s</a>',
-				bp_displayed_user_domain() . bp_docs_get_slug() . '/',
+				esc_url( bp_docs_get_user_docs_url( bp_displayed_user_id() ) ),
 				sprintf( _x( '%s&#8217;s Docs', 'user Docs directory breadcrumb', 'buddypress-docs' ), esc_html( bp_get_displayed_user_fullname() ) )
 			),
 		);
@@ -354,8 +354,8 @@ function bp_docs_user_single_breadcrumb( $crumbs, $doc = null ) {
 		$user_crumbs = array(
 			sprintf(
 				'<a href="%s">%s&#8217;s Docs</a>',
-				bp_core_get_user_domain( $user_id ) . bp_docs_get_slug() . '/',
-				bp_core_get_user_displayname( $user_id )
+				esc_url( bp_docs_get_user_docs_url( $user_id ) ),
+				esc_html( bp_core_get_user_displayname( $user_id ) )
 			),
 		);
 

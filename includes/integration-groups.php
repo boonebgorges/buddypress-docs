@@ -631,8 +631,8 @@ class BP_Docs_Groups_Integration {
 				return $action;
 			}
 
-			$group_url  = bp_get_group_permalink( $group );
-			$group_link = '<a href="' . $group_url . '">' . $group->name . '</a>';
+			$group_url  = bp_get_group_url( $group );
+			$group_link = '<a href="' . esc_url( $group_url ) . '">' . esc_html( $group->name ) . '</a>';
 
 			if ( $is_new_doc ) {
 				$action = sprintf( __( '%1$s created the doc %2$s in the group %3$s', 'buddypress-docs' ), $user_link, $doc_link, $group_link );
@@ -689,8 +689,8 @@ class BP_Docs_Groups_Integration {
 				return $action;
 			}
 
-			$group_url  = bp_get_group_permalink( $group );
-			$group_link = '<a href="' . $group_url . '">' . $group->name . '</a>';
+			$group_url  = bp_get_group_url( $group );
+			$group_link = '<a href="' . esc_url( $group_url ) . '">' . esc_html( $group->name ) . '</a>';
 
 			$action 	= sprintf( __( '%1$s commented on the doc %2$s in the group %3$s', 'buddypress-docs' ), $user_link, $comment_link, $group_link );
 		}
@@ -815,9 +815,9 @@ class BP_Docs_Groups_Integration {
 						}
 					}
 
-					$group_permalink = bp_get_group_permalink( $group ) ?>
+					$group_permalink = bp_get_group_url( $group ) ?>
 
-					<li><a href="<?php echo $group_permalink ?>">
+					<li><a href="<?php echo esc_url( $group_permalink ); ?>">
 						<?php echo bp_core_fetch_avatar( array(
 							'item_id'    => $group_id,
 							'object'     => 'group',
@@ -827,7 +827,7 @@ class BP_Docs_Groups_Integration {
 							'height'     => '30',
 							'title'      => $group->name
 						) ) ?>
-						<?php echo $group->name ?>
+						<?php echo esc_html( $group->name ); ?>
 					</a></li>
 				<?php endforeach ?>
 				</ul>
@@ -860,7 +860,7 @@ class BP_Docs_Groups_Integration {
 	 */
 	public function filter_bp_docs_page_links_base_url( $base_url, $wp_rewrite_pag_base  ) {
 		if ( bp_is_group() ) {
-			$base_url = user_trailingslashit( trailingslashit( bp_get_group_permalink() . bp_docs_get_docs_slug() ) . $wp_rewrite_pag_base . '/%#%/' );
+			$base_url = user_trailingslashit( trailingslashit( bp_docs_get_group_docs_url() ) . $wp_rewrite_pag_base . '/%#%/' );
 		} else if ( bp_docs_is_mygroups_directory() ) {
 			$base_url = user_trailingslashit( trailingslashit( bp_docs_get_mygroups_link() ) . $wp_rewrite_pag_base . '/%#%/' );
 		}
@@ -1165,8 +1165,6 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	 * @since 1.0-beta
 	 */
 	function edit_screen_save( $group_id = null ) {
-		global $bp;
-
 		if ( !isset( $_POST['save'] ) )
 			return false;
 
@@ -1180,7 +1178,12 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 		else
 			bp_core_add_message( __( 'Settings saved successfully', 'buddypress-docs' ) );
 
-		bp_core_redirect( bp_get_group_permalink( $bp->groups->current_group ) . 'admin/' . $this->slug );
+		$redirect_url = bp_groups_get_group_manage_url(
+			bp_get_current_group_id(),
+			bp_groups_get_path_chunks( array( $this->slug ), 'manage' )
+		);
+
+		bp_core_redirect( $redirect_url );
 	}
 
 	/**
@@ -1257,6 +1260,19 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 				<option value="mod" <?php selected( $can_create, 'mod' ) ?>><?php _e( 'Group moderator', 'buddypress-docs' ) ?></option>
 				<option value="member" <?php selected( $can_create, 'member' ) ?>><?php _e( 'Group member', 'buddypress-docs' ) ?></option>
 			</select>
+
+			<?php
+
+			/**
+			 * Fires after the default group admin options on the admin/create screen.
+			 *
+			 * @since 2.2.0
+			 *
+			 * @param int $group_id ID of the current group.
+			 */
+			do_action( 'bp_docs_after_group_admin_options', $group_id );
+			?>
+
 		</div>
 
 		<?php /* History's laziest way to create spacing without loading stylesheet */ ?>
@@ -1449,6 +1465,30 @@ function bp_docs_group_tabs( $group = false ) {
 }
 
 /**
+ * Gets the URL for the Docs tab of a group.
+ *
+ * @since 2.2.0
+ *
+ * @param int|BP_Groups_Group $group Optional. The ID of the group, or the group object.
+ *                                   Defaults to the current group.
+ * @return string The URL for the Docs tab of the group.
+ */
+function bp_docs_get_group_docs_url( $group = null ) {
+	if ( ! $group ) {
+		$group = groups_get_current_group();
+	}
+
+	if ( ! $group ) {
+		return '';
+	}
+
+	return bp_get_group_url(
+		$group,
+		bp_groups_get_path_chunks( array( bp_docs_get_slug() ) )
+	);
+}
+
+/**
  * Echoes the output of bp_docs_get_group_doc_permalink()
  *
  * @since 1.0-beta
@@ -1465,22 +1505,23 @@ function bp_docs_group_doc_permalink() {
 	 * @return str Permalink for the group doc
 	 */
 	function bp_docs_get_group_doc_permalink( $doc_id = false ) {
-		global $post, $bp;
+		global $post;
 
-		$group			= $bp->groups->current_group;
-		$group_permalink 	= bp_get_group_permalink( $group );
-
-		if ( $doc_id )
+		if ( $doc_id ) {
 			$the_post = get_post( $doc_id );
-		else
+		} else {
 			$the_post = $post;
+		}
 
-		if ( !empty( $the_post->post_name ) )
+		if ( ! empty( $the_post->post_name ) ) {
 			$doc_slug = $the_post->post_name;
-		else
-			return false;
+		} else {
+			return '';
+		}
 
-		return apply_filters( 'bp_docs_get_doc_permalink', $group_permalink . $bp->bp_docs->slug . '/' . $doc_slug );
+		$group_docs_permalink = bp_docs_get_group_docs_url( bp_get_current_group_id() );
+
+		return apply_filters( 'bp_docs_get_doc_permalink', trailingslashit( $group_docs_permalink ) . trailingslashit( $doc_slug ) );
 	}
 
 /**
@@ -1683,7 +1724,7 @@ function bp_docs_group_directory_breadcrumb( $crumbs ) {
 		$group_crumbs = array(
 			sprintf(
 				'<a href="%s">%s</a>',
-				bp_get_group_permalink( groups_get_current_group() ) . bp_docs_get_slug() . '/',
+				esc_url( bp_docs_get_group_docs_url() ),
 				sprintf( _x( '%s&#8217;s Docs', 'group Docs directory breadcrumb', 'buddypress-docs' ), esc_html( bp_get_current_group_name() ) )
 			),
 		);
@@ -1734,7 +1775,7 @@ function bp_docs_group_single_breadcrumb( $crumbs, $doc = null ) {
 		$group_crumbs = array(
 			sprintf(
 				'<a href="%s">%s</a>',
-				bp_get_group_permalink( $group ) . bp_docs_get_slug() . '/',
+				esc_url( bp_docs_get_group_docs_url() ),
 				/* translators: group name */
 				sprintf( esc_html__( '%s&#8217;s Docs', 'buddypress-docs' ), esc_html( $group->name ) )
 			),

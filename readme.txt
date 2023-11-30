@@ -1,10 +1,10 @@
-=== BuddyPress Docs  ===
+=== BuddyPress Docs ===
 Contributors: boonebgorges, cuny-academic-commons, dcavins
 Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: 3.3
-Tested up to: 5.8
-Stable tag: 2.1.6
+Tested up to: 6.4
+Stable tag: 2.1.0
 
 Adds collaborative Docs to BuddyPress.
 
@@ -32,6 +32,27 @@ This plugin is in active development. For feature requests and bug reports, visi
 1. Sit back and watch the jack roll in.
 
 == Changelog ==
+
+= 2.2.0 =
+* Compatibility with BuddyPress 12.0+.
+* Improved compatibility with PHP 8.2+.
+* Caching for attachment protection check.
+* Improved appearance of Docs list tables when there are no Docs to display.
+* Improved hooks for customizing the Docs group admin/create panel.
+* Added a shortcode, `bp_docs_recent_docs`, to output a simple list of docs similar to the Recent Docs widget.
+
+= 2.1.9 =
+* Improved compatibility with WP 6.3 in the History tab.
+* Prevent Docs tag archive from being access via the template hierarchy, rather than through the dedicated Docs interface.
+
+= 2.1.8 =
+* Better compatibility with third-party plugins when serving attachments.
+* Improved PHP 8 compatibility.
+* Improved clarity about plugin license.
+
+= 2.1.7 =
+* Improved JavaScript dependencies to prevent issues when webhosts disable the Heartbeat API.
+* Fixed PHP notices.
 
 = 2.1.6 =
 * Fixed bug that caused Tab button to be incorrectly inserted in rich text editor in some cases.

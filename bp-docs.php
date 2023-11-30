@@ -6,6 +6,48 @@
  * @package BuddyPressDocs
  */
 class BP_Docs {
+	/**
+	 * Akismet addon object.
+	 *
+	 * @var BP_Docs_Akismet
+	 */
+	public $akismet;
+
+	/**
+	 * Moderation addon object.
+	 *
+	 * @var BP_Docs_Moderation
+	 */
+	public $moderation;
+
+	/**
+	 * WikiText addon object.
+	 *
+	 * @var BP_Docs_Wikitext
+	 */
+	public $wikitext;
+
+	/**
+	 * History addon object.
+	 *
+	 * @var BP_Docs_History
+	 */
+	public $history;
+
+	/**
+	 * Hierarchy addon object.
+	 *
+	 * @var BP_Docs_Hierarchy
+	 */
+	public $hierarchy;
+
+	/**
+	 * Taxonomy addon object.
+	 *
+	 * @var BP_Docs_Taxonomy
+	 */
+	public $taxonomy;
+
 	var $post_type_name;
 	var $associated_item_tax_name;
 	var $access_tax_name;
@@ -142,7 +184,7 @@ class BP_Docs {
 		// class-wp-widget-recent-docs.php adds a widget to show recently created docs.
 		require( BP_DOCS_INCLUDES_PATH . 'class-wp-widget-recent-docs.php' );
 
-		// Adds a shortcode to show recently created docs.
+		// class-wp-widget-recent-docs.php adds a widget to show recently created docs.
 		require( BP_DOCS_INCLUDES_PATH . 'shortcode.php' );
 
 		// Dashboard-specific functions
@@ -629,7 +671,7 @@ class BP_Docs {
 			) );
 		} else {
 			bp_core_add_message( __( 'You do not have permission to do that.', 'buddypress-docs' ), 'error' );
-			bp_core_redirect( bp_get_root_domain() );
+			bp_core_redirect( bp_get_root_url() );
 		}
 	}
 

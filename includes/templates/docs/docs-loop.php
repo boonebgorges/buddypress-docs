@@ -142,7 +142,7 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 
 				<?php if ( ! bp_docs_is_started_by() ) : ?>
 					<td class="author-cell">
-						<a href="<?php echo bp_core_get_user_domain( get_the_author_meta( 'ID' ) ) ?>" title="<?php echo bp_core_get_user_displayname( get_the_author_meta( 'ID' ) ) ?>"><?php echo bp_core_get_user_displayname( get_the_author_meta( 'ID' ) ) ?></a>
+						<a href="<?php echo esc_url( bp_members_get_user_url( get_the_author_meta( 'ID' ) ) ); ?>" title="<?php echo bp_core_get_user_displayname( get_the_author_meta( 'ID' ) ) ?>"><?php echo bp_core_get_user_displayname( get_the_author_meta( 'ID' ) ) ?></a>
 					</td>
 				<?php endif; ?>
 
@@ -179,6 +179,8 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 
 			<td class="date-cell created-date-cell"></td>
 			<td class="date-cell edited-date-cell"></td>
+
+			<?php do_action( 'bp_docs_loop_additional_td' ) ?>
 		</tr>
 	</tbody>
 	</table>
