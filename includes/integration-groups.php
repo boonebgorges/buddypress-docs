@@ -1041,7 +1041,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	 * @since 1.0-beta
 	 */
 	public function __construct() {
-		global $bp;
+		$bp = buddypress();
 
 		$bp_docs_tab_name = bp_docs_get_group_tab_name();
 
@@ -1067,6 +1067,13 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 		$this->visibility		= 'public';
 		$this->enable_nav_item		= $this->enable_nav_item();
 
+		/**
+		 * In BP 12, the current group is not yet known at __construct time
+		 * because the URL parsing hasn't occurred yet. We use a callback that is
+		 * accessed later.
+		 */
+		$this->show_tab_callback = array( $this, 'enable_nav_item' );
+
 		// Create some default settings if the create step is skipped
 		if ( apply_filters( 'bp_docs_force_enable_at_group_creation', false ) ) {
 			add_action( 'groups_created_group', array( &$this, 'enable_at_group_creation' ) );
@@ -1074,6 +1081,20 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 
 		// Backward compatibility for group-based Doc URLs
 		add_action( 'bp_actions', array( $this, 'url_backpat' ) );
+
+		$args = array(
+			'slug'              => $this->slug,
+			'name'              => $this->name ,
+			'nav_item_position' => $this->nav_item_position,
+			'access'            => 'anyone',
+			'show_tab_callback' => $this->show_tab_callback,
+			'screens'           => array(
+				'edit'   => array(),
+				'create' => array(),
+				'admin'  => array(),
+			),
+		);
+		parent::init( $args );
 	}
 
 	/**
@@ -1289,7 +1310,9 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	function enable_nav_item() {
 		global $bp;
 
-		$enable_nav_item = false;
+		$enable_nav_item    = false;
+		$this->settings     = bp_docs_get_group_settings( $this->group_id );
+		$this->group_enable = ! empty( $this->settings['group-enable'] ) ? true : false;
 
 		// The nav item should only be enabled when BP Docs is enabled for the group
 		if ( $this->group_enable ) {
