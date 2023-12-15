@@ -86,8 +86,56 @@ function bp_docs_do_theme_compat( $template = false ) {
 		return true;
 	}
 
+
+if ( function_exists( 'wp_is_block_theme' ) && wp_is_block_theme() && is_post_type_archive( bp_docs_get_post_type_name() ) ) {
+	// return false;
+}
+
+var_dump(  locate_template( 'page' ), locate_template( 'template-canvas.php' ) );
+
 	return apply_filters( 'bp_docs_do_theme_compat', true, $template );
 }
+
+
+function bp_docs_add_template_hooks() {
+	// If we are on an archive in a block theme, don't do compat.
+	if ( function_exists( 'wp_is_block_theme' ) && wp_is_block_theme() && is_post_type_archive( bp_docs_get_post_type_name() ) ) {
+		// return false;
+		add_filter( 'archive_template', 'bp_docs_upset_applecart' );
+	}
+}
+add_filter( 'init', 'bp_docs_add_template_hooks' );
+
+// function bp_docs_upset_applecart( $templates ) {
+// 		// If we are on an archive in a block theme, don't do compat.
+// 	if ( function_exists( 'wp_is_block_theme' ) && wp_is_block_theme() && is_post_type_archive( bp_docs_get_post_type_name() ) ) {
+// 		$templates = locate_template( 'page' );
+// 		error_log( "templates: " . print_r( $templates, true ) );
+// 	}
+// 	return $templates;
+// }
+// add_filter( 'archive_template', 'bp_docs_upset_applecart' );
+
+
+function bp_docs_upset_applecart( $templates = '' ) {
+	error_log( "templates before: " . print_r( $templates, true ) );
+
+	if ( ! is_array( $templates ) && ! empty( $templates ) ) {
+		$templates = locate_template( array( "page.php", $templates ), false );
+	} elseif ( empty( $templates ) ) {
+		$templates = locate_template( "page.php", false );
+	} else {
+		$new_template = locate_template( array( "page.php" ) );
+
+		if ( ! empty( $new_template ) ) {
+			array_unshift( $templates, $new_template );
+		}
+	}
+	error_log( "templates after: " . print_r( $templates, true ) );
+
+	return $templates;
+}
+add_filter( 'archive_template', 'bp_docs_upset_applecart', 99 );
 
 /**
  * Theme Compat
