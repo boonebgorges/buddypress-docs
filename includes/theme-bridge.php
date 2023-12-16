@@ -327,3 +327,57 @@ function bp_docs_is_theme_compat_active() {
 
 	return $is_active;
 }
+
+/**
+ * Provides a stub block template for the Docs directory.
+ *
+ * On block themes, the Docs directory is powered by the archive.html template.
+ * In many block themes, including WP default themes, archive.html shows only
+ * an excerpt from the posts, rather than the full content. This breaks our
+ * theme compatibility technique, which requires that the untruncated content
+ * returned by the 'the_content' filter be displayed on the CPT archive.
+ *
+ * As a workaround, and to provide maximal compatibility with the rest of the
+ * theme, we detect whether the archive template shows only excerpts. If so,
+ * we provide a "stub" template that is a copy of the archive template, but
+ * with the wp:post-excerpt block replaced by wp:post-content.
+ *
+ * @since 2.2.1
+ *
+ * @param array $templates Array of block templates.
+ * @param array $query     Query arguments.
+ * @return array
+ */
+function bp_docs_provide_block_template_for_docs_directory( $templates, $query ) {
+	// We are only concerned with the Docs directory, ie the bp_doc archive.
+	if ( empty( $query['slug__in'] ) || ! in_array( 'archive-bp_doc', $query['slug__in'], true ) ) {
+		return $templates;
+	}
+
+	// If an archive-bp_doc template was found, use it.
+	$has_archive_bp_doc_template = false;
+	foreach ( $templates as $template ) {
+		if ( 'archive-bp_doc' === $template->slug ) {
+			$has_archive_bp_doc_template = true;
+			return $templates;
+		}
+	}
+
+	// If the top template already has a wp:post-content block, use it.
+	$first_template = reset( $templates );
+	if ( false !== strpos( $first_template->content, 'wp:post-content' ) ) {
+		return $templates;
+	}
+
+	// Copy the first template and swap out the wp:post-excerpt block for wp:post-content.
+	$new_template          = clone $first_template;
+	$new_template->slug    = 'archive-bp_doc';
+	$new_template->title   = __( 'Docs Directory', 'buddypress-docs' );
+	$new_template->content = str_replace( 'wp:post-excerpt', 'wp:post-content', $new_template->content );
+
+	// Add the new template to the top of the list.
+	array_unshift( $templates, $new_template );
+
+	return $templates;
+}
+add_filter( 'get_block_templates', 'bp_docs_provide_block_template_for_docs_directory', 10, 2 );
