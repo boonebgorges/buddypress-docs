@@ -363,21 +363,80 @@ function bp_docs_provide_block_template_for_docs_directory( $templates, $query )
 		}
 	}
 
-	// If the top template already has a wp:post-content block, use it.
-	$first_template = reset( $templates );
-	if ( false !== strpos( $first_template->content, 'wp:post-content' ) ) {
+	// Render the top template.
+	$rendered = do_blocks( $templates[0]->content );
+
+	// If the rendered HTML contains a .bp-docs-container element, no need for further processing
+	if ( false !== strpos( $rendered, 'bp-docs-container' ) ) {
 		return $templates;
 	}
 
-	// Copy the first template and swap out the wp:post-excerpt block for wp:post-content.
-	$new_template          = clone $first_template;
-	$new_template->slug    = 'archive-bp_doc';
-	$new_template->title   = __( 'Docs Directory', 'buddypress-docs' );
-	$new_template->content = str_replace( 'wp:post-excerpt', 'wp:post-content', $new_template->content );
+	// We will be targeting post excerpt blocks. Bail early if none are found in the markup.
+	if ( false === strpos( $rendered, 'wp-block-post-excerpt' ) ) {
+		return $templates;
+	}
 
-	// Add the new template to the top of the list.
-	array_unshift( $templates, $new_template );
+	// Find the most deeply nested block whose rendered content contains a post excerpt block.
+	$blocks                   = parse_blocks( $templates[0]->content );
+	$block_containing_excerpt = bp_docs_find_closest_ancestor_of_excerpt( $blocks );
+
+	if ( null === $block_containing_excerpt ) {
+		return $templates;
+	}
+
+	$new_template_content = '';
+	if ( 'core/post-excerpt' === $block_containing_excerpt['blockName'] ) {
+		$new_template_content = str_replace( 'wp:post-excerpt', 'wp:post-content', $new_template->content );
+	} elseif ( 'core/pattern' === $block_containing_excerpt['blockName'] ) {
+		/*
+		 * Some themes use a pattern to render the archive's post-template.
+		 * Expand the pattern and check for a post-excerpt there.
+		 */
+		$registry = WP_Block_Patterns_Registry::get_instance();
+		$pattern  = $registry->get_registered( $block_containing_excerpt['attrs']['slug'] );
+
+		if ( $pattern ) {
+			$new_pattern_content = str_replace( 'wp:post-excerpt', 'wp:post-content', $pattern['content'] );
+			$new_template_content = str_replace( serialize_block( $block_containing_excerpt ), $new_pattern_content, $templates[0]->content );
+		}
+	}
+
+	if ( $new_template_content ) {
+		$new_template          = clone $templates[0];
+		$new_template->slug    = 'archive-bp_doc';
+		$new_template->title   = __( 'Docs Directory', 'buddypress-docs' );
+		$new_template->content = $new_template_content;
+
+		// Add the new template to the top of the list.
+		array_unshift( $templates, $new_template );
+	}
 
 	return $templates;
 }
 add_filter( 'get_block_templates', 'bp_docs_provide_block_template_for_docs_directory', 10, 2 );
+
+/**
+ * Finds the most deeply nested block whose rendered content contains a post excerpt block.
+ *
+ * @since 2.2.1
+ *
+ * @param array $blocks Array of blocks.
+ * @return array|null
+ */
+function bp_docs_find_closest_ancestor_of_excerpt( $blocks ) {
+	foreach ( $blocks as $block ) {
+		if ( ! empty( $block['innerBlocks'] ) ) {
+			$ancestor = bp_docs_find_closest_ancestor_of_excerpt( $block['innerBlocks'] );
+			if ( null !== $ancestor ) {
+				return $ancestor;
+			}
+		}
+
+		$rendered = render_block( $block );
+		if ( false !== strpos( $rendered, 'wp-block-post-excerpt' ) ) {
+			return $block;
+		}
+	}
+
+	return null;
+}
