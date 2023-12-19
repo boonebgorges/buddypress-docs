@@ -386,7 +386,7 @@ function bp_docs_provide_block_template_for_docs_directory( $templates, $query )
 
 	$new_template_content = '';
 	if ( 'core/post-excerpt' === $block_containing_excerpt['blockName'] ) {
-		$new_template_content = str_replace( 'wp:post-excerpt', 'wp:post-content', $new_template->content );
+		$new_template_content = str_replace( 'wp:post-excerpt', 'wp:post-content', $templates[0]->content );
 	} elseif ( 'core/pattern' === $block_containing_excerpt['blockName'] ) {
 		/*
 		 * Some themes use a pattern to render the archive's post-template.
