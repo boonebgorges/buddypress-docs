@@ -1798,7 +1798,7 @@ function bp_docs_group_single_breadcrumb( $crumbs, $doc = null ) {
 		$group_crumbs = array(
 			sprintf(
 				'<a href="%s">%s</a>',
-				esc_url( bp_docs_get_group_docs_url() ),
+				esc_url( bp_docs_get_group_docs_url( $group ) ),
 				/* translators: group name */
 				sprintf( esc_html__( '%s&#8217;s Docs', 'buddypress-docs' ), esc_html( $group->name ) )
 			),
