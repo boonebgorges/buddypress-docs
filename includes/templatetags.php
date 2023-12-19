@@ -2322,7 +2322,7 @@ function bp_docs_get_container_class() {
  * Echo the classes for the bp-docs BuddyPress container element.
  *
  *
- * @since 1.9.0
+ * @since 2.2.1
  */
 function bp_docs_buddypress_container_class() {
 	echo esc_attr( bp_docs_get_buddypress_container_class() );
@@ -2334,7 +2334,7 @@ function bp_docs_buddypress_container_class() {
  * All Docs content appears in a div.bp-docs. Classes are also included for current theme/parent theme, eg
  * 'bp-docs-theme-twentytwelve'.
  *
- * @since 1.9.0
+ * @since 2.2.1
  */
 function bp_docs_get_buddypress_container_class() {
 	$classes = array( get_template() );
@@ -2346,7 +2346,7 @@ function bp_docs_get_buddypress_container_class() {
 	/**
 	 * Filter the classes for the bp-docs BuddyPress container element.
 	 *
-	 * @since 1.9.0
+	 * @since 2.2.1
 	 *
 	 * @param array $classes Array of classes.
 	 */
@@ -2522,7 +2522,7 @@ function bp_docs_genericon( $glyph_name, $object_id = null ) {
  * Retuns the theme layout available widths.
  * Idea comes directly from the BP Nouveau template pack.
  *
- * @since 2.2
+ * @since 2.2.1
  *
  * @return bool $go_wide Whether the theme supports wide content width.
  */
@@ -2542,7 +2542,7 @@ function bp_docs_theme_supports_wide_layout() {
 	/**
 	 * Filter here to edit whether we should allow a wide layout or not.
 	 *
-	 * @since 2.2
+	 * @since 2.2.1
 	 *
 	 * @param bool $go_wide Whether the theme supports wide content width.
 	 */
