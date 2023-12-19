@@ -33,6 +33,12 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 2.2.1 =
+* Fixed regression in 2.2.0 that caused Docs content to appear twice in some contexts
+* Improved compatibility with WP default block themes, including full-width templates and previously-broken directory views
+* Added the ability to disable 'bp_doc_edited' activity items
+* Fixed bug that caused certain group permission checks not to work properly in BP 12.0+.
+
 = 2.2.0 =
 * Compatibility with BuddyPress 12.0+.
 * Improved compatibility with PHP 8.2+.
