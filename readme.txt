@@ -38,6 +38,7 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Improved compatibility with WP default block themes, including full-width templates and previously-broken directory views
 * Added the ability to disable 'bp_doc_edited' activity items
 * Fixed bug that caused certain group permission checks not to work properly in BP 12.0+.
+* Fixed bug introduced in 2.2.0 that caused post-save redirects to go to the wrong place.
 
 = 2.2.0 =
 * Compatibility with BuddyPress 12.0+.
