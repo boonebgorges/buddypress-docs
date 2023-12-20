@@ -1032,9 +1032,6 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	var $enable_nav_item;
 	var $enable_create_step;
 
-	// This is so I can get a reliable group id even during group creation
-	var $maybe_group_id;
-
 	/**
 	 * Constructor
 	 *
@@ -1044,17 +1041,6 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 		$bp = buddypress();
 
 		$bp_docs_tab_name = bp_docs_get_group_tab_name();
-
-		if ( !empty( $bp->groups->current_group->id ) )
-			$this->maybe_group_id	= $bp->groups->current_group->id;
-		else if ( !empty( $bp->groups->new_group_id ) )
-			$this->maybe_group_id	= $bp->groups->new_group_id;
-		else
-			$this->maybe_group_id	= false;
-
-		// Load the bp-docs setting for the group, for easy access
-		$this->settings = bp_docs_get_group_settings( $this->maybe_group_id );
-		$this->group_enable		= !empty( $this->settings['group-enable'] ) ? true : false;
 
 		$this->name 			= !empty( $bp_docs_tab_name ) ? $bp_docs_tab_name : __( 'Docs', 'buddypress-docs' );
 
@@ -1095,6 +1081,44 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 			),
 		);
 		parent::init( $args );
+	}
+
+	/**
+	 * Gets the ID of the current group.
+	 *
+	 * Sensitive to group creation vs group editing.
+	 *
+	 * @since 2.2.1
+	 *
+	 * @return int
+	 */
+	public function get_current_group_id() {
+		if ( bp_is_group() ) {
+			return bp_get_current_group_id();
+		}
+
+		if ( bp_is_group_create() ) {
+			return bp_get_new_group_id();
+		}
+
+		return 0;
+	}
+
+	/**
+	 * Gets the Docs settings for the current group.
+	 *
+	 * @since 2.2.1
+	 *
+	 * @return array
+	 */
+	public function get_group_settings() {
+		$group_id = $this->get_current_group_id();
+
+		if ( ! $group_id ) {
+			return array();
+		}
+
+		return bp_docs_get_group_settings( $group_id );
 	}
 
 	/**
@@ -1215,8 +1239,9 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	function settings_save( $group_id = false ) {
 		$success = false;
 
-		if ( !$group_id )
-			$group_id = $this->maybe_group_id;
+		if ( ! $group_id ) {
+			$group_id = $this->get_current_group_id();
+		}
 
 		$settings = !empty( $_POST['bp-docs'] ) ? $_POST['bp-docs'] : array();
 
@@ -1255,7 +1280,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 				'can-create' 	=> 'member'
 			) );
 		} else {
-			$settings = bp_docs_get_group_settings( $this->maybe_group_id );
+			$settings = bp_docs_get_group_settings( $this->get_current_group_id() );
 		}
 
 		$group_enable = empty( $settings['group-enable'] ) ? false : true;
@@ -1291,7 +1316,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 			 *
 			 * @param int $group_id ID of the current group.
 			 */
-			do_action( 'bp_docs_after_group_admin_options', $group_id );
+			do_action( 'bp_docs_after_group_admin_options', $this->get_current_group_id() );
 			?>
 
 		</div>
@@ -1309,7 +1334,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	 */
 	function enable_nav_item() {
 		$enable_nav_item    = false;
-		$this->settings     = bp_docs_get_group_settings( $this->group_id );
+		$this->settings     = $this->get_group_settings();
 		$this->group_enable = ! empty( $this->settings['group-enable'] ) ? true : false;
 		$current_group      = groups_get_current_group();
 
