@@ -425,17 +425,24 @@ add_filter( 'get_block_templates', 'bp_docs_provide_block_template_for_docs_dire
  */
 function bp_docs_find_closest_ancestor_of_excerpt( $blocks ) {
 	foreach ( $blocks as $block ) {
-		if ( ! empty( $block['innerBlocks'] ) ) {
-			$ancestor = bp_docs_find_closest_ancestor_of_excerpt( $block['innerBlocks'] );
-			if ( null !== $ancestor ) {
-				return $ancestor;
-			}
-		}
-
 		$rendered = render_block( $block );
+
 		if ( false !== strpos( $rendered, 'wp-block-post-excerpt' ) ) {
-			return $block;
-		}
+			// If the block contains 'post-excerpt' and has no inner blocks,
+            // it is the closest ancestor.
+            if ( empty( $block['innerBlocks'] ) ) {
+                return $block;
+            }
+
+            // If the block has inner blocks, recursively search them.
+            $innerAncestor = bp_docs_find_closest_ancestor_of_excerpt( $block['innerBlocks'] );
+            if ( null !== $innerAncestor ) {
+                return $innerAncestor;
+            }
+
+            // If no inner block is a valid ancestor, return the current block.
+            return $block;
+        }
 	}
 
 	return null;
