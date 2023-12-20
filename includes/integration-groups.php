@@ -1199,7 +1199,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 		else
 			bp_core_add_message( __( 'Settings saved successfully', 'buddypress-docs' ) );
 
-		$redirect_url = bp_groups_get_group_manage_url(
+		$redirect_url = bp_get_group_manage_url(
 			bp_get_current_group_id(),
 			bp_groups_get_path_chunks( array( $this->slug ), 'manage' )
 		);
