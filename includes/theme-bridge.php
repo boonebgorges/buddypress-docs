@@ -233,17 +233,7 @@ class BP_Docs_Theme_Compat {
 	 * @since 1.3
 	 */
 	public function directory_dummy_post() {
-		bp_theme_compat_reset_post( array(
-			'ID'             => 0,
-			'post_title'     => bp_docs_get_docs_directory_title(),
-			'post_author'    => 0,
-			'post_date'      => 0,
-			'post_content'   => '',
-			'post_type'      => bp_docs_get_post_type_name(),
-			'post_status'    => 'publish',
-			'is_archive'     => true,
-			'comment_status' => 'closed'
-		) );
+		bp_docs_theme_compat_reset_post( 'directory' );
 	}
 
 	/**
@@ -286,17 +276,7 @@ class BP_Docs_Theme_Compat {
 	 * @since 1.3
 	 */
 	public function create_dummy_post() {
-		bp_theme_compat_reset_post( array(
-			'ID'             => 0,
-			'post_title'     => __( 'Create a Doc', 'buddypress-docs' ),
-			'post_author'    => get_current_user_id(),
-			'post_date'      => 0,
-			'post_content'   => '',
-			'post_type'      => bp_docs_get_post_type_name(),
-			'post_status'    => 'publish',
-			'is_archive'     => true,
-			'comment_status' => 'closed'
-		) );
+		bp_docs_theme_compat_reset_post( 'create' );
 	}
 
 	/**
@@ -309,6 +289,36 @@ class BP_Docs_Theme_Compat {
 	}
 }
 new BP_Docs_Theme_Compat();
+
+/**
+ * Resets the global $post object to a dummy post.
+ *
+ * @since 2.2.1
+ *
+ * @param string $type 'create' or 'directory'.
+ * @return void
+ */
+function bp_docs_theme_compat_reset_post( $type ) {
+	$post_args = [
+		'ID'             => 0,
+		'post_date'      => 0,
+		'post_content'   => '',
+		'post_type'      => bp_docs_get_post_type_name(),
+		'post_status'    => 'publish',
+		'is_archive'     => true,
+		'comment_status' => 'closed'
+	];
+
+	if ( 'create' === $type ) {
+		$post_args['post_title']  = __( 'Create a Doc', 'buddypress-docs' );
+		$post_args['post_author'] = get_current_user_id();
+	} elseif ( 'directory' === $type ) {
+		$post_args['post_title']  = bp_docs_get_docs_directory_title();
+		$post_args['post_author'] = 0;
+	}
+
+	bp_theme_compat_reset_post( $post_args );
+}
 
 /**
  * Wrapper function for bp_is_theme_compat_active()
@@ -329,13 +339,14 @@ function bp_docs_is_theme_compat_active() {
 }
 
 /**
- * Provides a stub block template for the Docs directory.
+ * Provides a stub block template for the Docs directory and create pages.
  *
- * On block themes, the Docs directory is powered by the archive.html template.
- * In many block themes, including WP default themes, archive.html shows only
- * an excerpt from the posts, rather than the full content. This breaks our
- * theme compatibility technique, which requires that the untruncated content
- * returned by the 'the_content' filter be displayed on the CPT archive.
+ * On block themes, the Docs directory and create pages are powered by the
+ * archive.html template. In many block themes, including WP default themes,
+ * archive.html shows only an excerpt from the posts, rather than the full
+ * content. This breaks our theme compatibility technique, which requires
+ * that the untruncated content returned by the 'the_content' filter be
+ * displayed on the CPT archive.
  *
  * As a workaround, and to provide maximal compatibility with the rest of the
  * theme, we detect whether the archive template shows only excerpts. If so,
@@ -348,7 +359,7 @@ function bp_docs_is_theme_compat_active() {
  * @param array $query     Query arguments.
  * @return array
  */
-function bp_docs_provide_block_template_for_docs_directory( $templates, $query ) {
+function bp_docs_provide_block_template_for_docs_content( $templates, $query ) {
 	// We are only concerned with the Docs directory, ie the bp_doc archive.
 	if ( empty( $query['slug__in'] ) || ! in_array( 'archive-bp_doc', $query['slug__in'], true ) ) {
 		return $templates;
@@ -361,6 +372,12 @@ function bp_docs_provide_block_template_for_docs_directory( $templates, $query )
 			$has_archive_bp_doc_template = true;
 			return $templates;
 		}
+	}
+
+	if ( bp_docs_is_doc_create() ) {
+		bp_docs_theme_compat_reset_post( 'create' );
+	} else {
+		bp_docs_theme_compat_reset_post( 'directory' );
 	}
 
 	// Render the top template.
@@ -413,7 +430,7 @@ function bp_docs_provide_block_template_for_docs_directory( $templates, $query )
 
 	return $templates;
 }
-add_filter( 'get_block_templates', 'bp_docs_provide_block_template_for_docs_directory', 10, 2 );
+add_filter( 'get_block_templates', 'bp_docs_provide_block_template_for_docs_content', 10, 2 );
 
 /**
  * Finds the most deeply nested block whose rendered content contains a post excerpt block.
