@@ -28,7 +28,7 @@ endif;
  * @since 1.2
  */
 function bp_docs_has_docs( $args = array() ) {
-	global $bp, $wp_query;
+	global $bp, $wp_query, $wp_rewrite;
 
 	// The if-empty is because, like with WP itself, we use bp_docs_has_docs() both for the
 	// initial 'if' of the loop, as well as for the 'while' iterator. Don't want infinite
@@ -96,6 +96,17 @@ function bp_docs_has_docs( $args = array() ) {
 			$d_paged = absint( $_GET['paged'] );
 		} else if ( bp_docs_is_global_directory() && is_a( $wp_query, 'WP_Query' ) && 1 < $wp_query->get( 'paged' ) ) {
 			$d_paged = absint( $wp_query->get( 'paged' ) );
+		} else if ( ! bp_docs_is_global_directory() ) {
+			// For group and member docs directories, use the BP action variable.
+			if ( ! empty( $bp->action_variables[0] ) && $wp_rewrite->pagination_base === $bp->action_variables[0] && ! empty( $bp->action_variables[1] ) ) {
+				$page = absint( $bp->action_variables[1] );
+				// Get the right page of docs.
+				$d_paged = $page;
+				// Set query var for the pagination function.
+				set_query_var( 'paged', $page );
+			} else {
+				$d_paged = absint( $wp_query->get( 'paged', 1 ) );
+			}
 		} else {
 			$d_paged = absint( $wp_query->get( 'paged', 1 ) );
 		}
