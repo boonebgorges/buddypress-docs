@@ -214,6 +214,18 @@ function bp_docs_post_activity( $query ) {
 		'hide_sitewide'		=> apply_filters( 'bp_docs_hide_sitewide', $hide_sitewide, false, $doc, $item, $component ) // Filtered to allow plugins and integration pieces to dictate
 	);
 
+	/**
+	 * Filters whether to create an activity item for a given Doc save event.
+	 *
+	 * @since 2.2.1
+	 *
+	 * @param bool  $create_activity Whether to create an activity item. Default true.
+	 * @param array $args Array of arguments for the activity item.
+	 */
+	if ( ! apply_filters( 'bp_docs_create_activity', true, $args ) ) {
+		return;
+	}
+
 	do_action( 'bp_docs_before_activity_save', $args );
 
 	$activity_id = bp_activity_add( apply_filters( 'bp_docs_activity_args', $args, $query ) );

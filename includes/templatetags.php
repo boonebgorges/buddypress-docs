@@ -28,7 +28,7 @@ endif;
  * @since 1.2
  */
 function bp_docs_has_docs( $args = array() ) {
-	global $bp, $wp_query;
+	global $bp, $wp_query, $wp_rewrite;
 
 	// The if-empty is because, like with WP itself, we use bp_docs_has_docs() both for the
 	// initial 'if' of the loop, as well as for the 'while' iterator. Don't want infinite
@@ -96,6 +96,17 @@ function bp_docs_has_docs( $args = array() ) {
 			$d_paged = absint( $_GET['paged'] );
 		} else if ( bp_docs_is_global_directory() && is_a( $wp_query, 'WP_Query' ) && 1 < $wp_query->get( 'paged' ) ) {
 			$d_paged = absint( $wp_query->get( 'paged' ) );
+		} else if ( ! bp_docs_is_global_directory() ) {
+			// For group and member docs directories, use the BP action variable.
+			if ( ! empty( $bp->action_variables[0] ) && $wp_rewrite->pagination_base === $bp->action_variables[0] && ! empty( $bp->action_variables[1] ) ) {
+				$page = absint( $bp->action_variables[1] );
+				// Get the right page of docs.
+				$d_paged = $page;
+				// Set query var for the pagination function.
+				set_query_var( 'paged', $page );
+			} else {
+				$d_paged = absint( $wp_query->get( 'paged', 1 ) );
+			}
 		} else {
 			$d_paged = absint( $wp_query->get( 'paged', 1 ) );
 		}
@@ -2313,7 +2324,48 @@ function bp_docs_get_container_class() {
 	 */
 	$classes = apply_filters( 'bp_docs_get_container_classes', $classes );
 
-	return implode( ' ', array_unique( $classes ) );
+	$classes = array_unique( array_map( 'sanitize_html_class', $classes ) );
+
+	return implode( ' ', $classes );
+}
+
+/**
+ * Echo the classes for the bp-docs BuddyPress container element.
+ *
+ *
+ * @since 2.2.1
+ */
+function bp_docs_buddypress_container_class() {
+	echo esc_attr( bp_docs_get_buddypress_container_class() );
+}
+
+/**
+ * Generate the classes for the bp-docs BuddyPress container element.
+ *
+ * All Docs content appears in a div.bp-docs. Classes are also included for current theme/parent theme, eg
+ * 'bp-docs-theme-twentytwelve'.
+ *
+ * @since 2.2.1
+ */
+function bp_docs_get_buddypress_container_class() {
+	$classes = array( get_template() );
+
+	if ( bp_docs_theme_supports_wide_layout() ) {
+		$classes[] = 'alignwide';
+	}
+
+	/**
+	 * Filter the classes for the bp-docs BuddyPress container element.
+	 *
+	 * @since 2.2.1
+	 *
+	 * @param array $classes Array of classes.
+	 */
+	$classes = apply_filters( 'bp_docs_get_buddypress_container_class', $classes );
+
+	$classes = array_unique( array_map( 'sanitize_html_class', $classes ) );
+
+	return implode( ' ',  $classes );
 }
 
 /**
@@ -2476,3 +2528,34 @@ function bp_docs_genericon( $glyph_name, $object_id = null ) {
 		$icon_markup = '<i class="genericon genericon-' . $glyph_name . '"></i>';
 		return apply_filters( 'bp_docs_get_genericon', $icon_markup, $glyph_name, $object_id );
 	}
+
+/**
+ * Retuns the theme layout available widths.
+ * Idea comes directly from the BP Nouveau template pack.
+ *
+ * @since 2.2.1
+ *
+ * @return bool $go_wide Whether the theme supports wide content width.
+ */
+function bp_docs_theme_supports_wide_layout() {
+	$go_wide = false;
+
+	if ( current_theme_supports( 'align-wide' ) ) {
+		$go_wide = true;
+	} else if ( function_exists( 'wp_get_global_settings' ) ) {
+		$theme_layouts = wp_get_global_settings( array( 'layout' ) );
+
+		if ( isset( $theme_layouts['wideSize'] ) && $theme_layouts['wideSize'] ) {
+			$go_wide = true;
+		}
+	}
+
+	/**
+	 * Filter here to edit whether we should allow a wide layout or not.
+	 *
+	 * @since 2.2.1
+	 *
+	 * @param bool $go_wide Whether the theme supports wide content width.
+	 */
+	return apply_filters( 'bp_docs_theme_supports_wide_layout', $go_wide );
+}

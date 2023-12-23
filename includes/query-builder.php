@@ -668,7 +668,7 @@ class BP_Docs_Query {
 		}
 
 		if ( $result['redirect'] == 'single' ) {
-			$redirect_url = bp_docs_get_archive_link();
+			$redirect_url = bp_docs_get_doc_link( $this->doc_id );
 		} elseif ( $result['redirect'] == 'edit' ) {
 			$redirect_url = bp_docs_get_doc_edit_link( $this->doc_id );
 		} elseif ( $result['redirect'] == 'create' ) {

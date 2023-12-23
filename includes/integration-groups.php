@@ -1032,29 +1032,15 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	var $enable_nav_item;
 	var $enable_create_step;
 
-	// This is so I can get a reliable group id even during group creation
-	var $maybe_group_id;
-
 	/**
 	 * Constructor
 	 *
 	 * @since 1.0-beta
 	 */
 	public function __construct() {
-		global $bp;
+		$bp = buddypress();
 
 		$bp_docs_tab_name = bp_docs_get_group_tab_name();
-
-		if ( !empty( $bp->groups->current_group->id ) )
-			$this->maybe_group_id	= $bp->groups->current_group->id;
-		else if ( !empty( $bp->groups->new_group_id ) )
-			$this->maybe_group_id	= $bp->groups->new_group_id;
-		else
-			$this->maybe_group_id	= false;
-
-		// Load the bp-docs setting for the group, for easy access
-		$this->settings = bp_docs_get_group_settings( $this->maybe_group_id );
-		$this->group_enable		= !empty( $this->settings['group-enable'] ) ? true : false;
 
 		$this->name 			= !empty( $bp_docs_tab_name ) ? $bp_docs_tab_name : __( 'Docs', 'buddypress-docs' );
 
@@ -1067,6 +1053,13 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 		$this->visibility		= 'public';
 		$this->enable_nav_item		= $this->enable_nav_item();
 
+		/**
+		 * In BP 12, the current group is not yet known at __construct time
+		 * because the URL parsing hasn't occurred yet. We use a callback that is
+		 * accessed later.
+		 */
+		$this->show_tab_callback = array( $this, 'enable_nav_item' );
+
 		// Create some default settings if the create step is skipped
 		if ( apply_filters( 'bp_docs_force_enable_at_group_creation', false ) ) {
 			add_action( 'groups_created_group', array( &$this, 'enable_at_group_creation' ) );
@@ -1074,6 +1067,58 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 
 		// Backward compatibility for group-based Doc URLs
 		add_action( 'bp_actions', array( $this, 'url_backpat' ) );
+
+		$args = array(
+			'slug'              => $this->slug,
+			'name'              => $this->name ,
+			'nav_item_position' => $this->nav_item_position,
+			'access'            => 'anyone',
+			'show_tab_callback' => $this->show_tab_callback,
+			'screens'           => array(
+				'edit'   => array(),
+				'create' => array(),
+				'admin'  => array(),
+			),
+		);
+		parent::init( $args );
+	}
+
+	/**
+	 * Gets the ID of the current group.
+	 *
+	 * Sensitive to group creation vs group editing.
+	 *
+	 * @since 2.2.1
+	 *
+	 * @return int
+	 */
+	public function get_current_group_id() {
+		if ( bp_is_group() ) {
+			return bp_get_current_group_id();
+		}
+
+		if ( bp_is_group_create() ) {
+			return bp_get_new_group_id();
+		}
+
+		return 0;
+	}
+
+	/**
+	 * Gets the Docs settings for the current group.
+	 *
+	 * @since 2.2.1
+	 *
+	 * @return array
+	 */
+	public function get_group_settings() {
+		$group_id = $this->get_current_group_id();
+
+		if ( ! $group_id ) {
+			return array();
+		}
+
+		return bp_docs_get_group_settings( $group_id );
 	}
 
 	/**
@@ -1178,7 +1223,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 		else
 			bp_core_add_message( __( 'Settings saved successfully', 'buddypress-docs' ) );
 
-		$redirect_url = bp_groups_get_group_manage_url(
+		$redirect_url = bp_get_group_manage_url(
 			bp_get_current_group_id(),
 			bp_groups_get_path_chunks( array( $this->slug ), 'manage' )
 		);
@@ -1194,8 +1239,9 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	function settings_save( $group_id = false ) {
 		$success = false;
 
-		if ( !$group_id )
-			$group_id = $this->maybe_group_id;
+		if ( ! $group_id ) {
+			$group_id = $this->get_current_group_id();
+		}
 
 		$settings = !empty( $_POST['bp-docs'] ) ? $_POST['bp-docs'] : array();
 
@@ -1234,7 +1280,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 				'can-create' 	=> 'member'
 			) );
 		} else {
-			$settings = bp_docs_get_group_settings( $this->maybe_group_id );
+			$settings = bp_docs_get_group_settings( $this->get_current_group_id() );
 		}
 
 		$group_enable = empty( $settings['group-enable'] ) ? false : true;
@@ -1270,7 +1316,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 			 *
 			 * @param int $group_id ID of the current group.
 			 */
-			do_action( 'bp_docs_after_group_admin_options', $group_id );
+			do_action( 'bp_docs_after_group_admin_options', $this->get_current_group_id() );
 			?>
 
 		</div>
@@ -1287,25 +1333,27 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 	 * @since 1.0-beta
 	 */
 	function enable_nav_item() {
-		global $bp;
-
-		$enable_nav_item = false;
+		$enable_nav_item    = false;
+		$this->settings     = $this->get_group_settings();
+		$this->group_enable = ! empty( $this->settings['group-enable'] ) ? true : false;
+		$current_group      = groups_get_current_group();
 
 		// The nav item should only be enabled when BP Docs is enabled for the group
 		if ( $this->group_enable ) {
-			if ( !empty( $bp->groups->current_group->status ) && $status = $bp->groups->current_group->status ) {
+			if ( ! empty( $current_group->status ) && $status = $current_group->status ) {
 				// Docs in public groups are publicly viewable.
 				if ( 'public' == $status ) {
 					$enable_nav_item = true;
-				} else if ( groups_is_user_member( bp_loggedin_user_id(), $bp->groups->current_group->id ) ) {
+				} else if ( groups_is_user_member( bp_loggedin_user_id(), $current_group->id ) ) {
 					// Docs in private or hidden groups visible only to members
 					$enable_nav_item = true;
 				}
 			}
 
 			// Super admin override
-			if ( is_super_admin() )
+			if ( is_super_admin() ) {
 				$enable_nav_item = true;
+			}
 		}
 
 		return apply_filters( 'bp_docs_groups_enable_nav_item', $enable_nav_item );
@@ -1775,7 +1823,7 @@ function bp_docs_group_single_breadcrumb( $crumbs, $doc = null ) {
 		$group_crumbs = array(
 			sprintf(
 				'<a href="%s">%s</a>',
-				esc_url( bp_docs_get_group_docs_url() ),
+				esc_url( bp_docs_get_group_docs_url( $group ) ),
 				/* translators: group name */
 				sprintf( esc_html__( '%s&#8217;s Docs', 'buddypress-docs' ), esc_html( $group->name ) )
 			),

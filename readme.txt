@@ -4,7 +4,7 @@ Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: 3.3
 Tested up to: 6.4
-Stable tag: 2.1.0
+Stable tag: 2.2.1
 
 Adds collaborative Docs to BuddyPress.
 
@@ -32,6 +32,13 @@ This plugin is in active development. For feature requests and bug reports, visi
 1. Sit back and watch the jack roll in.
 
 == Changelog ==
+
+= 2.2.1 =
+* Fixed regression in 2.2.0 that caused Docs content to appear twice in some contexts
+* Improved compatibility with WP default block themes, including full-width templates and previously-broken directory views
+* Added the ability to disable 'bp_doc_edited' activity items
+* Fixed bug that caused certain group permission checks not to work properly in BP 12.0+.
+* Fixed bug introduced in 2.2.0 that caused post-save redirects to go to the wrong place.
 
 = 2.2.0 =
 * Compatibility with BuddyPress 12.0+.

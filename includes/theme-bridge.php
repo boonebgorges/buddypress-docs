@@ -233,17 +233,7 @@ class BP_Docs_Theme_Compat {
 	 * @since 1.3
 	 */
 	public function directory_dummy_post() {
-		bp_theme_compat_reset_post( array(
-			'ID'             => 0,
-			'post_title'     => bp_docs_get_docs_directory_title(),
-			'post_author'    => 0,
-			'post_date'      => 0,
-			'post_content'   => '',
-			'post_type'      => bp_docs_get_post_type_name(),
-			'post_status'    => 'publish',
-			'is_archive'     => true,
-			'comment_status' => 'closed'
-		) );
+		bp_docs_theme_compat_reset_post( 'directory' );
 	}
 
 	/**
@@ -252,8 +242,7 @@ class BP_Docs_Theme_Compat {
 	 * @since 1.3
 	 */
 	public function directory_content() {
-		bp_buffer_template_part( 'docs/docs-loop' );
-		return '';
+		return bp_buffer_template_part( 'docs/docs-loop', null, false );
 	}
 
 	/** Single ****************************************************************/
@@ -276,8 +265,7 @@ class BP_Docs_Theme_Compat {
 	 * @since 1.3
 	 */
 	public function single_content() {
-		bp_buffer_template_part( $this->single_content_template );
-		return '';
+		return bp_buffer_template_part( $this->single_content_template, null, false );
 	}
 
 	/** Create ****************************************************************/
@@ -288,17 +276,7 @@ class BP_Docs_Theme_Compat {
 	 * @since 1.3
 	 */
 	public function create_dummy_post() {
-		bp_theme_compat_reset_post( array(
-			'ID'             => 0,
-			'post_title'     => __( 'Create a Doc', 'buddypress-docs' ),
-			'post_author'    => get_current_user_id(),
-			'post_date'      => 0,
-			'post_content'   => '',
-			'post_type'      => bp_docs_get_post_type_name(),
-			'post_status'    => 'publish',
-			'is_archive'     => true,
-			'comment_status' => 'closed'
-		) );
+		bp_docs_theme_compat_reset_post( 'create' );
 	}
 
 	/**
@@ -307,11 +285,40 @@ class BP_Docs_Theme_Compat {
 	 * @since 1.3
 	 */
 	public function create_content() {
-		bp_buffer_template_part( 'docs/single/edit' );
-		return '';
+		return bp_buffer_template_part( 'docs/single/edit', null, false );
 	}
 }
 new BP_Docs_Theme_Compat();
+
+/**
+ * Resets the global $post object to a dummy post.
+ *
+ * @since 2.2.1
+ *
+ * @param string $type 'create' or 'directory'.
+ * @return void
+ */
+function bp_docs_theme_compat_reset_post( $type ) {
+	$post_args = [
+		'ID'             => 0,
+		'post_date'      => 0,
+		'post_content'   => '',
+		'post_type'      => bp_docs_get_post_type_name(),
+		'post_status'    => 'publish',
+		'is_archive'     => true,
+		'comment_status' => 'closed'
+	];
+
+	if ( 'create' === $type ) {
+		$post_args['post_title']  = __( 'Create a Doc', 'buddypress-docs' );
+		$post_args['post_author'] = get_current_user_id();
+	} elseif ( 'directory' === $type ) {
+		$post_args['post_title']  = bp_docs_get_docs_directory_title();
+		$post_args['post_author'] = 0;
+	}
+
+	bp_theme_compat_reset_post( $post_args );
+}
 
 /**
  * Wrapper function for bp_is_theme_compat_active()
@@ -329,4 +336,131 @@ function bp_docs_is_theme_compat_active() {
 	}
 
 	return $is_active;
+}
+
+/**
+ * Provides a stub block template for the Docs directory and create pages.
+ *
+ * On block themes, the Docs directory and create pages are powered by the
+ * archive.html template. In many block themes, including WP default themes,
+ * archive.html shows only an excerpt from the posts, rather than the full
+ * content. This breaks our theme compatibility technique, which requires
+ * that the untruncated content returned by the 'the_content' filter be
+ * displayed on the CPT archive.
+ *
+ * As a workaround, and to provide maximal compatibility with the rest of the
+ * theme, we detect whether the archive template shows only excerpts. If so,
+ * we provide a "stub" template that is a copy of the archive template, but
+ * with the wp:post-excerpt block replaced by wp:post-content.
+ *
+ * @since 2.2.1
+ *
+ * @param array $templates Array of block templates.
+ * @param array $query     Query arguments.
+ * @return array
+ */
+function bp_docs_provide_block_template_for_docs_content( $templates, $query ) {
+	// We are only concerned with the Docs directory, ie the bp_doc archive.
+	if ( empty( $query['slug__in'] ) || ! in_array( 'archive-bp_doc', $query['slug__in'], true ) ) {
+		return $templates;
+	}
+
+	// If an archive-bp_doc template was found, use it.
+	$has_archive_bp_doc_template = false;
+	foreach ( $templates as $template ) {
+		if ( 'archive-bp_doc' === $template->slug ) {
+			$has_archive_bp_doc_template = true;
+			return $templates;
+		}
+	}
+
+	if ( bp_docs_is_doc_create() ) {
+		bp_docs_theme_compat_reset_post( 'create' );
+	} else {
+		bp_docs_theme_compat_reset_post( 'directory' );
+	}
+
+	// Render the top template.
+	$rendered = do_blocks( $templates[0]->content );
+
+	// If the rendered HTML contains a .bp-docs-container element, no need for further processing
+	if ( false !== strpos( $rendered, 'bp-docs-container' ) ) {
+		return $templates;
+	}
+
+	// We will be targeting post excerpt blocks. Bail early if none are found in the markup.
+	if ( false === strpos( $rendered, 'wp-block-post-excerpt' ) ) {
+		return $templates;
+	}
+
+	// Find the most deeply nested block whose rendered content contains a post excerpt block.
+	$blocks                   = parse_blocks( $templates[0]->content );
+	$block_containing_excerpt = bp_docs_find_closest_ancestor_of_excerpt( $blocks );
+
+	if ( null === $block_containing_excerpt ) {
+		return $templates;
+	}
+
+	$new_template_content = '';
+	if ( 'core/post-excerpt' === $block_containing_excerpt['blockName'] ) {
+		$new_template_content = str_replace( 'wp:post-excerpt', 'wp:post-content', $templates[0]->content );
+	} elseif ( 'core/pattern' === $block_containing_excerpt['blockName'] ) {
+		/*
+		 * Some themes use a pattern to render the archive's post-template.
+		 * Expand the pattern and check for a post-excerpt there.
+		 */
+		$registry = WP_Block_Patterns_Registry::get_instance();
+		$pattern  = $registry->get_registered( $block_containing_excerpt['attrs']['slug'] );
+
+		if ( $pattern ) {
+			$new_pattern_content = str_replace( 'wp:post-excerpt', 'wp:post-content', $pattern['content'] );
+			$new_template_content = str_replace( serialize_block( $block_containing_excerpt ), $new_pattern_content, $templates[0]->content );
+		}
+	}
+
+	if ( $new_template_content ) {
+		$new_template          = clone $templates[0];
+		$new_template->slug    = 'archive-bp_doc';
+		$new_template->title   = __( 'Docs Directory', 'buddypress-docs' );
+		$new_template->content = $new_template_content;
+
+		// Add the new template to the top of the list.
+		array_unshift( $templates, $new_template );
+	}
+
+	return $templates;
+}
+add_filter( 'get_block_templates', 'bp_docs_provide_block_template_for_docs_content', 10, 2 );
+
+/**
+ * Finds the most deeply nested block whose rendered content contains a post excerpt block.
+ *
+ * @since 2.2.1
+ *
+ * @param array $blocks Array of blocks.
+ * @return array|null
+ */
+function bp_docs_find_closest_ancestor_of_excerpt( $blocks ) {
+	foreach ( $blocks as $block ) {
+		$rendered = render_block( $block );
+
+		if ( false !== strpos( $rendered, 'wp-block-post-excerpt' ) ) {
+			// If the block contains 'post-excerpt' and has no inner blocks,
+            // it is the closest ancestor.
+            if ( empty( $block['innerBlocks'] ) ) {
+                return $block;
+            }
+
+            // If the block has inner blocks, recursively search them.
+            $innerAncestor = bp_docs_find_closest_ancestor_of_excerpt( $block['innerBlocks'] );
+            if ( null !== $innerAncestor ) {
+                return $innerAncestor;
+            }
+
+            // If no inner block is a valid ancestor, return the current block.
+            return $block;
+        }
+	}
+
+	return null;
 }
