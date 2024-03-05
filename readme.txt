@@ -33,6 +33,11 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 2.2.2 =
+* Fixed fatal error when viewing certain interfaces while using the BuddyPress Legacy template pack.
+* Improve fallback visibility settings when viewing the Docs tab in non-public groups.
+* Ensure that CSS and JS assets are loaded on user Docs pages.
+
 = 2.2.1 =
 * Fixed regression in 2.2.0 that caused Docs content to appear twice in some contexts
 * Improved compatibility with WP default block themes, including full-width templates and previously-broken directory views
