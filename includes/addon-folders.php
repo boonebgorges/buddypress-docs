@@ -223,7 +223,8 @@ function bp_docs_enable_folders() {
  */
 function bp_docs_enable_folders_for_current_context() {
 	// Enabled only in groups by default. Enable elsewhere only at your own risk.
-	$enable = function_exists( 'bp_is_group' ) && bp_is_group();
+	$enable = (bool) bp_docs_get_current_group_id();
+
 	return apply_filters( 'bp_docs_enable_folders_for_current_context', (bool) $enable );
 }
 
@@ -750,8 +751,11 @@ function bp_docs_delete_folder_contents( $folder_id ) {
  */
 function bp_docs_get_folders( $args = array() ) {
 	$group_id = null;
-	if ( bp_is_active( 'groups' ) && bp_is_group() ) {
+	if ( bp_is_active( 'groups' ) ) {
 		$group_id = bp_get_current_group_id();
+		if ( ! $group_id && defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+			$group_id = bp_get_group_id( bp_docs_get_current_group_id() );
+		}
 	}
 
 	$user_id = null;
