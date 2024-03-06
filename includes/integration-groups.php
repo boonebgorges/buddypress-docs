@@ -1050,8 +1050,7 @@ class BP_Docs_Group_Extension extends BP_Group_Extension {
 		$this->create_step_position 	= 18;
 		$this->nav_item_position 	= 45;
 
-		$this->visibility		= 'public';
-		$this->enable_nav_item		= $this->enable_nav_item();
+		$this->enable_nav_item = $this->enable_nav_item();
 
 		/**
 		 * In BP 12, the current group is not yet known at __construct time

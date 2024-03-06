@@ -1162,7 +1162,7 @@ function bp_docs_access_options_helper( $settings_field, $doc_id = 0, $group_id 
 	$doc_settings = bp_docs_get_doc_settings( $doc_id, $settings_type, $group_id );
 
 	// If this is a failed form submission, check the submitted values first
-	$field_name = isset( buddypress()->bp_docs->submitted_data->settings->{$settings_field['name']} ) ? buddypress()->bp_docs->submitted_data->setings->{$settings_field['name']} : null;
+	$field_name = isset( buddypress()->bp_docs->submitted_data->settings->{$settings_field['name']} ) ? buddypress()->bp_docs->submitted_data->settings->{$settings_field['name']} : null;
 	if ( ! empty( $field_name ) ) {
 		$setting = $field_name;
 	} else {
