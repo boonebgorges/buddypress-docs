@@ -13,6 +13,8 @@ class BP_Docs_Folders {
 	 * @since 1.9
 	 */
 	public function __construct() {
+		$this->register_ajax_actions();
+
 		if ( ! bp_docs_enable_folders() ) {
 			return;
 		}
@@ -194,6 +196,35 @@ class BP_Docs_Folders {
 			'folders_tab_label_groups' => _x( 'Group Folders', 'Doc edit tab name', 'buddypress-docs' ),
 			'force_metabox' => $force_folders_metabox,
 		) );
+	}
+
+	/**
+	 * Register AJAX actions.
+	 *
+	 * Required by BuddyPress 12+, so that context information like "current group"
+	 * is available during our AJAX callbacks.
+	 *
+	 * @since 2.2.3
+	 *
+	 * @return void
+	 */
+	public function register_ajax_actions() {
+		if ( ! function_exists( 'bp_ajax_register_action' ) ) {
+			return;
+		}
+
+		$ajax_actions = array(
+			'bp_docs_update_folders',
+			'bp_docs_update_parent_folders',
+			'bp_docs_update_folder_type',
+			'bp_docs_update_folder_type_for_group',
+			'bp_docs_process_folder_drop',
+			'bp_docs_get_folder_content',
+		);
+
+		foreach ( $ajax_actions as $action ) {
+			bp_ajax_register_action( $action );
+		}
 	}
 }
 

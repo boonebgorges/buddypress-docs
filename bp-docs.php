@@ -102,6 +102,9 @@ class BP_Docs {
 		// Set up doc taxonomy, etc
 		add_action( 'bp_docs_init',     array( $this, 'load_doc_extras' ), 8 );
 
+		// Register AJAX actions.
+		add_action( 'bp_docs_init', array( $this, 'register_ajax_actions' ) );
+
 		// Add rewrite rules
 		add_action( 'generate_rewrite_rules', array( &$this, 'generate_rewrite_rules' ) );
 
@@ -459,6 +462,32 @@ class BP_Docs {
 		$this->moderation->add_hooks();
 
 		do_action( 'bp_docs_load_doc_extras' );
+	}
+
+	/**
+	 * Registers AJAX actions for BP 12+.
+	 *
+	 * @since 2.2.3
+	 *
+	 * @return void
+	 */
+	public function register_ajax_actions() {
+		if ( ! function_exists( 'bp_ajax_register_action' ) ) {
+			return;
+		}
+
+		$ajax_actions = array(
+			'add_edit_lock',
+			'bp_docs_create_dummy_doc',
+			'doc_attachment_item_markup',
+			'refresh_access_settings',
+			'refresh_associated_group',
+			'remove_edit_lock',
+		);
+
+		foreach ( $ajax_actions as $action ) {
+			bp_ajax_register_action( $action );
+		}
 	}
 
 	/**
