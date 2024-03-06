@@ -204,7 +204,7 @@ class BP_Docs_Folders {
 	 * Required by BuddyPress 12+, so that context information like "current group"
 	 * is available during our AJAX callbacks.
 	 *
-	 * @since 2.2.2
+	 * @since 2.2.3
 	 *
 	 * @return void
 	 */

@@ -467,7 +467,7 @@ class BP_Docs {
 	/**
 	 * Registers AJAX actions for BP 12+.
 	 *
-	 * @since 2.2.2
+	 * @since 2.2.3
 	 *
 	 * @return void
 	 */
