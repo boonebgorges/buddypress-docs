@@ -1095,6 +1095,16 @@ class BP_Docs_Component extends BP_Component {
 			}
 			wp_localize_script( 'bp-docs-js', 'bp_docs', $strings );
 
+			$config = [
+				'tagCloudCount' => bp_docs_get_tags_truncate_count(),
+			];
+
+			wp_add_inline_script(
+				'bp-docs-js',
+				'const bpDocsConfig = ' . json_encode( $config ) . ';',
+				'before'
+			);
+
 			do_action( 'bp_docs_enqueue_scripts' );
 		}
 	}

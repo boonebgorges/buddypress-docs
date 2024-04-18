@@ -603,4 +603,20 @@ function bp_docs_post_categories_meta_box( $post ) {
 	<?php
 }
 
-?>
+/**
+ * The number of tags that should be shown before truncating on directories.
+ *
+ * @since 2.2.4
+ *
+ * @return int
+ */
+function bp_docs_get_tags_truncate_count() {
+	/**
+	 * Filters the number of tags that should be shown before truncating on directories.
+	 *
+	 * @since 2.2.4
+	 *
+	 * @param int $count The number of tags to show before truncating.
+	 */
+	return apply_filters( 'bp_docs_get_tags_truncate_count', 6 );
+}

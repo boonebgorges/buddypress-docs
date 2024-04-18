@@ -216,8 +216,10 @@ jQuery(document).ready(function($){
 	function tags_section_collapse( $section ) {
 		$section.find( 'a.tags-hide' ).remove();
 
+		var hide_counter = 0;
 		$dfsection_tags_items.each( function( k, v ) {
-			if ( k > 6 ) {
+			hide_counter++;
+			if ( hide_counter > bpDocsConfig.tagCloudCount ) {
 				$( v ).addClass( 'hidden-tag' );
 				hidden_tag_counter++;
 			}
