@@ -231,7 +231,7 @@ jQuery(document).ready(function($){
 
 		$dfsection_tags_list.append( '<li class="tags-ellipses">' + st + '</li>' );
 
-		$dfsection_tags.prepend( '<a class="tags-unhide tags-action-button tags-spanning-button" href="#">show all tags</a>' );
+		$dfsection_tags.prepend( '<a class="tags-unhide tags-action-button tags-spanning-button" href="#">' + bp_docs.show_all_tags + '</a>' );
 	}
 
 	/**
@@ -241,7 +241,7 @@ jQuery(document).ready(function($){
 		$section.find( 'a.tags-unhide' ).remove();
 		$section.find( '.tags-ellipses' ).remove();
 		$dfsection_tags_items.removeClass( 'hidden-tag' );
-		$dfsection_tags.prepend( '<a class="tags-hide tags-action-button tags-spanning-button" href="#">show fewer tags</a>' );
+		$dfsection_tags.prepend( '<a class="tags-hide tags-action-button tags-spanning-button" href="#">' + bp_docs.show_fewer_tags + '</a>' );
 		hidden_tag_counter = 0;
 	}
 
