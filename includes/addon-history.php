@@ -180,8 +180,10 @@ class BP_Docs_History {
 				}
 			}
 
-			if ( !$post = get_post( $this->revision->post_parent ) )
+			// If revision post parent is empty or no post, bail.
+			if ( empty( $this->revision->post_parent ) || ! $post = get_post( $this->revision->post_parent ) ) {
 				break;
+			}
 
 			// Revisions disabled and we're not looking at an autosave
 			if ( ! wp_revisions_enabled( $post ) && !wp_is_post_autosave( $this->revision ) ) {
