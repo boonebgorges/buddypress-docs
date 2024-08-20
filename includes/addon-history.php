@@ -45,7 +45,7 @@ class BP_Docs_History {
 	function setup_params() {
 		global $bp;
 
-		if ( ! bp_docs_is_existing_doc() ) {
+		if ( ! bp_docs_is_doc_history() ) {
 			return;
 		}
 
@@ -86,7 +86,7 @@ class BP_Docs_History {
 	function setup_action() {
 		global $bp;
 
-		if ( ! bp_docs_is_existing_doc() ) {
+		if ( ! bp_docs_is_doc_history() ) {
 			return;
 		}
 
