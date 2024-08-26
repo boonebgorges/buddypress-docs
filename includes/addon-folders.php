@@ -71,12 +71,12 @@ class BP_Docs_Folders {
 		) );
 
 		register_taxonomy( 'bp_docs_folder_in_user', 'bp_docs_folder', array(
-			'public' => true,
+			'public' => false,
 		) );
 
 		if ( bp_is_active( 'groups' ) ) {
 			register_taxonomy( 'bp_docs_folder_in_group', 'bp_docs_folder', array(
-				'public' => true,
+				'public' => false,
 			) );
 		}
 	}
