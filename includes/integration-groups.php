@@ -62,8 +62,8 @@ class BP_Docs_Groups_Integration {
 		add_filter( 'bp_docs_hide_sitewide',		array( $this, 'hide_sitewide' ), 10, 5 );
 
 		// These functions are used to keep the group Doc count up to date
-		add_filter( 'bp_docs_doc_saved',		array( $this, 'update_doc_count' )  );
-		add_filter( 'bp_docs_doc_deleted',		array( $this, 'update_doc_count' ) );
+		add_action( 'bp_docs_doc_saved',		array( $this, 'update_doc_count' ) );
+		add_action( 'bp_docs_doc_deleted',		array( $this, 'update_doc_count' ) );
 
 		// On non-group Doc directories, add a Groups column
 		add_filter( 'bp_docs_loop_additional_th',       array( $this, 'groups_th' ), 5 );
@@ -83,7 +83,7 @@ class BP_Docs_Groups_Integration {
 		// Sneak into the nav before it's rendered to insert the group Doc count. Hooking
 		// to bp_actions because of the craptastic nature of the BP_Group_Extension loader
 		// @todo Temporarily disabled
-		//add_action( 'bp_actions',			array( $this, 'show_doc_count_in_tab' ), 9 );
+		add_action( 'bp_actions',			array( $this, 'show_doc_count_in_tab' ), 9 );
 
 		// Prettify the page title
 		add_filter( 'bp_page_title',			array( $this, 'page_title' ) );
@@ -737,15 +737,34 @@ class BP_Docs_Groups_Integration {
 	 *
 	 * @since 1.0.8
 	 */
-	function update_doc_count() {
+	function update_doc_count( $group_id = 0 ) {
 		global $bp;
 
-		// If this is not a group Doc, skip it
-		if ( !bp_is_group() )
-			return;
+		if ( array_key_exists( 'delete', $_GET ) ) { 
+			// We're deleting a doc. In the deleting context,
+			// we get useful information from `bp_docs_get_associated_group_id()`. 
+			$doc_id = is_singular() ? get_the_ID() : 0;
+			$group_id = bp_docs_get_associated_group_id( $doc_id );
+		} else if ( array_key_exists( 'group', $_GET ) ) { 
+			// We're creating a doc. In the doc creation context,
+			// we don't get anything useful from `bp_docs_get_associated_group_id()`, 
+			// so we have to figure out what group we're in by looking at the 
+			// $_GET variable that's passed during this step. 
+			$group_id = BP_Groups_Group::group_exists( $_GET['group'] ); 
+		} else if ( 0 !== $group_id ) {  
+			// If $group_id is passed through this function, 
+			// that means it's probably being called via show_doc_count_in_tab(). 
+			// This means that the doc count is probably '', which means this is probably 
+			// the first time this function has been run for this group. 
+			// Nothing to do here. Pass along through. 
+		} else {  
+			// If we're not creating or deleting a document, or updating for the first time,
+			// get outta here!
+			return; 
+		} 
 
-		// Get a fresh doc count for the group
-		bp_docs_update_doc_count( bp_get_current_group_id(), 'group' );
+		// Update the doc count for the group, since it has now changed. 
+		bp_docs_update_doc_count( $group_id, 'group' );
 	}
 
 	/**
@@ -928,12 +947,14 @@ class BP_Docs_Groups_Integration {
 		if ( !empty( $bp->bp_options_nav[$group_slug] ) && !empty( $bp->bp_options_nav[$group_slug][ $docs_slug ] ) ) {
 			$current_tab_name = $bp->bp_options_nav[$group_slug][ $docs_slug ]['name'];
 
-			$doc_count = groups_get_groupmeta( $bp->groups->current_group->id, 'bp-docs-count' );
+			$group_id = $bp->groups->current_group->id; 
+
+			$doc_count = groups_get_groupmeta( $group_id, 'bp-docs-count' );
 
 			// For backward compatibility
 			if ( '' === $doc_count ) {
-				BP_Docs_Groups_Integration::update_doc_count();
-				$doc_count = groups_get_groupmeta( $bp->groups->current_group->id, 'bp-docs-count' );
+				BP_Docs_Groups_Integration::update_doc_count( $group_id );
+				$doc_count = groups_get_groupmeta( $group_id, 'bp-docs-count' );
 			}
 
 			$bp->bp_options_nav[$group_slug][ $docs_slug ]['name'] = sprintf( __( '%s <span>%d</span>', 'buddypress-docs' ), $current_tab_name, $doc_count );
