@@ -6,11 +6,11 @@
 	<?php if ( ! is_a( $folder_to_delete, 'WP_Post' ) || 'bp_docs_folder' !== $folder_to_delete->post_type ) : ?>
 		<p><?php _e( 'This does not appear to be a valid folder.', 'buddypress-docs' ) ?></p>
 	<?php else : ?>
-		<form action="<?php echo bp_get_requested_url() ?>" method="post">
+		<form action="<?php echo esc_url( bp_get_requested_url() ); ?>" method="post">
 
 		<p>
 			<?php printf(
-				__( 'You are about to delete the folder %s.', 'buddypress-docs' ),
+				esc_html__( 'You are about to delete the folder %s.', 'buddypress-docs' ),
 				sprintf( '<a href="%s">%s</a>', esc_url( bp_docs_get_folder_url( $folder_to_delete->ID ) ), esc_html( $folder_to_delete->post_title ) )
 			) ?>
 		</p>
@@ -25,7 +25,7 @@
 
 		<p>
 			<input type="submit" name="bp-docs-delete-folder-submit" class="button-primary" value="<?php _e( 'Delete', 'buddypress-docs' ) ?>" />
-			<a href="<?php echo remove_query_arg( 'delete-folder', bp_get_requested_url() ) ?>"><?php _e( 'Cancel', 'buddypress-docs' ) ?></a>
+			<a href="<?php echo esc_url( remove_query_arg( 'delete-folder', bp_get_requested_url() ) ); ?>"><?php esc_html_e( 'Cancel', 'buddypress-docs' ) ?></a>
 			<?php wp_nonce_field( 'bp-docs-delete-folder-' . $folder_to_delete->ID ) ?>
 		</p>
 
@@ -45,6 +45,7 @@
 
 <h3><?php _e( 'Manage Existing Folders', 'buddypress-docs' ) ?></h3>
 <ul class="docs-folder-manage">
+	<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 	<?php echo $f ?>
 </ul>
 

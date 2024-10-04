@@ -49,7 +49,7 @@
 					<?php bp_docs_doc_action_links() ?>
 				</div>
 
-				<div class="bp-docs-attachment-drawer" id="bp-docs-attachment-drawer-<?php echo get_the_ID() ?>">
+				<div class="bp-docs-attachment-drawer" id="bp-docs-attachment-drawer-<?php echo esc_attr( get_the_ID() ); ?>">
 					<?php bp_docs_doc_attachment_drawer() ?>
 				</div>
 			</td>
@@ -59,11 +59,11 @@
 			</td>
 
 			<td class="date-cell created-date-cell">
-				<?php echo get_the_date() ?>
+				<?php echo esc_html( get_the_date() ); ?>
 			</td>
 
 			<td class="date-cell edited-date-cell">
-				<?php echo get_the_modified_date() ?>
+				<?php echo esc_html( get_the_modified_date() ); ?>
 			</td>
 
 			<?php do_action( 'bp_docs_loop_additional_td' ) ?>
@@ -75,7 +75,7 @@
 
 	<div id="bp-docs-pagination">
 		<div id="bp-docs-pagination-count">
-			<?php printf( __( 'Viewing %1$s-%2$s of %3$s docs', 'buddypress-docs' ), bp_docs_get_current_docs_start(), bp_docs_get_current_docs_end(), bp_docs_get_total_docs_num() ) ?>
+			<?php echo esc_html( sprintf( __( 'Viewing %1$s-%2$s of %3$s docs', 'buddypress-docs' ), bp_docs_get_current_docs_start(), bp_docs_get_current_docs_end(), bp_docs_get_total_docs_num() ) ); ?>
 		</div>
 
 		<div id="bp-docs-paginate-links">
@@ -86,7 +86,7 @@
 <?php else: ?>
 
         <?php if ( bp_docs_current_user_can_create_in_context() ) : ?>
-                <p class="no-docs"><?php printf( __( 'There are no docs for this view. Why not <a href="%s">create one</a>?', 'buddypress-docs' ), bp_docs_get_create_link() ) ?>
+			<p class="no-docs"><?php echo wp_kses_post( sprintf( __( 'There are no docs for this view. Why not <a href="%s">create one</a>?', 'buddypress-docs' ), esc_url( bp_docs_get_create_link() ) ) ); ?>
 	<?php else : ?>
 		<p class="no-docs"><?php _e( 'There are no docs for this view.', 'buddypress-docs' ) ?></p>
         <?php endif ?>
