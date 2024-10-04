@@ -9,4 +9,5 @@
  * @package BuddyPress_Docs
  */
 
+// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 _deprecated_file( wp_basename(__FILE__), '1.2', BP_DOCS_INCLUDES_PATH_ABS . 'component.php' );

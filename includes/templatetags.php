@@ -243,6 +243,7 @@ function bp_docs_is_wiki_edit_page() {
  * @since 1.0-beta
  */
 function bp_docs_info_header() {
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo bp_docs_get_info_header();
 }
 	/**
@@ -287,11 +288,13 @@ function bp_docs_info_header() {
 
 		?>
 
+		<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		<p class="currently-viewing"><?php echo $message ?></p>
 
 		<?php if ( $filter_titles = bp_docs_filter_titles() ) : ?>
 			<div class="docs-filters">
 				<p id="docs-filter-meta">
+					<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 					<?php printf( __( 'Filter by: %s', 'buddypress-docs' ), $filter_titles ) ?>
 				</p>
 
@@ -344,6 +347,7 @@ function bp_docs_get_breadcrumb_separator( $context = 'doc' ) {
  * @since 1.9.0
  */
 function bp_docs_the_breadcrumb( $args = array() ) {
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo bp_docs_get_the_breadcrumb( $args );
 }
 	/**
@@ -385,6 +389,7 @@ function bp_docs_the_breadcrumb( $args = array() ) {
  * @since 1.3
  */
 function bp_docs_the_content() {
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo bp_docs_get_the_content();
 }
 	/**
@@ -481,7 +486,7 @@ function bp_docs_get_current_filters() {
  * @since 1.0-beta
  */
 function bp_docs_doc_link( $doc_id = false ) {
-	echo bp_docs_get_doc_link( $doc_id );
+	echo esc_url( bp_docs_get_doc_link( $doc_id ) );
 }
 	/**
 	 * Get the doc's permalink
@@ -508,7 +513,7 @@ function bp_docs_doc_link( $doc_id = false ) {
  * @since 1.2
  */
 function bp_docs_doc_edit_link( $doc_id = false ) {
-	echo bp_docs_get_doc_edit_link( $doc_id );
+	echo esc_url( bp_docs_get_doc_edit_link( $doc_id ) );
 }
 	/**
 	 * Get the edit link for a doc
@@ -528,7 +533,7 @@ function bp_docs_doc_edit_link( $doc_id = false ) {
  * @since 1.2
  */
 function bp_docs_archive_link() {
-        echo bp_docs_get_archive_link();
+	echo esc_url( bp_docs_get_archive_link() );
 }
 	/**
          * Get the link to the main site Docs archive
@@ -545,7 +550,7 @@ function bp_docs_archive_link() {
  * @since 1.2
  */
 function bp_docs_mygroups_link() {
-        echo bp_docs_get_mygroups_link();
+	echo esc_url( bp_docs_get_mygroups_link() );
 }
 	/**
          * Get the link the My Groups tab of the Docs archive
@@ -577,7 +582,7 @@ function bp_docs_get_user_docs_url( $user_id ) {
  * @since 1.2
  */
 function bp_docs_mydocs_link() {
-	echo bp_docs_get_mydocs_link();
+	echo esc_url( bp_docs_get_mydocs_link() );
 }
 	/**
 	 * Get the link to the My Docs tab of the logged in user
@@ -596,7 +601,7 @@ function bp_docs_mydocs_link() {
  * @since 1.2
  */
 function bp_docs_mydocs_started_link() {
-	echo bp_docs_get_mydocs_started_link();
+	echo esc_url( bp_docs_get_mydocs_started_link() );
 }
 	/**
 	 * Get the link to the Started By Me tab of the logged in user
@@ -615,7 +620,7 @@ function bp_docs_mydocs_started_link() {
  * @since 1.2
  */
 function bp_docs_mydocs_edited_link() {
-	echo bp_docs_get_mydocs_edited_link();
+	echo esc_url( bp_docs_get_mydocs_edited_link() );
 }
 	/**
 	 * Get the link to the Edited By Me tab of the logged in user
@@ -634,7 +639,7 @@ function bp_docs_mydocs_edited_link() {
  * @since 1.9
  */
 function bp_docs_displayed_user_docs_started_link() {
-        echo bp_docs_get_displayed_user_docs_started_link();
+	echo esc_url( bp_docs_get_displayed_user_docs_started_link() );
 }
 	/**
      * Get the link to the Started By tab of the displayed user
@@ -651,7 +656,7 @@ function bp_docs_displayed_user_docs_started_link() {
  * @since 1.9
  */
 function bp_docs_displayed_user_docs_edited_link() {
-	echo bp_docs_get_displayed_user_docs_edited_link();
+	echo esc_url( bp_docs_get_displayed_user_docs_edited_link() );
 }
 	/**
      * Get the link to the Edited By tab of the displayed user
@@ -670,7 +675,7 @@ function bp_docs_displayed_user_docs_edited_link() {
  * @since 1.2
  */
 function bp_docs_create_link() {
-	echo bp_docs_get_create_link();
+	echo esc_url( bp_docs_get_create_link() );
 }
 	/**
 	 * Get the link to create a Doc
@@ -690,7 +695,7 @@ function bp_docs_create_link() {
  * @deprecated 2.2.0
  */
 function bp_docs_item_docs_link() {
-	echo bp_docs_get_item_docs_link();
+	echo esc_url( bp_docs_get_item_docs_link() );
 }
 	/**
 	 * Get the link to the docs section of an item
@@ -711,6 +716,7 @@ function bp_docs_item_docs_link() {
  * @since 1.9.0
  */
 function bp_docs_directory_breadcrumb() {
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo bp_docs_get_directory_breadcrumb();
 }
 	/**
@@ -835,6 +841,7 @@ function bp_docs_is_current_orderby_class( $orderby = 'modified' ) {
 		}
 	}
 
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo apply_filters( 'bp_docs_is_current_orderby', $class, $is_current_orderby, $current_orderby );
 }
 
@@ -966,6 +973,7 @@ function bp_docs_associated_group_dropdown( $args = array() ) {
 	if ( false === $r['echo'] ) {
 		return $html;
 	} else {
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo $html;
 	}
 }
@@ -1101,6 +1109,7 @@ function bp_docs_associated_group_summary( $group_id = 0 ) {
 
 	}
 
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo $html;
 }
 
@@ -1185,6 +1194,7 @@ function bp_docs_access_options_helper( $settings_field, $doc_id = 0, $group_id 
 						$selected = selected( 1, 1, false );
 					}
 					?>
+					<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 					<option value="<?php echo esc_attr( $option['name'] ) ?>" <?php echo $selected ?>><?php echo esc_attr( $option['label'] ) ?></option>
 				<?php endforeach ?>
 			</select>
@@ -1217,6 +1227,7 @@ function bp_docs_doc_action_links() {
 
 	$links = apply_filters( 'bp_docs_doc_action_links', $links, get_the_ID() );
 
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo implode( ' &#124; ', $links );
 }
 
@@ -1295,6 +1306,7 @@ function bp_docs_remove_from_trash_link( $doc_id = false ) {
  * @param int $doc_id Optional. Default: current Doc.
  */
 function bp_docs_delete_doc_button( $doc_id = false ) {
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo bp_docs_get_delete_doc_button( $doc_id );
 }
 	/**
@@ -1381,6 +1393,7 @@ function bp_docs_paginate_links() {
 
 	$page_links = paginate_links( $pagination_args );
 
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo apply_filters( 'bp_docs_paginate_links', $page_links );
 }
 
@@ -1518,7 +1531,7 @@ function bp_docs_doc_permalink() {
 }
 
 function bp_docs_slug() {
-	echo bp_docs_get_slug();
+	echo esc_html( bp_docs_get_slug() );
 }
 	function bp_docs_get_slug() {
 		global $bp;
@@ -1581,6 +1594,7 @@ function bp_docs_tabs( $show_create_button = true ) {
  */
 function bp_docs_create_button() {
 	if ( ! bp_docs_is_doc_create() && current_user_can( 'bp_docs_create' ) ) {
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo apply_filters( 'bp_docs_create_button', '<a class="button" id="bp-create-doc-button" href="' . esc_url( bp_docs_get_create_link() ) . '">' . esc_html__( "Create New Doc", 'buddypress-docs' ) . '</a>' );
 	}
 }
@@ -1766,6 +1780,7 @@ function bp_docs_doc_permissions_snapshot( $args = array() ) {
 	$html .=   '<a href="#" class="doc-permissions-toggle" id="doc-permissions-less">' . esc_html__( 'Hide Details', 'buddypress-docs' ) . '</a>';
 	$html .= '</div>';
 
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo $html;
 }
 
@@ -2071,6 +2086,7 @@ function bp_docs_media_buttons( $editor_id ) {
 
 	?>
 	<div class="add-files-button">
+		<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		<button id="insert-media-button" class="button add-attachment add_media" data-editor="<?php echo esc_attr( $editor_id ); ?>" title="<?php esc_attr_e( 'Add Files', 'buddypress-docs' ); ?>"><?php echo $img; ?><?php esc_html_e( 'Add Files', 'buddypress-docs' ); ?></button>
 	</div>
 	<?php
@@ -2261,6 +2277,7 @@ function bp_docs_attachment_icon() {
 
 	$html = '<a class="bp-docs-attachment-clip" id="bp-docs-attachment-clip-' . esc_attr( get_the_ID() ) . '">' . bp_docs_get_genericon( 'attachment', get_the_ID() ) . '</a>';
 
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo $html;
 }
 
@@ -2284,6 +2301,7 @@ function bp_docs_doc_attachment_drawer() {
 		$html .= '</ul>';
 	}
 
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo $html;
 }
 
@@ -2516,6 +2534,7 @@ function bp_docs_is_directory_view_filtered( $exclude = array() ) {
  * @return string HTML representing icon element.
  */
 function bp_docs_genericon( $glyph_name, $object_id = null ) {
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo bp_docs_get_genericon( $glyph_name, $object_id );
 }
 	function bp_docs_get_genericon( $glyph_name, $object_id = null ) {
