@@ -94,7 +94,7 @@ function bp_docs_map_meta_caps( $caps, $cap, $user_id, $args ) {
 					$caps[] = 'exist';
 
 					// Anonymous comment posting should respect site-wide setting.
-					if ( 'bp_docs_post_comments' == $cap_name && get_option( 'comment_registration' ) ) {
+					if ( 'bp_docs_post_comments' === $cap_name && get_option( 'comment_registration' ) ) {
 						$caps = array();
 					}
 					break;
@@ -109,7 +109,7 @@ function bp_docs_map_meta_caps( $caps, $cap, $user_id, $args ) {
 					break;
 
 				case 'creator' :
-					if ( $user_id == $doc->post_author ) {
+					if ( (int) $user_id === (int) $doc->post_author ) {
 						$caps[] = 'exist';
 					} else {
 						$caps[] = 'do_not_allow';
@@ -171,8 +171,9 @@ function bp_docs_user_has_custom_access( $user_id, $doc_settings, $key ) {
 	// Default to true, so that if it's not set to 'custom', you pass through
 	$has_access = true;
 
-	if ( isset( $doc_settings[ $key ] ) && 'custom' == $doc_settings[ $key ] && is_array( $doc_settings[ $key ] ) ) {
-		$has_access = in_array( $user_id, $doc_settings[ $key ] );
+	if ( isset( $doc_settings[ $key ] ) && 'custom' === $doc_settings[ $key ] && is_array( $doc_settings[ $key ] ) ) {
+		$user_ids   = array_map( 'intval', $doc_settings[ $key ] );
+		$has_access = in_array( (int) $user_id, $user_ids, true );
 	}
 
 	return $has_access;
