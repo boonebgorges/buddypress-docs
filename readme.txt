@@ -3,8 +3,8 @@ Contributors: boonebgorges, cuny-academic-commons, dcavins
 Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: 3.3
-Tested up to: 6.5
-Stable tag: 2.2.3
+Tested up to: 6.6
+Stable tag: 2.2.4
 
 Adds collaborative Docs to BuddyPress.
 
@@ -32,6 +32,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 1. Sit back and watch the jack roll in.
 
 == Changelog ==
+
+= 2.2.4 =
+* Escaping improvements.
 
 = 2.2.3 =
 * Improved compatibility with BuddyPress 12.0+ when performing AJAX requests.
