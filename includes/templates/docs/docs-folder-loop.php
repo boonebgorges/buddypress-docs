@@ -1,5 +1,5 @@
 <?php $current_folder_id = isset( $_GET['folder'] ) ? absint( $_GET['folder'] ) : 0; ?>
-<table class="doctable" data-folder-id="<?php echo $current_folder_id; ?>">
+<table class="doctable" data-folder-id="<?php echo esc_attr( $current_folder_id ); ?>">
 <tbody>
 <?php $has_folders = false; ?>
 <?php if ( bp_docs_enable_folders_for_current_context() ) : ?>
@@ -16,7 +16,7 @@
 
 				<td class="folder-row-name" colspan=10>
 					<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class( 'folder-contents-toggle' ); ?>">
-						<span class="folder-toggle-link toggle-link-js"><a class="toggle-folder" id="expand-folder-<?php echo $folder->ID; ?>" data-folder-id="<?php echo $folder->ID; ?>" href="<?php echo esc_url( bp_docs_get_folder_url( $folder->ID ) ) ?>"><span class="hide-if-no-js"><?php bp_docs_genericon( 'expand', $folder->ID ); ?></span><?php bp_docs_genericon( 'category', $folder->ID ); ?><?php echo esc_html( $folder->post_title ) ?></a></span>
+						<span class="folder-toggle-link toggle-link-js"><a class="toggle-folder" id="expand-folder-<?php echo esc_attr( $folder->ID ); ?>" data-folder-id="<?php echo esc_attr( $folder->ID ); ?>" href="<?php echo esc_url( bp_docs_get_folder_url( $folder->ID ) ) ?>"><span class="hide-if-no-js"><?php bp_docs_genericon( 'expand', $folder->ID ); ?></span><?php bp_docs_genericon( 'category', $folder->ID ); ?><?php echo esc_html( $folder->post_title ) ?></a></span>
 						<div class="toggle-content folder-loop"></div>
 					</div>
 				</td>
@@ -29,7 +29,7 @@
 <?php if ( bp_docs_has_docs() ) : ?>
 	<?php $has_docs = true; ?>
 		<?php while ( bp_docs_has_docs() ) : bp_docs_the_doc() ?>
-		<tr<?php bp_docs_doc_row_classes(); ?> data-doc-id="<?php echo get_the_ID() ?>">
+		<tr<?php bp_docs_doc_row_classes(); ?> data-doc-id="<?php echo esc_attr( get_the_ID() ); ?>">
 			<?php if ( bp_docs_enable_attachments() ) : ?>
 				<td class="attachment-clip-cell">
 					<?php bp_docs_attachment_icon() ?>
@@ -51,7 +51,7 @@
 					<?php bp_docs_doc_action_links() ?>
 				</div>
 
-				<div class="bp-docs-attachment-drawer" id="bp-docs-attachment-drawer-<?php echo get_the_ID() ?>">
+				<div class="bp-docs-attachment-drawer" id="bp-docs-attachment-drawer-<?php echo esc_attr( get_the_ID() ); ?>">
 					<?php bp_docs_doc_attachment_drawer() ?>
 				</div>
 			</td>
@@ -67,6 +67,7 @@
 			</td>
 
 			<td class="date-cell edited-date-cell">
+				<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				<?php echo get_the_modified_date() ?>
 			</td>
 
@@ -82,8 +83,8 @@
 				</td>
 			<?php endif ?>
 			<td class="folder-meta-info-statement" colspan=10>
-				<?php printf( __( 'Viewing %1$s-%2$s of %3$s docs in this folder.', 'buddypress-docs' ), bp_docs_get_current_docs_start(), bp_docs_get_current_docs_end(), bp_docs_get_total_docs_num() ) ?> <br/>
-				<a href="<?php echo esc_url( bp_docs_get_folder_url( $current_folder_id ) ); ?>"><?php printf( __( 'View all docs in <strong>%s</strong>.', 'buddypress-docs' ), get_the_title( $current_folder_id ) ); ?></a>
+				<?php echo esc_html( sprintf( __( 'Viewing %1$s-%2$s of %3$s docs in this folder.', 'buddypress-docs' ), bp_docs_get_current_docs_start(), bp_docs_get_current_docs_end(), bp_docs_get_total_docs_num() ) ); ?> <br/>
+				<a href="<?php echo esc_url( bp_docs_get_folder_url( $current_folder_id ) ); ?>"><?php echo wp_kses_post( sprintf( __( 'View all docs in <strong>%s</strong>.', 'buddypress-docs' ), esc_html( get_the_title( $current_folder_id ) ) ) ); ?></a>
 			</td>
 		</tr>
 <?php endif; ?>
@@ -95,7 +96,16 @@
 
 		<td class="title-cell">
 			<?php if ( bp_docs_current_user_can_create_in_context() ) : ?>
-				<p class="no-docs"><?php printf( __( 'There are no docs for this view. Why not <a href="%s">create one</a>?', 'buddypress-docs' ), bp_docs_get_create_link() ); ?>
+				<p class="no-docs">
+					<?php
+					echo wp_kses_post(
+						sprintf(
+							__( 'There are no docs for this view. Why not <a href="%s">create one</a>?', 'buddypress-docs' ),
+							esc_url( bp_docs_get_create_link() )
+						)
+					);
+					?>
+				</p>
 			<?php else : ?>
 				<p class="no-docs"><?php _e( 'There are no docs for this view.', 'buddypress-docs' ); ?></p>
 			<?php endif; ?>
