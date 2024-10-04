@@ -282,7 +282,7 @@ function bp_docs_info_header() {
 			$view_all_url = remove_query_arg( 'p', $view_all_url );
 			$view_all_url = preg_replace( '|page/[0-9]+/|', '', $view_all_url );
 
-			$message .= ' - ' . sprintf( __( '<strong><a href="%s" title="View All Docs">View All Docs</a></strong>', 'buddypress-docs' ), $view_all_url );
+			$message .= ' - ' . sprintf( __( '<strong><a href="%s" title="View All Docs">View All Docs</a></strong>', 'buddypress-docs' ), esc_url( $view_all_url ) );
 		}
 
 		?>
@@ -317,9 +317,9 @@ function bp_docs_filter_titles() {
 		$current = isset( $_GET[ $filter_type['query_arg'] ] ) ? ' current' : '';
 		$links[] = sprintf(
 			'<a href="#" class="docs-filter-title%s" id="docs-filter-title-%s">%s</a>',
-			apply_filters( 'bp_docs_filter_title_class', $current, $filter_type ),
-			$filter_type['slug'],
-			$filter_type['title']
+			esc_attr( apply_filters( 'bp_docs_filter_title_class', $current, $filter_type ) ),
+			esc_attr( $filter_type['slug'] ),
+			esc_html( $filter_type['title'] )
 		);
 	}
 
@@ -368,7 +368,7 @@ function bp_docs_the_breadcrumb( $args = array() ) {
 			$crumbs[] = sprintf(
 				'<span class="breadcrumb-current">%s%s</span>',
 				bp_docs_get_genericon( 'document', $r['doc_id'] ),
-				$doc->post_title
+				esc_html( $doc->post_title )
 			);
 		}
 
@@ -784,7 +784,7 @@ function bp_docs_get_sort_order( $orderby = 'modified' ) {
  * @param str $orderby The order_by item: title, author, created, edited, etc
  */
 function bp_docs_order_by_link( $orderby = 'modified' ) {
-	echo bp_docs_get_order_by_link( $orderby );
+	echo esc_url( bp_docs_get_order_by_link( $orderby ) );
 }
 	/**
 	 * Get the URL for the sortable column header links
@@ -796,8 +796,8 @@ function bp_docs_order_by_link( $orderby = 'modified' ) {
 	 */
 	function bp_docs_get_order_by_link( $orderby = 'modified' ) {
 		$args = array(
-			'orderby' 	=> $orderby,
-			'order'		=> bp_docs_get_sort_order( $orderby )
+			'orderby' => $orderby,
+			'order'	  => bp_docs_get_sort_order( $orderby )
 		);
 
 		return apply_filters( 'bp_docs_get_order_by_link', add_query_arg( $args ), $orderby, $args );
@@ -1095,7 +1095,7 @@ function bp_docs_associated_group_summary( $group_id = 0 ) {
 
 			$html .= '<div class="item">';
 			$html .= '<a href="' . esc_url( $group_link ) . '">' . esc_html( $group->name ) . '</a>';
-			$html .= '<div class="meta">' . $group_type_string . ' / ' . $group_member_count . '</div>';
+			$html .= '<div class="meta">' . esc_html( $group_type_string ) . ' / ' . esc_html( $group_member_count ) . '</div>';
 			$html .= '</div>';
 		}
 
@@ -1201,18 +1201,18 @@ function bp_docs_access_options_helper( $settings_field, $doc_id = 0, $group_id 
 function bp_docs_doc_action_links() {
 	$links = array();
 
-	$links[] = '<a href="' . bp_docs_get_doc_link() . '">' . __( 'Read', 'buddypress-docs' ) . '</a>';
+	$links[] = '<a href="' . esc_url( bp_docs_get_doc_link() ) . '">' . esc_html__( 'Read', 'buddypress-docs' ) . '</a>';
 
 	if ( current_user_can( 'bp_docs_edit', get_the_ID() ) ) {
-		$links[] = '<a href="' . bp_docs_get_doc_edit_link() . '">' . __( 'Edit', 'buddypress-docs' ) . '</a>';
+		$links[] = '<a href="' . esc_url( bp_docs_get_doc_edit_link() ). '">' . esc_html__( 'Edit', 'buddypress-docs' ) . '</a>';
 	}
 
 	if ( current_user_can( 'bp_docs_view_history', get_the_ID() ) && defined( 'WP_POST_REVISIONS' ) && WP_POST_REVISIONS ) {
-		$links[] = '<a href="' . bp_docs_get_doc_link() . BP_DOCS_HISTORY_SLUG . '">' . __( 'History', 'buddypress-docs' ) . '</a>';
+		$links[] = '<a href="' . esc_url( bp_docs_get_doc_link() . BP_DOCS_HISTORY_SLUG ) . '">' . esc_html__( 'History', 'buddypress-docs' ) . '</a>';
 	}
 
 	if ( current_user_can( 'manage', get_the_ID() ) && bp_docs_is_doc_trashed( get_the_ID() ) ) {
-		$links[] = '<a href="' . bp_docs_get_remove_from_trash_link( get_the_ID() ) . '" class="delete confirm">' . __( 'Untrash', 'buddypress-docs' ) . '</a>';
+		$links[] = '<a href="' . esc_url( bp_docs_get_remove_from_trash_link( get_the_ID() ) ) . '" class="delete confirm">' . esc_html__( 'Untrash', 'buddypress-docs' ) . '</a>';
 	}
 
 	$links = apply_filters( 'bp_docs_doc_action_links', $links, get_the_ID() );
@@ -1235,7 +1235,7 @@ function bp_docs_current_group_is_public() {
  * @since 1.0.1
  */
 function bp_docs_delete_doc_link( $force_delete = false ) {
-	echo bp_docs_get_delete_doc_link( $force_delete );
+	echo esc_url( bp_docs_get_delete_doc_link( $force_delete ) );
 }
 	/**
 	 * Get the URL to delete the current doc
@@ -1266,7 +1266,7 @@ function bp_docs_delete_doc_link( $force_delete = false ) {
  * @since 1.5.5
  */
 function bp_docs_remove_from_trash_link( $doc_id = false ) {
-	echo bp_docs_get_remove_from_trash_link( $doc_id );
+	echo esc_url( bp_docs_get_remove_from_trash_link( $doc_id ) );
 }
 	/**
 	 * Get the URL for removing a Doc from the Trash.
@@ -1312,14 +1312,14 @@ function bp_docs_delete_doc_button( $doc_id = false ) {
 
 		if ( bp_docs_is_doc_trashed( $doc_id ) ) {
 			// A button to remove the doc from the trash...
-			$button = ' <a class="delete-doc-button untrash-doc-button confirm" href="' . bp_docs_get_remove_from_trash_link( $doc_id ) . '">' . __( 'Remove from Trash', 'buddypress-docs' ) . '</a>';
+			$button = ' <a class="delete-doc-button untrash-doc-button confirm" href="' . esc_url( bp_docs_get_remove_from_trash_link( $doc_id ) ) . '">' . esc_html__( 'Remove from Trash', 'buddypress-docs' ) . '</a>';
 			// and a button to permanently delete the doc.
-			$button .= '<a class="delete-doc-button confirm" href="' . bp_docs_get_delete_doc_link() . '">' . __( 'Permanently Delete', 'buddypress-docs' ) . '</a>';
+			$button .= '<a class="delete-doc-button confirm" href="' . esc_url( bp_docs_get_delete_doc_link() ) . '">' . esc_html__( 'Permanently Delete', 'buddypress-docs' ) . '</a>';
 		} else {
 			// A button to move the doc to the trash...
-			$button = '<a class="delete-doc-button confirm" href="' . bp_docs_get_delete_doc_link() . '">' . __( 'Move to Trash', 'buddypress-docs' ) . '</a>';
+			$button = '<a class="delete-doc-button confirm" href="' . esc_url( bp_docs_get_delete_doc_link() ) . '">' . esc_html__( 'Move to Trash', 'buddypress-docs' ) . '</a>';
 			// and a button to permanently delete the doc.
-			$button .= '<a class="delete-doc-button confirm" href="' . bp_docs_get_delete_doc_link( true ) . '">' . __( 'Permanently Delete', 'buddypress-docs' ) . '</a>';
+			$button .= '<a class="delete-doc-button confirm" href="' . esc_url( bp_docs_get_delete_doc_link( true ) ) . '">' . esc_html__( 'Permanently Delete', 'buddypress-docs' ) . '</a>';
 		}
 
 		return $button;
@@ -1581,7 +1581,7 @@ function bp_docs_tabs( $show_create_button = true ) {
  */
 function bp_docs_create_button() {
 	if ( ! bp_docs_is_doc_create() && current_user_can( 'bp_docs_create' ) ) {
-		echo apply_filters( 'bp_docs_create_button', '<a class="button" id="bp-create-doc-button" href="' . bp_docs_get_create_link() . '">' . __( "Create New Doc", 'buddypress-docs' ) . '</a>' );
+		echo apply_filters( 'bp_docs_create_button', '<a class="button" id="bp-create-doc-button" href="' . esc_url( bp_docs_get_create_link() ) . '">' . esc_html__( "Create New Doc", 'buddypress-docs' ) . '</a>' );
 	}
 }
 
@@ -1643,9 +1643,9 @@ function bp_docs_doc_permissions_snapshot( $args = array() ) {
 			$html .= '<div id="doc-group-summary">';
 
 			$html .= $summary_before_content ;
-			$html .= '<span>' . __('Group: ', 'buddypress-docs') . '</span>';
+			$html .= '<span>' . esc_html( 'Group: ', 'buddypress-docs' ) . '</span>';
 
-			$html .= sprintf( __( ' %s', 'buddypress-docs' ), '<a href="' . $group_link . '">' . bp_core_fetch_avatar( 'item_id=' . $doc_groups[0]->id . '&object=group&type=thumb&width=25&height=25' ) . '</a> ' . '<a href="' . $group_link . '">' . esc_html( $doc_groups[0]->name ) . '</a>' );
+			$html .= sprintf( __( ' %s', 'buddypress-docs' ), '<a href="' . esc_url( $group_link ) . '">' . bp_core_fetch_avatar( 'item_id=' . $doc_groups[0]->id . '&object=group&type=thumb&width=25&height=25' ) . '</a> ' . '<a href="' . esc_url( $group_link ) . '">' . esc_html( $doc_groups[0]->name ) . '</a>' );
 
 			$html .= $summary_after_content;
 
@@ -1677,23 +1677,23 @@ function bp_docs_doc_permissions_snapshot( $args = array() ) {
 
 	// Read
 	$read_class = bp_docs_get_permissions_css_class( $settings['read'] );
-	$read_text  = sprintf( __( 'This Doc can be read by: <strong>%s</strong>', 'buddypress-docs' ), $levels[ $settings['read'] ] );
+	$read_text  = sprintf( __( 'This Doc can be read by: <strong>%s</strong>', 'buddypress-docs' ), esc_html( $levels[ $settings['read'] ] ) );
 
 	// Edit
 	$edit_class = bp_docs_get_permissions_css_class( $settings['edit'] );
-	$edit_text  = sprintf( __( 'This Doc can be edited by: <strong>%s</strong>', 'buddypress-docs' ), $levels[ $settings['edit'] ] );
+	$edit_text  = sprintf( __( 'This Doc can be edited by: <strong>%s</strong>', 'buddypress-docs' ), esc_html( $levels[ $settings['edit'] ] ) );
 
 	// Read Comments
 	$read_comments_class = bp_docs_get_permissions_css_class( $settings['read_comments'] );
-	$read_comments_text  = sprintf( __( 'Comments are visible to: <strong>%s</strong>', 'buddypress-docs' ), $levels[ $settings['read_comments'] ] );
+	$read_comments_text  = sprintf( __( 'Comments are visible to: <strong>%s</strong>', 'buddypress-docs' ), esc_html( $levels[ $settings['read_comments'] ] ) );
 
 	// Post Comments
 	$post_comments_class = bp_docs_get_permissions_css_class( $settings['post_comments'] );
-	$post_comments_text  = sprintf( __( 'Comments can be posted by: <strong>%s</strong>', 'buddypress-docs' ), $levels[ $settings['post_comments'] ] );
+	$post_comments_text  = sprintf( __( 'Comments can be posted by: <strong>%s</strong>', 'buddypress-docs' ), esc_html( $levels[ $settings['post_comments'] ] ) );
 
 	// View History
 	$view_history_class = bp_docs_get_permissions_css_class( $settings['view_history'] );
-	$view_history_text  = sprintf( __( 'History can be viewed by: <strong>%s</strong>', 'buddypress-docs' ), $levels[ $settings['view_history'] ] );
+	$view_history_text  = sprintf( __( 'History can be viewed by: <strong>%s</strong>', 'buddypress-docs' ), esc_html( $levels[ $settings['view_history'] ] ) );
 
 	// Calculate summary
 	// Summary works like this:
@@ -1746,24 +1746,24 @@ function bp_docs_doc_permissions_snapshot( $args = array() ) {
 
 	$html .= '<div id="doc-permissions-summary" class="doc-' . $summary . '">';
 	$html .= $summary_before_content;
- $html .=   sprintf( __( 'Access: <strong>%s</strong>', 'buddypress-docs' ), $summary_label );
-	$html .=   '<a href="#" class="doc-permissions-toggle" id="doc-permissions-more">' . __( 'Show Details', 'buddypress-docs' ) . '</a>';
+ $html .=   sprintf( __( 'Access: <strong>%s</strong>', 'buddypress-docs' ), esc_html( $summary_label ) );
+	$html .=   '<a href="#" class="doc-permissions-toggle" id="doc-permissions-more">' . esc_html__( 'Show Details', 'buddypress-docs' ) . '</a>';
 	$html .= $summary_after_content;
  $html .= '</div>';
 
 	$html .= '<div id="doc-permissions-details">';
 	$html .=   '<ul>';
-	$html .=     '<li class="bp-docs-can-read ' . $read_class . '"><span class="bp-docs-level-icon"></span>' . '<span class="perms-text">' . $read_text . '</span></li>';
-	$html .=     '<li class="bp-docs-can-edit ' . $edit_class . '"><span class="bp-docs-level-icon"></span>' . '<span class="perms-text">' . $edit_text . '</span></li>';
-	$html .=     '<li class="bp-docs-can-read_comments ' . $read_comments_class . '"><span class="bp-docs-level-icon"></span>' . '<span class="perms-text">' . $read_comments_text . '</span></li>';
-	$html .=     '<li class="bp-docs-can-post_comments ' . $post_comments_class . '"><span class="bp-docs-level-icon"></span>' . '<span class="perms-text">' . $post_comments_text . '</span></li>';
-	$html .=     '<li class="bp-docs-can-view_history ' . $view_history_class . '"><span class="bp-docs-level-icon"></span>' . '<span class="perms-text">' . $view_history_text . '</span></li>';
+	$html .=     '<li class="bp-docs-can-read ' . esc_attr( $read_class ) . '"><span class="bp-docs-level-icon"></span>' . '<span class="perms-text">' . $read_text . '</span></li>';
+	$html .=     '<li class="bp-docs-can-edit ' . esc_attr( $edit_class ) . '"><span class="bp-docs-level-icon"></span>' . '<span class="perms-text">' . $edit_text . '</span></li>';
+	$html .=     '<li class="bp-docs-can-read_comments ' . esc_attr( $read_comments_class ) . '"><span class="bp-docs-level-icon"></span>' . '<span class="perms-text">' . $read_comments_text . '</span></li>';
+	$html .=     '<li class="bp-docs-can-post_comments ' . esc_attr( $post_comments_class ) . '"><span class="bp-docs-level-icon"></span>' . '<span class="perms-text">' . $post_comments_text . '</span></li>';
+	$html .=     '<li class="bp-docs-can-view_history ' . esc_attr( $view_history_class ) . '"><span class="bp-docs-level-icon"></span>' . '<span class="perms-text">' . $view_history_text . '</span></li>';
 	$html .=   '</ul>';
 
 	if ( current_user_can( 'bp_docs_manage' ) )
-		$html .=   '<a href="' . bp_docs_get_doc_edit_link() . '#doc-settings" id="doc-permissions-edit">' . __( 'Edit', 'buddypress-docs' ) . '</a>';
+		$html .=   '<a href="' . esc_url( bp_docs_get_doc_edit_link() ) . '#doc-settings" id="doc-permissions-edit">' . esc_html__( 'Edit', 'buddypress-docs' ) . '</a>';
 
-	$html .=   '<a href="#" class="doc-permissions-toggle" id="doc-permissions-less">' . __( 'Hide Details', 'buddypress-docs' ) . '</a>';
+	$html .=   '<a href="#" class="doc-permissions-toggle" id="doc-permissions-less">' . esc_html__( 'Hide Details', 'buddypress-docs' ) . '</a>';
 	$html .= '</div>';
 
 	echo $html;
@@ -2134,7 +2134,7 @@ function bp_docs_get_doc_attachments( $doc_id = null ) {
  * @param int $attachment_id
  */
 function bp_docs_attachment_url( $attachment_id ) {
-	echo bp_docs_get_attachment_url( $attachment_id );
+	echo esc_url( bp_docs_get_attachment_url( $attachment_id ) );
 }
 	/**
 	 * Get the URL for an attachment download.
@@ -2184,16 +2184,16 @@ function bp_docs_attachment_item_markup( $attachment_id, $format = 'full' ) {
 			), $attachment_delete_url );
 			$attachment_delete_html = sprintf(
 				'<a href="%s" class="doc-attachment-delete confirm button">%s</a> ',
-				$attachment_delete_url,
-				__( 'Delete', 'buddypress-docs' )
+				esc_url( $attachment_delete_url ),
+				esc_html__( 'Delete', 'buddypress-docs' )
 			);
 		}
 
 		$markup = sprintf(
 			'<li id="doc-attachment-%d"><span class="doc-attachment-mime-icon doc-attachment-mime-%s"></span><a href="%s" title="%s">%s</a>%s</li>',
-			$attachment_id,
-			$attachment_ext,
-			$att_url,
+			esc_attr( $attachment_id ),
+			esc_attr( $attachment_ext ),
+			esc_url( $att_url ),
 			esc_attr( $att_base ),
 			esc_html( $att_base ),
 			$attachment_delete_html
@@ -2201,9 +2201,9 @@ function bp_docs_attachment_item_markup( $attachment_id, $format = 'full' ) {
 	} else {
 		$markup = sprintf(
 			'<li id="doc-attachment-%d"><span class="doc-attachment-mime-icon doc-attachment-mime-%s"></span><a href="%s" title="%s">%s</a></li>',
-			$attachment_id,
-			$attachment_ext,
-			$att_url,
+			esc_attr( $attachment_id ),
+			esc_attr( $attachment_ext ),
+			esc_url( $att_url ),
 			esc_attr( $att_base ),
 			esc_html( $att_base )
 		);
@@ -2259,7 +2259,7 @@ function bp_docs_attachment_icon() {
 
 	// $pc = plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/images/paperclip.png' );
 
-	$html = '<a class="bp-docs-attachment-clip" id="bp-docs-attachment-clip-' . get_the_ID() . '">' . bp_docs_get_genericon( 'attachment', get_the_ID() ) . '</a>';
+	$html = '<a class="bp-docs-attachment-clip" id="bp-docs-attachment-clip-' . esc_attr( get_the_ID() ) . '">' . bp_docs_get_genericon( 'attachment', get_the_ID() ) . '</a>';
 
 	echo $html;
 }
@@ -2275,7 +2275,7 @@ function bp_docs_doc_attachment_drawer() {
 
 	if ( ! empty( $atts ) ) {
 		$html .= '<ul>';
-		$html .= '<h4>' . __( 'Attachments', 'buddypress-docs' ) . '</h4>';
+		$html .= '<h4>' . esc_html__( 'Attachments', 'buddypress-docs' ) . '</h4>';
 
 		foreach ( $atts as $att ) {
 			$html .= bp_docs_attachment_item_markup( $att->ID, 'simple' );
@@ -2402,9 +2402,9 @@ function bp_docs_doc_row_classes() {
 function bp_docs_doc_trash_notice() {
 	$status = get_post_status( get_the_ID() );
 	if ( 'trash' == $status ) {
-		echo ' <span title="' . __( 'This Doc is in the Trash', 'buddypress-docs' ) . '" class="bp-docs-trashed-doc-notice">' . __( 'Trash', 'buddypress-docs' ) . '</span>';
+		echo ' <span title="' . esc_attr__( 'This Doc is in the Trash', 'buddypress-docs' ) . '" class="bp-docs-trashed-doc-notice">' . esc_html__( 'Trash', 'buddypress-docs' ) . '</span>';
 	} elseif ( 'bp_docs_pending' == $status  ) {
-		echo ' <span title="' . __( 'This Doc is awaiting moderation', 'buddypress-docs' ) . '" class="bp-docs-pending-doc-notice">' . __( 'Awaiting Moderation', 'buddypress-docs' ) . '</span>';
+		echo ' <span title="' . esc_attr__( 'This Doc is awaiting moderation', 'buddypress-docs' ) . '" class="bp-docs-pending-doc-notice">' . esc_html__( 'Awaiting Moderation', 'buddypress-docs' ) . '</span>';
 	}
 }
 
@@ -2464,12 +2464,12 @@ function bp_docs_ajax_value_inputs() {
 		$group_id = 0;
 	}
 	?>
-	<input type="hidden" id="directory-group-id" value="<?php echo $group_id; ?>">
+	<input type="hidden" id="directory-group-id" value="<?php echo esc_attr( $group_id ); ?>">
 	<?php
 	// Store the user ID in a hidden input.
 	$user_id = bp_displayed_user_id();
 	?>
-	<input type="hidden" id="directory-user-id" value="<?php echo $user_id; ?>">
+	<input type="hidden" id="directory-user-id" value="<?php echo esc_attr( $user_id ); ?>">
 	<?php
 	// Allow other plugins to add inputs.
 	do_action( 'bp_docs_ajax_value_inputs', $group_id, $user_id );
@@ -2525,7 +2525,7 @@ function bp_docs_genericon( $glyph_name, $object_id = null ) {
 		if ( empty( $object_id ) ) {
 			$object_id = get_the_ID();
 		}
-		$icon_markup = '<i class="genericon genericon-' . $glyph_name . '"></i>';
+		$icon_markup = '<i class="genericon genericon-' . esc_attr( $glyph_name ) . '"></i>';
 		return apply_filters( 'bp_docs_get_genericon', $icon_markup, $glyph_name, $object_id );
 	}
 

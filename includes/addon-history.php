@@ -367,7 +367,7 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
 
 		$base_url = trailingslashit( get_permalink() . BP_DOCS_HISTORY_SLUG );
 
-		$date = '<a href="' . add_query_arg( 'revision', $revision->ID ) . '">' . bp_format_time( strtotime( $revision->post_date ), false, false /* don't double localize time */ ) . '</a>';
+		$date = '<a href="' . esc_url( add_query_arg( 'revision', $revision->ID ) ) . '">' . bp_format_time( strtotime( $revision->post_date ), false, false /* don't double localize time */ ) . '</a>';
 		$name = bp_core_get_userlink( $revision->post_author );
 
 		if ( 'form-table' == $format ) {
@@ -380,7 +380,7 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
 			$class = $class ? '' : " class='alternate'";
 
 			if ( $post->ID != $revision->ID && $can_edit_post )
-				$actions = '<a class="confirm" href="' . wp_nonce_url( add_query_arg( array( 'revision' => $revision->ID, 'action' => 'restore' ), $base_url ), "restore-post_$post->ID|$revision->ID" ) . '">' . __( 'Restore', 'buddypress-docs' ) . '</a>';
+				$actions = '<a class="confirm" href="' . esc_url( wp_nonce_url( add_query_arg( array( 'revision' => $revision->ID, 'action' => 'restore' ), $base_url ), "restore-post_$post->ID|$revision->ID" ) ) . '">' . __( 'Restore', 'buddypress-docs' ) . '</a>';
 			else
 				$actions = '';
 
