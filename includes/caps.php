@@ -11,7 +11,9 @@
  */
 
 // Exit if accessed directly
-if ( !defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Map our caps to WP's
@@ -42,7 +44,7 @@ function bp_docs_map_meta_caps( $caps, $cap, $user_id, $args ) {
 			if ( ! $user_id ) {
 				$caps[] = 'do_not_allow';
 
-			// All logged-in users can create
+				// All logged-in users can create
 			} else {
 				$caps[] = 'exist';
 			}
@@ -142,11 +144,11 @@ function bp_docs_get_doc_for_caps( $args = array() ) {
 	global $post;
 
 	$doc_id = 0;
-	$doc = NULL;
+	$doc    = null;
 	if ( isset( $args[0] ) ) {
 		$doc_id = $args[0];
-		$doc = get_post( $doc_id );
-	} else if ( isset( $post->ID ) ) {
+		$doc    = get_post( $doc_id );
+	} elseif ( isset( $post->ID ) ) {
 		$doc = $post;
 	}
 
@@ -169,8 +171,8 @@ function bp_docs_user_has_custom_access( $user_id, $doc_settings, $key ) {
 	// Default to true, so that if it's not set to 'custom', you pass through
 	$has_access = true;
 
-	if ( isset( $doc_settings[$key] ) && 'custom' == $doc_settings[$key] && is_array( $doc_settings[$key] ) ) {
-		$has_access = in_array( $user_id, $doc_settings[$key] );
+	if ( isset( $doc_settings[ $key ] ) && 'custom' == $doc_settings[ $key ] && is_array( $doc_settings[ $key ] ) ) {
+		$has_access = in_array( $user_id, $doc_settings[ $key ] );
 	}
 
 	return $has_access;
