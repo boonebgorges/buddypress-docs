@@ -13,7 +13,7 @@
  * @since 1.0-beta
  */
 function bp_docs_edit_doc_title() {
-	echo bp_docs_get_edit_doc_title();
+	echo esc_html( bp_docs_get_edit_doc_title() );
 }
 	/**
 	 * Returns the title of the doc currently being edited, when it exists
@@ -47,7 +47,7 @@ function bp_docs_edit_doc_title() {
  * @since 1.0-beta
  */
 function bp_docs_edit_doc_slug() {
-	echo bp_docs_get_edit_doc_slug();
+	echo esc_attr( bp_docs_get_edit_doc_slug() );
 }
 	/**
 	 * Returns the slug of the doc currently being edited, when it exists
@@ -76,6 +76,7 @@ function bp_docs_edit_doc_slug() {
  * @since 1.0-beta
  */
 function bp_docs_edit_doc_content() {
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo bp_docs_get_edit_doc_content();
 }
 	/**
@@ -137,15 +138,18 @@ function bp_docs_edit_parent_dropdown() {
 	$doc_query->reset_postdata();
 
 	$pages = wp_dropdown_pages( array(
+		// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
 		'post_type'        => $bp->bp_docs->post_type_name,
 		'include'          => $include,
 		'selected'         => $parent,
+		// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
 		'name'             => 'parent_id',
-		'show_option_none' => __( '(no parent)', 'buddypress-docs' ),
+		'show_option_none' => esc_html__( '(no parent)', 'buddypress-docs' ),
 		'sort_column'      => 'menu_order, post_title',
 		'echo'             => 0 )
 	);
 
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo $pages;
 }
 

@@ -116,9 +116,11 @@ class BP_Docs_Widget_Recent_Docs extends WP_Widget {
 		$doc_args = apply_filters( 'bp_docs_widget_query_args', $doc_args );
 
 		if ( bp_docs_has_docs( $doc_args ) ) :
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo $args['before_widget'];
 			if ( $title ) {
-				echo $args['before_title'] . $title . $args['after_title'];
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo $args['before_title'] . esc_html( $title ) . $args['after_title'];
 			} ?>
 			<ul>
 			<?php while ( bp_docs_has_docs() ) : bp_docs_the_doc(); ?>
@@ -130,7 +132,10 @@ class BP_Docs_Widget_Recent_Docs extends WP_Widget {
 				</li>
 			<?php endwhile; ?>
 		</ul>
-		<?php echo $args['after_widget'];
+
+		<?php
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $args['after_widget'];
 
 		endif;
 
@@ -174,17 +179,17 @@ class BP_Docs_Widget_Recent_Docs extends WP_Widget {
 		$show_date = isset( $instance['show_date'] ) ? (bool) $instance['show_date'] : false;
 		$context_aware = isset( $instance['context_aware'] ) ? (bool) $instance['context_aware'] : false;
 		?>
-		<p><label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:', 'buddypress-docs' ); ?></label>
-		<input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo $title; ?>" /></p>
+		<p><label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_html_e( 'Title:', 'buddypress-docs' ); ?></label>
+		<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>" /></p>
 
-		<p><label for="<?php echo $this->get_field_id( 'number' ); ?>"><?php _e( 'Number of docs to show:', 'buddypress-docs' ); ?></label>
-		<input class="tiny-text" id="<?php echo $this->get_field_id( 'number' ); ?>" name="<?php echo $this->get_field_name( 'number' ); ?>" type="number" step="1" min="1" value="<?php echo $number; ?>" size="3" /></p>
+		<p><label for="<?php echo esc_attr( $this->get_field_id( 'number' ) ); ?>"><?php esc_html_e( 'Number of docs to show:', 'buddypress-docs' ); ?></label>
+		<input class="tiny-text" id="<?php echo esc_attr( $this->get_field_id( 'number' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'number' ) ); ?>" type="number" step="1" min="1" value="<?php echo esc_attr( $number ); ?>" size="3" /></p>
 
-		<p><input class="checkbox" type="checkbox"<?php checked( $show_date ); ?> id="<?php echo $this->get_field_id( 'show_date' ); ?>" name="<?php echo $this->get_field_name( 'show_date' ); ?>" />
-		<label for="<?php echo $this->get_field_id( 'show_date' ); ?>"><?php _e( 'Display post date?', 'buddypress-docs' ); ?></label></p>
+		<p><input class="checkbox" type="checkbox"<?php checked( $show_date ); ?> id="<?php echo esc_attr( $this->get_field_id( 'show_date' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'show_date' ) ); ?>" />
+		<label for="<?php echo esc_attr( $this->get_field_id( 'show_date' ) ); ?>"><?php esc_html_e( 'Display post date?', 'buddypress-docs' ); ?></label></p>
 
-		<p><input class="checkbox" type="checkbox"<?php checked( $context_aware ); ?> id="<?php echo $this->get_field_id( 'context_aware' ); ?>" name="<?php echo $this->get_field_name( 'context_aware' ); ?>" />
-		<label for="<?php echo $this->get_field_id( 'context_aware' ); ?>"><?php _e( 'When used within a group or on a user&rsquo;s profile, limit docs to the current group or displayed user&rsquo;s docs.', 'buddypress-docs' ); ?></label></p>
+		<p><input class="checkbox" type="checkbox"<?php checked( $context_aware ); ?> id="<?php echo esc_attr( $this->get_field_id( 'context_aware' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'context_aware' ) ); ?>" />
+		<label for="<?php echo esc_attr( $this->get_field_id( 'context_aware' ) ); ?>"><?php esc_html_e( 'When used within a group or on a user&rsquo;s profile, limit docs to the current group or displayed user&rsquo;s docs.', 'buddypress-docs' ); ?></label></p>
 
 		<?php
 	}

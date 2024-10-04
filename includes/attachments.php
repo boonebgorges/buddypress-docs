@@ -113,14 +113,14 @@ class BP_Docs_Attachments {
 			}
 
 			if ( ! $this->filename_is_safe( $fn ) ) {
-				wp_die( __( 'File not found.', 'buddypress-docs' ) );
+				wp_die( esc_html__( 'File not found.', 'buddypress-docs' ) );
 			}
 
 			$uploads = wp_upload_dir( null, false );
 			$filepath = $uploads['path'] . DIRECTORY_SEPARATOR . $fn;
 
 			if ( ! file_exists( $filepath ) ) {
-				wp_die( __( 'File not found.', 'buddypress-docs' ) );
+				wp_die( esc_html__( 'File not found.', 'buddypress-docs' ) );
 			}
 
 			error_reporting( 0 );
@@ -633,7 +633,7 @@ class BP_Docs_Attachments {
 		?>
 
 		<div id="docs-filter-section-attachments" class="docs-filter-section<?php if ( $has_attachment ) : ?> docs-filter-section-open<?php endif ?>">
-			<form method="get" action="<?php echo $form_action ?>">
+			<form method="get" action="<?php echo esc_attr( $form_action ); ?>">
 				<label for="has-attachment"><?php _e( 'Has attachment?', 'buddypress-docs' ) ?></label>
 				<select id="has-attachment" name="has-attachment">
 					<option value="yes"<?php selected( $has_attachment, 'yes' ) ?>><?php _e( 'Yes', 'buddypress-docs' ) ?></option>
@@ -853,23 +853,36 @@ class BP_Docs_Attachments {
 			<p><?php _e( '<strong>Your BuddyPress Docs attachments directory is publicly accessible.</strong> Doc attachments will not be properly protected from direct viewing, even if the parent Docs are non-public.', 'buddypress-docs' ) ?></p>
 
 			<?php if ( $help_p ) : ?>
-				<p><?php echo $help_p ?></p>
+				<p><?php echo wp_kses_post( $help_p ); ?></p>
 			<?php endif ?>
 
-			<p><?php
-				printf(
-					__( 'Access protection was last checked %s and will be checked again %s. <a href="%s">Test access protection now.</a>', 'buddypress-docs' ),
-					$last_check_time,
-					$expiry_stamp,
-					$force_check_url
-				);
-			?></p>
+			<p>
+				<?php
+					echo wp_kses_post(
+						sprintf(
+							__( 'Access protection was last checked %s and will be checked again %s. <a href="%s">Test access protection now.</a>', 'buddypress-docs' ),
+							esc_html( $last_check_time ),
+							esc_html( $expiry_stamp ),
+							esc_url( $force_check_url )
+						)
+					);
+				?>
+			</p>
 
 			<?php if ( $help_url ) : ?>
-				<p><?php printf( __( 'See <a href="%s">this wiki page</a> for more information.', 'buddypress-docs' ), $help_url ) ?></p>
+				<p>
+					<?php
+					echo wp_kses_post(
+						sprintf(
+							__( 'See <a href="%s">this wiki page</a> for more information.', 'buddypress-docs' ),
+							esc_url( $help_url )
+						)
+					);
+					?>
+				</p>
 			<?php endif ?>
 
-			<p><a href="<?php echo $dismiss_url ?>"><?php _e( 'Dismiss this message', 'buddypress-docs' ) ?></a></p>
+			<p><a href="<?php echo esc_url( $dismiss_url ); ?>"><?php esc_html_e( 'Dismiss this message', 'buddypress-docs' ) ?></a></p>
 		</div>
 		<?php
 	}

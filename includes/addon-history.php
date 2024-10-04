@@ -428,6 +428,7 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
 </thead>
 <tbody>
 
+<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 <?php echo $rows; ?>
 
 </tbody>
@@ -450,10 +451,8 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
 function bp_docs_history_tab() {
 	if ( current_user_can( 'bp_docs_view_history' ) ) : ?>
 		<li<?php if ( bp_docs_is_doc_history() ) : ?> class="current"<?php endif ?>>
-			<a href="<?php echo bp_docs_get_doc_link() . BP_DOCS_HISTORY_SLUG ?>"><?php _e( 'History', 'buddypress-docs' ) ?></a>
+			<a href="<?php echo esc_url( bp_docs_get_doc_link() . BP_DOCS_HISTORY_SLUG ); ?>"><?php esc_html_e( 'History', 'buddypress-docs' ) ?></a>
 		</li>
 	<?php endif;
 }
 add_action( 'bp_docs_header_tabs', 'bp_docs_history_tab' );
-
-?>

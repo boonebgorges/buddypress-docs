@@ -818,6 +818,7 @@ class BP_Docs_Groups_Integration {
 					$group_permalink = bp_get_group_url( $group ) ?>
 
 					<li><a href="<?php echo esc_url( $group_permalink ); ?>">
+						<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 						<?php echo bp_core_fetch_avatar( array(
 							'item_id'    => $group_id,
 							'object'     => 'group',
@@ -1497,15 +1498,17 @@ function bp_docs_group_tabs( $group = false ) {
 	// BP 1.2 - 1.3 support
 	$groups_slug = !empty( $bp->groups->root_slug ) ? $bp->groups->root_slug : $bp->groups->slug;
 
+	$group_url = bp_get_group_url( $group );
+
 ?>
-	<li<?php if ( $bp->bp_docs->current_view == 'list' ) : ?> class="current"<?php endif; ?>><a href="<?php echo $bp->root_domain . '/' . $groups_slug ?>/<?php echo $group->slug ?>/<?php echo $bp->bp_docs->slug ?>/"><?php _e( 'View Docs', 'buddypress-docs' ) ?></a></li>
+	<li<?php if ( $bp->bp_docs->current_view == 'list' ) : ?> class="current"<?php endif; ?>><a href="<?php echo esc_url( $group_url . $bp->bp_docs->slug ); ?>/"><?php esc_html_e( 'View Docs', 'buddypress-docs' ) ?></a></li>
 
 	<?php if ( current_user_can( 'bp_docs_create' ) ) : ?>
-		<li<?php if ( 'create' == $bp->bp_docs->current_view ) : ?> class="current"<?php endif; ?>><a href="<?php echo $bp->root_domain . '/' . $groups_slug ?>/<?php echo $group->slug ?>/<?php echo $bp->bp_docs->slug ?>/create"><?php _e( 'New Doc', 'buddypress-docs' ) ?></a></li>
+		<li<?php if ( 'create' == $bp->bp_docs->current_view ) : ?> class="current"<?php endif; ?>><a href="<?php echo esc_url( $group_url . $bp->bp_docs->slug ); ?>/create"><?php esc_html_e( 'New Doc', 'buddypress-docs' ) ?></a></li>
 	<?php endif ?>
 
 	<?php if ( bp_docs_is_existing_doc() ) : ?>
-		<li class="current"><a href="<?php echo $bp->root_domain . '/' . $groups_slug ?>/<?php echo $group->slug ?>/<?php echo $bp->bp_docs->slug ?>/<?php echo $post->post_name ?>"><?php the_title() ?></a></li>
+		<li class="current"><a href="<?php echo esc_url( $group_url . $bp->bp_docs->slug . '/' . $post->post_name ); ?>"><?php the_title() ?></a></li>
 	<?php endif ?>
 
 <?php
@@ -1541,7 +1544,7 @@ function bp_docs_get_group_docs_url( $group = null ) {
  * @since 1.0-beta
  */
 function bp_docs_group_doc_permalink() {
-	echo bp_docs_get_group_doc_permalink();
+	echo esc_url( bp_docs_get_group_doc_permalink() );
 }
 	/**
 	 * Returns a link to a specific document in a group
@@ -1706,7 +1709,7 @@ function bp_docs_unlink_from_group( $doc_id, $group_id = 0 ) {
  * @since 1.9.0
  */
 function bp_docs_unlink_from_group_link( $doc_id = false ) {
-	echo bp_docs_get_unlink_from_group_link( $doc_id, $group_id );
+	echo esc_url( bp_docs_get_unlink_from_group_link( $doc_id, $group_id ) );
 }
 	/**
 	 * Get the URL for removing a Doc from a group.
