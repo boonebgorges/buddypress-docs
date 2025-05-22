@@ -1110,8 +1110,15 @@ function bp_docs_save_doc_via_post() {
 		'redirect_to'  => 'single',
 	);
 
-	if ( isset( $_POST['doc_id'] ) && 0 != $_POST['doc_id'] ) {
+	if ( empty( $args['doc_id'] ) && ! empty( $_POST['doc_id'] ) ) {
 		$args['doc_id'] = (int) $_POST['doc_id'];
+	}
+
+	// Existing Docs have a more specific permission check.
+	if ( $args['doc_id'] && ! current_user_can( 'bp_docs_edit', $args['doc_id'] ) ) {
+		return;
+	} elseif ( ! $args['doc_id'] && ! current_user_can( 'bp_docs_create' ) ) {
+		return;
 	}
 
 	if ( isset( $_POST['doc']['title'] ) ) {

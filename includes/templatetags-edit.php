@@ -99,6 +99,31 @@ function bp_docs_edit_doc_content() {
 	}
 
 /**
+ * Echoes a nonce field for specific doc editing.
+ *
+ * @since 2.2.5
+ *
+ * @param int $doc_id The ID of the doc being edited. If not set, will use the current doc.
+ *                    We make this optional because old templates may not pass it.
+ * @return void
+ */
+function bp_docs_edit_doc_nonce( $doc_id = null ) {
+	if ( ! $doc_id ) {
+		$doc = bp_docs_get_current_doc();
+		if ( $doc ) {
+			$doc_id = $doc->ID;
+		}
+	}
+
+	if ( ! $doc_id ) {
+		return;
+	}
+
+	wp_nonce_field( 'bp_docs_edit_' . (string) $doc_id, 'bp_docs_edit_nonce' );
+}
+add_action( 'bp_docs_before_doc_edit_content', 'bp_docs_edit_doc_nonce' );
+
+/**
  * Get a list of an item's docs for display in the parent dropdown
  *
  * @since 1.0-beta

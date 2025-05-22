@@ -457,15 +457,27 @@ class BP_Docs_Component extends BP_Component {
 
 		if ( ! empty( $_POST['doc-edit-submit'] ) || ! empty( $_POST['doc-edit-submit-continue'] ) ) {
 
-			// Existing Docs have a more specific permission check.
-			$doc = bp_docs_get_current_doc();
-			if ( $doc && ! current_user_can( 'bp_docs_edit', $doc->ID ) ) {
-				return;
-			} elseif ( ! $doc && ! current_user_can( 'bp_docs_create' ) ) {
-				return;
+			$doc_id = false;
+			if ( isset( $_POST['doc-id'] ) ) {
+				$doc_id = absint( $_POST['doc-id'] );
 			}
 
+			$current_doc = bp_docs_get_current_doc();
+			if ( $current_doc ) {
+				// Don't allow editing if there's a mismatch.
+				if ( $doc_id && $doc_id !== $current_doc->ID ) {
+					return;
+				}
+
+				$doc_id = $current_doc->ID;
+			}
+
+			// Legacy.
 			check_admin_referer( 'bp_docs_save' );
+
+			if ( $doc_id ) {
+				check_admin_referer( 'bp_docs_edit_' . (string) $doc_id, 'bp_docs_edit_nonce' );
+			}
 
 			$result = bp_docs_save_doc_via_post();
 
