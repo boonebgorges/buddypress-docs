@@ -115,10 +115,11 @@ class BP_Docs_Hierarchy {
 				$parent_url = bp_docs_get_doc_link( $parent->ID );
 				$parent_title = $parent->post_title;
 
-				$html = "<p>" . __( 'Parent: ', 'buddypress-docs' ) . "<a href=\"$parent_url\" title=\"$parent_title\">$parent_title</a></p>";
+				$html = '<p>' . esc_html__( 'Parent: ', 'buddypress-docs' ) . sprintf( '<a href="%s" title="%s">%s</a>', esc_url( $parent_url ), esc_attr( $parent_title ), esc_html( $parent_title ) );
 			}
 		}
 
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo apply_filters( 'bp_docs_hierarchy_show_parent', $html, $parent );
 	}
 
@@ -165,11 +166,11 @@ class BP_Docs_Hierarchy {
 		// Create the HTML
 		$html = '';
 		if ( !empty( $child_data ) ) {
-			$html .= '<p>' . __( 'Children: ', 'buddypress-docs' );
+			$html .= '<p>' . esc_html__( 'Children: ', 'buddypress-docs' );
 
 			$children_html = array();
 			foreach( $child_data as $child ) {
-				$children_html[] = '<a href="' . $child['post_link'] . '">' . $child['post_name'] . '</a>';
+				$children_html[] = '<a href="' . esc_url( $child['post_link'] ) . '">' . esc_html( $child['post_name'] ) . '</a>';
 			}
 
 			$html .= implode( ', ', $children_html );
@@ -177,6 +178,7 @@ class BP_Docs_Hierarchy {
 			$html .= '</p>';
 		}
 
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo apply_filters( 'bp_docs_hierarchy_show_children', $html, $child_data );
 	}
 

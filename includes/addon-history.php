@@ -45,7 +45,7 @@ class BP_Docs_History {
 	function setup_params() {
 		global $bp;
 
-		if ( ! bp_docs_is_existing_doc() ) {
+		if ( ! bp_docs_is_doc_history() ) {
 			return;
 		}
 
@@ -86,7 +86,7 @@ class BP_Docs_History {
 	function setup_action() {
 		global $bp;
 
-		if ( ! bp_docs_is_existing_doc() ) {
+		if ( ! bp_docs_is_doc_history() ) {
 			return;
 		}
 
@@ -180,8 +180,10 @@ class BP_Docs_History {
 				}
 			}
 
-			if ( !$post = get_post( $this->revision->post_parent ) )
+			// If revision post parent is empty or no post, bail.
+			if ( empty( $this->revision->post_parent ) || ! $post = get_post( $this->revision->post_parent ) ) {
 				break;
+			}
 
 			// Revisions disabled and we're not looking at an autosave
 			if ( ! wp_revisions_enabled( $post ) && !wp_is_post_autosave( $this->revision ) ) {
@@ -365,7 +367,7 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
 
 		$base_url = trailingslashit( get_permalink() . BP_DOCS_HISTORY_SLUG );
 
-		$date = '<a href="' . add_query_arg( 'revision', $revision->ID ) . '">' . bp_format_time( strtotime( $revision->post_date ), false, false /* don't double localize time */ ) . '</a>';
+		$date = '<a href="' . esc_url( add_query_arg( 'revision', $revision->ID ) ) . '">' . bp_format_time( strtotime( $revision->post_date ), false, false /* don't double localize time */ ) . '</a>';
 		$name = bp_core_get_userlink( $revision->post_author );
 
 		if ( 'form-table' == $format ) {
@@ -378,7 +380,7 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
 			$class = $class ? '' : " class='alternate'";
 
 			if ( $post->ID != $revision->ID && $can_edit_post )
-				$actions = '<a class="confirm" href="' . wp_nonce_url( add_query_arg( array( 'revision' => $revision->ID, 'action' => 'restore' ), $base_url ), "restore-post_$post->ID|$revision->ID" ) . '">' . __( 'Restore', 'buddypress-docs' ) . '</a>';
+				$actions = '<a class="confirm" href="' . esc_url( wp_nonce_url( add_query_arg( array( 'revision' => $revision->ID, 'action' => 'restore' ), $base_url ), "restore-post_$post->ID|$revision->ID" ) ) . '">' . __( 'Restore', 'buddypress-docs' ) . '</a>';
 			else
 				$actions = '';
 
@@ -426,6 +428,7 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
 </thead>
 <tbody>
 
+<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 <?php echo $rows; ?>
 
 </tbody>
@@ -448,10 +451,8 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
 function bp_docs_history_tab() {
 	if ( current_user_can( 'bp_docs_view_history' ) ) : ?>
 		<li<?php if ( bp_docs_is_doc_history() ) : ?> class="current"<?php endif ?>>
-			<a href="<?php echo bp_docs_get_doc_link() . BP_DOCS_HISTORY_SLUG ?>"><?php _e( 'History', 'buddypress-docs' ) ?></a>
+			<a href="<?php echo esc_url( bp_docs_get_doc_link() . BP_DOCS_HISTORY_SLUG ); ?>"><?php esc_html_e( 'History', 'buddypress-docs' ) ?></a>
 		</li>
 	<?php endif;
 }
 add_action( 'bp_docs_header_tabs', 'bp_docs_history_tab' );
-
-?>

@@ -71,12 +71,12 @@ class BP_Docs_Folders {
 		) );
 
 		register_taxonomy( 'bp_docs_folder_in_user', 'bp_docs_folder', array(
-			'public' => true,
+			'public' => false,
 		) );
 
 		if ( bp_is_active( 'groups' ) ) {
 			register_taxonomy( 'bp_docs_folder_in_group', 'bp_docs_folder', array(
-				'public' => true,
+				'public' => false,
 			) );
 		}
 	}
@@ -1776,6 +1776,7 @@ function bp_docs_folder_selector( $args = array() ) {
 	if ( false === $r['echo'] ) {
 		return $retval;
 	} else {
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo $retval;
 	}
 }
@@ -1829,6 +1830,7 @@ function bp_docs_folder_type_selector( $args = array() ) {
 	if ( false === $r['echo'] ) {
 		return $type_selector;
 	} else {
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo $type_selector;
 	}
 }
@@ -1935,7 +1937,7 @@ function bp_docs_create_new_folder_markup( $args = array() ) {
 
 	<div style="clear:both"></div>
 
-	<div class="folder-type-selector-div <?php echo $folder_type_class ?>">
+	<div class="folder-type-selector-div <?php echo esc_url( $folder_type_class ); ?>">
 		<label for="new-folder-type"><?php _e( 'Folder type', 'buddypress-docs' ) ?></label>
 		<?php bp_docs_folder_type_selector( array(
 			'selected' => $r['selected'],
@@ -2056,7 +2058,7 @@ function bp_docs_display_folder_meta() {
 	echo sprintf(
 		'<p class="folder-meta" data-folder-id="%d">%s<a href="%s">%s</a>',
 		esc_attr( $folder_id ),
-		bp_docs_get_genericon( 'category', $folder_id ),
+		bp_docs_get_genericon( 'category', $folder_id ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		esc_url( bp_docs_get_folder_url( $folder_id ) ),
 		esc_attr( $folder->post_title )
 	);
@@ -2135,7 +2137,7 @@ function bp_docs_get_parent_folder_url( $folder_id = null ) {
  * @since 1.9.0
  */
 function bp_docs_manage_folders_url() {
-	echo bp_docs_get_manage_folders_url();
+	echo esc_url( bp_docs_get_manage_folders_url() );
 }
 	/**
 	 * Generate a manage-folders URL relative to the current context.

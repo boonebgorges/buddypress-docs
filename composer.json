@@ -1,7 +1,7 @@
 {
     "name": "boonebgorges/buddypress-docs",
     "description": "Collaborative document editing for BuddyPress",
-    "version": "2.1.4",
+    "version": "2.2.5",
     "type": "project",
     "license": "GPLv3",
     "require": {

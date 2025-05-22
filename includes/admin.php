@@ -39,7 +39,7 @@ class BP_Docs_Admin {
 	public function settings_cb() {
 		?>
 <div class="wrap">
-	<form method="post" action="<?php echo admin_url( 'options.php' ) ?>">
+	<form method="post" action="<?php echo esc_url( admin_url( 'options.php' ) ) ?>">
 		<h2><?php _e( 'BuddyPress Docs Settings', 'buddypress-docs' ) ?></h2>
 		<?php settings_fields( 'bp-docs-settings' ) ?>
 		<?php do_settings_sections( 'bp-docs-settings' ) ?>
@@ -182,7 +182,7 @@ class BP_Docs_Admin {
 
 		?>
 		<label for="bp-docs-directory-title" class="screen-reader-text"><?php _e( "Change the title of the main Docs directory.", 'buddypress-docs' ) ?></label>
-		<input name="bp-docs-directory-title" id="bp-docs-directory-title" type="text" value="<?php echo $label; ?>" />
+		<input name="bp-docs-directory-title" id="bp-docs-directory-title" type="text" value="<?php echo esc_html( $label ); ?>" />
 		<p class="description"><?php _e( "Change the title of the main Docs directory from 'Docs Directory' to whatever you&rsquo;d like.", 'buddypress-docs' ) ?></p>
 
 		<?php

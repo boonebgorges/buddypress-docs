@@ -199,6 +199,7 @@ class BP_Docs_Taxonomy {
 				$html = '<p>' . sprintf( __( 'Tags: %s', 'buddypress-docs' ), implode( ', ', $tagtext ) ) . '</p>';
 			}
 
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo apply_filters( 'bp_docs_taxonomy_show_terms', $html, $tagtext );
 		}
 	}
@@ -298,6 +299,7 @@ class BP_Docs_Taxonomy {
 		?>
 
 		<td class="tags-cell">
+			<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 			<?php echo implode( ', ', $tagtext ) ?>
 		</td>
 
@@ -374,7 +376,7 @@ class BP_Docs_Taxonomy {
 
 					?>
 					<li>
-					<a href="<?php echo bp_docs_get_tag_link( array( 'tag' => $term, 'type' => 'url' ) ) ?>" title="<?php echo esc_html( $term_name ) ?>"><?php echo esc_html( $term_name ) ?> <?php printf( __( '(%d)', 'buddypress-docs' ), $term_count ) ?></a>
+					<a href="<?php echo esc_url( bp_docs_get_tag_link( array( 'tag' => $term, 'type' => 'url' ) ) ); ?>" title="<?php echo esc_html( $term_name ) ?>"><?php echo esc_html( $term_name ) ?> <?php echo esc_html( sprintf( __( '(%d)', 'buddypress-docs' ), $term_count ) ); ?></a>
 					</li>
 
 				<?php endforeach ?>
@@ -483,7 +485,7 @@ function bp_docs_get_tag_link( $args = array() ) {
 	if ( $type != 'html' )
 		return apply_filters( 'bp_docs_get_tag_link_url', $url, $tag, $type );
 
-	$html = '<a href="' . $url . '" title="' . sprintf( __( 'Docs tagged %s', 'buddypress-docs' ), esc_attr( $tag ) ) . '">' . esc_html( $tag ) . '</a>';
+	$html = '<a href="' . esc_url( $url  ). '" title="' . esc_attr( sprintf( __( 'Docs tagged %s', 'buddypress-docs' ), esc_attr( $tag ) ) ) . '">' . esc_html( $tag ) . '</a>';
 
 	return apply_filters( 'bp_docs_get_tag_link', $html, $url, $tag, $type );
 }
@@ -555,47 +557,48 @@ function bp_docs_post_categories_meta_box( $post ) {
 	$tax = get_taxonomy($taxonomy);
 
 	?>
-	<div id="taxonomy-<?php echo $taxonomy; ?>" class="categorydiv">
-		<ul id="<?php echo $taxonomy; ?>-tabs" class="category-tabs">
-			<li class="tabs"><a href="#<?php echo $taxonomy; ?>-all" tabindex="3"><?php echo $tax->labels->all_items; ?></a></li>
-			<li class="hide-if-no-js"><a href="#<?php echo $taxonomy; ?>-pop" tabindex="3"><?php _e( 'Most Used', 'buddypress-docs' ); ?></a></li>
+	<div id="taxonomy-<?php echo esc_attr( $taxonomy ); ?>" class="categorydiv">
+		<ul id="<?php echo esc_attr( $taxonomy ); ?>-tabs" class="category-tabs">
+			<li class="tabs"><a href="#<?php echo esc_attr( $taxonomy ); ?>-all" tabindex="3"><?php echo esc_html( $tax->labels->all_items ); ?></a></li>
+			<li class="hide-if-no-js"><a href="#<?php echo esc_attr( $taxonomy ); ?>-pop" tabindex="3"><?php _e( 'Most Used', 'buddypress-docs' ); ?></a></li>
 		</ul>
 
-		<div id="<?php echo $taxonomy; ?>-pop" class="tabs-panel" style="display: none;">
-			<ul id="<?php echo $taxonomy; ?>checklist-pop" class="categorychecklist form-no-clear" >
+		<div id="<?php echo esc_attr( $taxonomy ); ?>-pop" class="tabs-panel" style="display: none;">
+			<ul id="<?php echo esc_attr( $taxonomy ); ?>checklist-pop" class="categorychecklist form-no-clear" >
 				<?php $popular_ids = wp_popular_terms_checklist($taxonomy); ?>
 			</ul>
 		</div>
 
-		<div id="<?php echo $taxonomy; ?>-all" class="tabs-panel">
+		<div id="<?php echo esc_attr( $taxonomy ); ?>-all" class="tabs-panel">
 			<?php
-            $name = ( $taxonomy == 'category' ) ? 'post_category' : 'tax_input[' . $taxonomy . ']';
-            echo "<input type='hidden' name='{$name}[]' value='0' />"; // Allows for an empty term set to be sent. 0 is an invalid Term ID and will be ignored by empty() checks.
+            $name = ( $taxonomy == 'category' ) ? 'post_category' : 'tax_input[' . esc_attr( $taxonomy ) . ']';
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+            echo '<input type="hidden" name="' . $name . '[]" value="0" />'; // Allows for an empty term set to be sent. 0 is an invalid Term ID and will be ignored by empty() checks.
             ?>
-			<ul id="<?php echo $taxonomy; ?>checklist" class="list:<?php echo $taxonomy?> categorychecklist form-no-clear">
+			<ul id="<?php echo esc_attr( $taxonomy ); ?>checklist" class="list:<?php echo esc_attr( $taxonomy ); ?> categorychecklist form-no-clear">
 				<?php wp_terms_checklist($bp->bp_docs->current_post->ID, array( 'taxonomy' => $taxonomy, 'popular_cats' => $popular_ids ) ) ?>
 			</ul>
 		</div>
 	<?php if ( current_user_can($tax->cap->edit_terms) ) : ?>
-			<div id="<?php echo $taxonomy; ?>-adder" class="wp-hidden-children">
+			<div id="<?php echo esc_attr( $taxonomy ); ?>-adder" class="wp-hidden-children">
 				<h4>
-					<a id="<?php echo $taxonomy; ?>-add-toggle" href="#<?php echo $taxonomy; ?>-add" class="hide-if-no-js" tabindex="3">
+					<a id="<?php echo esc_attr( $taxonomy ); ?>-add-toggle" href="#<?php echo esc_attr( $taxonomy ); ?>-add" class="hide-if-no-js" tabindex="3">
 						<?php
 							/* translators: %s: add new taxonomy label */
-							printf( __( '+ %s', 'buddypress-docs' ), $tax->labels->add_new_item );
+						echo esc_html( sprintf( __( '+ %s', 'buddypress-docs' ), $tax->labels->add_new_item ) );
 						?>
 					</a>
 				</h4>
-				<p id="<?php echo $taxonomy; ?>-add" class="category-add wp-hidden-child">
-					<label class="screen-reader-text" for="new<?php echo $taxonomy; ?>"><?php echo $tax->labels->add_new_item; ?></label>
-					<input type="text" name="new<?php echo $taxonomy; ?>" id="new<?php echo $taxonomy; ?>" class="form-required form-input-tip" value="<?php echo esc_attr( $tax->labels->new_item_name ); ?>" tabindex="3" aria-required="true"/>
-					<label class="screen-reader-text" for="new<?php echo $taxonomy; ?>_parent">
-						<?php echo $tax->labels->parent_item_colon; ?>
+				<p id="<?php echo esc_attr( $taxonomy ); ?>-add" class="category-add wp-hidden-child">
+					<label class="screen-reader-text" for="new<?php echo esc_attr( $taxonomy ); ?>"><?php echo esc_html( $tax->labels->add_new_item ); ?></label>
+					<input type="text" name="new<?php echo esc_attr( $taxonomy ); ?>" id="new<?php echo esc_attr( $taxonomy ); ?>" class="form-required form-input-tip" value="<?php echo esc_attr( $tax->labels->new_item_name ); ?>" tabindex="3" aria-required="true"/>
+					<label class="screen-reader-text" for="new<?php echo esc_attr( $taxonomy); ?>_parent">
+						<?php echo esc_html( $tax->labels->parent_item_colon ); ?>
 					</label>
 					<?php wp_dropdown_categories( array( 'taxonomy' => $taxonomy, 'hide_empty' => 0, 'name' => 'new'.$taxonomy.'_parent', 'orderby' => 'name', 'hierarchical' => 1, 'show_option_none' => '&mdash; ' . $tax->labels->parent_item . ' &mdash;', 'tab_index' => 3 ) ); ?>
-					<input type="button" id="<?php echo $taxonomy; ?>-add-submit" class="add:<?php echo $taxonomy ?>checklist:<?php echo $taxonomy ?>-add button category-add-sumbit" value="<?php echo esc_attr( $tax->labels->add_new_item ); ?>" tabindex="3" />
+					<input type="button" id="<?php echo esc_attr( $taxonomy ); ?>-add-submit" class="add:<?php echo esc_attr( $taxonomy ); ?>checklist:<?php echo esc_attr( $taxonomy ); ?>-add button category-add-sumbit" value="<?php echo esc_attr( $tax->labels->add_new_item ); ?>" tabindex="3" />
 					<?php wp_nonce_field( 'add-'.$taxonomy, '_ajax_nonce-add-'.$taxonomy, false ); ?>
-					<span id="<?php echo $taxonomy; ?>-ajax-response"></span>
+					<span id="<?php echo esc_attr( $taxonomy ); ?>-ajax-response"></span>
 				</p>
 			</div>
 		<?php endif; ?>
@@ -603,4 +606,20 @@ function bp_docs_post_categories_meta_box( $post ) {
 	<?php
 }
 
-?>
+/**
+ * The number of tags that should be shown before truncating on directories.
+ *
+ * @since 2.2.4
+ *
+ * @return int
+ */
+function bp_docs_get_tags_truncate_count() {
+	/**
+	 * Filters the number of tags that should be shown before truncating on directories.
+	 *
+	 * @since 2.2.4
+	 *
+	 * @param int $count The number of tags to show before truncating.
+	 */
+	return apply_filters( 'bp_docs_get_tags_truncate_count', 6 );
+}

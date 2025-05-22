@@ -457,15 +457,27 @@ class BP_Docs_Component extends BP_Component {
 
 		if ( ! empty( $_POST['doc-edit-submit'] ) || ! empty( $_POST['doc-edit-submit-continue'] ) ) {
 
-			// Existing Docs have a more specific permission check.
-			$doc = bp_docs_get_current_doc();
-			if ( $doc && ! current_user_can( 'bp_docs_edit', $doc->ID ) ) {
-				return;
-			} elseif ( ! $doc && ! current_user_can( 'bp_docs_create' ) ) {
-				return;
+			$doc_id = false;
+			if ( isset( $_POST['doc-id'] ) ) {
+				$doc_id = absint( $_POST['doc-id'] );
 			}
 
+			$current_doc = bp_docs_get_current_doc();
+			if ( $current_doc ) {
+				// Don't allow editing if there's a mismatch.
+				if ( $doc_id && $doc_id !== $current_doc->ID ) {
+					return;
+				}
+
+				$doc_id = $current_doc->ID;
+			}
+
+			// Legacy.
 			check_admin_referer( 'bp_docs_save' );
+
+			if ( $doc_id ) {
+				check_admin_referer( 'bp_docs_edit_' . (string) $doc_id, 'bp_docs_edit_nonce' );
+			}
 
 			$result = bp_docs_save_doc_via_post();
 
@@ -1083,17 +1095,29 @@ class BP_Docs_Component extends BP_Component {
 			$submitted_data = isset( buddypress()->bp_docs->submitted_data ) ? buddypress()->bp_docs->submitted_data : null;
 
 			$strings = array(
-				'upload_title' => __( 'Upload File', 'buddypress-docs' ),
-				'upload_button' => __( 'OK', 'buddypress-docs' ),
-				'still_working'	=> __( 'Still working?', 'buddypress-docs' ),
-				'and_x_more' => __( 'and %d more', 'buddypress-docs' ),
+				'and_x_more'        => __( 'and %d more', 'buddypress-docs' ),
 				'failed_submission' => ! empty( $submitted_data ) ? 1 : 0,
+				'show_all_tags'     => __( 'show all tags', 'buddypress-docs' ),
+				'show_fewer_tags'   => __( 'show fewer tags', 'buddypress-docs' ),
+				'still_working'	    => __( 'Still working?', 'buddypress-docs' ),
+				'upload_title'      => __( 'Upload File', 'buddypress-docs' ),
+				'upload_button'     => __( 'OK', 'buddypress-docs' ),
 			);
 
 			if ( bp_docs_is_doc_edit() ) {
 				$strings['pulse'] = bp_docs_heartbeat_pulse();
 			}
 			wp_localize_script( 'bp-docs-js', 'bp_docs', $strings );
+
+			$config = [
+				'tagCloudCount' => bp_docs_get_tags_truncate_count(),
+			];
+
+			wp_add_inline_script(
+				'bp-docs-js',
+				'const bpDocsConfig = ' . json_encode( $config ) . ';',
+				'before'
+			);
 
 			do_action( 'bp_docs_enqueue_scripts' );
 		}

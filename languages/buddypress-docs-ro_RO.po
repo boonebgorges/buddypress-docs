@@ -214,7 +214,7 @@ msgstr "Last Edited"
 
 #: includes/templates/docs/docs-loop.php:79
 msgid "Viewing %1$s-%2$s of %3$s docs"
-msgstr "Vizualizarea %1$ s-% 2$ s de %3$ s docs"
+msgstr "Vizualizarea %1$s-%2$s de %3$s docs"
 
 #: includes/templates/docs/docs-loop.php:89
 msgid "There are no docs for this view. Why not <a href=\"%s\">create one</a>?"

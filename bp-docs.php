@@ -379,23 +379,22 @@ class BP_Docs {
 		register_taxonomy( $this->associated_item_tax_name, array( $this->post_type_name ), array(
 			'labels'       => $associated_item_labels,
 			'hierarchical' => true,
+			'public'       => false,
 			'show_ui'      => false,
-			'query_var'    => true,
-			'rewrite'      => array( 'slug' => 'item' ),
 		) );
 
 		// Register the bp_docs_access taxonomy
 		register_taxonomy( $this->access_tax_name, array( $this->post_type_name ), array(
 			'hierarchical' => false,
+			'public'       => false,
 			'show_ui'      => false,
-			'query_var'    => false,
 		) );
 
 		// Register the bp_docs_comment_access taxonomy.
 		register_taxonomy( $this->comment_access_tax_name, array( $this->post_type_name ), array(
 			'hierarchical' => false,
+			'public'       => false,
 			'show_ui'      => false,
-			'query_var'    => false,
 		) );
 
 		do_action( 'bp_docs_registered_post_type' );

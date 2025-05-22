@@ -3,7 +3,7 @@
 
 	<?php if ( is_user_logged_in() ) : ?>
 		<?php if ( function_exists( 'bp_is_group' ) && bp_is_group() ) : ?>
-			<li<?php if ( bp_is_current_action( BP_DOCS_SLUG ) ) : ?> class="current"<?php endif ?>><a href="<?php bp_get_group_url( groups_get_current_group() ) ?><?php bp_docs_slug() ?>"><?php printf( __( "%s's Docs", 'buddypress-docs' ), bp_get_current_group_name() ) ?></a></li>
+			<li<?php if ( bp_is_current_action( BP_DOCS_SLUG ) ) : ?> class="current"<?php endif ?>><a href="<?php esc_url( bp_get_group_url( groups_get_current_group() ) ); ?><?php bp_docs_slug() ?>"><?php echo esc_html( sprintf( __( "%s's Docs", 'buddypress-docs' ), bp_get_current_group_name() ) ); ?></a></li>
 		<?php else : ?>
 			<li><a href="<?php bp_docs_mydocs_started_link() ?>"><?php _e( 'Started By Me', 'buddypress-docs' ) ?></a></li>
 			<li><a href="<?php bp_docs_mydocs_edited_link() ?>"><?php _e( 'Edited By Me', 'buddypress-docs' ) ?></a></li>

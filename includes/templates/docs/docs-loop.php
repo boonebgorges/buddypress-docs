@@ -15,6 +15,7 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 	<?php $breadcrumb = bp_docs_get_directory_breadcrumb(); ?>
 	<?php if ( $breadcrumb ) : ?>
 		<h2 class="directory-title">
+			<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 			<?php echo $breadcrumb; ?>
 		</h2>
 	<?php endif; ?>
@@ -100,7 +101,7 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 
 					<td class="folder-row-name" colspan=10>
 						<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class( 'folder-contents-toggle' ); ?>">
-							<span class="folder-toggle-link toggle-link-js"><a class="toggle-folder" id="expand-folder-<?php echo $folder->ID; ?>" data-folder-id="<?php echo $folder->ID; ?>" href="<?php echo esc_url( bp_docs_get_folder_url( $folder->ID ) ) ?>"><span class="hide-if-no-js"><?php bp_docs_genericon( 'expand', $folder->ID ); ?></span><?php bp_docs_genericon( 'category', $folder->ID ); ?><?php echo esc_html( $folder->post_title ) ?></a></span>
+							<span class="folder-toggle-link toggle-link-js"><a class="toggle-folder" id="expand-folder-<?php echo esc_attr( $folder->ID ); ?>" data-folder-id="<?php echo esc_attr( $folder->ID ); ?>" href="<?php echo esc_url( bp_docs_get_folder_url( $folder->ID ) ) ?>"><span class="hide-if-no-js"><?php bp_docs_genericon( 'expand', $folder->ID ); ?></span><?php bp_docs_genericon( 'category', $folder->ID ); ?><?php echo esc_html( $folder->post_title ) ?></a></span>
 							<div class="toggle-content folder-loop"></div>
 						</div>
 					</td>
@@ -113,7 +114,7 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 	<?php if ( bp_docs_has_docs( array( 'update_attachment_cache' => true ) ) ) : ?>
 		<?php $has_docs = true ?>
 		<?php while ( bp_docs_has_docs() ) : bp_docs_the_doc() ?>
-			<tr<?php bp_docs_doc_row_classes(); ?> data-doc-id="<?php echo get_the_ID() ?>">
+			<tr<?php bp_docs_doc_row_classes(); ?> data-doc-id="<?php echo esc_attr( get_the_ID() ); ?>">
 				<?php if ( bp_docs_enable_attachments() ) : ?>
 					<td class="attachment-clip-cell">
 						<?php bp_docs_attachment_icon() ?>
@@ -135,23 +136,23 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 						<?php bp_docs_doc_action_links() ?>
 					</div>
 
-					<div class="bp-docs-attachment-drawer" id="bp-docs-attachment-drawer-<?php echo get_the_ID() ?>">
+					<div class="bp-docs-attachment-drawer" id="bp-docs-attachment-drawer-<?php echo esc_attr( get_the_ID() ); ?>">
 						<?php bp_docs_doc_attachment_drawer() ?>
 					</div>
 				</td>
 
 				<?php if ( ! bp_docs_is_started_by() ) : ?>
 					<td class="author-cell">
-						<a href="<?php echo esc_url( bp_members_get_user_url( get_the_author_meta( 'ID' ) ) ); ?>" title="<?php echo bp_core_get_user_displayname( get_the_author_meta( 'ID' ) ) ?>"><?php echo bp_core_get_user_displayname( get_the_author_meta( 'ID' ) ) ?></a>
+						<a href="<?php echo esc_url( bp_members_get_user_url( get_the_author_meta( 'ID' ) ) ); ?>" title="<?php echo esc_attr( bp_core_get_user_displayname( get_the_author_meta( 'ID' ) ) ); ?>"><?php echo esc_html( bp_core_get_user_displayname( get_the_author_meta( 'ID' ) ) ); ?></a>
 					</td>
 				<?php endif; ?>
 
 				<td class="date-cell created-date-cell">
-					<?php echo get_the_date() ?>
+					<?php echo esc_html( get_the_date() ); ?>
 				</td>
 
 				<td class="date-cell edited-date-cell">
-					<?php echo get_the_modified_date() ?>
+					<?php echo esc_html( get_the_modified_date() ); ?>
 				</td>
 
 				<?php do_action( 'bp_docs_loop_additional_td' ) ?>
@@ -167,7 +168,7 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 
 			<td class="title-cell">
 				<?php if ( bp_docs_current_user_can_create_in_context() ) : ?>
-					<p class="no-docs"><?php printf( __( 'There are no docs for this view. Why not <a href="%s">create one</a>?', 'buddypress-docs' ), bp_docs_get_create_link() ); ?>
+					<p class="no-docs"><?php echo wp_kses_post( sprintf( __( 'There are no docs for this view. Why not <a href="%s">create one</a>?', 'buddypress-docs' ), esc_url( bp_docs_get_create_link() ) ) ); ?>
 				<?php else : ?>
 					<p class="no-docs"><?php _e( 'There are no docs for this view.', 'buddypress-docs' ); ?></p>
 				<?php endif; ?>
@@ -188,7 +189,7 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 	<?php if ( $has_docs ) : ?>
 		<div id="bp-docs-pagination">
 			<div id="bp-docs-pagination-count">
-				<?php printf( __( 'Viewing %1$s-%2$s of %3$s docs', 'buddypress-docs' ), bp_docs_get_current_docs_start(), bp_docs_get_current_docs_end(), bp_docs_get_total_docs_num() ); ?>
+				<?php echo esc_html( sprintf( __( 'Viewing %1$s-%2$s of %3$s docs', 'buddypress-docs' ), bp_docs_get_current_docs_start(), bp_docs_get_current_docs_end(), bp_docs_get_total_docs_num() ) ); ?>
 			</div>
 
 			<div id="bp-docs-paginate-links">

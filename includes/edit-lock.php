@@ -170,7 +170,7 @@ function bp_docs_is_doc_edit_locked( $doc_id = false ) {
  * @since 1.0-beta-2
  */
 function bp_docs_current_doc_locker_name() {
-	echo bp_docs_get_current_doc_locker_name();
+	echo esc_html( bp_docs_get_current_doc_locker_name() );
 }
 	/**
 	 * Get the name of the user locking the current document, if any
@@ -196,7 +196,7 @@ function bp_docs_current_doc_locker_name() {
  * @since 1.0-beta-2
  */
 function bp_docs_force_cancel_edit_lock_link() {
-	echo bp_docs_get_force_cancel_edit_lock_link();
+	echo esc_url( bp_docs_get_force_cancel_edit_lock_link() );
 }
 	/**
 	 * Get the URL for canceling the edit lock on the current doc
@@ -226,7 +226,7 @@ function bp_docs_force_cancel_edit_lock_link() {
  * @since 1.0-beta-2
  */
 function bp_docs_cancel_edit_link() {
-	echo bp_docs_get_cancel_edit_link();
+	echo esc_url( bp_docs_get_cancel_edit_link() );
 }
 	/**
 	 * Get the URL for canceling out of Edit mode on a doc

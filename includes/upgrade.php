@@ -37,7 +37,7 @@ function bp_docs_upgrade_notice() {
 
 	if ( ! empty( $_GET['bp_docs_upgraded'] ) ) {
 		flush_rewrite_rules(); // just in case. Hack
-		echo '<div class="updated message"><p>' . __( 'Upgrade complete!', 'buddypress-docs' ) . '</p></div>';
+		echo '<div class="updated message"><p>' . esc_html__( 'Upgrade complete!', 'buddypress-docs' ) . '</p></div>';
 	}
 
 	$upgrades = bp_docs_upgrade_check();
@@ -59,7 +59,7 @@ function bp_docs_upgrade_notice() {
 	?>
 	<div class="message error">
 		<p><?php _e( 'Thanks for updating BuddyPress Docs. We need to run a few quick operations before your new Docs is ready to use.', 'buddypress-docs' ) ?></p>
-		<p><strong><a href="<?php echo admin_url( 'edit.php?post_type=bp_doc&page=bp-docs-upgrade' ) ?>"><?php _e( 'Click here to start the upgrade.', 'buddypress-docs' ) ?></a></strong></p>
+		<p><strong><a href="<?php echo esc_url( admin_url( 'edit.php?post_type=bp_doc&page=bp-docs-upgrade' ) ); ?>"><?php _e( 'Click here to start the upgrade.', 'buddypress-docs' ) ?></a></strong></p>
 	</div>
 	<?php
 }
@@ -98,7 +98,7 @@ function bp_docs_upgrade_render() {
 
 			<p><?php _e( 'Thanks for updating BuddyPress Docs. We need to run a few quick operations before your new Docs is ready to use.', 'buddypress-docs' ) ?></p>
 
-			<a class="button primary" href="<?php echo $url ?>"><?php _e( 'Start the upgrade', 'buddypress-docs' ) ?></a>
+			<a class="button primary" href="<?php echo esc_url( $url ); ?>"><?php _e( 'Start the upgrade', 'buddypress-docs' ) ?></a>
 
 		<?php elseif ( 'upgrade' == $status ) : ?>
 
@@ -127,7 +127,7 @@ function bp_docs_upgrade_render() {
 			<script type='text/javascript'>
 				<!--
 				function nextpage() {
-					location.href = "<?php echo $refresh_url ?>";
+					location.href = "<?php echo esc_url_raw( $refresh_url ); ?>";
 				}
 				setTimeout( "nextpage()", 2000 );
 				//-->
@@ -135,7 +135,7 @@ function bp_docs_upgrade_render() {
 
 		<?php elseif ( 'complete' == $status ) : ?>
 
-			<p><?php printf( __( 'Migration complete! <a href="%s">Dashboard</a>', 'buddypress-docs' ), admin_url() ) ?></p>
+			<p><?php echo wp_kses_post( sprintf( __( 'Migration complete! <a href="%s">Dashboard</a>', 'buddypress-docs' ), esc_url( admin_url() ) ) ); ?></p>
 
 		<?php endif ?>
 	</div>

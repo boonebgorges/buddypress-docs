@@ -24,7 +24,7 @@ foreach ( (array)$comments as $comment ) {
 <?php if ( current_user_can( 'bp_docs_read_comments' ) ) : ?>
 	<div id="comments" class="comments-area">
 		<h3>
-			<?php printf( __( 'Discussion (%d)', 'buddypress-docs' ), $num_comments ) ?>
+			<?php echo esc_html( sprintf( __( 'Discussion (%d)', 'buddypress-docs' ), $num_comments ) ); ?>
 		</h3>
 
 		<?php do_action( 'bp_before_blog_comment_list' ) ?>
