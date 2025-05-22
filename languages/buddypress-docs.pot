@@ -1,4 +1,4 @@
-# Copyright (C) 2024 Boone B Gorges, David Cavins
+# Copyright (C) 2025 Boone B Gorges, David Cavins
 # This file is distributed under the same license as the BuddyPress Docs plugin.
 msgid ""
 msgstr ""
@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-10-04T09:14:01-05:00\n"
+"POT-Creation-Date: 2025-05-22T14:13:55-05:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.9.0\n"
 "X-Domain: buddypress-docs\n"
@@ -567,12 +567,12 @@ msgid "Could not delete attachment"
 msgstr ""
 
 #: includes/attachments.php:434
-#: includes/component.php:1091
+#: includes/component.php:1103
 msgid "Upload File"
 msgstr ""
 
 #: includes/attachments.php:435
-#: includes/component.php:1092
+#: includes/component.php:1104
 msgid "OK"
 msgstr ""
 
@@ -692,81 +692,81 @@ msgstr ""
 msgid "Edited By %s"
 msgstr ""
 
-#: includes/component.php:495
+#: includes/component.php:507
 msgid "This doc is currently being edited by %s. To prevent overwrites, you cannot edit until that user has finished. Please try again in a few minutes."
 msgstr ""
 
-#: includes/component.php:508
+#: includes/component.php:520
 msgid "You do not have permission to edit the doc."
 msgstr ""
 
-#: includes/component.php:522
+#: includes/component.php:534
 msgid "You do not have permission to create a Doc in this group."
 msgstr ""
 
-#: includes/component.php:536
+#: includes/component.php:548
 msgid "You do not have permission to view this Doc's history."
 msgstr ""
 
-#: includes/component.php:560
+#: includes/component.php:572
 msgid "Lock successfully removed"
 msgstr ""
 
-#: includes/component.php:592
+#: includes/component.php:604
 msgid "Doc successfully deleted!"
 msgstr ""
 
-#: includes/component.php:594
+#: includes/component.php:606
 msgid "Could not delete doc."
 msgstr ""
 
-#: includes/component.php:597
+#: includes/component.php:609
 msgid "You do not have permission to delete that doc."
 msgstr ""
 
-#: includes/component.php:618
+#: includes/component.php:630
 msgid "Doc successfully removed from Trash!"
 msgstr ""
 
-#: includes/component.php:620
+#: includes/component.php:632
 msgid "Could not remove Doc from Trash."
 msgstr ""
 
-#: includes/component.php:623
+#: includes/component.php:635
 msgid "You do not have permission to remove that Doc from the Trash."
 msgstr ""
 
-#: includes/component.php:638
+#: includes/component.php:650
 msgid "Doc successfully removed from the group"
 msgstr ""
 
-#: includes/component.php:640
+#: includes/component.php:652
 msgid "Could not remove Doc from the group."
 msgstr ""
 
-#: includes/component.php:643
+#: includes/component.php:655
 msgid "You do not have permission to remove that Doc from this group."
 msgstr ""
 
-#: includes/component.php:978
-#: includes/component.php:1001
-#: includes/component.php:1003
+#: includes/component.php:990
+#: includes/component.php:1013
+#: includes/component.php:1015
 msgid "Search"
 msgstr ""
 
-#: includes/component.php:1086
+#: includes/component.php:1098
 msgid "and %d more"
 msgstr ""
 
-#: includes/component.php:1088
+#: includes/component.php:1100
 msgid "show all tags"
 msgstr ""
 
-#: includes/component.php:1089
+#: includes/component.php:1101
 msgid "show fewer tags"
 msgstr ""
 
-#: includes/component.php:1090
+#: includes/component.php:1102
 msgid "Still working?"
 msgstr ""
 
@@ -1163,7 +1163,7 @@ msgstr ""
 msgid "Directory menu"
 msgstr ""
 
-#: includes/templatetags-edit.php:147
+#: includes/templatetags-edit.php:172
 msgid "(no parent)"
 msgstr ""
 
