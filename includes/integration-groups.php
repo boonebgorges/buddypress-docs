@@ -1291,8 +1291,8 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
 				}
 			}
 
-			if ( $settings_are_changed ) {
-				// No need to resave settings if they're the same
+			$success = false;
+			if ( ! $settings_are_changed ) {
 				$success = true;
 			} elseif ( groups_update_groupmeta( $group_id, 'bp-docs', $settings ) ) {
 				$success = true;
