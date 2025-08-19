@@ -320,46 +320,55 @@ function bp_docs_general_access_protection( $query ) {
 	// We only need to filter when BP Docs could possibly show up in the
 	// results, so we check the post type, and bail if the post_type rules
 	// out Docs to begin with
+	$docs_post_type    = bp_docs_get_post_type_name();
 	$queried_post_type = $query->get( 'post_type' );
-	$pt = bp_docs_get_post_type_name();
-	$is_bp_doc_query = is_array( $queried_post_type ) ? in_array( $pt, $queried_post_type ) : $pt == $queried_post_type;
+
+	$is_bp_doc_post_type = is_array( $queried_post_type ) ? in_array( $docs_post_type, $queried_post_type ) : $docs_post_type === $queried_post_type;
+
+	$docs_tag_tax      = apply_filters( 'bp_docs_docs_tag_tax_name', 'bp_doc_tag' );
+	$queried_tax_query = $query->get( 'tax_query' );
 
 	$filter_query = false;
 
-	// 'pagename' queries always fetch pages.
-	if ( ! $queried_post_type && ! $query->get( 'pagename' ) ) {
-		$filter_query = true;
-	} elseif ( 'any' === $queried_post_type ) {
+	if ( 'any' === $queried_post_type ) {
 		$filter_query = true;
 	} elseif ( $is_bp_doc_query ) {
 		$filter_query = true;
+	} elseif ( $queried_tax_query ) {
+		foreach ( $queried_tax_query as $tax_query ) {
+			if ( ! empty( $tax_query['taxonomy'] ) && $docs_tag_tax === $tax_query['taxonomy'] ) {
+				$filter_query = true;
+				break;
+			}
+		}
 	}
 
-	if ( $filter_query ) {
-		$bp_docs_access_query = bp_docs_access_query();
+	if ( ! $filter_query ) {
+		return;
+	}
 
-		if ( $pt == $queried_post_type ) {
-			// Use a tax query if possible
-			$tax_query = $query->get( 'tax_query' );
-			if ( ! $tax_query ) {
-				$tax_query = array();
-			}
+	$bp_docs_access_query = bp_docs_access_query();
 
-			$query->set( 'tax_query', array_merge( $tax_query, $bp_docs_access_query->get_tax_query() ) );
+	if ( $pt == $queried_post_type ) {
+		// Use a tax query if possible
+		$tax_query = $query->get( 'tax_query' );
+		if ( ! $tax_query ) {
+			$tax_query = array();
+		}
 
-		} else {
-			// When it's not a straight bp_doc query, a tax_query
-			// approach won't work (because the taxonomy in
-			// question only applies to bp_docs, and conditional
-			// tax_query is not supported by WP). Instead, get a
-			// list of off-limits Docs and pass to post__not_in
-			$exclude = $bp_docs_access_query->get_doc_ids();
+		$query->set( 'tax_query', array_merge( $tax_query, $bp_docs_access_query->get_tax_query() ) );
 
-			if ( ! empty( $exclude ) ) {
-				$not_in = $query->get( 'post__not_in' );
-				$query->set( 'post__not_in', array_merge( (array) $not_in, $exclude ) );
-			}
+	} else {
+		// When it's not a straight bp_doc query, a tax_query
+		// approach won't work (because the taxonomy in
+		// question only applies to bp_docs, and conditional
+		// tax_query is not supported by WP). Instead, get a
+		// list of off-limits Docs and pass to post__not_in
+		$exclude = $bp_docs_access_query->get_doc_ids();
 
+		if ( ! empty( $exclude ) ) {
+			$not_in = $query->get( 'post__not_in' );
+			$query->set( 'post__not_in', array_merge( (array) $not_in, $exclude ) );
 		}
 	}
 }
