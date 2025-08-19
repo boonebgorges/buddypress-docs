@@ -332,7 +332,7 @@ function bp_docs_general_access_protection( $query ) {
 
 	if ( 'any' === $queried_post_type ) {
 		$filter_query = true;
-	} elseif ( $is_bp_doc_query ) {
+	} elseif ( $is_bp_doc_post_type ) {
 		$filter_query = true;
 	} elseif ( $queried_tax_query ) {
 		foreach ( $queried_tax_query as $tax_query ) {
@@ -349,7 +349,7 @@ function bp_docs_general_access_protection( $query ) {
 
 	$bp_docs_access_query = bp_docs_access_query();
 
-	if ( $pt == $queried_post_type ) {
+	if ( $docs_post_type == $queried_post_type ) {
 		// Use a tax query if possible
 		$tax_query = $query->get( 'tax_query' );
 		if ( ! $tax_query ) {
