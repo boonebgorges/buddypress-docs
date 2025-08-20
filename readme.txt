@@ -35,6 +35,8 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 = 2.2.6 =
 * Changed the logic for access-protection, so that the off-limits Docs query is run far less frequently. This helps with performance as well as with global pollution.
+* Fixed the logic for saving group settings.
+* Improve compatibility with recent versions of WordPress and BuddyPress when loading the BP_Component.
 
 = 2.2.5 =
 * Security fix: Prevent users from editing Docs that they do not have permission to edit. Props to HedgeByte Cybersecurity for reporting this issue.
