@@ -102,7 +102,7 @@ class BP_Docs_Component extends BP_Component {
 
 		parent::start(
 			'bp_docs',
-			__( 'BuddyPress Docs', 'buddypress-docs' ),
+			'BuddyPress Docs',
 			BP_DOCS_INSTALL_PATH
 		);
 
