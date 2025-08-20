@@ -4,7 +4,7 @@ Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: 3.3
 Tested up to: 6.8
-Stable tag: 2.2.5
+Stable tag: 2.2.6
 
 Adds collaborative Docs to BuddyPress.
 
@@ -32,6 +32,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 1. Sit back and watch the jack roll in.
 
 == Changelog ==
+
+= 2.2.6 =
+* Changed the logic for access-protection, so that the off-limits Docs query is run far less frequently. This helps with performance as well as with global pollution.
 
 = 2.2.5 =
 * Security fix: Prevent users from editing Docs that they do not have permission to edit. Props to HedgeByte Cybersecurity for reporting this issue.
