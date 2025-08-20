@@ -325,7 +325,7 @@ function bp_docs_general_access_protection( $query ) {
 
 	$is_bp_doc_post_type = is_array( $queried_post_type ) ? in_array( $docs_post_type, $queried_post_type ) : $docs_post_type === $queried_post_type;
 
-	$docs_tag_tax      = apply_filters( 'bp_docs_docs_tag_tax_name', 'bp_doc_tag' );
+	$docs_tag_tax      = apply_filters( 'bp_docs_docs_tag_tax_name', 'bp_docs_tag' );
 	$queried_tax_query = $query->get( 'tax_query' );
 
 	$filter_query = false;
