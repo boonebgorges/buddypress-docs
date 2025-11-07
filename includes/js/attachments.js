@@ -38,7 +38,13 @@ window.wp = window.wp || {};
 	doc_id = wp.media.model.settings.post.id;
 
 	if ( 0 == doc_id ) {
+		var urlParams = new URLSearchParams(window.location.search);
+		var groupSlug = urlParams.get('group') || '';
+
 		options = {
+			data: {
+				group_slug: groupSlug
+			},
 			success: function( response ) {
 				wp.media.model.settings.post.id = response.doc_id;
 				$('input#doc_id').val(response.doc_id);
