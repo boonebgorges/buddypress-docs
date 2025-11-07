@@ -19,6 +19,7 @@ add_action( 'wp_ajax_doc_attachment_item_markup', 'bp_docs_attachment_item_marku
  * @since 1.4
  */
 function bp_docs_create_dummy_doc() {
+	$group_id = null;
 	if ( ! empty( $_POST['group_slug'] ) ) {
 		$group_slug = sanitize_text_field( wp_unslash( $_POST['group_slug'] ) );
 		$group_id   = BP_Groups_Group::group_exists( $group_slug );
@@ -39,7 +40,11 @@ function bp_docs_create_dummy_doc() {
 	) );
 	remove_filter( 'wp_insert_post_empty_content', '__return_false' );
 
-	if ( $doc_id ) {
+	if ( ! $doc_id || is_wp_error( $doc_id ) ) {
+		wp_send_json_error( __( 'Could not create document.', 'bp-docs' ) );
+	}
+
+	if ( $doc_id && $group_id ) {
 		bp_docs_set_associated_group_id( $doc_id, $group_id );
 	}
 
