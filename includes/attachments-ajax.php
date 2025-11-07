@@ -28,7 +28,7 @@ function bp_docs_create_dummy_doc() {
 		}
 
 		if ( ! current_user_can( 'bp_docs_associate_with_group', $group_id ) ) {
-			wp_send_json_error( __( 'You must be a member of the group to create a document.', 'bp-docs' ) );
+			wp_send_json_error( __( 'You do not have permission to create a document in this group.', 'bp-docs' ) );
 		}
 	}
 
