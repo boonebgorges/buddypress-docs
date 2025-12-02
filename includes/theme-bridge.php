@@ -365,6 +365,11 @@ function bp_docs_provide_block_template_for_docs_content( $templates, $query ) {
 		return $templates;
 	}
 
+	// If there are no templates, bail.
+	if ( empty( $templates ) ) {
+		return $templates;
+	}
+
 	// If an archive-bp_doc template was found, use it.
 	$has_archive_bp_doc_template = false;
 	foreach ( $templates as $template ) {
