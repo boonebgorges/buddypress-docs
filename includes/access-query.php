@@ -148,6 +148,7 @@ class BP_Docs_Access_Query {
 			return $cached;
 		} else {
 			remove_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
+			remove_filter( 'posts_clauses', 'bp_docs_late_access_protection', 28 );
 
 			$tax_query = $this->get_tax_query();
 			foreach ( $tax_query as &$tq ) {
@@ -180,6 +181,7 @@ class BP_Docs_Access_Query {
 			}
 
 			add_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
+			add_filter( 'posts_clauses', 'bp_docs_late_access_protection', 28, 2 );
 
 			// Set the cache to avoid duplicate requests.
 			wp_cache_set( $cache_key, $protected_doc_ids, 'bp_docs_nonpersistent' );
@@ -207,6 +209,7 @@ class BP_Docs_Access_Query {
 			return $cached;
 		} else  {
 			remove_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
+			remove_filter( 'posts_clauses', 'bp_docs_late_access_protection', 28 );
 
 			$tax_query = $this->get_comment_tax_query();
 			foreach ( $tax_query as &$tq ) {
@@ -239,6 +242,7 @@ class BP_Docs_Access_Query {
 			}
 
 			add_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
+			add_filter( 'posts_clauses', 'bp_docs_late_access_protection', 28, 2 );
 
 			// Set the cache to avoid duplicate requests.
 			wp_cache_set( $cache_key, $restricted_comment_doc_ids, 'bp_docs_nonpersistent' );
@@ -371,10 +375,67 @@ function bp_docs_general_access_protection( $query ) {
 			$query->set( 'post__not_in', array_merge( (array) $not_in, $exclude ) );
 		}
 	}
+
+	// Mark the query as protected to prevent duplicate work in posts_clauses.
+	$query->set( 'bp_docs_access_protected', true );
 }
 // Hooked at an oddball priority to avoid conflicts with nested actions and
 // other plugins using 'pre_get_posts'. See https://github.com/boonebgorges/buddypress-docs/issues/425
 add_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
+
+/**
+ * Keep private Docs out of queries where post_type is resolved after pre_get_posts.
+ *
+ * Search queries are a key example: WP_Query sets post_type to 'any' inside
+ * get_posts(), after pre_get_posts has already fired. This filter catches those
+ * cases by acting at a later point in the WP_Query lifecycle, when post_type
+ * is fully resolved.
+ *
+ * @since 2.1.2
+ *
+ * @param array    $clauses  Array of SQL query clauses.
+ * @param WP_Query $query    The WP_Query instance.
+ * @return array
+ */
+function bp_docs_late_access_protection( $clauses, $query ) {
+	// Skip if access protection was already applied during pre_get_posts.
+	if ( $query->get( 'bp_docs_access_protected' ) ) {
+		return $clauses;
+	}
+
+	// Access is unlimited when viewing your own profile, or when the
+	// current user is a site admin.
+	if ( bp_is_my_profile() || current_user_can( 'bp_moderate' ) ) {
+		return $clauses;
+	}
+
+	// At this point in WP_Query's lifecycle, post_type is fully resolved
+	// (e.g. 'any' for search queries). Only act when bp_docs could appear
+	// in results.
+	$docs_post_type    = bp_docs_get_post_type_name();
+	$queried_post_type = $query->get( 'post_type' );
+
+	$is_bp_doc_post_type = is_array( $queried_post_type )
+		? in_array( $docs_post_type, $queried_post_type )
+		: $docs_post_type === $queried_post_type;
+
+	if ( 'any' !== $queried_post_type && ! $is_bp_doc_post_type ) {
+		return $clauses;
+	}
+
+	$bp_docs_access_query = bp_docs_access_query();
+	$exclude = $bp_docs_access_query->get_doc_ids();
+
+	if ( ! empty( $exclude ) ) {
+		global $wpdb;
+		$ids = implode( ',', array_map( 'intval', $exclude ) );
+		$clauses['where'] .= " AND {$wpdb->posts}.ID NOT IN ($ids)";
+	}
+
+	return $clauses;
+}
+// Hooked at the same oddball priority as bp_docs_general_access_protection.
+add_filter( 'posts_clauses', 'bp_docs_late_access_protection', 28, 2 );
 
 /**
  * Keep comments that the user shouldn't see out of primary WP_Comment_Query queries.
