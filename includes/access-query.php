@@ -391,7 +391,7 @@ add_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
  * cases by acting at a later point in the WP_Query lifecycle, when post_type
  * is fully resolved.
  *
- * @since 2.1.2
+ * @since 2.2.7
  *
  * @param array    $clauses  Array of SQL query clauses.
  * @param WP_Query $query    The WP_Query instance.
