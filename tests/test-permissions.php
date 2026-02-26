@@ -1219,6 +1219,63 @@ class BP_Docs_Tests_Permissions extends BP_Docs_TestCase {
 	}
 
 	/**
+	 * @group search
+	 * @group access_protection
+	 */
+	public function test_protected_doc_excluded_from_search_for_logged_out_user() {
+		// Create a doc restricted to logged-in users only.
+		$creator = $this->factory->user->create();
+		$d = $this->factory->doc->create( array( 'post_author' => $creator ) );
+		bp_docs_update_doc_access( $d, 'loggedin' );
+
+		// Create a publicly-readable doc with the same content so we have a match.
+		$public = $this->factory->doc->create( array(
+			'post_content' => 'unique-search-term-public',
+		) );
+		bp_docs_update_doc_access( $public, 'anyone' );
+
+		wp_update_post( array(
+			'ID'           => $d,
+			'post_content' => 'unique-search-term-public',
+		) );
+
+		// Search as a logged-out user.
+		$this->set_current_user( 0 );
+
+		$q = new WP_Query( array( 's' => 'unique-search-term-public' ) );
+		$found_ids = wp_list_pluck( $q->posts, 'ID' );
+
+		// Protected doc should NOT appear.
+		$this->assertNotContains( $d, $found_ids );
+		// Public doc should still appear.
+		$this->assertContains( $public, $found_ids );
+	}
+
+	/**
+	 * @group search
+	 * @group access_protection
+	 */
+	public function test_protected_doc_visible_in_search_for_logged_in_user() {
+		// Create a doc restricted to logged-in users only.
+		$creator = $this->factory->user->create();
+		$d = $this->factory->doc->create( array(
+			'post_author'  => $creator,
+			'post_content' => 'unique-search-term-loggedin',
+		) );
+		bp_docs_update_doc_access( $d, 'loggedin' );
+
+		// Search as a logged-in user.
+		$u = $this->factory->user->create();
+		$this->set_current_user( $u );
+
+		$q = new WP_Query( array( 's' => 'unique-search-term-loggedin' ) );
+		$found_ids = wp_list_pluck( $q->posts, 'ID' );
+
+		// Logged-in user should be able to see the doc.
+		$this->assertContains( $d, $found_ids );
+	}
+
+	/**
 	 * @group map_meta_cap
 	 * @group dissociate_from_group
 	 */

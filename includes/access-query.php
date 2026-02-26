@@ -332,6 +332,8 @@ function bp_docs_general_access_protection( $query ) {
 
 	if ( 'any' === $queried_post_type ) {
 		$filter_query = true;
+	} elseif ( ! $queried_post_type && $query->is_search() ) {
+		$filter_query = true;
 	} elseif ( $is_bp_doc_post_type ) {
 		$filter_query = true;
 	} elseif ( $queried_tax_query ) {
