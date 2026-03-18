@@ -4,7 +4,7 @@ Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: 3.3
 Tested up to: 6.9
-Stable tag: 2.2.6
+Stable tag: 2.2.7
 
 Adds collaborative Docs to BuddyPress.
 
