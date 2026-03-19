@@ -1,37 +1,41 @@
-# Copyright (C) 2025 Boone B Gorges, David Cavins
+# Copyright (C) 2026 Boone B Gorges, David Cavins
 # This file is distributed under the same license as the BuddyPress Docs plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: BuddyPress Docs 2.2.4\n"
+"Project-Id-Version: BuddyPress Docs 2.2.7\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/buddypress-docs\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-05-22T14:13:55-05:00\n"
+"POT-Creation-Date: 2026-03-18T19:03:44-05:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.9.0\n"
+"X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: buddypress-docs\n"
 
 #. Plugin Name of the plugin
-#: includes/component.php:105
+#: loader.php
 msgid "BuddyPress Docs"
 msgstr ""
 
 #. Plugin URI of the plugin
+#: loader.php
 msgid "http://github.com/boonebgorges/buddypress-docs"
 msgstr ""
 
 #. Description of the plugin
+#: loader.php
 msgid "Adds collaborative Docs to BuddyPress"
 msgstr ""
 
 #. Author of the plugin
+#: loader.php
 msgid "Boone B Gorges, David Cavins"
 msgstr ""
 
 #. Author URI of the plugin
+#: loader.php
 msgid "http://boone.gorg.es"
 msgstr ""
 
@@ -104,16 +108,19 @@ msgstr ""
 
 #: includes/activity.php:66
 #: includes/activity.php:395
+#, php-format
 msgid "%1$s commented on the doc %2$s"
 msgstr ""
 
 #: includes/activity.php:188
 #: includes/activity.php:335
+#, php-format
 msgid "%1$s created the doc %2$s"
 msgstr ""
 
 #: includes/activity.php:190
 #: includes/activity.php:364
+#, php-format
 msgid "%1$s edited the doc %2$s"
 msgstr ""
 
@@ -249,12 +256,14 @@ msgid "Create a new folder"
 msgstr ""
 
 #: includes/addon-folders.php:2198
+#, php-format
 msgid "You are viewing docs in the following folder: %s"
 msgid_plural "You are viewing docs in the following folders: %s"
 msgstr[0] ""
 msgstr[1] ""
 
 #: includes/addon-folders.php:2355
+#, php-format
 msgid "#%d (no title)"
 msgstr ""
 
@@ -304,10 +313,12 @@ msgid "Children: "
 msgstr ""
 
 #: includes/addon-history.php:117
+#, php-format
 msgid "You have successfully restored the Doc to the revision from %s."
 msgstr ""
 
 #: includes/addon-history.php:165
+#, php-format
 msgid "Compare Revisions of &#8220;%1$s&#8221;"
 msgstr ""
 
@@ -317,11 +328,13 @@ msgid "Revisions"
 msgstr ""
 
 #: includes/addon-history.php:196
+#, php-format
 msgid "Revision for &#8220;%1$s&#8221; created on %2$s"
 msgstr ""
 
 #. translators: post revision: 1: when, 2: author name
 #: includes/addon-history.php:356
+#, php-format
 msgctxt "post revision"
 msgid "%1$s by %2$s"
 msgstr ""
@@ -374,6 +387,7 @@ msgid "Awaiting Moderation"
 msgstr ""
 
 #: includes/addon-moderation.php:40
+#, php-format
 msgid "Awaiting Moderation (%s)"
 msgid_plural "Awaiting Moderation (%s)"
 msgstr[0] ""
@@ -393,6 +407,7 @@ msgid "Docs Tag"
 msgstr ""
 
 #: includes/addon-taxonomy.php:199
+#, php-format
 msgid "Tags: %s"
 msgstr ""
 
@@ -403,6 +418,7 @@ msgid "Tags"
 msgstr ""
 
 #: includes/addon-taxonomy.php:329
+#, php-format
 msgid "You are viewing docs with the following tags: %s"
 msgstr ""
 
@@ -411,6 +427,7 @@ msgid "Tag"
 msgstr ""
 
 #: includes/addon-taxonomy.php:379
+#, php-format
 msgid "(%d)"
 msgstr ""
 
@@ -419,6 +436,7 @@ msgid "No tags to show."
 msgstr ""
 
 #: includes/addon-taxonomy.php:488
+#, php-format
 msgid "Docs tagged %s"
 msgstr ""
 
@@ -428,6 +446,7 @@ msgstr ""
 
 #. translators: %s: add new taxonomy label
 #: includes/addon-taxonomy.php:588
+#, php-format
 msgid "+ %s"
 msgstr ""
 
@@ -613,10 +632,12 @@ msgid "<strong>Your BuddyPress Docs attachments directory is publicly accessible
 msgstr ""
 
 #: includes/attachments.php:863
+#, php-format
 msgid "Access protection was last checked %s and will be checked again %s. <a href=\"%s\">Test access protection now.</a>"
 msgstr ""
 
 #: includes/attachments.php:877
+#, php-format
 msgid "See <a href=\"%s\">this wiki page</a> for more information."
 msgstr ""
 
@@ -681,18 +702,22 @@ msgstr ""
 #. translators: group name
 #: includes/component.php:388
 #: includes/integration-groups.php:1895
+#, php-format
 msgid "%s&#8217;s Docs"
 msgstr ""
 
 #: includes/component.php:391
+#, php-format
 msgid "Started By %s"
 msgstr ""
 
 #: includes/component.php:400
+#, php-format
 msgid "Edited By %s"
 msgstr ""
 
 #: includes/component.php:507
+#, php-format
 msgid "This doc is currently being edited by %s. To prevent overwrites, you cannot edit until that user has finished. Please try again in a few minutes."
 msgstr ""
 
@@ -755,6 +780,7 @@ msgid "Search"
 msgstr ""
 
 #: includes/component.php:1098
+#, php-format
 msgid "and %d more"
 msgstr ""
 
@@ -771,6 +797,7 @@ msgid "Still working?"
 msgstr ""
 
 #: includes/functions.php:159
+#, php-format
 msgctxt "Description for the associated-item taxonomy term. Of the form \"Docs associated with the [item-type] [item-name]\" - item-type is group, user, etc"
 msgid "Docs associated with the %1$s %2$s"
 msgstr ""
@@ -795,27 +822,36 @@ msgid "Your Doc was successfully saved, but some of your access settings have be
 msgstr ""
 
 #: includes/functions.php:1077
-#: includes/theme-bridge.php:424
+#: includes/theme-bridge.php:429
 msgid "Docs Directory"
 msgstr ""
 
+#: includes/functions.php:1119
+msgid "Could not save Doc."
+msgstr ""
+
 #: includes/integration-groups.php:552
+#, php-format
 msgid "Members of %s"
 msgstr ""
 
 #: includes/integration-groups.php:564
+#, php-format
 msgid "Admins and mods of %s"
 msgstr ""
 
 #: includes/integration-groups.php:650
+#, php-format
 msgid "%1$s created the doc %2$s in the group %3$s"
 msgstr ""
 
 #: includes/integration-groups.php:652
+#, php-format
 msgid "%1$s edited the doc %2$s in the group %3$s"
 msgstr ""
 
 #: includes/integration-groups.php:707
+#, php-format
 msgid "%1$s commented on the doc %2$s in the group %3$s"
 msgstr ""
 
@@ -828,6 +864,7 @@ msgid "Unlink from Group"
 msgstr ""
 
 #: includes/integration-groups.php:959
+#, php-format
 msgid "%1$s <span>%2$d</span>"
 msgstr ""
 
@@ -873,11 +910,13 @@ msgstr ""
 
 #. translators: group name
 #: includes/integration-groups.php:1841
+#, php-format
 msgctxt "group Docs directory breadcrumb"
 msgid "%s&#8217;s Docs"
 msgstr ""
 
 #: includes/integration-users.php:296
+#, php-format
 msgctxt "user Docs directory breadcrumb"
 msgid "%s&#8217;s Docs"
 msgstr ""
@@ -911,16 +950,19 @@ msgid "Doc successfully edited!"
 msgstr ""
 
 #: includes/templates/docs/docs-folder-loop.php:86
+#, php-format
 msgid "Viewing %1$s-%2$s of %3$s docs in this folder."
 msgstr ""
 
 #: includes/templates/docs/docs-folder-loop.php:87
+#, php-format
 msgid "View all docs in <strong>%s</strong>."
 msgstr ""
 
 #: includes/templates/docs/docs-folder-loop.php:103
 #: includes/templates/docs/docs-loop-list.php:89
 #: includes/templates/docs/docs-loop.php:171
+#, php-format
 msgid "There are no docs for this view. Why not <a href=\"%s\">create one</a>?"
 msgstr ""
 
@@ -968,6 +1010,7 @@ msgstr ""
 
 #: includes/templates/docs/docs-loop-list.php:78
 #: includes/templates/docs/docs-loop.php:192
+#, php-format
 msgid "Viewing %1$s-%2$s of %3$s docs"
 msgstr ""
 
@@ -1002,6 +1045,7 @@ msgid "This does not appear to be a valid folder."
 msgstr ""
 
 #: includes/templates/docs/manage-folders.php:13
+#, php-format
 msgid "You are about to delete the folder %s."
 msgstr ""
 
@@ -1031,6 +1075,7 @@ msgid "Create"
 msgstr ""
 
 #: includes/templates/docs/single/comments.php:27
+#, php-format
 msgid "Discussion (%d)"
 msgstr ""
 
@@ -1109,14 +1154,17 @@ msgid "Alternatively, you can compare two revisions by selecting them in the 'Ol
 msgstr ""
 
 #: includes/templates/docs/single/history.php:29
+#, php-format
 msgid "Older: %s"
 msgstr ""
 
 #: includes/templates/docs/single/history.php:31
+#, php-format
 msgid "Newer: %s"
 msgstr ""
 
 #: includes/templates/docs/single/history.php:39
+#, php-format
 msgid "You are currently viewing a revision titled \"%1$s\", saved on %2$s by %3$s"
 msgstr ""
 
@@ -1133,10 +1181,12 @@ msgid "(click for more info)"
 msgstr ""
 
 #: includes/templates/docs/single/index.php:18
+#, php-format
 msgid "This doc is currently being edited by %1$s. In order to prevent edit conflicts, only one user can edit a doc at a time."
 msgstr ""
 
 #: includes/templates/docs/single/index.php:21
+#, php-format
 msgid "Please try again in a few minutes. Or, as an admin, you can <a href=\"%s\">force cancel</a> the edit lock."
 msgstr ""
 
@@ -1151,6 +1201,7 @@ msgstr ""
 
 #: includes/templates/docs/tabs-legacy.php:6
 #: includes/templates/docs/tabs-nouveau.php:8
+#, php-format
 msgid "%s's Docs"
 msgstr ""
 
@@ -1172,14 +1223,17 @@ msgid "You are viewing <strong>all</strong> docs."
 msgstr ""
 
 #: includes/templatetags.php:286
+#, php-format
 msgid "<strong><a href=\"%s\" title=\"View All Docs\">View All Docs</a></strong>"
 msgstr ""
 
 #: includes/templatetags.php:298
+#, php-format
 msgid "Filter by: %s"
 msgstr ""
 
 #: includes/templatetags.php:448
+#, php-format
 msgid "You are searching for docs containing the term <em>%s</em>"
 msgstr ""
 
@@ -1197,6 +1251,7 @@ msgstr ""
 
 #: includes/templatetags.php:1079
 #: includes/templatetags.php:1081
+#, php-format
 msgid "%s member"
 msgid_plural "%s members"
 msgstr[0] ""
@@ -1260,6 +1315,7 @@ msgid "&raquo;"
 msgstr ""
 
 #: includes/templatetags.php:1662
+#, php-format
 msgid " %s"
 msgstr ""
 
@@ -1272,10 +1328,12 @@ msgid "Just Me"
 msgstr ""
 
 #: includes/templatetags.php:1682
+#, php-format
 msgid "Members of: %s"
 msgstr ""
 
 #: includes/templatetags.php:1683
+#, php-format
 msgid "Admins and mods of the group %s"
 msgstr ""
 
@@ -1284,22 +1342,27 @@ msgid "The Doc author only (that's you!)"
 msgstr ""
 
 #: includes/templatetags.php:1694
+#, php-format
 msgid "This Doc can be read by: <strong>%s</strong>"
 msgstr ""
 
 #: includes/templatetags.php:1698
+#, php-format
 msgid "This Doc can be edited by: <strong>%s</strong>"
 msgstr ""
 
 #: includes/templatetags.php:1702
+#, php-format
 msgid "Comments are visible to: <strong>%s</strong>"
 msgstr ""
 
 #: includes/templatetags.php:1706
+#, php-format
 msgid "Comments can be posted by: <strong>%s</strong>"
 msgstr ""
 
 #: includes/templatetags.php:1710
+#, php-format
 msgid "History can be viewed by: <strong>%s</strong>"
 msgstr ""
 
@@ -1316,6 +1379,7 @@ msgid "Limited"
 msgstr ""
 
 #: includes/templatetags.php:1763
+#, php-format
 msgid "Access: <strong>%s</strong>"
 msgstr ""
 
@@ -1370,10 +1434,12 @@ msgid "Migrating..."
 msgstr ""
 
 #: includes/upgrade.php:138
+#, php-format
 msgid "Migration complete! <a href=\"%s\">Dashboard</a>"
 msgstr ""
 
 #: includes/upgrade.php:243
+#, php-format
 msgid "Docs associated with the group %s"
 msgstr ""
 
@@ -1382,5 +1448,6 @@ msgid "Group terms migrated. Now migrating Doc access terms...."
 msgstr ""
 
 #: includes/upgrade.php:306
+#, php-format
 msgid "Migrated %s of %s Docs. Migrating...."
 msgstr ""

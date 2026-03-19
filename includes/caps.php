@@ -83,6 +83,11 @@ function bp_docs_map_meta_caps( $caps, $cap, $user_id, $args ) {
 				return array( 'exist' );
 			}
 
+			// Anyone has caps for their own docs.
+			if ( (int) $user_id === (int) $doc->post_author ) {
+				return array( 'exist' );
+			}
+
 			$doc_settings = bp_docs_get_doc_settings( $doc->ID );
 
 			// Caps are stored without the 'bp_docs_' prefix,

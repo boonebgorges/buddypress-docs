@@ -1116,11 +1116,18 @@ function bp_docs_save_doc_via_post() {
 		$args['doc_id'] = (int) $_POST['doc_id'];
 	}
 
+	$retval = [
+		'message_type' => 'error',
+		'message'      => __( 'Could not save Doc.', 'buddypress-docs' ),
+		'redirect_url' => wp_get_referer(),
+		'doc_id'       => null,
+	];
+
 	// Existing Docs have a more specific permission check.
 	if ( $args['doc_id'] && ! current_user_can( 'bp_docs_edit', $args['doc_id'] ) ) {
-		return;
+		return $retval;
 	} elseif ( ! $args['doc_id'] && ! current_user_can( 'bp_docs_create' ) ) {
-		return;
+		return $retval;
 	}
 
 	if ( isset( $_POST['doc']['title'] ) ) {
