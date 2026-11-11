@@ -7,6 +7,10 @@
  * @package BuddyPressDocs
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Echoes the output of bp_docs_get_edit_doc_title()
  *
