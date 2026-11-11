@@ -11,7 +11,8 @@ jQuery(document).ready(function($){
 	if ( $( 'body' ).hasClass( 'bp-docs-edit' ) ) {
 		var lock_data = {
 			action: 'add_edit_lock',
-			doc_id: doc_id
+			doc_id: doc_id,
+			nonce: $( '#_wpnonce' ).val()
 		};
 
 		$.ajax({

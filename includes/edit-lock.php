@@ -294,7 +294,11 @@ add_action( 'wp_ajax_remove_edit_lock', 'bp_docs_remove_edit_lock' );
  * @since 1.6.0
  */
 function bp_docs_add_edit_lock_cb() {
-	$doc_id = isset( $_POST['doc_id'] ) ? (int) $_POST['doc_id'] : false;
+	if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'bp_docs_save' ) ) {
+		return;
+	}
+
+	$doc_id = isset( $_POST['doc_id'] ) ? absint( $_POST['doc_id'] ) : false;
 
 	if ( ! $doc_id ) {
 		return;
