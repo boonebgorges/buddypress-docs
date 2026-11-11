@@ -89,9 +89,6 @@ class BP_Docs {
 		// Load the BP Component extension
 		add_action( 'bp_docs_load', 	array( $this, 'do_integration' ), 6 );
 
-		// Load textdomain
-		add_action( 'bp_docs_load',     array( $this, 'load_plugin_textdomain' ) );
-
 		// Let other plugins know that BP Docs has finished initializing
 		add_action( 'bp_init',          array( $this, 'init_hook' ) );
 
@@ -124,26 +121,6 @@ class BP_Docs {
 	 */
 	function bp_docs() {
 		$this->__construct();
-	}
-
-	/**
-	 * Loads the textdomain for the plugin.
-	 * Language files are used in this order of preference:
-	 *    - WP_LANG_DIR/plugins/buddypress-docs-LOCALE.mo
-	 *    - WP_PLUGIN_DIR/buddypress-docs/languages/buddypress-docs-LOCALE.mo
-	 *
-	 * @since 1.0.2
-	 */
-	function load_plugin_textdomain() {
-		/*
-		 * As of WP 4.6, WP has, by this point in the load order, already
-		 * automatically added language files in this location:
-		 * wp-content/languages/plugins/buddypress-docs-es_ES.mo
-		 * load_plugin_textdomain() also looks for language files in that location,
-		 * then it falls back to translations in the plugin's /languages folder, like
-		 * wp-content/buddypress-docs/languages/buddypress-docs-es_ES.mo
-		 */
-		load_plugin_textdomain( 'buddypress-docs', false, plugin_basename( dirname( __FILE__ ) ) . '/languages' );
 	}
 
 	/**
