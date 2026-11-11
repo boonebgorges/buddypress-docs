@@ -100,7 +100,7 @@ class BP_Docs_Akismet {
 		 * This helps Akismet ensure that the update was a valid form submission.
 		 */
 		if ( ! empty( $_POST['_wpnonce'] ) ) {
-			$package['akismet_comment_nonce'] = wp_verify_nonce( $_POST['_wpnonce'], 'bp_docs_save' ) ? 'passed' : 'failed';
+			$package['akismet_comment_nonce'] = wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ), 'bp_docs_save' ) ? 'passed' : 'failed';
 		}
 
 		/**
@@ -133,7 +133,7 @@ class BP_Docs_Akismet {
 		$package['blog']         = bp_get_option( 'home' );
 		$package['blog_charset'] = bp_get_option( 'blog_charset' );
 		$package['blog_lang']    = get_locale();
-		$package['referrer']     = $_SERVER['HTTP_REFERER'];
+		$package['referrer']     = isset( $_SERVER['HTTP_REFERER'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) : '';
 		$package['user_agent']   = bp_core_current_user_ua();
 		$package['user_ip']      = bp_core_current_user_ip();
 
