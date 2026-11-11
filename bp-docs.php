@@ -608,15 +608,26 @@ class BP_Docs {
 		// that the current user is the admin of
 		if ( $posts_query->is_single && bp_docs_get_post_type_name() === $posts_query->get( 'post_type' ) ) {
 
+			$doc_id   = (int) $posts_query->get( 'p' );
 			$doc_slug = $posts_query->get( 'name' );
 
-			// Direct query, because barf
-			global $wpdb;
-			$author_id = $wpdb->get_var( $wpdb->prepare(
-				"SELECT post_author FROM {$wpdb->posts} WHERE post_type = %s AND post_name = %s",
-				bp_docs_get_post_type_name(),
-				$doc_slug
-			) );
+			// Prefer ID (set for ID-based URLs and by the hierarchy addon for child docs).
+			if ( $doc_id ) {
+				$doc       = get_post( $doc_id );
+				$author_id = ( $doc && bp_docs_get_post_type_name() === $doc->post_type ) ? $doc->post_author : false;
+			} elseif ( '' !== (string) $doc_slug ) {
+				$matched_posts = get_posts( array(
+					'name'        => $doc_slug,
+					'post_type'   => bp_docs_get_post_type_name(),
+					'post_status' => array( 'publish', 'trash', 'bp_docs_pending' ),
+					'numberposts' => 1,
+				) );
+
+				$author_id = ( ! empty( $matched_posts ) ) ? $matched_posts[0]->post_author : false;
+			} else {
+				// No ID or slug to look up; an empty post_name would match slugless drafts.
+				return;
+			}
 
 			// Post author or mod can visit it
 			if ( $author_id && ( $author_id == get_current_user_id() || current_user_can( 'bp_moderate' ) ) ) {
