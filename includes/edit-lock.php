@@ -51,7 +51,7 @@ function bp_docs_heartbeat_callback( $response, $data ) {
 
 	$doc_id = intval( $data['doc_id'] );
 
-	if ( ! $doc_id ) {
+	if ( ! $doc_id || bp_docs_get_post_type_name() !== get_post_type( $doc_id ) || ! current_user_can( 'bp_docs_edit', $doc_id ) ) {
 		return $response;
 	}
 
@@ -309,7 +309,7 @@ function bp_docs_add_edit_lock_cb() {
 		return;
 	}
 
-	if ( ! is_user_logged_in() ) {
+	if ( ! is_user_logged_in() || ! current_user_can( 'bp_docs_edit', $doc_id ) ) {
 		return;
 	}
 
