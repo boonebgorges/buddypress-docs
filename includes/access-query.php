@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 class BP_Docs_Access_Query {
 	protected $user_id;
 	protected $tax_query = array();
