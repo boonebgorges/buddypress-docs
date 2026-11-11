@@ -2,7 +2,7 @@
 Contributors: boonebgorges, cuny-academic-commons, dcavins
 Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
-Requires at least: 5.0
+Requires at least: 5.4
 Tested up to: 6.9
 Stable tag: 2.2.7
 
