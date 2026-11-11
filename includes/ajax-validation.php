@@ -11,9 +11,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Verifies the nonce and permissions for a validation AJAX request.
+ * Verifies permissions for a validation AJAX request.
  *
- * Dies with a 403 if the request is not allowed.
+ * Callers must verify the nonce first. Dies with a 403 if the request is not allowed.
  *
  * @since 2.2.8
  *
@@ -22,8 +22,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @return void
  */
 function bp_docs_val_check_request( $doc_id, $group_id ) {
-	check_ajax_referer( 'bp_docs_validation', 'nonce' );
-
 	if ( $doc_id ) {
 		$can_access_doc = current_user_can( 'bp_docs_edit', $doc_id );
 	} else {
@@ -48,6 +46,8 @@ function bp_docs_val_check_request( $doc_id, $group_id ) {
 }
 
 function bp_docs_val_refresh_access_settings() {
+	check_ajax_referer( 'bp_docs_validation', 'nonce' );
+
 	$doc_id   = isset( $_POST['doc_id'] ) ? intval( $_POST['doc_id'] ) : 0;
 	$group_id = isset( $_POST['group_id'] ) ? intval( $_POST['group_id'] ) : 0;
 
@@ -60,6 +60,8 @@ function bp_docs_val_refresh_access_settings() {
 add_action( 'wp_ajax_refresh_access_settings', 'bp_docs_val_refresh_access_settings' );
 
 function bp_docs_val_refresh_associated_group() {
+	check_ajax_referer( 'bp_docs_validation', 'nonce' );
+
 	$doc_id   = isset( $_POST['doc_id'] ) ? intval( $_POST['doc_id'] ) : 0;
 	$group_id = isset( $_POST['group_id'] ) ? intval( $_POST['group_id'] ) : 0;
 
