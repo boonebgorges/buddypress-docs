@@ -37,10 +37,13 @@ function bp_docs_edit_doc_title() {
 
 		// If no title has been found yet, check to see whether one has
 		// been submitted using create_title URL param (from the
-		// [[wikitext]] linking functionality)
+		// [[wikitext]] linking functionality).
+		// No nonce: this only pre-fills the Create form from a shareable link; nothing is saved.
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
 		if ( empty( $title ) && ! empty( $_GET['create_title'] ) ) {
-			$title = urldecode( $_GET['create_title'] );
+			$title = sanitize_text_field( wp_unslash( $_GET['create_title'] ) );
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 		return apply_filters( 'bp_docs_get_edit_doc_title', esc_attr( $title ) );
 	}
