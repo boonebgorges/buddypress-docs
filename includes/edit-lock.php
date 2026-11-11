@@ -95,7 +95,8 @@ function bp_docs_edit_lock_redirect() {
 
 	if ( ! empty( $lock ) && $lock != bp_loggedin_user_id() ) {
 		$bounce = bp_docs_get_doc_link( $doc_id );
-		wp_redirect( $bounce );
+		wp_safe_redirect( $bounce );
+		exit;
 	}
 }
 add_action( 'bp_actions', 'bp_docs_edit_lock_redirect' );
