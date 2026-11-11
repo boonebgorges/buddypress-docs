@@ -2446,8 +2446,8 @@ class BP_Docs_Folder_Manage_Walker extends Walker {
 		if ( current_user_can( 'bp_docs_manage_folder', $page->ID ) ) {
 			$delete_link_markup = sprintf(
 				'<a class="folder-delete" href="%s">%s</a>',
-				add_query_arg( 'delete-folder', $page->ID, bp_get_requested_url() ), // No nonce because actual deletion is done on the subsequent page
-				__( 'Delete', 'buddypress-docs' )
+				esc_url( add_query_arg( 'delete-folder', $page->ID, bp_get_requested_url() ) ), // No nonce because actual deletion is done on the subsequent page
+				esc_html__( 'Delete', 'buddypress-docs' )
 			);
 		}
 
