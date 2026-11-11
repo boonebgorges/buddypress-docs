@@ -3,8 +3,9 @@ Contributors: boonebgorges, cuny-academic-commons, dcavins
 Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: 5.4
-Tested up to: 6.9
+Tested up to: 7.1
 Stable tag: 2.2.7
+License: GPLv2 or later
 
 Adds collaborative Docs to BuddyPress.
 
