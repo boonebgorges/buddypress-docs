@@ -1,3 +1,11 @@
+<?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
+?>
+
 <?php $folders = bp_docs_get_folders( 'display=flat' ); ?>
 <?php $walker = new BP_Docs_Folder_Walker(); ?>
 

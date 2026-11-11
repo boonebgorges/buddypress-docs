@@ -7,6 +7,10 @@
  * @since 1.2
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 ?>
 
 <?php get_header( 'buddypress' ); ?>
