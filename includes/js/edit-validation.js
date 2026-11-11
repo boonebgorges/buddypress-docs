@@ -35,6 +35,7 @@ function bpdv_refresh_access_settings() {
 		url: ajaxurl,
 		data: {
 			'action': 'refresh_access_settings',
+			'nonce': bpDocsValidation.nonce,
 			'group_id': assoc_group,
 			'doc_id': doc_id
 		},
@@ -52,6 +53,7 @@ function bpdv_refresh_associated_group() {
 		url: ajaxurl,
 		data: {
 			'action': 'refresh_associated_group',
+			'nonce': bpDocsValidation.nonce,
 			'group_id': assoc_group,
 			'doc_id': doc_id
 		},

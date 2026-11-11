@@ -1083,6 +1083,13 @@ class BP_Docs_Component extends BP_Component {
 			wp_register_script( 'word-counter', site_url() . '/wp-admin/js/word-count.js', array( 'jquery' ) );
 
 			wp_enqueue_script( 'bp-docs-edit-validation', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/edit-validation.js' ), array( 'jquery', 'bp-docs-js' ) );
+			wp_localize_script(
+				'bp-docs-edit-validation',
+				'bpDocsValidation',
+				array(
+					'nonce' => wp_create_nonce( 'bp_docs_validation' ),
+				)
+			);
 		}
 
 		// Only load our JS on the right sorts of pages. Generous to account for
