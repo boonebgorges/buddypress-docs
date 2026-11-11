@@ -6,6 +6,10 @@
  * @since 1.6.0
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * BP Docs heartbeat interval.
  *
