@@ -1129,7 +1129,8 @@ function bp_docs_save_doc_via_post() {
 	}
 
 	if ( isset( $_POST['doc']['title'] ) ) {
-		$args['title'] = $_POST['doc']['title'];
+		// Doc titles are plain text. Strip markup so it can't be smuggled into contexts that render titles as HTML.
+		$args['title'] = trim( wp_strip_all_tags( $_POST['doc']['title'] ) );
 	}
 
 	// Using WP editor necessitated the change to $_POST['doc_content'].
