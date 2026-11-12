@@ -219,7 +219,7 @@ class BP_Docs_Attachments {
 
 		$path = $this->get_htaccess_path();
 		if ( file_exists( $path ) ) {
-			unlink( $path );
+			wp_delete_file( $path );
 		}
 
 		return true;
