@@ -1,3 +1,8 @@
+<?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+?>
 <div class="buddypress-wrap">
 <nav class="bp-docs-main-navs main-navs bp-navs dir-navs" role="navigation" aria-label="<?php esc_attr_e( 'Directory menu', 'buddypress-docs' ); ?>">
 	<ul class="component-navigation bp-docs-nav">
