@@ -1155,7 +1155,7 @@ function bp_docs_save_doc_via_post() {
 	);
 
 	if ( empty( $args['doc_id'] ) && ! empty( $_POST['doc_id'] ) ) {
-		$args['doc_id'] = (int) $_POST['doc_id'];
+		$args['doc_id'] = absint( $_POST['doc_id'] );
 	}
 
 	$retval = [
@@ -1174,18 +1174,24 @@ function bp_docs_save_doc_via_post() {
 
 	if ( isset( $_POST['doc']['title'] ) ) {
 		// Doc titles are plain text. Strip markup so it can't be smuggled into contexts that render titles as HTML.
+		// Left slashed: BP_Docs_Query::save() passes it to wp_insert_post(), which expects slashed data.
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 		$args['title'] = trim( wp_strip_all_tags( $_POST['doc']['title'] ) );
 	}
 
 	// Using WP editor necessitated the change to $_POST['doc_content'].
 	// Maintain backward compatibility by checking $_POST['doc']['content'] too.
+	// Content is left slashed: sanitize_post_field() runs the 'content_save_pre'
+	// filters (including kses), and wp_insert_post() then unslashes it.
+	// phpcs:disable WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 	if ( isset( $_POST['doc_content'] ) ) {
 		$args['content'] = sanitize_post_field( 'post_content', $_POST['doc_content'], 0, 'db' );
 	} elseif ( isset( $_POST['doc']['content'] ) ) {
 		$args['content'] = sanitize_post_field( 'post_content', $_POST['doc']['content'], 0, 'db' );
 	}
+	// phpcs:enable WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
-	$args['permalink'] = isset( $_POST['doc']['permalink'] ) ? sanitize_title( $_POST['doc']['permalink'] ) : sanitize_title( $args['title'] );
+	$args['permalink'] = isset( $_POST['doc']['permalink'] ) ? sanitize_title( wp_unslash( $_POST['doc']['permalink'] ) ) : sanitize_title( $args['title'] );
 
 	$args['author_id'] = bp_loggedin_user_id();
 
@@ -1194,14 +1200,20 @@ function bp_docs_save_doc_via_post() {
 	}
 
 	if ( ! empty( $_POST['is_auto'] ) ) {
-		$args['is_auto'] = $_POST['is_auto'];
+		$args['is_auto'] = 1;
 	}
 
 	// Calculate terms only if taxonomy addon is active.
 	$args['taxonomies'] = apply_filters( 'bp_docs_prepare_terms_via_post', $args['taxonomies'] );
 
-	if ( ! empty( $_POST['settings'] ) ) {
-		$args['settings'] = $_POST['settings'];
+	// Values are checked against the allowed access levels in bp_docs_verify_settings().
+	if ( ! empty( $_POST['settings'] ) && is_array( $_POST['settings'] ) ) {
+		$posted_settings = map_deep( wp_unslash( $_POST['settings'] ), 'sanitize_key' );
+		foreach ( $posted_settings as $setting_name => $setting_value ) {
+			if ( is_string( $setting_value ) ) {
+				$args['settings'][ sanitize_key( $setting_name ) ] = $setting_value;
+			}
+		}
 	}
 
 	// Calculate parent_id only if hierarchy addon is active.
@@ -1231,7 +1243,7 @@ function bp_docs_set_last_docs_directory_cookie() {
 	$url = home_url( $wp->request );
 
 	if ( isset( $_COOKIE['bp-docs-last-docs-directory'] ) ) {
-		$existing = urldecode( $_COOKIE['bp-docs-last-docs-directory'] );
+		$existing = urldecode( esc_url_raw( wp_unslash( $_COOKIE['bp-docs-last-docs-directory'] ) ) );
 		if ( $existing === $url ) {
 			return;
 		}
