@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class BP_Docs_Attachments {
 	protected $doc_id;
 	protected $override_doc_id;
