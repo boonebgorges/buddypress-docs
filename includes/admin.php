@@ -306,36 +306,40 @@ class BP_Docs_Admin {
 	 * @since 1.1.8
 	 */
 	function wp_dashboard_recent_comments() {
-		global $wpdb, $bp;
-
-		if ( current_user_can('edit_posts') )
-			$allowed_states = array('0', '1');
-		else
-			$allowed_states = array('1');
-
-		// Select all comment types and filter out spam later for better query performance.
 		$comments = array();
-		$start = 0;
 
 		$widgets = get_option( 'dashboard_widget_options' );
 		$total_items = isset( $widgets['dashboard_recent_comments'] ) && isset( $widgets['dashboard_recent_comments']['items'] )
 			? absint( $widgets['dashboard_recent_comments']['items'] ) : 5;
 
-		while ( count( $comments ) < $total_items && $possible = $wpdb->get_results( "SELECT c.*, p.post_type AS comment_post_post_type FROM $wpdb->comments c LEFT JOIN $wpdb->posts p ON c.comment_post_ID = p.ID WHERE p.post_status != 'trash' ORDER BY c.comment_date_gmt DESC LIMIT $start, 50" ) ) {
+		// 'all' is approved + pending; trashed, spam, and comments on trashed posts are excluded.
+		$comments_query = array(
+			'number' => 50,
+			'offset' => 0,
+			'status' => current_user_can( 'edit_posts' ) ? 'all' : 'approve',
+		);
 
+		$doc_post_type = bp_docs_get_post_type_name();
+
+		while ( count( $comments ) < $total_items && $possible = get_comments( $comments_query ) ) {
 			foreach ( $possible as $comment ) {
-				if ( count( $comments ) >= $total_items )
+				if ( count( $comments ) >= $total_items ) {
 					break;
+				}
+
+				$comment_post_id = (int) $comment->comment_post_ID;
 
 				// Is the user allowed to read this doc?
-				if ( $bp->bp_docs->post_type_name == $comment->comment_post_post_type && !bp_docs_user_can( 'read', get_current_user_ID(), $comment->comment_post_ID ) )
+				if ( $doc_post_type === get_post_type( $comment_post_id ) && ! current_user_can( 'bp_docs_read', $comment_post_id ) ) {
 					continue;
+				}
 
-				if ( in_array( $comment->comment_approved, $allowed_states ) && current_user_can( 'read_post', $comment->comment_post_ID ) )
+				if ( current_user_can( 'read_post', $comment_post_id ) ) {
 					$comments[] = $comment;
+				}
 			}
 
-			$start = $start + 50;
+			$comments_query['offset'] += $comments_query['number'];
 		}
 
 		if ( $comments ) :
