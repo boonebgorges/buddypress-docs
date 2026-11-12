@@ -388,10 +388,16 @@ class BP_Docs_Component extends BP_Component {
 
 		$parent_url = bp_docs_get_user_docs_url( bp_displayed_user_id() );
 
-		$mydocs_label = bp_is_my_profile() ? __( 'My Docs ', 'buddypress-docs' ) : sprintf( __( '%s&#8217;s Docs', 'buddypress-docs' ), bp_get_user_firstname( bp_get_displayed_user_fullname() ) );
+		$mydocs_label = bp_is_my_profile()
+			? __( 'My Docs ', 'buddypress-docs' )
+			/* translators: %s: first name of the displayed user */
+			: sprintf( __( '%s&#8217;s Docs', 'buddypress-docs' ), bp_get_user_firstname( bp_get_displayed_user_fullname() ) );
 
 		$sub_nav[] = array(
-			'name'            => bp_is_my_profile() ? __( 'Started By Me', 'buddypress-docs' ) : sprintf( __( 'Started By %s', 'buddypress-docs' ), bp_get_user_firstname() ),
+			'name'            => bp_is_my_profile()
+				? __( 'Started By Me', 'buddypress-docs' )
+				/* translators: %s: first name of the displayed user */
+				: sprintf( __( 'Started By %s', 'buddypress-docs' ), bp_get_user_firstname() ),
 			'slug'            => BP_DOCS_STARTED_SLUG,
 			'parent_url'      => $parent_url,
 			'parent_slug'     => bp_docs_get_docs_slug(),
@@ -400,7 +406,10 @@ class BP_Docs_Component extends BP_Component {
 		);
 
 		$sub_nav[] = array(
-			'name'            => bp_is_my_profile() ? __( 'Edited By Me', 'buddypress-docs' ) : sprintf( __( 'Edited By %s', 'buddypress-docs' ), bp_get_user_firstname() ),
+			'name'            => bp_is_my_profile()
+				? __( 'Edited By Me', 'buddypress-docs' )
+				/* translators: %s: first name of the displayed user */
+				: sprintf( __( 'Edited By %s', 'buddypress-docs' ), bp_get_user_firstname() ),
 			'slug'            => BP_DOCS_EDITED_SLUG,
 			'parent_url'      => $parent_url,
 			'parent_slug'     => bp_docs_get_docs_slug(),
@@ -507,6 +516,7 @@ class BP_Docs_Component extends BP_Component {
 					$lock = bp_docs_check_post_lock( $doc->ID );
 
 					if ( $lock ) {
+						/* translators: %s: display name of the user editing the doc */
 						bp_core_add_message( sprintf( __( 'This doc is currently being edited by %s. To prevent overwrites, you cannot edit until that user has finished. Please try again in a few minutes.', 'buddypress-docs' ), bp_core_get_user_displayname( $lock ) ), 'error' );
 
 						// Redirect back to the non-edit view of this document
@@ -1016,7 +1026,7 @@ class BP_Docs_Component extends BP_Component {
 			<form action="<?php echo esc_url( $form_action ); ?>" method="get">
 				<label for="docs-search" class="screen-reader-text"><?php esc_html_e( 'Search', 'buddypress-docs' ); ?></label>
 				<input id="docs-search" name="s" value="<?php the_search_query() ?>">
-				<input name="search_submit" type="submit" value="<?php _e( 'Search', 'buddypress-docs' ) ?>" />
+				<input name="search_submit" type="submit" value="<?php esc_attr_e( 'Search', 'buddypress-docs' ) ?>" />
 				<?php do_action( 'bp_docs_directory_filter_search_form' ) ?>
 			</form>
 		</div>
@@ -1107,6 +1117,7 @@ class BP_Docs_Component extends BP_Component {
 			$submitted_data = isset( buddypress()->bp_docs->submitted_data ) ? buddypress()->bp_docs->submitted_data : null;
 
 			$strings = array(
+				/* translators: %d: number of additional items */
 				'and_x_more'        => __( 'and %d more', 'buddypress-docs' ),
 				'failed_submission' => ! empty( $submitted_data ) ? 1 : 0,
 				'show_all_tags'     => __( 'show all tags', 'buddypress-docs' ),
