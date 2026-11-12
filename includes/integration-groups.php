@@ -279,6 +279,8 @@ class BP_Docs_Groups_Integration {
 			'update_term_cache' => true,
 			'showposts'         => '-1',
 			'posts_per_page'    => '-1',
+			// The group association is stored as a taxonomy term, so a tax_query is required.
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 			'tax_query'         => array(
 				self::tax_query_arg_for_groups( $group_id ),
 			),
