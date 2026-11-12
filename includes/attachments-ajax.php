@@ -6,6 +6,10 @@
  * @since 1.4
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 function bp_docs_attachment_item_markup_cb() {
 	$attachment_id = isset( $_POST['attachment_id'] ) ? intval( $_POST['attachment_id'] ) : 0;
 	$markup = bp_docs_attachment_item_markup( $attachment_id );
