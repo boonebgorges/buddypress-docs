@@ -110,7 +110,9 @@ class BP_Docs_Admin {
 			'bp-docs-settings',
 			'bp-docs-users'
 		);
-		register_setting( 'bp-docs-settings', 'bp-docs-user-tab-name' );
+		register_setting( 'bp-docs-settings', 'bp-docs-user-tab-name', array(
+			'sanitize_callback' => 'sanitize_text_field',
+		) );
 
 		// Groups
 		if ( bp_is_active( 'groups' ) ) {
@@ -129,7 +131,9 @@ class BP_Docs_Admin {
 				'bp-docs-settings',
 				'bp-docs-groups'
 			);
-			register_setting( 'bp-docs-settings', 'bp-docs-tab-name' );
+			register_setting( 'bp-docs-settings', 'bp-docs-tab-name', array(
+				'sanitize_callback' => 'sanitize_text_field',
+			) );
 		}
 
 		// Attachments
@@ -148,7 +152,9 @@ class BP_Docs_Admin {
 			'bp-docs-settings',
 			'bp-docs-attachments'
 		);
-		register_setting( 'bp-docs-settings', 'bp-docs-enable-attachments' );
+		register_setting( 'bp-docs-settings', 'bp-docs-enable-attachments', array(
+			'sanitize_callback' => array( $this, 'sanitize_yes_no' ),
+		) );
 	}
 
 	public function general_section() { settings_errors(); }
@@ -229,6 +235,18 @@ class BP_Docs_Admin {
 		<p class="description"><?php _e( "Allow users to add attachments to their Docs.", 'buddypress-docs' ) ?></p>
 
 		<?php
+	}
+
+	/**
+	 * Sanitizes a 'yes'/'no' setting. Anything other than 'no' is treated as 'yes'.
+	 *
+	 * @since 2.2.8
+	 *
+	 * @param mixed $value Submitted value.
+	 * @return string
+	 */
+	public function sanitize_yes_no( $value ) {
+		return 'no' === $value ? 'no' : 'yes';
 	}
 
 	public function sanitize_slug( $value ) {
