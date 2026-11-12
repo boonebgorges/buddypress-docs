@@ -289,7 +289,7 @@ class BP_Docs_Admin {
 		$recent_comments_title = __( 'Recent Comments', 'buddypress-docs' );
 
 		// Add our widget in the same location
-		wp_add_dashboard_widget( 'dashboard_recent_comments_bp_docs', $recent_comments_title, array( $this, 'wp_dashboard_recent_comments' ), 'wp_dashboard_recent_comments_control' );
+		wp_add_dashboard_widget( 'dashboard_recent_comments_bp_docs', $recent_comments_title, array( $this, 'wp_dashboard_recent_comments' ) );
 
 		// Restore the previous widget order. File this under "good citizenship"
 		$wp_meta_boxes['dashboard'][$context]['core']['dashboard_recent_comments'] = $wp_meta_boxes['dashboard'][$context]['core']['dashboard_recent_comments_bp_docs'];
