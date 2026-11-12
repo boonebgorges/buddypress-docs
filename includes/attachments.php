@@ -614,6 +614,8 @@ class BP_Docs_Attachments {
 		if ( function_exists( 'apache_setenv' ) ) {
 			@apache_setenv( 'no-gzip', 1 );
 		}
+		// Compression would make the Content-Length header below inaccurate.
+		// phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
 		@ini_set( 'zlib.output_compression', 'Off' );
 
 		// @todo Make this more configurable
