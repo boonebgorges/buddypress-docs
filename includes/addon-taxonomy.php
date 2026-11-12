@@ -357,6 +357,7 @@ class BP_Docs_Taxonomy {
 
 		$existing_terms = $this->get_item_terms();
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only directory filter.
 		$tag_filter = ! empty( $_GET['bpd_tag'] );
 
 		?>
@@ -416,6 +417,7 @@ class BP_Docs_Taxonomy {
 			return $is_filtered;
 		}
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only directory filter.
 		if ( ! empty( $_GET['bpd_tag'] ) ) {
 			$is_filtered = true;
 		}
