@@ -559,6 +559,7 @@ class BP_Docs_Groups_Integration {
 
 			$options[40] = array(
 				'name'  => 'group-members',
+				/* translators: %s: group name */
 				'label' => sprintf( __( 'Members of %s', 'buddypress-docs' ), $group->name ),
 			);
 
@@ -571,6 +572,7 @@ class BP_Docs_Groups_Integration {
 			if ( $is_admin || $is_mod ) {
 				$options[50] = array(
 					'name'  => 'admins-mods',
+					/* translators: %s: group name */
 					'label' => sprintf( __( 'Admins and mods of %s', 'buddypress-docs' ), $group->name ),
 				);
 			}
@@ -657,8 +659,10 @@ class BP_Docs_Groups_Integration {
 			$group_link = '<a href="' . esc_url( $group_url ) . '">' . esc_html( $group->name ) . '</a>';
 
 			if ( $is_new_doc ) {
+				/* translators: 1: link to the user, 2: link to the doc, 3: link to the group */
 				$action = sprintf( __( '%1$s created the doc %2$s in the group %3$s', 'buddypress-docs' ), $user_link, $doc_link, $group_link );
 			} else {
+				/* translators: 1: link to the user, 2: link to the doc, 3: link to the group */
 				$action = sprintf( __( '%1$s edited the doc %2$s in the group %3$s', 'buddypress-docs' ), $user_link, $doc_link, $group_link );
 			}
 		}
@@ -714,6 +718,7 @@ class BP_Docs_Groups_Integration {
 			$group_url  = bp_get_group_url( $group );
 			$group_link = '<a href="' . esc_url( $group_url ) . '">' . esc_html( $group->name ) . '</a>';
 
+			/* translators: 1: link to the user, 2: link to the comment, 3: link to the group */
 			$action = sprintf( __( '%1$s commented on the doc %2$s in the group %3$s', 'buddypress-docs' ), $user_link, $comment_link, $group_link );
 		}
 
@@ -792,7 +797,7 @@ class BP_Docs_Groups_Integration {
 
 		?>
 
-		<th scope="column" class="groups-cell"><?php _e( 'Group', 'buddypress-docs' ); ?></th>
+		<th scope="column" class="groups-cell"><?php esc_html_e( 'Group', 'buddypress-docs' ); ?></th>
 
 		<?php
 	}
@@ -843,8 +848,8 @@ class BP_Docs_Groups_Integration {
 					?>
 
 					<li><a href="<?php echo esc_url( $group_permalink ); ?>">
-						<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 						<?php
+						// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Avatar markup is built and escaped by BuddyPress.
 						echo bp_core_fetch_avatar(
 							array(
 								'item_id'    => $group_id,
@@ -966,6 +971,7 @@ class BP_Docs_Groups_Integration {
 				$doc_count = groups_get_groupmeta( $bp->groups->current_group->id, 'bp-docs-count' );
 			}
 
+			/* translators: 1: name of the Docs tab, 2: number of Docs */
 			$bp->bp_options_nav[ $group_slug ][ $docs_slug ]['name'] = sprintf( __( '%1$s <span>%2$d</span>', 'buddypress-docs' ), $current_tab_name, $doc_count );
 		}
 	}
@@ -1232,7 +1238,7 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
 			// On the edit screen, we have to provide a save button
 			?>
 		<p>
-			<input type="submit" value="<?php _e( 'Save Changes', 'buddypress-docs' ); ?>" id="save" name="save" />
+			<input type="submit" value="<?php esc_attr_e( 'Save Changes', 'buddypress-docs' ); ?>" id="save" name="save" />
 		</p>
 			<?php
 
