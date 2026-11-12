@@ -195,8 +195,8 @@ function bp_docs_locate_template( $template = '', $load = false, $require_once =
 		return false;
 
 	// Try to load custom templates first
-	$stylesheet_path = STYLESHEETPATH . '/docs/';
-	$template_path   = TEMPLATEPATH . '/docs/';
+	$stylesheet_path = get_stylesheet_directory() . '/docs/';
+	$template_path   = get_template_directory() . '/docs/';
 
 	if ( file_exists( $stylesheet_path . $template ) )
 		$template_path = $stylesheet_path . $template;
