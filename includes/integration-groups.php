@@ -1494,16 +1494,26 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
 		}
 
 		public function url_backpat() {
-			global $bp, $wpdb;
+			global $bp;
 
 			if ( bp_is_group() && bp_is_current_action( 'docs' ) ) {
 				if ( 'single' === $bp->bp_docs->current_view ) {
-					// Look up a Doc by this name
-					$maybe_id = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post_name = %s LIMIT 1", bp_action_variable( 0 ) ) );
+					// Look up a Doc by this name. 'name' rather than get_page_by_path(),
+					// because Doc permalinks don't include ancestors' slugs.
+					$maybe_ids = get_posts(
+						array(
+							'post_type'              => bp_docs_get_post_type_name(),
+							'name'                   => bp_action_variable( 0 ),
+							'posts_per_page'         => 1,
+							'fields'                 => 'ids',
+							'update_post_meta_cache' => false,
+							'update_post_term_cache' => false,
+						)
+					);
 
 					// Redirect to that Doc. Permissions will be handled there
-					if ( $maybe_id ) {
-						bp_core_redirect( bp_docs_get_doc_link( $maybe_id ) );
+					if ( $maybe_ids ) {
+						bp_core_redirect( bp_docs_get_doc_link( $maybe_ids[0] ) );
 					}
 				}
 			}
