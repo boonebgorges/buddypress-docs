@@ -403,7 +403,13 @@ class BP_Docs_Attachments {
 			bp_core_add_message( __( 'Could not delete attachment', 'buddypress-docs' ), 'error' );
 		}
 
-		wp_redirect( wp_get_referer() );
+		$redirect = wp_get_referer();
+		if ( ! $redirect ) {
+			$redirect = bp_docs_get_doc_edit_link( bp_docs_get_current_doc()->ID );
+		}
+
+		wp_safe_redirect( $redirect );
+		exit;
 	}
 
 	/**
