@@ -1161,7 +1161,8 @@ function bp_docs_save_doc_via_post() {
 	}
 
 	// Calculate parent_id only if hierarchy addon is active.
-	$args['parent_id'] = apply_filters( 'bp_docs_get_parent_id_via_post', $args['parent_id'] );
+	$posted_parent_id  = isset( $_POST['parent_id'] ) ? absint( $_POST['parent_id'] ) : 0;
+	$args['parent_id'] = apply_filters( 'bp_docs_get_parent_id_via_post', $args['parent_id'], $posted_parent_id );
 
 	$args['redirect_to'] = isset( $_POST['doc-edit-submit-continue'] ) ? 'edit' : 'single';
 

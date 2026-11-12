@@ -23,7 +23,7 @@ class BP_Docs_Hierarchy {
 		add_filter( 'bp_docs_post_type_args', array( $this, 'register_with_post_type' ) );
 
 		// Set parent_id for posts saved from the front end
-		add_filter( 'bp_docs_get_parent_id_via_post', array( $this, 'set_parent_id_via_post' ) );
+		add_filter( 'bp_docs_get_parent_id_via_post', array( $this, 'set_parent_id_via_post' ), 10, 2 );
 
 		// Display a doc's parent on its single doc page
 		add_action( 'bp_docs_single_doc_meta', array( $this, 'show_parent' ) );
@@ -85,17 +85,33 @@ class BP_Docs_Hierarchy {
 	/**
 	 * Set parent_id for posts saved from the front end
 	 *
-	 * @since 1.0-beta
+	 * The submitted value is read (after nonce verification) by
+	 * bp_docs_save_doc_via_post() and passed in here.
 	 *
-	 * @param int $parent_id The parent ID from BP_Docs_Query->save()
-	 * @return int $parent_id Returns the doc's parent_id on success
+	 * @since 1.0-beta
+	 * @since 2.2.8 Added the `$posted_parent_id` parameter. No longer reads from $_POST.
+	 *
+	 * @param int $parent_id        Default parent ID.
+	 * @param int $posted_parent_id Parent ID submitted with the Doc form.
+	 * @return int
 	 */
-	function set_parent_id_via_post( $parent_id ) {
-		if ( ! empty( $_POST['parent_id'] ) ) {
-			$parent_id = $_POST['parent_id'];
+	function set_parent_id_via_post( $parent_id, $posted_parent_id = 0 ) {
+		$posted_parent_id = absint( $posted_parent_id );
+
+		if ( ! $posted_parent_id ) {
+			return $parent_id;
 		}
 
-		return $parent_id;
+		// The parent must be a Doc that the current user is able to read.
+		if ( bp_docs_get_post_type_name() !== get_post_type( $posted_parent_id ) ) {
+			return $parent_id;
+		}
+
+		if ( ! current_user_can( 'bp_docs_read', $posted_parent_id ) ) {
+			return $parent_id;
+		}
+
+		return $posted_parent_id;
 	}
 
 	/**
