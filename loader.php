@@ -11,6 +11,10 @@ Domain Path: /languages/
 License: GPLv3
 */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /*
 It's on like Donkey Kong
 */
