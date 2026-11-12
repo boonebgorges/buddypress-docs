@@ -44,7 +44,7 @@ class BP_Docs_Admin {
 		?>
 <div class="wrap">
 	<form method="post" action="<?php echo esc_url( admin_url( 'options.php' ) ) ?>">
-		<h2><?php _e( 'BuddyPress Docs Settings', 'buddypress-docs' ) ?></h2>
+		<h2><?php esc_html_e( 'BuddyPress Docs Settings', 'buddypress-docs' ) ?></h2>
 		<?php settings_fields( 'bp-docs-settings' ) ?>
 		<?php do_settings_sections( 'bp-docs-settings' ) ?>
 		<?php submit_button() ?>
@@ -163,9 +163,9 @@ class BP_Docs_Admin {
 		$is_in_wp_config = 1 === $bp->bp_docs->slug_defined_in_wp_config['slug'];
 
 		?>
-		<label for="bp-docs-slug" class="screen-reader-text"><?php _e( "Change the slug used to build Docs URLs.", 'buddypress-docs' ) ?></label>
-		<input name="bp-docs-slug" id="bp-docs-slug" type="text" value="<?php echo esc_html( $slug ) ?>" <?php if ( $is_in_wp_config ) : ?>disabled="disabled" <?php endif ?>/>
-		<p class="description"><?php _e( "Change the slug used to build Docs URLs.", 'buddypress-docs' ) ?><?php if ( $is_in_wp_config ) : ?> <?php _e( 'You have already defined this value in <code>wp-config.php</code>, so it cannot be edited here.', 'buddypress-docs' ) ?><?php endif ?></p>
+		<label for="bp-docs-slug" class="screen-reader-text"><?php esc_html_e( "Change the slug used to build Docs URLs.", 'buddypress-docs' ) ?></label>
+		<input name="bp-docs-slug" id="bp-docs-slug" type="text" value="<?php echo esc_attr( $slug ); ?>" <?php if ( $is_in_wp_config ) : ?>disabled="disabled" <?php endif ?>/>
+		<p class="description"><?php esc_html_e( "Change the slug used to build Docs URLs.", 'buddypress-docs' ) ?><?php if ( $is_in_wp_config ) : ?> <?php echo wp_kses( __( 'You have already defined this value in <code>wp-config.php</code>, so it cannot be edited here.', 'buddypress-docs' ), array( 'code' => array() ) ) ?><?php endif ?></p>
 
 		<?php
 	}
@@ -174,9 +174,9 @@ class BP_Docs_Admin {
 		$length = bp_docs_get_excerpt_length();
 
 		?>
-		<label for="bp-docs-excerpt-length" class="screen-reader-text"><?php _e( "Change the value for longer or shorter excerpts.", 'buddypress-docs' ) ?></label>
-		<input name="bp-docs-excerpt-length" id="bp-docs-excerpt-length" type="text" value="<?php echo esc_html( $length ) ?>" />
-		<p class="description"><?php _e( "Excerpts are shown on Docs directories, to provide better context. If your theme or language requires longer or shorter excerpts, change this value. Set to <code>0</code> to disable these excerpts.", 'buddypress-docs' ) ?></p>
+		<label for="bp-docs-excerpt-length" class="screen-reader-text"><?php esc_html_e( "Change the value for longer or shorter excerpts.", 'buddypress-docs' ) ?></label>
+		<input name="bp-docs-excerpt-length" id="bp-docs-excerpt-length" type="text" value="<?php echo esc_attr( $length ); ?>" />
+		<p class="description"><?php echo wp_kses( __( "Excerpts are shown on Docs directories, to provide better context. If your theme or language requires longer or shorter excerpts, change this value. Set to <code>0</code> to disable these excerpts.", 'buddypress-docs' ), array( 'code' => array() ) ) ?></p>
 
 		<?php
 	}
@@ -185,9 +185,9 @@ class BP_Docs_Admin {
 		$label = bp_docs_get_docs_directory_title();
 
 		?>
-		<label for="bp-docs-directory-title" class="screen-reader-text"><?php _e( "Change the title of the main Docs directory.", 'buddypress-docs' ) ?></label>
-		<input name="bp-docs-directory-title" id="bp-docs-directory-title" type="text" value="<?php echo esc_html( $label ); ?>" />
-		<p class="description"><?php _e( "Change the title of the main Docs directory from 'Docs Directory' to whatever you&rsquo;d like.", 'buddypress-docs' ) ?></p>
+		<label for="bp-docs-directory-title" class="screen-reader-text"><?php esc_html_e( "Change the title of the main Docs directory.", 'buddypress-docs' ) ?></label>
+		<input name="bp-docs-directory-title" id="bp-docs-directory-title" type="text" value="<?php echo esc_attr( $label ); ?>" />
+		<p class="description"><?php esc_html_e( "Change the title of the main Docs directory from 'Docs Directory' to whatever you&rsquo;d like.", 'buddypress-docs' ) ?></p>
 
 		<?php
 	}
@@ -199,9 +199,9 @@ class BP_Docs_Admin {
 		$name = bp_docs_get_group_tab_name();
 
 		?>
-		<label for="bp-docs-tab-name" class="screen-reader-text"><?php _e( "Change the word on groups' Docs tab.", 'buddypress-docs' ) ?></label>
-		<input name="bp-docs-tab-name" id="bp-docs-tab-name" type="text" value="<?php echo esc_html( $name ) ?>" />
-		<p class="description"><?php _e( "Change the word on the BuddyPress group tab from 'Docs' to whatever you'd like. Keep in mind that this will not change the text anywhere else on the page. For a more thorough text change, create a <a href='http://codex.buddypress.org/extending-buddypress/customizing-labels-messages-and-urls/'>language file</a> for BuddyPress Docs.", 'buddypress-docs' ) ?></p>
+		<label for="bp-docs-tab-name" class="screen-reader-text"><?php esc_html_e( "Change the word on groups' Docs tab.", 'buddypress-docs' ) ?></label>
+		<input name="bp-docs-tab-name" id="bp-docs-tab-name" type="text" value="<?php echo esc_attr( $name ); ?>" />
+		<p class="description"><?php echo wp_kses( __( "Change the word on the BuddyPress group tab from 'Docs' to whatever you'd like. Keep in mind that this will not change the text anywhere else on the page. For a more thorough text change, create a <a href='http://codex.buddypress.org/extending-buddypress/customizing-labels-messages-and-urls/'>language file</a> for BuddyPress Docs.", 'buddypress-docs' ), array( 'a' => array( 'href' => array() ) ) ) ?></p>
 
 		<?php
 	}
@@ -210,9 +210,9 @@ class BP_Docs_Admin {
 		$name = bp_docs_get_user_tab_name();
 
 		?>
-		<label for="bp-docs-user-tab-name" class="screen-reader-text"><?php _e( "Change the word on users' Docs tab.", 'buddypress-docs' ) ?></label>
-		<input name="bp-docs-user-tab-name" id="bp-docs-user-tab-name" type="text" value="<?php echo esc_html( $name ) ?>" />
-		<p class="description"><?php _e( "Change the word on users' Docs tabs from 'Docs' to whatever you'd like. Keep in mind that this will not change the text anywhere else on the page. For a more thorough text change, create a <a href='http://codex.buddypress.org/extending-buddypress/customizing-labels-messages-and-urls/'>language file</a> for BuddyPress Docs.", 'buddypress-docs' ) ?></p>
+		<label for="bp-docs-user-tab-name" class="screen-reader-text"><?php esc_html_e( "Change the word on users' Docs tab.", 'buddypress-docs' ) ?></label>
+		<input name="bp-docs-user-tab-name" id="bp-docs-user-tab-name" type="text" value="<?php echo esc_attr( $name ); ?>" />
+		<p class="description"><?php echo wp_kses( __( "Change the word on users' Docs tabs from 'Docs' to whatever you'd like. Keep in mind that this will not change the text anywhere else on the page. For a more thorough text change, create a <a href='http://codex.buddypress.org/extending-buddypress/customizing-labels-messages-and-urls/'>language file</a> for BuddyPress Docs.", 'buddypress-docs' ), array( 'a' => array( 'href' => array() ) ) ) ?></p>
 
 		<?php
 	}
@@ -342,7 +342,7 @@ class BP_Docs_Admin {
 		else :
 	?>
 
-		<p><?php _e( 'No comments yet.', 'buddypress-docs' ); ?></p>
+		<p><?php esc_html_e( 'No comments yet.', 'buddypress-docs' ); ?></p>
 
 	<?php
 		endif; // $comments;
