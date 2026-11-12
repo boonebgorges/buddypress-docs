@@ -996,17 +996,49 @@ function bp_docs_hide_sitewide_for_doc( $doc_id ) {
 	return apply_filters( 'bp_docs_hide_sitewide_for_doc', $hide_sitewide, $doc_id );
 }
 
+/**
+ * Get the IDs of all Docs that the current user is allowed to read.
+ *
+ * @since 1.4
+ * @since 2.2.8 Results are cached for the duration of the request.
+ *
+ * @return array Doc IDs, as numeric strings.
+ */
 function bp_docs_get_doc_ids_accessible_to_current_user() {
 	global $wpdb;
 
-	// Direct query for speeeeeeed
-	$exclude = bp_docs_access_query()->get_doc_ids();
+	// Built from the per-user list of forbidden Docs, which is cached
+	// against the Docs 'last_changed' incrementor. Core's 'posts' incrementor
+	// additionally covers Docs being created or permanently deleted.
+	$last_changed = wp_cache_get( 'last_changed', 'bp_docs_nonpersistent' );
+	if ( false === $last_changed ) {
+		$last_changed = microtime();
+		wp_cache_set( 'last_changed', $last_changed, 'bp_docs_nonpersistent' );
+	}
+
+	$cache_key = 'bp_docs_accessible_docs_for_user_' . bp_loggedin_user_id() . '_' . $last_changed . '_' . wp_cache_get_last_changed( 'posts' );
+	$cached    = wp_cache_get( $cache_key, 'bp_docs_nonpersistent' );
+	if ( false !== $cached ) {
+		return $cached;
+	}
+
+	$exclude = array_map( 'intval', bp_docs_access_query()->get_doc_ids() );
 	if ( empty( $exclude ) ) {
 		$exclude = array( 0 );
 	}
-	$exclude_sql = '(' . implode( ',', $exclude ) . ')';
-	$items_sql = $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post_type = %s AND ID NOT IN $exclude_sql", bp_docs_get_post_type_name() );
-	return $wpdb->get_col( $items_sql );
+
+	// Direct query for speeeeeeed
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+	$doc_ids = $wpdb->get_col(
+		$wpdb->prepare(
+			"SELECT ID FROM $wpdb->posts WHERE post_type = %s AND ID NOT IN (" . implode( ', ', array_fill( 0, count( $exclude ), '%d' ) ) . ')',
+			array_merge( array( bp_docs_get_post_type_name() ), $exclude )
+		)
+	);
+
+	wp_cache_set( $cache_key, $doc_ids, 'bp_docs_nonpersistent' );
+
+	return $doc_ids;
 }
 
 /**
