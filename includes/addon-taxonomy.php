@@ -7,6 +7,10 @@
  * @package BuddyPressDocs
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * This class sets up the interface and back-end functions needed to use post tags with BP Docs.
  *
