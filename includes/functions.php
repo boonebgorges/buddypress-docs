@@ -1200,26 +1200,49 @@ function bp_docs_set_last_docs_directory_cookie() {
  * @since 2.1.0
  */
 function bp_docs_force_unique_slugs( $slug, $post_ID, $post_status, $post_type, $post_parent, $original_slug ) {
-	global $wpdb;
-
 	if ( bp_docs_get_post_type_name() !== $post_type ) {
 		return $slug;
 	}
 
-	$check_sql = "SELECT post_name FROM $wpdb->posts WHERE post_name = %s AND post_type = %s AND ID != %d LIMIT 1";
-	$post_name_check = $wpdb->get_var( $wpdb->prepare( $check_sql, $slug, bp_docs_get_post_type_name(), $post_ID ) );
-
-	if ( ! $post_name_check ) {
+	if ( ! bp_docs_slug_is_taken( $slug, $post_ID ) ) {
 		return $slug;
 	}
 
 	$suffix = 2;
 	do {
 		$alt_post_name = _truncate_post_slug( $original_slug, 200 - ( strlen( $suffix ) + 1 ) ) . "-$suffix";
-		$post_name_check = $wpdb->get_var( $wpdb->prepare( $check_sql, $alt_post_name, $post_type, $post_ID ) );
 		$suffix++;
-	} while ( $post_name_check );
+	} while ( bp_docs_slug_is_taken( $alt_post_name, $post_ID ) );
 
 	return $alt_post_name;
 }
 add_filter( 'wp_unique_post_slug', 'bp_docs_force_unique_slugs', 10, 6 );
+
+/**
+ * Check whether a slug is used by any Doc other than the given one, in any hierarchy.
+ *
+ * @since 2.2.8
+ *
+ * @param string $slug    Slug to check.
+ * @param int    $post_ID ID of the Doc being saved, which is excluded from the check.
+ * @return bool
+ */
+function bp_docs_slug_is_taken( $slug, $post_ID ) {
+	global $wpdb;
+
+	// A direct, uncached query, as in core's wp_unique_post_slug(): this must
+	// reflect the current state of the database and must see every Doc. WP_Query
+	// skips trashed, auto-draft and pending Docs even with post_status 'any', and
+	// Doc queries are subject to Docs' per-user access protection.
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+	$found = $wpdb->get_var(
+		$wpdb->prepare(
+			"SELECT post_name FROM $wpdb->posts WHERE post_name = %s AND post_type = %s AND ID != %d LIMIT 1",
+			$slug,
+			bp_docs_get_post_type_name(),
+			$post_ID
+		)
+	);
+
+	return (bool) $found;
+}
