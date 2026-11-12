@@ -1063,7 +1063,7 @@ class BP_Docs_Component extends BP_Component {
 	 * @since 1.0-beta
 	 */
 	function enqueue_scripts() {
-		wp_register_script( 'bp-docs-js', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/bp-docs.js' ), array( 'jquery' ) );
+		wp_register_script( 'bp-docs-js', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/bp-docs.js' ), array( 'jquery' ), BP_DOCS_VERSION, false );
 
 		// This is for edit/create scripts
 		if ( bp_docs_is_doc_edit()
@@ -1080,10 +1080,10 @@ class BP_Docs_Component extends BP_Component {
 			wp_enqueue_script( 'editor' );
 			wp_enqueue_script( 'utils' );
 
-			wp_register_script( 'bp-docs-idle-js', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/idle.js' ), array( 'jquery', 'bp-docs-js' ) );
+			wp_register_script( 'bp-docs-idle-js', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/idle.js' ), array( 'jquery', 'bp-docs-js' ), BP_DOCS_VERSION, false );
 			wp_enqueue_script( 'bp-docs-idle-js' );
 
-			wp_register_script( 'jquery-colorbox', plugins_url( BP_DOCS_PLUGIN_SLUG . '/lib/js/colorbox/jquery.colorbox-min.js' ), array( 'jquery' ) );
+			wp_register_script( 'jquery-colorbox', plugins_url( BP_DOCS_PLUGIN_SLUG . '/lib/js/colorbox/jquery.colorbox-min.js' ), array( 'jquery' ), '1.3.19', false );
 			wp_enqueue_script( 'jquery-colorbox' );
 			// Edit mode requires bp-docs-js to be dependent on TinyMCE, so we must
 			// reregister bp-docs-js with the correct dependencies
@@ -1092,13 +1092,11 @@ class BP_Docs_Component extends BP_Component {
 				'bp-docs-js',
 				plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/bp-docs.js' ),
 				array( 'jquery', 'editor' ),
-				'',
+				BP_DOCS_VERSION,
 				true
 			);
 
-			wp_register_script( 'word-counter', site_url() . '/wp-admin/js/word-count.js', array( 'jquery' ) );
-
-			wp_enqueue_script( 'bp-docs-edit-validation', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/edit-validation.js' ), array( 'jquery', 'bp-docs-js' ) );
+			wp_enqueue_script( 'bp-docs-edit-validation', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/edit-validation.js' ), array( 'jquery', 'bp-docs-js' ), BP_DOCS_VERSION, false );
 			wp_localize_script(
 				'bp-docs-edit-validation',
 				'bpDocsValidation',
@@ -1158,17 +1156,17 @@ class BP_Docs_Component extends BP_Component {
 		// Load the main CSS only on the proper pages
 		if ( in_array( bp_docs_get_docs_slug(), $this->slugstocheck ) || bp_docs_is_docs_component() ) {
 			if ( is_rtl() ) {
-				wp_enqueue_style( 'bp-docs-css', $this->includes_url . 'css-rtl/screen.css' );
+				wp_enqueue_style( 'bp-docs-css', $this->includes_url . 'css-rtl/screen.css', array(), BP_DOCS_VERSION );
 			} else {
-				wp_enqueue_style( 'bp-docs-css', $this->includes_url . 'css/screen.css' );
+				wp_enqueue_style( 'bp-docs-css', $this->includes_url . 'css/screen.css', array(), BP_DOCS_VERSION );
 			}
 		}
 
 		if ( bp_docs_is_doc_edit() || bp_docs_is_doc_create() ) {
 			if ( is_rtl() ) {
-				wp_enqueue_style( 'bp-docs-edit-css', $this->includes_url . 'css-rtl/edit.css' );
+				wp_enqueue_style( 'bp-docs-edit-css', $this->includes_url . 'css-rtl/edit.css', array(), BP_DOCS_VERSION );
 			} else {
-				wp_enqueue_style( 'bp-docs-edit-css', $this->includes_url . 'css/edit.css' );
+				wp_enqueue_style( 'bp-docs-edit-css', $this->includes_url . 'css/edit.css', array(), BP_DOCS_VERSION );
 			}
 			wp_enqueue_style( 'thickbox' );
 		}
