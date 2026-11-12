@@ -554,7 +554,7 @@ class BP_Docs_Attachments {
 		}
 
 		$url = bp_docs_get_doc_link( $doc_id );
-		$url_parts = parse_url( $url );
+		$url_parts = wp_parse_url( $url );
 
 		if ( ! empty( $url_parts['path'] ) ) {
 			$rules = array(
