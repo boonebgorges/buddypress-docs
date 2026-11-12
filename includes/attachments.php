@@ -131,8 +131,10 @@ class BP_Docs_Attachments {
 				wp_die( esc_html__( 'File not found.', 'buddypress-docs' ) );
 			}
 
-			error_reporting( 0 );
-			ob_end_clean();
+			// Discard any buffered output so that it doesn't corrupt the file.
+			while ( ob_get_level() ) {
+				ob_end_clean();
+			}
 
 			$headers = $this->generate_headers( $filepath );
 
@@ -143,7 +145,9 @@ class BP_Docs_Attachments {
 				@header("{$name}: {$field_value}");
 			}
 
-			ob_end_clean();
+			// Stream the file. WP_Filesystem has no streaming method, and
+			// get_contents() would read the whole file into memory.
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile
 			readfile( $filepath );
 			exit();
 		}
