@@ -1,3 +1,8 @@
+<?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+?>
 <?php bp_docs_inline_toggle_js() ?>
 
 <?php if ( bp_docs_has_docs() ) : ?>

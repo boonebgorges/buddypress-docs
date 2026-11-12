@@ -1,4 +1,12 @@
-<?php $current_folder_id = isset( $_GET['folder'] ) ? absint( $_GET['folder'] ) : 0; ?>
+<?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+?>
+<?php
+// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only folder navigation.
+$current_folder_id = isset( $_GET['folder'] ) ? absint( $_GET['folder'] ) : 0;
+?>
 <table class="doctable" data-folder-id="<?php echo esc_attr( $current_folder_id ); ?>">
 <tbody>
 <?php $has_folders = false; ?>

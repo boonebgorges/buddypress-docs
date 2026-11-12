@@ -1,4 +1,7 @@
-<?php if ( ! empty( $_GET['delete-folder'] ) ) : ?>
+<?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 	<h3><?php _e( 'Delete Folder', 'buddypress-docs' ) ?></h3>
 	<?php $folder_to_delete = get_post( $_GET['delete-folder'] ); ?>

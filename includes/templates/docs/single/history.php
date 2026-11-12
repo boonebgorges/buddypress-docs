@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 $bp_docs_do_theme_compat = is_buddypress() && bp_docs_do_theme_compat( 'single/history.php' );
 if ( ! $bp_docs_do_theme_compat ) : ?>
 <div id="buddypress" class="<?php bp_docs_buddypress_container_class(); ?>">
