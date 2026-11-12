@@ -1129,8 +1129,15 @@ function bp_docs_get_docs_directory_title() {
  *		  @type string $redirect_url URL to use for redirect after save.
  *		  @type int    $doc_id ID of the updated doc, if applicable.
  *        }
+ *
+ * Callers must verify the request's nonces first. See
+ * BP_Docs_Component::catch_page_load(), which checks 'bp_docs_save' and, for
+ * existing Docs, 'bp_docs_edit_{$doc_id}'.
  */
 function bp_docs_save_doc_via_post() {
+	// Nonces are verified by the caller; see above.
+	// phpcs:disable WordPress.Security.NonceVerification.Missing
+
 	// Defaults for the array of args that the save() method is expecting:
 	$args = array(
 		'doc_id'       => 0,
@@ -1202,6 +1209,8 @@ function bp_docs_save_doc_via_post() {
 	$args['parent_id'] = apply_filters( 'bp_docs_get_parent_id_via_post', $args['parent_id'], $posted_parent_id );
 
 	$args['redirect_to'] = isset( $_POST['doc-edit-submit-continue'] ) ? 'edit' : 'single';
+
+	// phpcs:enable WordPress.Security.NonceVerification.Missing
 
 	$instance = new BP_Docs_Query;
 	return $instance->save( $args );
