@@ -13,6 +13,10 @@
  * @since 1.0-beta
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * This class filters a number of key values from BP Docs's core to work in BP groups
  *
