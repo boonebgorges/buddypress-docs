@@ -227,12 +227,12 @@ class BP_Docs_Admin {
 		$enabled = bp_docs_enable_attachments();
 
 		?>
-		<label for="bp-docs-enable-attachments" class="screen-reader-text"><?php _e( "Allow users to add attachments.", 'buddypress-docs' ) ?></label>
+		<label for="bp-docs-enable-attachments" class="screen-reader-text"><?php esc_html_e( "Allow users to add attachments.", 'buddypress-docs' ) ?></label>
 		<select name="bp-docs-enable-attachments" id="bp-docs-enable-attachments">
-			<option value="yes" <?php selected( $enabled, true ) ?>><?php _e( 'Enabled', 'buddypress-docs' ) ?></option>
-			<option value="no" <?php selected( $enabled, false ) ?>><?php _e( 'Disabled', 'buddypress-docs' ) ?></option>
+			<option value="yes" <?php selected( $enabled, true ) ?>><?php esc_html_e( 'Enabled', 'buddypress-docs' ) ?></option>
+			<option value="no" <?php selected( $enabled, false ) ?>><?php esc_html_e( 'Disabled', 'buddypress-docs' ) ?></option>
 		</select>
-		<p class="description"><?php _e( "Allow users to add attachments to their Docs.", 'buddypress-docs' ) ?></p>
+		<p class="description"><?php esc_html_e( "Allow users to add attachments to their Docs.", 'buddypress-docs' ) ?></p>
 
 		<?php
 	}
