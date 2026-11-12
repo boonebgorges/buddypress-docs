@@ -37,6 +37,7 @@ class BP_Docs_Moderation {
 	public function register_docs_pending_status() {
 		$args = array(
 			'label'                     => _x( 'Awaiting Moderation', 'General name of pending doc status', 'buddypress-docs' ),
+			/* translators: %s: number of pending docs */
 			'label_count'               => _n_noop( 'Awaiting Moderation (%s)',  'Awaiting Moderation (%s)', 'buddypress-docs' ),
 			'public'                    => current_user_can( 'bp_moderate' ),
 			'show_in_admin_all_list'    => true,
