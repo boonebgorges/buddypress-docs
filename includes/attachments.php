@@ -380,6 +380,12 @@ class BP_Docs_Attachments {
 		return $this->doc_id;
 	}
 
+	/**
+	 * Process a request to delete one of the current Doc's attachments.
+	 *
+	 * @since 1.4
+	 * @since 2.2.8 The attachment must belong to the current Doc.
+	 */
 	public function catch_delete_request() {
 		if ( ! bp_docs_is_existing_doc() ) {
 			return;
@@ -389,15 +395,22 @@ class BP_Docs_Attachments {
 			return;
 		}
 
-		if ( ! current_user_can( 'bp_docs_edit' ) ) {
+		$doc = bp_docs_get_current_doc();
+		if ( ! $doc || ! current_user_can( 'bp_docs_edit', $doc->ID ) ) {
 			return;
 		}
 
-		$attachment_id = intval( $_GET['delete_attachment'] );
+		$attachment_id = absint( $_GET['delete_attachment'] );
 
 		check_admin_referer( 'bp_docs_delete_attachment_' . $attachment_id );
 
-		if ( wp_delete_attachment( $attachment_id ) ) {
+		// Only attachments of the current Doc may be deleted from it.
+		$attachment = get_post( $attachment_id );
+		$is_doc_attachment = $attachment
+			&& 'attachment' === $attachment->post_type
+			&& (int) $doc->ID === (int) $attachment->post_parent;
+
+		if ( $is_doc_attachment && wp_delete_attachment( $attachment_id ) ) {
 			bp_core_add_message( __( 'Attachment deleted', 'buddypress-docs' ) );
 		} else {
 			bp_core_add_message( __( 'Could not delete attachment', 'buddypress-docs' ), 'error' );
@@ -405,7 +418,7 @@ class BP_Docs_Attachments {
 
 		$redirect = wp_get_referer();
 		if ( ! $redirect ) {
-			$redirect = bp_docs_get_doc_edit_link( bp_docs_get_current_doc()->ID );
+			$redirect = bp_docs_get_doc_edit_link( $doc->ID );
 		}
 
 		wp_safe_redirect( $redirect );
