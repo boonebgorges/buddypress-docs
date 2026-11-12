@@ -210,8 +210,8 @@ class BP_Docs_Groups_Integration {
 
 		if ( array() === $group_ids ) {
 			$group_terms = get_terms(
-				bp_docs_get_associated_item_tax_name(),
 				array(
+					'taxonomy'               => bp_docs_get_associated_item_tax_name(),
 					'fields'                 => 'ids',
 					'update_term_meta_cache' => false,
 				)
