@@ -203,6 +203,7 @@ class BP_Docs_Taxonomy {
 			}
 
 			if ( ! empty( $tagtext ) ) {
+				/* translators: %s: comma-separated list of tag links */
 				$html = '<p>' . sprintf( __( 'Tags: %s', 'buddypress-docs' ), implode( ', ', $tagtext ) ) . '</p>';
 			}
 
@@ -279,7 +280,7 @@ class BP_Docs_Taxonomy {
 	function tags_th() {
 		?>
 
-		<th scope="column" class="tags-cell"><?php _e( 'Tags', 'buddypress-docs' ); ?></th>
+		<th scope="column" class="tags-cell"><?php esc_html_e( 'Tags', 'buddypress-docs' ); ?></th>
 
 		<?php
 	}
@@ -330,6 +331,7 @@ class BP_Docs_Taxonomy {
 				$tagtext[] = bp_docs_get_tag_link( array( 'tag' => $tag ) );
 			}
 
+			/* translators: %s: comma-separated list of tag links */
 			$message[] = sprintf( __( 'You are viewing docs with the following tags: %s', 'buddypress-docs' ), implode( ', ', $tagtext ) );
 		}
 
@@ -380,12 +382,15 @@ class BP_Docs_Taxonomy {
 
 					?>
 					<li>
-					<a href="<?php echo esc_url( bp_docs_get_tag_link( array( 'tag' => $term, 'type' => 'url' ) ) ); ?>" title="<?php echo esc_html( $term_name ) ?>"><?php echo esc_html( $term_name ) ?> <?php echo esc_html( sprintf( __( '(%d)', 'buddypress-docs' ), $term_count ) ); ?></a>
+					<a href="<?php echo esc_url( bp_docs_get_tag_link( array( 'tag' => $term, 'type' => 'url' ) ) ); ?>" title="<?php echo esc_html( $term_name ) ?>"><?php echo esc_html( $term_name ) ?> <?php
+					/* translators: %d: number of Docs with this tag */
+					echo esc_html( sprintf( __( '(%d)', 'buddypress-docs' ), $term_count ) );
+					?></a>
 					</li>
 
 				<?php endforeach ?>
 			<?php else: ?>
-				<li><?php _e( 'No tags to show.', 'buddypress-docs' )  ?></li>
+				<li><?php esc_html_e( 'No tags to show.', 'buddypress-docs' )  ?></li>
 			<?php endif; ?>
 			</ul>
 		</div>
@@ -493,7 +498,13 @@ function bp_docs_get_tag_link( $args = array() ) {
 	if ( $type != 'html' )
 		return apply_filters( 'bp_docs_get_tag_link_url', $url, $tag, $type );
 
-	$html = '<a href="' . esc_url( $url  ). '" title="' . esc_attr( sprintf( __( 'Docs tagged %s', 'buddypress-docs' ), esc_attr( $tag ) ) ) . '">' . esc_html( $tag ) . '</a>';
+	$html = '<a href="' . esc_url( $url  ). '" title="' . esc_attr(
+		sprintf(
+			/* translators: %s: tag name */
+			__( 'Docs tagged %s', 'buddypress-docs' ),
+			$tag
+		)
+	) . '">' . esc_html( $tag ) . '</a>';
 
 	return apply_filters( 'bp_docs_get_tag_link', $html, $url, $tag, $type );
 }
@@ -568,7 +579,7 @@ function bp_docs_post_categories_meta_box( $post ) {
 	<div id="taxonomy-<?php echo esc_attr( $taxonomy ); ?>" class="categorydiv">
 		<ul id="<?php echo esc_attr( $taxonomy ); ?>-tabs" class="category-tabs">
 			<li class="tabs"><a href="#<?php echo esc_attr( $taxonomy ); ?>-all" tabindex="3"><?php echo esc_html( $tax->labels->all_items ); ?></a></li>
-			<li class="hide-if-no-js"><a href="#<?php echo esc_attr( $taxonomy ); ?>-pop" tabindex="3"><?php _e( 'Most Used', 'buddypress-docs' ); ?></a></li>
+			<li class="hide-if-no-js"><a href="#<?php echo esc_attr( $taxonomy ); ?>-pop" tabindex="3"><?php esc_html_e( 'Most Used', 'buddypress-docs' ); ?></a></li>
 		</ul>
 
 		<div id="<?php echo esc_attr( $taxonomy ); ?>-pop" class="tabs-panel" style="display: none;">
