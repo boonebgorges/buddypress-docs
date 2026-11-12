@@ -8,7 +8,7 @@ Author: Boone B Gorges, David Cavins
 Author URI: http://boone.gorg.es
 Text Domain: buddypress-docs
 Domain Path: /languages/
-Licence: GPLv3
+License: GPLv3
 */
 
 /*
