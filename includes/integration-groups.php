@@ -536,19 +536,23 @@ class BP_Docs_Groups_Integration {
 		}
 
 		// If this is the Doc creation page, check to see whether a
-		// group id has been passed somewhere
+		// group id has been passed somewhere. This only determines which
+		// options are offered; the group is checked against the user's
+		// 'bp_docs_associate_with_group' cap below, and saves are nonce-checked.
+		// phpcs:disable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
 		if ( empty( $group_id ) ) {
 			if ( isset( $_POST['associated_group_id'] ) ) {
-				$group_id = intval( $_POST['associated_group_id'] );
+				$group_id = absint( $_POST['associated_group_id'] );
 			} elseif ( isset( $_GET['associated_group_id'] ) ) {
-				$group_id = intval( $_GET['associated_group_id'] );
+				$group_id = absint( $_GET['associated_group_id'] );
 			} elseif ( isset( $_GET['group'] ) ) {
-				$maybe_group = BP_Groups_Group::get_id_from_slug( $_GET['group'] );
+				$maybe_group = BP_Groups_Group::get_id_from_slug( sanitize_title( wp_unslash( $_GET['group'] ) ) );
 				if ( $maybe_group ) {
 					$group_id = $maybe_group;
 				}
 			}
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
 
 		if ( $group_id && current_user_can( 'bp_docs_associate_with_group', $group_id ) ) {
 			$group = groups_get_group( array( 'group_id' => intval( $group_id ) ) );
