@@ -38,34 +38,41 @@ class BP_Docs_Hierarchy {
 	/**
 	 * Ensure that child Docs have the query parsed correctly.
 	 *
-	 * get_page_by_path() is mangling the parse, because I've filtered out
-	 * the ancestors' slugs from the URL. What I'm doing below is pretty
-	 * hackish.
+	 * Docs are registered as a hierarchical post type, but Doc permalinks are
+	 * flat (see BP_Docs_Component::filter_permalinks()). For hierarchical
+	 * post types, WP_Query treats the post type query var as a full path
+	 * and resolves it with get_page_by_path(), which fails for child Docs
+	 * because the URL does not contain the ancestors' slugs.
+	 *
+	 * Doc slugs are unique across all hierarchies (see
+	 * bp_docs_force_unique_slugs()), so we clear the post type query var
+	 * and let WP_Query look the Doc up by 'name' alone.
 	 *
 	 * @since 1.8.5
+	 * @since 2.2.8 Rewritten to avoid a direct database query.
+	 *
+	 * @param WP_Query $q Query object.
 	 */
 	public function parse_query( $q ) {
-		$pt = $q->get( 'post_type' );
-		if ( ! $pt || bp_docs_get_post_type_name() !== $pt ) {
+		$pt = bp_docs_get_post_type_name();
+		if ( $pt !== $q->get( 'post_type' ) ) {
 			return;
 		}
 
-		$post_name = $q->get( 'name' );
-		if ( ! $post_name ) {
+		$pt_object = get_post_type_object( $pt );
+		if ( ! $pt_object || ! $pt_object->query_var ) {
 			return;
 		}
 
-		// Bypass get_post_by_path().
-		global $wpdb;
-		$sql = $wpdb->prepare( "SELECT * FROM {$wpdb->posts} WHERE post_name = %s AND post_type = %s AND post_parent != 0", $post_name, $pt );
-		$post_id = $wpdb->get_var( $sql );
+		$requested = $q->get( $pt_object->query_var );
 
-		if ( ! empty( $post_id ) ) {
-			$q->set( 'p', $post_id );
-			$q->set( 'name', '' );
-			$q->set( 'pagename', '' );
-			$q->set( bp_docs_get_post_type_name(), '' );
+		// Leave full paths (parent/child) to core, which resolves them correctly.
+		if ( ! $requested || false !== strpos( $requested, '/' ) ) {
+			return;
 		}
+
+		$q->set( $pt_object->query_var, '' );
+		$q->set( 'name', $requested );
 	}
 
 	/**
