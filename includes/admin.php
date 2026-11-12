@@ -7,6 +7,10 @@
  * @since 1.1.8
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class BP_Docs_Admin {
 	/**
 	 * Constructor
