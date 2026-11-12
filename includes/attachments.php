@@ -50,7 +50,7 @@ class BP_Docs_Attachments {
 		// Catch delete request
 		add_action( 'bp_actions', array( $this, 'catch_delete_request' ) );
 
-		// Ensure that all logged-in users have the 'upload_files' cap
+		// Let Doc editors upload files to the Doc they're editing
 		add_filter( 'map_meta_cap', array( __CLASS__, 'map_meta_cap' ), 10, 4 );
 
 		// Admin notice about directory accessibility
@@ -712,14 +712,25 @@ class BP_Docs_Attachments {
 	}
 
 	/**
-	 * Give users the 'edit_post' and 'upload_files' cap, when appropriate
+	 * Give users the 'upload_files' and 'edit_post' caps needed to add files to a Doc.
+	 *
+	 * The caps are granted only in two contexts, and only to users who can
+	 * edit the Doc in question:
+	 *
+	 * - On the Doc Edit and Create screens, so the media modal can load.
+	 * - During an 'upload-attachment' request to async-upload.php that
+	 *   carries a valid 'media-form' nonce and targets a Doc.
+	 *
+	 * 'edit_post' is granted only for the Doc itself, never for other posts.
 	 *
 	 * @since 1.4
+	 * @since 2.2.8 Requires the 'bp_docs_edit' (or 'bp_docs_create') cap, and
+	 *              no longer grants 'edit_post' for arbitrary posts.
 	 *
-	 * @param array $caps The mapped caps
-	 * @param string $cap The cap being mapped
-	 * @param int $user_id The user id in question
-	 * @param $args
+	 * @param array  $caps    The mapped caps.
+	 * @param string $cap     The cap being mapped.
+	 * @param int    $user_id The user id in question.
+	 * @param array  $args    Additional arguments. For 'edit_post', the post ID.
 	 * @return array $caps
 	 */
 	public static function map_meta_cap( $caps, $cap, $user_id, $args ) {
@@ -727,64 +738,88 @@ class BP_Docs_Attachments {
 			return $caps;
 		}
 
-		$maybe_user = new WP_User( $user_id );
-		if ( ! is_a( $maybe_user, 'WP_User' ) || empty( $maybe_user->ID ) ) {
+		if ( ! $user_id ) {
 			return $caps;
 		}
 
-		$is_doc = false;
+		$doc_id = self::get_upload_doc_id( $user_id );
 
-		// DOING_AJAX is not set yet, so we cheat
-		$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
-		$is_ajax     = isset( $_SERVER['REQUEST_METHOD'] ) && 'POST' === $_SERVER['REQUEST_METHOD'] && 'async-upload.php' === substr( $request_uri, strrpos( $request_uri, '/' ) + 1 );
-
-		if ( $is_ajax ) {
-			// WordPress sends the 'media-form' nonce, which we use
-			// as an initial screen
-			$nonce_ok = isset( $_REQUEST['_wpnonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ), 'media-form' );
-			$post_id  = $nonce_ok && isset( $_REQUEST['post_id'] ) ? absint( $_REQUEST['post_id'] ) : 0;
-
-			if ( $post_id ) {
-				$post   = get_post( $post_id );
-
-				// The dummy Doc created during the Create
-				// process should pass this test, in addition to
-				// existing Docs
-				$is_doc = isset( $post->post_type ) && bp_docs_get_post_type_name() === $post->post_type;
-			}
-		} else {
-			$is_doc = bp_docs_is_existing_doc() || bp_docs_is_doc_create();
+		// Not a context in which this user may upload to a Doc.
+		if ( false === $doc_id ) {
+			return $caps;
 		}
 
-		if ( $is_doc ) {
-			$caps = array( 'exist' );
+		if ( 'upload_files' === $cap ) {
+			return array( 'exist' );
+		}
 
-			// Since we've already done the permissions check,
-			// we can filter future current_user_can() checks on
-			// this pageload
-			add_filter( 'map_meta_cap', array( __CLASS__, 'map_meta_cap_supp' ), 10, 4 );
+		// 'edit_post' is only granted for the Doc being uploaded to.
+		if ( $doc_id && isset( $args[0] ) && (int) $args[0] === $doc_id ) {
+			return array( 'exist' );
 		}
 
 		return $caps;
 	}
 
 	/**
-	 * Make sure the current user has the 'edit_post' and 'upload_files' caps, when appropriate
+	 * Get the ID of the Doc that a user is allowed to upload files to in the current request.
 	 *
-	 * We do the necessary permissions checks in self::map_meta_cap(). If
-	 * the checks pass, then we can blindly hook this filter without doing
-	 * the permissions logic again. *Do not call this filter directly.* I'd
-	 * mark it private but it's not possible given the way that WP's filter
-	 * system works.
+	 * @since 2.2.8
 	 *
-	 * @since 1.4
+	 * @param int $user_id ID of the user.
+	 * @return int|false Doc ID; 0 on the Create screen before a Doc exists;
+	 *                   false if the user may not upload to a Doc in this request.
 	 */
-	public static function map_meta_cap_supp( $caps, $cap, $user_id, $args ) {
-		if ( 'upload_files' !== $cap && 'edit_post' !== $cap ) {
-			return $caps;
+	protected static function get_upload_doc_id( $user_id ) {
+		// DOING_AJAX is not set yet, so we cheat
+		$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+		$is_ajax     = isset( $_SERVER['REQUEST_METHOD'] ) && 'POST' === $_SERVER['REQUEST_METHOD'] && 'async-upload.php' === substr( $request_uri, strrpos( $request_uri, '/' ) + 1 );
+
+		if ( $is_ajax ) {
+			// Only the upload action. async-upload.php's other mode
+			// ('fetch') displays details of arbitrary attachments.
+			$nonce_ok = isset( $_REQUEST['_wpnonce'], $_REQUEST['action'] )
+				&& 'upload-attachment' === $_REQUEST['action']
+				&& wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ), 'media-form' );
+
+			$post_id = $nonce_ok && isset( $_REQUEST['post_id'] ) ? absint( $_REQUEST['post_id'] ) : 0;
+
+			// Existing Docs, and the dummy Doc created on the Create
+			// screen (whose author is the current user), pass this test.
+			if ( $post_id && bp_docs_get_post_type_name() === get_post_type( $post_id ) && user_can( $user_id, 'bp_docs_edit', $post_id ) ) {
+				return $post_id;
+			}
+
+			return false;
 		}
 
-		return array( 'exist' );
+		if ( bp_docs_is_doc_edit() ) {
+			$doc = bp_docs_get_current_doc();
+			if ( $doc && user_can( $user_id, 'bp_docs_edit', $doc->ID ) ) {
+				return (int) $doc->ID;
+			}
+
+			return false;
+		}
+
+		if ( bp_docs_is_doc_create() && user_can( $user_id, 'bp_docs_create' ) ) {
+			return 0;
+		}
+
+		return false;
+	}
+
+	/**
+	 * No longer used.
+	 *
+	 * Previously hooked by self::map_meta_cap() to grant 'upload_files' and
+	 * 'edit_post' for all posts for the remainder of the request.
+	 *
+	 * @since 1.4
+	 * @deprecated 2.2.8
+	 */
+	public static function map_meta_cap_supp( $caps, $cap, $user_id, $args ) {
+		return $caps;
 	}
 
 	public function admin_notice_init() {
