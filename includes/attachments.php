@@ -901,6 +901,10 @@ class BP_Docs_Attachments {
 		$upload_dir = $this->mod_upload_dir( wp_upload_dir( null, false ) );
 		$att_url = str_replace( get_option( 'home' ), '', $upload_dir['url'] );
 
+		// Server-specific help, if we recognize the server software.
+		$help_p   = '';
+		$help_url = '';
+
 		restore_current_blog();
 
 		if ( $is_nginx ) {
