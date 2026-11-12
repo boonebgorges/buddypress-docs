@@ -160,6 +160,7 @@ function bp_docs_get_item_term_id( $item_id, $item_type, $item_name = '' ) {
 		}
 
 		$item_term_args = apply_filters( 'bp_docs_item_term_values', array(
+			/* translators: 1: item type, such as "group" or "user", 2: item name */
 			'description' => sprintf( _x( 'Docs associated with the %1$s %2$s', 'Description for the associated-item taxonomy term. Of the form "Docs associated with the [item-type] [item-name]" - item-type is group, user, etc', 'buddypress-docs' ), $item_type, $item_name ),
 			'slug'        => $item_term_slug,
 		) );
