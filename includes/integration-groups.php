@@ -1286,7 +1286,9 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
 				$group_id = $this->get_current_group_id();
 			}
 
-			$settings = ! empty( $_POST['bp-docs'] ) ? $_POST['bp-docs'] : array();
+			// Nonces are checked by the callers, create_screen_save() and edit_screen_save().
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$settings = ! empty( $_POST['bp-docs'] ) && is_array( $_POST['bp-docs'] ) ? map_deep( wp_unslash( $_POST['bp-docs'] ), 'sanitize_text_field' ) : array();
 
 			$old_settings = bp_docs_get_group_settings( $group_id );
 
