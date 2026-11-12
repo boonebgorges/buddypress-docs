@@ -341,7 +341,7 @@ class BP_Docs_Groups_Integration {
 		// $args['group_id'] could be null (untouched) or 0, which unsets existing association
 		if ( ! empty( $args['group_id'] ) && ! user_can( $args['author_id'], 'bp_docs_associate_with_group', $args['group_id'] ) ) {
 			$result['error']    = true;
-			$result['message']  = __( 'You are not allowed to associate a Doc with that group.', 'bp-docs' );
+			$result['message']  = __( 'You are not allowed to associate a Doc with that group.', 'buddypress-docs' );
 			$result['redirect'] = 'create';
 		}
 
