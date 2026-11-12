@@ -623,8 +623,9 @@ class BP_Docs_Component extends BP_Component {
 			}
 
 			// Send the user back to the most recently viewed directory if possible.
-			if ( isset( $_COOKIE[ 'bp-docs-last-docs-directory' ] ) && filter_var( $_COOKIE[ 'bp-docs-last-docs-directory' ], FILTER_VALIDATE_URL) ) {
-				$delete_redirect = $_COOKIE[ 'bp-docs-last-docs-directory' ];
+			$last_directory = isset( $_COOKIE['bp-docs-last-docs-directory'] ) ? esc_url_raw( wp_unslash( $_COOKIE['bp-docs-last-docs-directory'] ) ) : '';
+			if ( $last_directory && filter_var( $last_directory, FILTER_VALIDATE_URL ) ) {
+				$delete_redirect = $last_directory;
 			} else {
 				$delete_redirect = home_url( bp_docs_get_docs_slug() );
 			}
