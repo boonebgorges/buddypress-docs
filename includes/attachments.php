@@ -103,9 +103,13 @@ class BP_Docs_Attachments {
 	 * @since 1.4
 	 */
 	function catch_attachment_request() {
-		if ( ! empty( $_GET['bp-attachment'] ) ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public file request. Read access to the Doc is enforced by BP_Docs::protect_doc_access().
+		$requested = isset( $_GET['bp-attachment'] ) ? sanitize_text_field( wp_unslash( $_GET['bp-attachment'] ) ) : '';
 
-			$fn = wp_basename( $_GET['bp-attachment'] );
+		if ( '' !== $requested ) {
+
+			// Further validated by filename_is_safe() below.
+			$fn = wp_basename( $requested );
 
 			// Sanity check - don't do anything if this is not a Doc
 			if ( ! bp_docs_is_existing_doc() ) {
@@ -151,9 +155,11 @@ class BP_Docs_Attachments {
 	 * @return string
 	 */
 	public function redirect_canonical( $redirect_url, $requested_url ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Only carries a public query arg through a canonical redirect.
 		if ( isset( $_GET['p'] ) && isset( $_GET['bp-attachment'] ) && false !== strpos( $requested_url, 'bp-attachments' ) ) {
-			$redirect_url = add_query_arg( 'bp-attachment', $_GET['bp-attachment'], $redirect_url );
+			$redirect_url = add_query_arg( 'bp-attachment', rawurlencode( sanitize_text_field( wp_unslash( $_GET['bp-attachment'] ) ) ), $redirect_url );
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 		return $redirect_url;
 	}
@@ -343,14 +349,15 @@ class BP_Docs_Attachments {
 				}
 			} else {
 				// AJAX
+				// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Only identifies the Doc whose upload directory is in use. The upload or query request itself is checked by WordPress and self::map_meta_cap().
 				if ( isset( $_REQUEST['query']['auto_draft_id'] ) ) {
 
-					$this->doc_id = (int) $_REQUEST['query']['auto_draft_id'];
+					$this->doc_id = absint( $_REQUEST['query']['auto_draft_id'] );
 
-				} else if ( isset( $_REQUEST['action'] ) && 'upload-attachment' == $_REQUEST['action'] && isset( $_REQUEST['post_id'] ) ) {
+				} else if ( isset( $_REQUEST['action'] ) && 'upload-attachment' === $_REQUEST['action'] && isset( $_REQUEST['post_id'] ) ) {
 
-					$maybe_doc = get_post( $_REQUEST['post_id'] );
-					if ( bp_docs_get_post_type_name() == $maybe_doc->post_type ) {
+					$maybe_doc = get_post( absint( $_REQUEST['post_id'] ) );
+					if ( $maybe_doc && bp_docs_get_post_type_name() === $maybe_doc->post_type ) {
 						$this->doc_id = $maybe_doc->ID;
 					}
 
@@ -358,6 +365,7 @@ class BP_Docs_Attachments {
 					// In order to check if this is a doc, must check ajax referer
 					$this->doc_id = $this->get_doc_id_from_url( wp_get_referer() );
 				}
+				// phpcs:enable WordPress.Security.NonceVerification.Recommended
 			}
 		}
 
@@ -448,12 +456,14 @@ class BP_Docs_Attachments {
 	 * @since 1.4
 	 */
 	public function filter_gallery_posts( $query ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Narrows core's query-attachments request, which is capability-checked by WordPress.
 		// This is also a surrogate check for DOING_AJAX
 		if ( ! isset( $_POST['action'] ) || 'query-attachments' !== $_POST['action'] ) {
 			return;
 		}
 
-		$post_id = isset( $_POST['post_id'] ) ? intval( $_POST['post_id'] ) : 0;
+		$post_id = isset( $_POST['post_id'] ) ? absint( $_POST['post_id'] ) : 0;
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 
 		if ( ! $post_id ) {
 			return;
@@ -466,7 +476,7 @@ class BP_Docs_Attachments {
 		}
 
 		// Phew
-		$query->set( 'post_parent', $_REQUEST['post_id'] );
+		$query->set( 'post_parent', $post_id );
 	}
 
 	public function filter_directory_posts( $query ) {
@@ -476,7 +486,7 @@ class BP_Docs_Attachments {
 
 		remove_action( 'pre_get_posts', array( $this, 'filter_directory_posts' ), 48 );
 
-		$has_attachment = isset( $_REQUEST['has-attachment'] ) && in_array( $_REQUEST['has-attachment'], array( 'yes', 'no' ) ) ? $_REQUEST['has-attachment'] : '';
+		$has_attachment = self::get_has_attachment_filter();
 
 		if ( $has_attachment ) {
 			$post__in = $query->get( 'post__in' );
@@ -640,15 +650,14 @@ class BP_Docs_Attachments {
 	}
 
 	public static function filter_markup() {
-		$has_attachment = isset( $_REQUEST['has-attachment'] ) && in_array( $_REQUEST['has-attachment'], array( 'yes', 'no' ) ) ? $_REQUEST['has-attachment'] : '';
-		$form_action = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-		foreach ( $_GET as $k => $v ) {
-			$form_action = remove_query_arg( $k, $form_action );
-		}
+		$has_attachment = self::get_has_attachment_filter();
+
+		// Current URL without its query string. (Browsers drop it from GET form actions anyway.)
+		$form_action = strtok( bp_get_requested_url(), '?' );
 		?>
 
 		<div id="docs-filter-section-attachments" class="docs-filter-section<?php if ( $has_attachment ) : ?> docs-filter-section-open<?php endif ?>">
-			<form method="get" action="<?php echo esc_attr( $form_action ); ?>">
+			<form method="get" action="<?php echo esc_url( $form_action ); ?>">
 				<label for="has-attachment"><?php _e( 'Has attachment?', 'buddypress-docs' ) ?></label>
 				<select id="has-attachment" name="has-attachment">
 					<option value="yes"<?php selected( $has_attachment, 'yes' ) ?>><?php _e( 'Yes', 'buddypress-docs' ) ?></option>
@@ -680,7 +689,7 @@ class BP_Docs_Attachments {
 			return $is_filtered;
 		}
 
-		if ( isset( $_GET['has-attachment'] ) && ( 'yes' == $_GET['has-attachment'] || 'no' == $_GET['has-attachment'] ) ) {
+		if ( self::get_has_attachment_filter() ) {
 			$is_filtered = true;
 		}
 	    return $is_filtered;
@@ -710,15 +719,16 @@ class BP_Docs_Attachments {
 		$is_doc = false;
 
 		// DOING_AJAX is not set yet, so we cheat
-		$is_ajax = isset( $_SERVER['REQUEST_METHOD'] ) && 'POST' === $_SERVER['REQUEST_METHOD'] && 'async-upload.php' === substr( $_SERVER['REQUEST_URI'], strrpos( $_SERVER['REQUEST_URI'], '/' ) + 1 );
+		$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+		$is_ajax     = isset( $_SERVER['REQUEST_METHOD'] ) && 'POST' === $_SERVER['REQUEST_METHOD'] && 'async-upload.php' === substr( $request_uri, strrpos( $request_uri, '/' ) + 1 );
 
 		if ( $is_ajax ) {
 			// WordPress sends the 'media-form' nonce, which we use
 			// as an initial screen
-			$nonce   = isset( $_REQUEST['_wpnonce'] ) ? stripslashes( $_REQUEST['_wpnonce'] ) : '';
-			$post_id = isset( $_REQUEST['post_id'] ) ? intval( $_REQUEST['post_id'] ) : '';
+			$nonce_ok = isset( $_REQUEST['_wpnonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ), 'media-form' );
+			$post_id  = $nonce_ok && isset( $_REQUEST['post_id'] ) ? absint( $_REQUEST['post_id'] ) : 0;
 
-			if ( wp_verify_nonce( $nonce, 'media-form' ) && $post_id ) {
+			if ( $post_id ) {
 				$post   = get_post( $post_id );
 
 				// The dummy Doc created during the Create
@@ -817,7 +827,7 @@ class BP_Docs_Attachments {
 	public function admin_notice() {
 		global $is_apache, $is_nginx, $is_IIS, $is_iis7;
 
-		$dismiss_url = add_query_arg( 'bpdocs-disable-attachment-notice', '1', $_SERVER['REQUEST_URI'] );
+		$dismiss_url = add_query_arg( 'bpdocs-disable-attachment-notice', '1' );
 		$dismiss_url = wp_nonce_url( $dismiss_url, 'bpdocs-disable-attachment-notice' );
 
 		if ( ! bp_is_root_blog() ) {
@@ -860,7 +870,7 @@ class BP_Docs_Attachments {
 		$expiry_time     = absint( bp_get_option( 'bp_docs_attachment_protection_expiry' ) );
 		$expiry_stamp    = wp_date( 'Y-m-d g:i:s A', $expiry_time );
 		$last_check_time = wp_date( 'Y-m-d g:i:s A', $expiry_time - $this->check_interval );
-		$force_check_url = add_query_arg( 'bpdocs-check-attachment-protection', '1', $_SERVER['REQUEST_URI'] );
+		$force_check_url = add_query_arg( 'bpdocs-check-attachment-protection', '1' );
 		$force_check_url = wp_nonce_url( $force_check_url, 'bpdocs-check-attachment-protection' );
 		?>
 
