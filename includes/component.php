@@ -588,16 +588,26 @@ class BP_Docs_Component extends BP_Component {
 			}
 		}
 
-		// Cancel edit
-		// Have to have a catcher for this so the edit lock can be removed
-		if ( !empty( $_GET['bpd_action'] ) && $_GET['bpd_action'] == 'cancel_edit' ) {
+		// Cancel edit: release the current user's edit lock, then return to the Doc.
+		if ( ! empty( $_GET['bpd_action'] ) && 'cancel_edit' === $_GET['bpd_action'] ) {
 			$doc = bp_docs_get_current_doc();
 
-			// Todo: get this into a proper method as well, blech
-			delete_post_meta( $doc->ID, '_bp_docs_last_pinged' );
+			if ( $doc ) {
+				$nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
 
-			bp_core_redirect( bp_docs_get_doc_link( $doc->ID ) );
-			die();
+				// bp_docs_check_post_lock() returns the ID of another user who
+				// holds an active lock. Never release someone else's lock here.
+				if (
+					wp_verify_nonce( $nonce, 'bp_docs_cancel_edit_' . $doc->ID )
+					&& current_user_can( 'bp_docs_edit', $doc->ID )
+					&& ! bp_docs_check_post_lock( $doc->ID )
+				) {
+					delete_post_meta( $doc->ID, '_bp_docs_last_pinged' );
+				}
+
+				bp_core_redirect( bp_docs_get_doc_link( $doc->ID ) );
+				die();
+			}
 		}
 
 		// Todo: get this into a proper method

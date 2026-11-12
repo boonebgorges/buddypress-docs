@@ -251,7 +251,7 @@ function bp_docs_cancel_edit_link() {
 		if ( $doc_id ) {
 			$doc_permalink = bp_docs_get_doc_link( $doc_id );
 
-			$cancel_link = add_query_arg( 'bpd_action', 'cancel_edit', $doc_permalink );
+			$cancel_link = wp_nonce_url( add_query_arg( 'bpd_action', 'cancel_edit', $doc_permalink ), 'bp_docs_cancel_edit_' . $doc_id );
 		} else {
 			// This is a cancel request on a new (or otherwise unknown) doc.
 			if ( $previous_page = wp_get_referer() ) {
