@@ -300,7 +300,10 @@ class BP_Docs_Component extends BP_Component {
 	 */
 	public function submitted_form_data() {
 		if ( isset( $_COOKIE['bp-docs-submit-data'] ) ) {
-			$this->submitted_data = json_decode( stripslashes( $_COOKIE['bp-docs-submit-data'] ) );
+			// JSON-encoded form data from the user's own failed submission (see
+			// BP_Docs_Query::save()). Values are escaped where they're displayed.
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$this->submitted_data = json_decode( wp_unslash( $_COOKIE['bp-docs-submit-data'] ) );
 			setcookie( 'bp-docs-submit-data', '', time() - 24*60*60, '/' );
 		}
 	}
@@ -994,6 +997,7 @@ class BP_Docs_Component extends BP_Component {
 	}
 
 	public static function filter_markup() {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only search filter.
 		$has_search = ! empty( $_GET['s'] );
 
 		$form_action = bp_get_requested_url();
@@ -1035,6 +1039,7 @@ class BP_Docs_Component extends BP_Component {
 			return $is_filtered;
 		}
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only search filter.
 		if ( ! empty( $_GET['s'] ) ) {
 			$is_filtered = true;
 		}
