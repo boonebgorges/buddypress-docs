@@ -134,8 +134,11 @@ class BP_Docs_Taxonomy {
 				$tax_name = 'post_category';
 			}
 
-			// Separate out the terms
-			$terms = ! empty( $_POST[$tax_name] ) ? explode( ',', $_POST[$tax_name] ) : array();
+			// Separate out the terms. Called via bp_docs_save_doc_via_post(), whose
+			// caller verifies the nonces. Left slashed, because wp_set_post_terms()
+			// expects slashed term names.
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+			$terms = ! empty( $_POST[ $tax_name ] ) ? explode( ',', sanitize_text_field( $_POST[ $tax_name ] ) ) : array();
 
 			// Strip whitespace from the terms
 			foreach ( $terms as $key => $term ) {
@@ -246,15 +249,11 @@ class BP_Docs_Taxonomy {
 	 */
 	function modify_tax_query( $tax_query ) {
 
-		// Check for the existence tag filters in the request URL
+		// Check for the existence tag filters in the request URL. Read-only directory filter.
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
 		if ( ! empty( $_REQUEST['bpd_tag'] ) ) {
 			// The bpd_tag argument may be comma-separated
-			$tags = explode( ',', urldecode( $_REQUEST['bpd_tag'] ) );
-
-			// Clean up the tag input
-			foreach ( $tags as $key => $value ) {
-				$tags[$key] = esc_attr( $value );
-			}
+			$tags = explode( ',', sanitize_text_field( wp_unslash( $_REQUEST['bpd_tag'] ) ) );
 
 			$tax_query[] = array(
 				'taxonomy'	=> $this->docs_tag_tax_name,
@@ -266,6 +265,7 @@ class BP_Docs_Taxonomy {
 				$tax_query['operator'] = 'AND';
 			}
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 		return apply_filters( 'bp_docs_modify_tax_query_for_tax', $tax_query );
 	}
@@ -423,17 +423,21 @@ class BP_Docs_Taxonomy {
 	 * @since 1.0-beta
 	 */
 	function handle_filters( $redirect_url ) {
-		if ( ! empty( $_POST['filter_terms'] ) ) {
+		// Legacy filter form. It only builds a redirect to a read-only directory filter.
+		// phpcs:disable WordPress.Security.NonceVerification.Missing
+		if ( ! empty( $_POST['filter_terms'] ) && is_array( $_POST['filter_terms'] ) ) {
 			$tags = array();
 
-			foreach ( $_POST['filter_terms'] as $term => $value ) {
-				$tags[] = urlencode( $term );
+			$filter_terms = map_deep( wp_unslash( $_POST['filter_terms'] ), 'sanitize_text_field' );
+			foreach ( array_keys( $filter_terms ) as $term ) {
+				$tags[] = urlencode( sanitize_text_field( $term ) );
 			}
 
 			$tags = implode( ',', $tags );
 
 			$redirect_url = add_query_arg( 'bpd_tag', $tags, $redirect_url );
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 
 		return $redirect_url;
 	}
