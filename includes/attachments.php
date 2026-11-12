@@ -489,6 +489,20 @@ class BP_Docs_Attachments {
 		add_action( 'pre_get_posts', array( $this, 'filter_directory_posts' ), 48 );
 	}
 
+	/**
+	 * Gets the value of the 'has-attachment' directory filter from the request.
+	 *
+	 * @since 2.2.8
+	 *
+	 * @return string 'yes', 'no', or an empty string when not filtered.
+	 */
+	public static function get_has_attachment_filter() {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only directory filter.
+		$value = isset( $_REQUEST['has-attachment'] ) ? sanitize_key( wp_unslash( $_REQUEST['has-attachment'] ) ) : '';
+
+		return in_array( $value, array( 'yes', 'no' ), true ) ? $value : '';
+	}
+
 	public function get_docs_with_attachments() {
 		$atts = get_posts( array(
 			'update_meta_cache' => false,
