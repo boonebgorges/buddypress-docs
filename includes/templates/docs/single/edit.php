@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 $doc_id = 0;
 $current_doc = bp_docs_get_current_doc();
 if ( $current_doc ) {

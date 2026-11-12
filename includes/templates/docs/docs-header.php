@@ -1,3 +1,8 @@
+<?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+?>
 <?php do_action( 'bp_docs_before_doc_header' ) ?>
 
 <?php /* Subnavigation on user pages is handled by BP's core functions */ ?>
