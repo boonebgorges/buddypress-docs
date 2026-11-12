@@ -71,12 +71,11 @@ $current_folder_id = isset( $_GET['folder'] ) ? absint( $_GET['folder'] ) : 0;
 			<?php endif; ?>
 
 			<td class="date-cell created-date-cell">
-				<?php echo get_the_date() ?>
+				<?php echo esc_html( get_the_date() ); ?>
 			</td>
 
 			<td class="date-cell edited-date-cell">
-				<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-				<?php echo get_the_modified_date() ?>
+				<?php echo esc_html( get_the_modified_date() ); ?>
 			</td>
 
 			<?php do_action( 'bp_docs_loop_additional_td' ) ?>
@@ -91,8 +90,29 @@ $current_folder_id = isset( $_GET['folder'] ) ? absint( $_GET['folder'] ) : 0;
 				</td>
 			<?php endif ?>
 			<td class="folder-meta-info-statement" colspan=10>
-				<?php echo esc_html( sprintf( __( 'Viewing %1$s-%2$s of %3$s docs in this folder.', 'buddypress-docs' ), bp_docs_get_current_docs_start(), bp_docs_get_current_docs_end(), bp_docs_get_total_docs_num() ) ); ?> <br/>
-				<a href="<?php echo esc_url( bp_docs_get_folder_url( $current_folder_id ) ); ?>"><?php echo wp_kses_post( sprintf( __( 'View all docs in <strong>%s</strong>.', 'buddypress-docs' ), esc_html( get_the_title( $current_folder_id ) ) ) ); ?></a>
+				<?php
+				echo esc_html(
+					sprintf(
+						/* translators: 1: number of the first doc on the page, 2: number of the last doc on the page, 3: total number of docs */
+						__( 'Viewing %1$s-%2$s of %3$s docs in this folder.', 'buddypress-docs' ),
+						bp_docs_get_current_docs_start(),
+						bp_docs_get_current_docs_end(),
+						bp_docs_get_total_docs_num()
+					)
+				);
+				?>
+				<br/>
+				<a href="<?php echo esc_url( bp_docs_get_folder_url( $current_folder_id ) ); ?>">
+					<?php
+					echo wp_kses_post(
+						sprintf(
+							/* translators: %s: folder name */
+							__( 'View all docs in <strong>%s</strong>.', 'buddypress-docs' ),
+							esc_html( get_the_title( $current_folder_id ) )
+						)
+					);
+					?>
+				</a>
 			</td>
 		</tr>
 <?php endif; ?>
@@ -108,6 +128,7 @@ $current_folder_id = isset( $_GET['folder'] ) ? absint( $_GET['folder'] ) : 0;
 					<?php
 					echo wp_kses_post(
 						sprintf(
+							/* translators: %s: URL of the Create Doc page */
 							__( 'There are no docs for this view. Why not <a href="%s">create one</a>?', 'buddypress-docs' ),
 							esc_url( bp_docs_get_create_link() )
 						)
@@ -115,7 +136,7 @@ $current_folder_id = isset( $_GET['folder'] ) ? absint( $_GET['folder'] ) : 0;
 					?>
 				</p>
 			<?php else : ?>
-				<p class="no-docs"><?php _e( 'There are no docs for this view.', 'buddypress-docs' ); ?></p>
+				<p class="no-docs"><?php esc_html_e( 'There are no docs for this view.', 'buddypress-docs' ); ?></p>
 			<?php endif; ?>
 		</td>
 
