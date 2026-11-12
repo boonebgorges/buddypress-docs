@@ -433,6 +433,7 @@ class BP_Docs_Attachments {
 			wp_localize_script( 'bp-docs-attachments', 'bp_docs_attachments', array(
 				'upload_title'  => __( 'Upload File', 'buddypress-docs' ),
 				'upload_button' => __( 'OK', 'buddypress-docs' ),
+				'nonce'         => wp_create_nonce( 'bp_docs_attachments' ),
 			) );
 		}
 	}

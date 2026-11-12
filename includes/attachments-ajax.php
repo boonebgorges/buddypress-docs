@@ -10,8 +10,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Ajax handler to fetch the markup for a newly uploaded attachment.
+ *
+ * @since 1.4
+ * @since 2.2.8 Requires a nonce, and the attachment must belong to a Doc the user can edit.
+ */
 function bp_docs_attachment_item_markup_cb() {
-	$attachment_id = isset( $_POST['attachment_id'] ) ? intval( $_POST['attachment_id'] ) : 0;
+	check_ajax_referer( 'bp_docs_attachments', 'nonce' );
+
+	$attachment_id = isset( $_POST['attachment_id'] ) ? absint( $_POST['attachment_id'] ) : 0;
+	$attachment    = $attachment_id ? get_post( $attachment_id ) : null;
+
+	if (
+		! $attachment
+		|| 'attachment' !== $attachment->post_type
+		|| bp_docs_get_post_type_name() !== get_post_type( $attachment->post_parent )
+		|| ! current_user_can( 'bp_docs_edit', $attachment->post_parent )
+	) {
+		wp_send_json_error( '', 403 );
+	}
+
 	$markup = bp_docs_attachment_item_markup( $attachment_id );
 	wp_send_json_success( $markup );
 }
@@ -23,6 +42,12 @@ add_action( 'wp_ajax_doc_attachment_item_markup', 'bp_docs_attachment_item_marku
  * @since 1.4
  */
 function bp_docs_create_dummy_doc() {
+	check_ajax_referer( 'bp_docs_attachments', 'nonce' );
+
+	if ( ! current_user_can( 'bp_docs_create' ) ) {
+		wp_send_json_error( __( 'You do not have permission to create a document.', 'buddypress-docs' ) );
+	}
+
 	$group_id = null;
 	if ( ! empty( $_POST['group_slug'] ) ) {
 		$group_slug = sanitize_text_field( wp_unslash( $_POST['group_slug'] ) );
