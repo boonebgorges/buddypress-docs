@@ -29,11 +29,11 @@ function bp_docs_create_dummy_doc() {
 		$group_id   = BP_Groups_Group::group_exists( $group_slug );
 
 		if ( ! $group_id ) {
-			wp_send_json_error( __( 'Group does not exist.', 'bp-docs' ) );
+			wp_send_json_error( __( 'Group does not exist.', 'buddypress-docs' ) );
 		}
 
 		if ( ! current_user_can( 'bp_docs_associate_with_group', $group_id ) ) {
-			wp_send_json_error( __( 'You do not have permission to create a document in this group.', 'bp-docs' ) );
+			wp_send_json_error( __( 'You do not have permission to create a document in this group.', 'buddypress-docs' ) );
 		}
 	}
 
@@ -45,7 +45,7 @@ function bp_docs_create_dummy_doc() {
 	remove_filter( 'wp_insert_post_empty_content', '__return_false' );
 
 	if ( ! $doc_id || is_wp_error( $doc_id ) ) {
-		wp_send_json_error( __( 'Could not create document.', 'bp-docs' ) );
+		wp_send_json_error( __( 'Could not create document.', 'buddypress-docs' ) );
 	}
 
 	if ( $doc_id && $group_id ) {
