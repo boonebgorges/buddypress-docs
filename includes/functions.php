@@ -7,6 +7,10 @@
  * @since 1.2
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Return the bp_doc post type name
  *
