@@ -19,7 +19,7 @@ class BP_Docs_Admin {
 	 */
 	function __construct() {
 		// Replace the Dashboard widget
-		if ( !defined( BP_DOCS_REPLACE_RECENT_COMMENTS_DASHBOARD_WIDGET ) || !BP_DOCS_REPLACE_RECENT_COMMENTS_DASHBOARD_WIDGET ) {
+		if ( ! defined( 'BP_DOCS_REPLACE_RECENT_COMMENTS_DASHBOARD_WIDGET' ) || BP_DOCS_REPLACE_RECENT_COMMENTS_DASHBOARD_WIDGET ) {
 			add_action( 'wp_dashboard_setup', array( $this, 'replace_recent_comments_dashboard_widget' ) );
 		}
 
