@@ -19,17 +19,6 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 
 	<?php include( apply_filters( 'bp_docs_header_template', bp_docs_locate_template( 'docs-header.php' ) ) ) ?>
 
-	<?php
-	// No media support at the moment. Want to integrate with something like BP Group Documents
-	// include_once ABSPATH . '/wp-admin/includes/media.php' ;
-
-	if ( !function_exists( 'wp_editor' ) ) {
-		require_once ABSPATH . '/wp-admin/includes/post.php' ;
-		wp_tiny_mce();
-	}
-
-	?>
-
 	<?php do_action( 'template_notices' ) ?>
 
 	<div class="doc-content">
@@ -59,15 +48,11 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 			<label id="content-label" for="doc_content"><?php esc_html_e( 'Content', 'buddypress-docs' ) ?></label>
 			<div id="editor-toolbar">
 				<?php
-					if ( function_exists( 'wp_editor' ) ) {
-						$wp_editor_args = apply_filters( 'bp_docs_wp_editor_args', array(
-							'media_buttons' => false,
-							'dfw'		=> false,
-						) );
-						wp_editor( bp_docs_get_edit_doc_content(), 'doc_content', $wp_editor_args );
-					} else {
-						the_editor( bp_docs_get_edit_doc_content(), 'doc_content', 'doc[title]', false );
-					}
+					$wp_editor_args = apply_filters( 'bp_docs_wp_editor_args', array(
+						'media_buttons' => false,
+						'dfw'           => false,
+					) );
+					wp_editor( bp_docs_get_edit_doc_content(), 'doc_content', $wp_editor_args );
 				?>
 			</div>
 		</div>
