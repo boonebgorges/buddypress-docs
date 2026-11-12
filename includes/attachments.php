@@ -658,13 +658,13 @@ class BP_Docs_Attachments {
 
 		<div id="docs-filter-section-attachments" class="docs-filter-section<?php if ( $has_attachment ) : ?> docs-filter-section-open<?php endif ?>">
 			<form method="get" action="<?php echo esc_url( $form_action ); ?>">
-				<label for="has-attachment"><?php _e( 'Has attachment?', 'buddypress-docs' ) ?></label>
+				<label for="has-attachment"><?php esc_html_e( 'Has attachment?', 'buddypress-docs' ) ?></label>
 				<select id="has-attachment" name="has-attachment">
-					<option value="yes"<?php selected( $has_attachment, 'yes' ) ?>><?php _e( 'Yes', 'buddypress-docs' ) ?></option>
-					<option value="no"<?php selected( $has_attachment, 'no' ) ?>><?php _e( 'No', 'buddypress-docs' ) ?></option>
-					<option value=""<?php selected( $has_attachment, '' ) ?>><?php _e( 'Doesn&#8217;t matter', 'buddypress-docs' ) ?></option>
+					<option value="yes"<?php selected( $has_attachment, 'yes' ) ?>><?php esc_html_e( 'Yes', 'buddypress-docs' ) ?></option>
+					<option value="no"<?php selected( $has_attachment, 'no' ) ?>><?php esc_html_e( 'No', 'buddypress-docs' ) ?></option>
+					<option value=""<?php selected( $has_attachment, '' ) ?>><?php esc_html_e( 'Doesn&#8217;t matter', 'buddypress-docs' ) ?></option>
 				</select>
-				<input type="submit" value="<?php _e( 'Filter', 'buddypress-docs' ) ?>" />
+				<input type="submit" value="<?php esc_attr_e( 'Filter', 'buddypress-docs' ) ?>" />
 				<?php do_action( 'bp_docs_directory_filter_attachments_form' ) ?>
 			</form>
 		</div>
@@ -875,7 +875,7 @@ class BP_Docs_Attachments {
 		?>
 
 		<div class="message error">
-			<p><?php _e( '<strong>Your BuddyPress Docs attachments directory is publicly accessible.</strong> Doc attachments will not be properly protected from direct viewing, even if the parent Docs are non-public.', 'buddypress-docs' ) ?></p>
+			<p><?php echo wp_kses( __( '<strong>Your BuddyPress Docs attachments directory is publicly accessible.</strong> Doc attachments will not be properly protected from direct viewing, even if the parent Docs are non-public.', 'buddypress-docs' ), array( 'strong' => array() ) ); ?></p>
 
 			<?php if ( $help_p ) : ?>
 				<p><?php echo wp_kses_post( $help_p ); ?></p>
@@ -885,7 +885,8 @@ class BP_Docs_Attachments {
 				<?php
 					echo wp_kses_post(
 						sprintf(
-							__( 'Access protection was last checked %s and will be checked again %s. <a href="%s">Test access protection now.</a>', 'buddypress-docs' ),
+							/* translators: 1: date and time of the last check, 2: date and time of the next check, 3: URL that runs the check now */
+							__( 'Access protection was last checked %1$s and will be checked again %2$s. <a href="%3$s">Test access protection now.</a>', 'buddypress-docs' ),
 							esc_html( $last_check_time ),
 							esc_html( $expiry_stamp ),
 							esc_url( $force_check_url )
@@ -899,6 +900,7 @@ class BP_Docs_Attachments {
 					<?php
 					echo wp_kses_post(
 						sprintf(
+							/* translators: %s: URL of the wiki page */
 							__( 'See <a href="%s">this wiki page</a> for more information.', 'buddypress-docs' ),
 							esc_url( $help_url )
 						)
