@@ -297,6 +297,7 @@ function bp_docs_user_directory_breadcrumb( $crumbs ) {
 			sprintf(
 				'<a href="%s">%s</a>',
 				esc_url( bp_docs_get_user_docs_url( bp_displayed_user_id() ) ),
+				// translators: %s is the displayed user's full name
 				sprintf( _x( '%s&#8217;s Docs', 'user Docs directory breadcrumb', 'buddypress-docs' ), esc_html( bp_get_displayed_user_fullname() ) )
 			),
 		);
