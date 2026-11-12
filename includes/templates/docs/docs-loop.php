@@ -76,6 +76,7 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
     <?php $has_folders = false; ?>
 	<?php if ( bp_docs_enable_folders_for_current_context() ) : ?>
 		<?php /* The '..' row */ ?>
+		<?php // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only folder navigation. ?>
 		<?php if ( ! empty( $_GET['folder'] ) ) : ?>
 			<tr class="folder-row">
 				<?php /* Just to keep things even */ ?>

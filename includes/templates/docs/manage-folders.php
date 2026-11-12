@@ -3,8 +3,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-	<h3><?php _e( 'Delete Folder', 'buddypress-docs' ) ?></h3>
-	<?php $folder_to_delete = get_post( $_GET['delete-folder'] ); ?>
+// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only selects the confirmation screen. Deletion is nonce-checked in bp_docs_process_folder_delete_cb().
+$folder_to_delete_id = isset( $_GET['delete-folder'] ) ? absint( $_GET['delete-folder'] ) : 0;
+?>
+<?php if ( $folder_to_delete_id ) : ?>
+
+	<h3><?php esc_html_e( 'Delete Folder', 'buddypress-docs' ) ?></h3>
+	<?php $folder_to_delete = get_post( $folder_to_delete_id ); ?>
 
 	<?php if ( ! is_a( $folder_to_delete, 'WP_Post' ) || 'bp_docs_folder' !== $folder_to_delete->post_type ) : ?>
 		<p><?php esc_html_e( 'This does not appear to be a valid folder.', 'buddypress-docs' ) ?></p>
