@@ -61,7 +61,7 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 			</tr>
 		<?php endif ?>
 
-		<?php foreach ( _wp_post_revision_fields() as $field => $field_title ) : ?>
+		<?php foreach ( bp_docs_history_get_revision_fields() as $field => $field_title ) : ?>
 			<?php if ( 'diff' == bp_docs_history_action() ) : ?>
 				<tr id="revision-field-<?php echo esc_attr( $field ); ?>">
 					<th scope="row"><?php echo esc_html( $field_title ); ?></th>

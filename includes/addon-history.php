@@ -221,7 +221,7 @@ class BP_Docs_History {
 	function setup_is_identical() {
 		$this->revisions_are_identical = true;
 
-		foreach ( _wp_post_revision_fields() as $field => $field_title ) {
+		foreach ( bp_docs_history_get_revision_fields() as $field => $field_title ) {
 			if ( 'diff' == bp_docs_history_action() ) {
 				$left_content = apply_filters( "_wp_post_revision_field_$field", $this->left_revision->$field, $field, $this->left_revision, 'from' );
 				$right_content = apply_filters( "_wp_post_revision_field_$field", $this->right_revision->$field, $field, $this->right_revision, 'to' );
@@ -234,6 +234,32 @@ class BP_Docs_History {
 			}
 		}
 	}
+}
+
+/**
+ * Gets the revisioned fields shown when viewing or comparing Doc revisions.
+ *
+ * Replaces the use of core's private _wp_post_revision_fields().
+ *
+ * @since 2.2.8
+ *
+ * @return array Field labels, keyed by post field name.
+ */
+function bp_docs_history_get_revision_fields() {
+	$fields = array(
+		'post_title'   => __( 'Title', 'buddypress-docs' ),
+		'post_content' => __( 'Content', 'buddypress-docs' ),
+		'post_excerpt' => __( 'Excerpt', 'buddypress-docs' ),
+	);
+
+	/**
+	 * Filters the revisioned fields shown in Doc history.
+	 *
+	 * @since 2.2.8
+	 *
+	 * @param array $fields Field labels, keyed by post field name.
+	 */
+	return apply_filters( 'bp_docs_history_revision_fields', $fields );
 }
 
 /**
