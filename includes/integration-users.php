@@ -8,6 +8,10 @@
  * @since 1.2
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class BP_Docs_Users_Integration {
 	function __construct() {
 		// Filter some properties of the query object
