@@ -509,42 +509,36 @@ add_action( 'bp_screens', 'bp_docs_load_activity_filter_options', 1 );
  *
  * @since 2.0
  * @since 2.1.2 Avoids filtering when activity scope doesn't include Docs-related items.
+ * @since 2.2.8 Decides from the query's 'filter' arguments. Group activity
+ *              streams (component 'groups') are now protected.
  *
- * @param $where_conditions
+ * @param array $where_conditions WHERE conditions of the activity query.
+ * @param array $r                Parsed arguments of the activity query.
+ * @return array
  */
 function bp_docs_access_protection_for_activity_feed( $where_conditions, $r ) {
-	$is_docs_query = true;
-
 	/*
-	 * Err on the side of caution: it's a Docs query if the string appears anywhere,
-	 * or if component + type are empty - ie, no restrictions on query.
+	 * Skip only when the query's filter rules out Docs activity: a type filter
+	 * with no Docs types, or a component filter with neither 'bp_docs' nor
+	 * 'groups' (group Docs activity is recorded under 'groups'). In every
+	 * other case, apply the protection. It is harmless when no Docs items
+	 * match.
 	 */
-	$contains_docs = false;
-	$has_type      = false;
-	$has_component = false;
+	$filter = ( isset( $r['filter'] ) && is_array( $r['filter'] ) ) ? $r['filter'] : array();
 
-	$exclude_clauses = array( 'excluded_types', 'spam_sql', 'hidden_sql' );
-
-	foreach ( $where_conditions as $condition_type => $condition ) {
-		if ( in_array( $condition_type, $exclude_clauses, true ) ) {
-			continue;
-		}
-
-		if ( false !== strpos( $condition, 'bp_doc' ) ) {
-			$contains_docs = true;
-		}
-
-		if ( false !== strpos( $condition, 'component' ) ) {
-			$has_component = true;
-		}
-
-		if ( false !== strpos( $condition, 'type' ) ) {
-			$has_type = true;
+	if ( ! empty( $filter['action'] ) ) {
+		$types      = is_array( $filter['action'] ) ? $filter['action'] : explode( ',', $filter['action'] );
+		$docs_types = array( 'bp_doc_created', 'bp_doc_edited', 'bp_doc_comment' );
+		if ( ! array_intersect( array_map( 'trim', $types ), $docs_types ) ) {
+			return $where_conditions;
 		}
 	}
 
-	if ( ! $contains_docs && ( $has_type || $has_component ) ) {
-		return $where_conditions;
+	if ( ! empty( $filter['object'] ) ) {
+		$components = is_array( $filter['object'] ) ? $filter['object'] : explode( ',', $filter['object'] );
+		if ( ! array_intersect( array_map( 'trim', $components ), array( 'bp_docs', 'groups' ) ) ) {
+			return $where_conditions;
+		}
 	}
 
 	$bp_docs_access_query  = bp_docs_access_query();
