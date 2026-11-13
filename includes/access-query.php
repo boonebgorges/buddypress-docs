@@ -401,6 +401,12 @@ function bp_docs_attachment_access_protection( $query ) {
 		return;
 	}
 
+	// Background jobs (media regeneration, backups, offloading) run without a
+	// user and must see every attachment. They don't display anything to a visitor.
+	if ( ! is_user_logged_in() && ( wp_doing_cron() || ( defined( 'WP_CLI' ) && WP_CLI ) ) ) {
+		return;
+	}
+
 	$post_types = array_values( (array) $query->get( 'post_type' ) );
 	if ( array( 'attachment' ) !== $post_types && ! $query->is_attachment() ) {
 		return;
