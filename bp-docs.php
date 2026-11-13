@@ -170,7 +170,6 @@ class BP_Docs {
 		// Dashboard-specific functions
 		if ( is_admin() ) {
 			require( BP_DOCS_INCLUDES_PATH . 'admin.php' );
-			require( BP_DOCS_INCLUDES_PATH . 'upgrade.php' );
 		}
 	}
 
