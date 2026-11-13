@@ -654,12 +654,14 @@ function bp_docs_save_doc_access_settings( $doc_id, $author_id, $settings, $is_n
 		// so that settings missing from the submission are kept.
 		$new_settings = bp_docs_get_doc_settings( $doc_id );
 		foreach ( $verified_settings as $verified_setting_name => $verified_setting ) {
-			// With no valid value and no default, keep the current setting.
-			if ( '' !== $verified_setting['verified_value'] ) {
+			// A value the user can't choose keeps the current setting (the
+			// default, for a new Doc) rather than falling back to the default,
+			// which may be less restrictive.
+			if ( '' !== $verified_setting['verified_value'] && $verified_setting['verified_value'] === $verified_setting['original_value'] ) {
 				$new_settings[ $verified_setting_name ] = $verified_setting['verified_value'];
 			}
 
-			if ( $verified_setting['verified_value'] != $verified_setting['original_value'] ) {
+			if ( $new_settings[ $verified_setting_name ] != $verified_setting['original_value'] ) {
 				$message = __( 'Your Doc was successfully saved, but some of your access settings have been changed to match the Doc\'s permissions.', 'buddypress-docs' );
 			}
 		}

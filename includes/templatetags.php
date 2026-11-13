@@ -934,7 +934,11 @@ function bp_docs_associated_group_dropdown( $args = array() ) {
 		'echo'         => true,
 		'null_option'  => true,
 		'include'      => null,
+		// The group a Doc already belongs to. It is always listed, even if
+		// the user can no longer associate Docs with it.
+		'current_group_id' => 0,
 	) );
+	$r['current_group_id'] = (int) $r['current_group_id'];
 
 	$groups_args = array(
 		'per_page' => false,
@@ -956,7 +960,13 @@ function bp_docs_associated_group_dropdown( $args = array() ) {
 	$cache_key = 'bp_docs_associated_group_dropdown:' . md5( serialize( $groups_args ) . serialize( $r ) );
 	$cached = wp_cache_get( $cache_key, 'bp_docs_nonpersistent' );
 	if ( false !== $cached ) {
-		return $cached;
+		if ( false === $r['echo'] ) {
+			return $cached;
+		}
+
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $cached;
+		return;
 	}
 
 	// Populate the $groups_template global, but stash the old one
@@ -968,7 +978,13 @@ function bp_docs_associated_group_dropdown( $args = array() ) {
 
 	// Filter out the groups where associate_with permissions forbid
 	$removed = 0;
+	$has_current = false;
 	foreach ( $groups_template->groups as $gtg_key => $gtg ) {
+		if ( $r['current_group_id'] && (int) $gtg->id === $r['current_group_id'] ) {
+			$has_current = true;
+			continue;
+		}
+
 		if ( ! current_user_can( 'bp_docs_associate_with_group', $gtg->id ) ) {
 			unset( $groups_template->groups[ $gtg_key ] );
 			$removed++;
@@ -982,6 +998,22 @@ function bp_docs_associated_group_dropdown( $args = array() ) {
 		$groups_template->total_group_count = $groups_template->total_group_count - $removed;
 	}
 
+	$groups = $groups_template->groups;
+
+	// The Doc's current group may be missing, eg if the user has left it.
+	if ( $r['current_group_id'] && ! $has_current ) {
+		$current_group = groups_get_group( $r['current_group_id'] );
+		if ( ! empty( $current_group->id ) ) {
+			$groups[] = $current_group;
+			usort(
+				$groups,
+				function ( $a, $b ) {
+					return strcasecmp( $a->name, $b->name );
+				}
+			);
+		}
+	}
+
 	$html = '';
 
 	if ( ! $r['options_only'] ) {
@@ -992,7 +1024,7 @@ function bp_docs_associated_group_dropdown( $args = array() ) {
 		$html .= '<option value="">' . __( 'None', 'buddypress-docs' ) . '</option>';
 	}
 
-	foreach ( $groups_template->groups as $g ) {
+	foreach ( $groups as $g ) {
 		$html .= sprintf(
 			'<option value="%s" %s>%s</option>',
 			esc_attr( $g->id ),
@@ -1041,9 +1073,13 @@ function bp_docs_doc_associated_group_markup() {
 		$selected_group = 0;
 	}
 
+	// The group the Doc already belongs to, which must stay selectable.
+	$current_doc      = bp_docs_get_current_doc();
+	$current_group_id = $current_doc ? (int) bp_docs_get_associated_group_id( $current_doc->ID ) : 0;
+
 	// If the selected group is still 0, see if there's something in the db
-	if ( ! $selected_group && is_singular() ) {
-		$selected_group = bp_docs_get_associated_group_id( get_the_ID() );
+	if ( ! $selected_group ) {
+		$selected_group = $current_group_id;
 	}
 
 	// Last check: if this is a second attempt at a newly created Doc,
@@ -1067,6 +1103,7 @@ function bp_docs_doc_associated_group_markup() {
 				'name' => 'associated_group_id',
 				'id' => 'associated_group_id',
 				'selected' => $selected_group,
+				'current_group_id' => $current_group_id,
 			) ) ?>
 
 			<div id="associated_group_summary">
@@ -1215,6 +1252,15 @@ function bp_docs_access_options_helper( $settings_field, $doc_id = 0, $group_id 
 		$setting = isset( $doc_settings[ $settings_field['name'] ] ) ? $doc_settings[ $settings_field['name'] ] : '';
 	}
 
+	$access_options = bp_docs_get_access_options( $settings_field['name'], $doc_id, $group_id );
+
+	// A value that isn't on offer would leave nothing selected, and the
+	// browser would submit the first option (often 'anyone'). Select the
+	// default instead, as bp_docs_verify_settings() would on save.
+	if ( ! in_array( $setting, wp_list_pluck( $access_options, 'name' ), true ) ) {
+		$setting = '';
+	}
+
 	?>
 	<tr class="bp-docs-access-row bp-docs-access-row-<?php echo esc_attr( $settings_field['name'] ) ?>">
 		<td class="desc-column">
@@ -1223,7 +1269,6 @@ function bp_docs_access_options_helper( $settings_field, $doc_id = 0, $group_id 
 
 		<td class="content-column">
 			<select name="settings[<?php echo esc_attr( $settings_field['name'] ) ?>]" id="settings-<?php echo esc_attr( $settings_field['name'] ) ?>">
-				<?php $access_options = bp_docs_get_access_options( $settings_field['name'], $doc_id, $group_id ) ?>
 				<?php foreach ( $access_options as $key => $option ) : ?>
 					<?php
 					$selected = selected( $setting, $option['name'], false );

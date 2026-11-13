@@ -337,9 +337,16 @@ class BP_Docs_Groups_Integration {
 	 * @param array $args The parameters for the doc about to be saved.
 	 */
 	public function pre_save_check_group_association( $result, $args ) {
+		// The group an existing Doc already belongs to.
+		$current_group_id = 0;
+		if ( ! empty( $args['doc_id'] ) && 'auto-draft' !== get_post_status( $args['doc_id'] ) ) {
+			$current_group_id = (int) bp_docs_get_associated_group_id( $args['doc_id'] );
+		}
+
 		// Check whether the user can associate the doc with the group.
-		// $args['group_id'] could be null (untouched) or 0, which unsets existing association
-		if ( ! empty( $args['group_id'] ) && ! user_can( $args['author_id'], 'bp_docs_associate_with_group', $args['group_id'] ) ) {
+		// $args['group_id'] could be null (untouched) or 0, which unsets existing association.
+		// Keeping a Doc in the group it already belongs to is not a new association.
+		if ( ! empty( $args['group_id'] ) && (int) $args['group_id'] !== $current_group_id && ! user_can( $args['author_id'], 'bp_docs_associate_with_group', $args['group_id'] ) ) {
 			$result['error']    = true;
 			$result['message']  = __( 'You are not allowed to associate a Doc with that group.', 'buddypress-docs' );
 			$result['redirect'] = 'create';
@@ -349,14 +356,10 @@ class BP_Docs_Groups_Integration {
 
 		// Removing an existing Doc from its group, or moving it to another
 		// group, also requires permission to remove Docs from the current group.
-		if ( ! is_null( $args['group_id'] ) && ! empty( $args['doc_id'] ) && 'auto-draft' !== get_post_status( $args['doc_id'] ) ) {
-			$current_group_id = (int) bp_docs_get_associated_group_id( $args['doc_id'] );
-
-			if ( $current_group_id && $current_group_id !== (int) $args['group_id'] && ! user_can( $args['author_id'], 'bp_docs_dissociate_from_group', $current_group_id ) ) {
-				$result['error']    = true;
-				$result['message']  = __( 'You are not allowed to remove this Doc from its current group.', 'buddypress-docs' );
-				$result['redirect'] = 'edit';
-			}
+		if ( ! is_null( $args['group_id'] ) && $current_group_id && $current_group_id !== (int) $args['group_id'] && ! user_can( $args['author_id'], 'bp_docs_dissociate_from_group', $current_group_id ) ) {
+			$result['error']    = true;
+			$result['message']  = __( 'You are not allowed to remove this Doc from its current group.', 'buddypress-docs' );
+			$result['redirect'] = 'edit';
 		}
 
 		return $result;
@@ -591,14 +594,34 @@ class BP_Docs_Groups_Integration {
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
 
-		if ( $group_id && current_user_can( 'bp_docs_associate_with_group', $group_id ) ) {
+		/*
+		 * A Doc's current group-based setting is always offered, so that
+		 * someone who can no longer choose it (eg after leaving the group)
+		 * can still save the Doc without the setting changing. Otherwise the
+		 * form would fall back to another option, possibly 'anyone'.
+		 * Read straight from post meta: bp_docs_get_doc_settings() would
+		 * call back into this filter.
+		 */
+		$current_value = '';
+		if ( $doc_id && $group_id && (int) $group_id === (int) bp_docs_get_associated_group_id( $doc_id ) ) {
+			$saved_settings = get_post_meta( $doc_id, 'bp_docs_settings', true );
+			if ( is_array( $saved_settings ) && isset( $saved_settings[ $settings_field ] ) ) {
+				$current_value = $saved_settings[ $settings_field ];
+			}
+		}
+
+		$can_associate = $group_id && current_user_can( 'bp_docs_associate_with_group', $group_id );
+
+		if ( $can_associate || in_array( $current_value, array( 'group-members', 'admins-mods' ), true ) ) {
 			$group = groups_get_group( array( 'group_id' => intval( $group_id ) ) );
 
-			$options[40] = array(
-				'name'  => 'group-members',
-				/* translators: %s: group name */
-				'label' => sprintf( __( 'Members of %s', 'buddypress-docs' ), $group->name ),
-			);
+			if ( $can_associate || 'group-members' === $current_value ) {
+				$options[40] = array(
+					'name'  => 'group-members',
+					/* translators: %s: group name */
+					'label' => sprintf( __( 'Members of %s', 'buddypress-docs' ), $group->name ),
+				);
+			}
 
 			// "Admins and mods" setting only available to admins and mods
 			// Otherwise users end up locking themselves out
@@ -606,7 +629,7 @@ class BP_Docs_Groups_Integration {
 			$is_admin       = groups_is_user_admin( bp_loggedin_user_id(), $group_id );
 			$is_mod         = groups_is_user_mod( bp_loggedin_user_id(), $group_id );
 
-			if ( $is_admin || $is_mod ) {
+			if ( ( $can_associate && ( $is_admin || $is_mod ) ) || 'admins-mods' === $current_value ) {
 				$options[50] = array(
 					'name'  => 'admins-mods',
 					/* translators: %s: group name */
@@ -618,7 +641,7 @@ class BP_Docs_Groups_Integration {
 			// permissions limited to group-members by default. If
 			// the group is non-public, set the other permissions
 			// to group-members as well
-			if ( 'public' != $group->status || in_array( $settings_field, array( 'edit', 'post_comments' ) ) ) {
+			if ( isset( $options[40] ) && ( 'public' != $group->status || in_array( $settings_field, array( 'edit', 'post_comments' ) ) ) ) {
 				// First, unset existing defaults
 				foreach ( $options as &$option ) {
 					$option['default'] = 0;
