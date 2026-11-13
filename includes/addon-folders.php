@@ -5,6 +5,12 @@
  *
  * @since 1.9
  */
+
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class BP_Docs_Folders {
 
 	/**
