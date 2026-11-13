@@ -427,14 +427,22 @@ function bp_docs_prefetch_activity_object_data( $activities ) {
 		}
 	}
 
-	// We've got to get the comments. Don't know of an easy way to do this
-	// using the WP API
+	// Fetch the comments, which primes the comment cache used when building
+	// action strings, and collect the IDs of the Docs they belong to.
 	if ( ! empty( $doc_comment_ids ) ) {
-		global $wpdb;
-		$doc_comment_ids_sql = implode( ',', wp_parse_id_list( $doc_comment_ids ) );
-		$comment_post_ids = $wpdb->get_col( "SELECT comment_post_ID FROM {$wpdb->comments} WHERE comment_ID IN ({$doc_comment_ids_sql})" );
-		$doc_ids = array_unique( array_merge( $doc_ids, $comment_post_ids ) );
+		$doc_comments = get_comments(
+			array(
+				'comment__in'               => wp_parse_id_list( $doc_comment_ids ),
+				'status'                    => 'any',
+				'orderby'                   => 'none',
+				'update_comment_meta_cache' => false,
+			)
+		);
+
+		$doc_ids = array_merge( $doc_ids, wp_list_pluck( $doc_comments, 'comment_post_ID' ) );
 	}
+
+	$doc_ids = wp_parse_id_list( $doc_ids );
 
 	if ( ! empty( $doc_ids ) ) {
 		// prime post caches
@@ -442,6 +450,8 @@ function bp_docs_prefetch_activity_object_data( $activities ) {
 		// weren't caching correctly. @todo fix this
 		_prime_post_caches( $doc_ids, false, false );
 	}
+
+	return $activities;
 }
 add_filter( 'bp_activity_prefetch_object_data', 'bp_docs_prefetch_activity_object_data' );
 
