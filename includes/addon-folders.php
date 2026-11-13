@@ -1092,11 +1092,87 @@ function bp_docs_folders_map_meta_caps( $caps, $cap, $user_id, $args ) {
 		// Temp
 		case 'bp_docs_create_global_folder' :
 		case 'bp_docs_create_personal_folder' :
-			if ( is_user_logged_in() ) {
+			if ( $user_id ) {
 				$caps = array( 'exist' );
 			} else {
-				$caps = array();
+				$caps = array( 'do_not_allow' );
 			}
+			break;
+
+		/*
+		 * Whether the user may put Docs into a folder, or nest a new folder
+		 * under it. Global folders: any logged-in user. Group folders:
+		 * members of the group. Personal folders: the owner.
+		 */
+		case 'bp_docs_use_folder' :
+			$caps = array( 'do_not_allow' );
+
+			$folder_id = isset( $args[0] ) ? intval( $args[0] ) : 0;
+			$folder    = $folder_id ? get_post( $folder_id ) : null;
+
+			if ( ! $user_id || ! $folder || 'bp_docs_folder' !== $folder->post_type || 'publish' !== $folder->post_status ) {
+				break;
+			}
+
+			$group_id  = bp_docs_get_folder_group( $folder_id );
+			$f_user_id = bp_docs_get_folder_user( $folder_id );
+
+			if ( user_can( $user_id, 'bp_moderate' ) ) {
+				$caps = array( 'exist' );
+			} else if ( $group_id ) {
+				if ( bp_is_active( 'groups' ) && groups_is_user_member( $user_id, $group_id ) ) {
+					$caps = array( 'exist' );
+				}
+			} else if ( $f_user_id ) {
+				if ( $f_user_id == $user_id ) {
+					$caps = array( 'exist' );
+				}
+			} else {
+				$caps = array( 'exist' );
+			}
+
+			break;
+
+		/*
+		 * Whether the user may create a folder with the given arguments.
+		 * $args[0] is an array with optional 'parent', 'group_id' and
+		 * 'user_id' keys, as passed to bp_docs_create_folder().
+		 */
+		case 'bp_docs_create_folder' :
+			$caps = array( 'do_not_allow' );
+
+			$folder_args = isset( $args[0] ) && is_array( $args[0] ) ? $args[0] : array();
+			$parent_id   = ! empty( $folder_args['parent'] ) ? intval( $folder_args['parent'] ) : 0;
+			$group_id    = ! empty( $folder_args['group_id'] ) ? intval( $folder_args['group_id'] ) : 0;
+			$f_user_id   = ! empty( $folder_args['user_id'] ) ? intval( $folder_args['user_id'] ) : 0;
+
+			if ( ! $user_id ) {
+				break;
+			}
+
+			// A child folder must be of the same type as a parent the user can use.
+			if ( $parent_id ) {
+				if ( ! user_can( $user_id, 'bp_docs_use_folder', $parent_id ) ) {
+					break;
+				}
+
+				if ( intval( bp_docs_get_folder_group( $parent_id ) ) !== $group_id || intval( bp_docs_get_folder_user( $parent_id ) ) !== $f_user_id ) {
+					break;
+				}
+			}
+
+			if ( $group_id ) {
+				if ( bp_is_active( 'groups' ) && user_can( $user_id, 'bp_docs_associate_with_group', $group_id ) ) {
+					$caps = array( 'exist' );
+				}
+			} else if ( $f_user_id ) {
+				if ( $f_user_id === intval( $user_id ) || user_can( $user_id, 'bp_moderate' ) ) {
+					$caps = array( 'exist' );
+				}
+			} else if ( user_can( $user_id, 'bp_docs_create_global_folder' ) ) {
+				$caps = array( 'exist' );
+			}
+
 			break;
 
 		case 'bp_docs_change_folder_type' :
