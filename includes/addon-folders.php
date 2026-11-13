@@ -73,16 +73,19 @@ class BP_Docs_Folders {
 	 */
 	public function register_taxonomies() {
 		register_taxonomy( 'bp_docs_doc_in_folder', bp_docs_get_post_type_name(), array(
-			'public' => false,
+			'public'       => false,
+			'capabilities' => bp_docs_internal_taxonomy_capabilities(),
 		) );
 
 		register_taxonomy( 'bp_docs_folder_in_user', 'bp_docs_folder', array(
-			'public' => false,
+			'public'       => false,
+			'capabilities' => bp_docs_internal_taxonomy_capabilities(),
 		) );
 
 		if ( bp_is_active( 'groups' ) ) {
 			register_taxonomy( 'bp_docs_folder_in_group', 'bp_docs_folder', array(
-				'public' => false,
+				'public'       => false,
+				'capabilities' => bp_docs_internal_taxonomy_capabilities(),
 			) );
 		}
 	}

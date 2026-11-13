@@ -357,6 +357,7 @@ class BP_Docs {
 			'hierarchical' => true,
 			'public'       => false,
 			'show_ui'      => false,
+			'capabilities' => bp_docs_internal_taxonomy_capabilities(),
 		) );
 
 		// Register the bp_docs_access taxonomy
@@ -364,6 +365,7 @@ class BP_Docs {
 			'hierarchical' => false,
 			'public'       => false,
 			'show_ui'      => false,
+			'capabilities' => bp_docs_internal_taxonomy_capabilities(),
 		) );
 
 		// Register the bp_docs_comment_access taxonomy.
@@ -371,6 +373,7 @@ class BP_Docs {
 			'hierarchical' => false,
 			'public'       => false,
 			'show_ui'      => false,
+			'capabilities' => bp_docs_internal_taxonomy_capabilities(),
 		) );
 
 		do_action( 'bp_docs_registered_post_type' );

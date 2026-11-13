@@ -146,6 +146,92 @@ function bp_docs_map_meta_caps( $caps, $cap, $user_id, $args ) {
 add_filter( 'map_meta_cap', 'bp_docs_map_meta_caps', 10, 4 );
 
 /**
+ * Map WordPress's own post capabilities for Docs and Folders onto Docs permissions.
+ *
+ * Docs and Folders are registered with the default 'post' capability type, so
+ * without this, core checks such as 'edit_post' (used by XML-RPC, comment
+ * editing and others) would follow site roles: a site Editor could read and
+ * change any Doc. Docs' own settings decide instead.
+ *
+ * - Docs (and their revisions): 'edit_post', 'delete_post' and 'publish_post'
+ *   require 'bp_docs_manage'; 'read_post' requires 'bp_docs_read'. Editing
+ *   through the Docs interface uses the Docs caps directly and is unaffected.
+ * - Folders: 'edit_post' and 'delete_post' require 'bp_docs_manage_folder'.
+ *
+ * Runs before BP_Docs_Attachments::map_meta_cap() (priority 10), which grants
+ * 'edit_post' for the Doc being uploaded to.
+ *
+ * @since 2.2.8
+ *
+ * @param array  $caps    Required primitive caps.
+ * @param string $cap     Capability being checked.
+ * @param int    $user_id User ID.
+ * @param array  $args    Capability arguments; the post ID is $args[0].
+ * @return array
+ */
+function bp_docs_map_core_post_caps( $caps, $cap, $user_id, $args ) {
+	$doc_caps = array(
+		'edit_post'    => 'bp_docs_manage',
+		'delete_post'  => 'bp_docs_manage',
+		'publish_post' => 'bp_docs_manage',
+		'read_post'    => 'bp_docs_read',
+	);
+
+	if ( ! isset( $doc_caps[ $cap ] ) || empty( $args[0] ) ) {
+		return $caps;
+	}
+
+	$post = get_post( $args[0] );
+	if ( ! $post ) {
+		return $caps;
+	}
+
+	// Revisions follow their parent for editing and reading. Deleting a
+	// revision is left to core, which doesn't allow it.
+	if ( 'revision' === $post->post_type && $post->post_parent ) {
+		if ( 'delete_post' === $cap ) {
+			return $caps;
+		}
+
+		$post = get_post( $post->post_parent );
+		if ( ! $post ) {
+			return $caps;
+		}
+	}
+
+	if ( bp_docs_get_post_type_name() === $post->post_type ) {
+		return map_meta_cap( $doc_caps[ $cap ], $user_id, $post->ID );
+	}
+
+	if ( 'bp_docs_folder' === $post->post_type && in_array( $cap, array( 'edit_post', 'delete_post' ), true ) ) {
+		return map_meta_cap( 'bp_docs_manage_folder', $user_id, $post->ID );
+	}
+
+	return $caps;
+}
+add_filter( 'map_meta_cap', 'bp_docs_map_core_post_caps', 9, 4 );
+
+/**
+ * Capabilities for the taxonomies that Docs manages internally.
+ *
+ * Group association, access levels and folder membership are set only by
+ * Docs' own code, which doesn't check these caps. Locking them keeps core
+ * paths such as XML-RPC from assigning the terms directly.
+ *
+ * @since 2.2.8
+ *
+ * @return array
+ */
+function bp_docs_internal_taxonomy_capabilities() {
+	return array(
+		'manage_terms' => 'do_not_allow',
+		'edit_terms'   => 'do_not_allow',
+		'delete_terms' => 'do_not_allow',
+		'assign_terms' => 'do_not_allow',
+	);
+}
+
+/**
  * Load up the doc to check against for meta cap mapping
  *
  * @since 1.2
