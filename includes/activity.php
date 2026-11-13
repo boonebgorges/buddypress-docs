@@ -66,8 +66,9 @@ function bp_docs_post_comment_activity( $comment_id ) {
 	$user_link    = bp_core_get_userlink( $commenter_id );
 	$doc_url      = bp_docs_get_doc_link( $doc_id );
 	$comment_url  = $doc_url . '#comment-' . $comment->comment_ID;
-	$comment_link = '<a href="' . $comment_url . '">' . $doc->post_title . '</a>';
+	$comment_link = '<a href="' . esc_url( $comment_url ) . '">' . esc_html( $doc->post_title ) . '</a>';
 
+	/* translators: 1: user link, 2: comment link */
 	$action = sprintf( __( '%1$s commented on the doc %2$s', 'buddypress-docs' ), $user_link, $comment_link );
 
 	$action	= apply_filters( 'bp_docs_comment_activity_action', $action, $user_link, $comment_link, $component, $item );
@@ -187,11 +188,13 @@ function bp_docs_post_activity( $query ) {
 	$action 	= '';
 	$user_link 	= bp_core_get_userlink( $last_editor );
 	$doc_url	= bp_docs_get_doc_link( $doc_id );
-	$doc_link	= '<a href="' . $doc_url . '">' . $doc->post_title . '</a>';
+	$doc_link	= '<a href="' . esc_url( $doc_url ) . '">' . esc_html( $doc->post_title ) . '</a>';
 
 	if ( $query->is_new_doc ) {
+		/* translators: 1: user link, 2: doc link */
 		$action = sprintf( __( '%1$s created the doc %2$s', 'buddypress-docs' ), $user_link, $doc_link );
 	} else {
+		/* translators: 1: user link, 2: doc link */
 		$action = sprintf( __( '%1$s edited the doc %2$s', 'buddypress-docs' ), $user_link, $doc_link );
 	}
 
@@ -335,8 +338,9 @@ function bp_docs_format_activity_action_bp_doc_created( $action, $activity ) {
 	$user_link = bp_core_get_userlink( $activity->user_id );
 
 	$doc_url = bp_docs_get_doc_link( $activity->secondary_item_id );
-	$doc_link = sprintf( '<a href="%s">%s</a>', $doc_url, $doc->post_title );
+	$doc_link = sprintf( '<a href="%s">%s</a>', esc_url( $doc_url ), esc_html( $doc->post_title ) );
 
+	/* translators: 1: user link, 2: doc link */
 	$action = sprintf( __( '%1$s created the doc %2$s', 'buddypress-docs' ), $user_link, $doc_link );
 
 	return $action;
@@ -364,8 +368,9 @@ function bp_docs_format_activity_action_bp_doc_edited( $action, $activity ) {
 	$user_link = bp_core_get_userlink( $activity->user_id );
 
 	$doc_url = bp_docs_get_doc_link( $activity->secondary_item_id );
-	$doc_link = sprintf( '<a href="%s">%s</a>', $doc_url, $doc->post_title );
+	$doc_link = sprintf( '<a href="%s">%s</a>', esc_url( $doc_url ), esc_html( $doc->post_title ) );
 
+	/* translators: 1: user link, 2: doc link */
 	$action = sprintf( __( '%1$s edited the doc %2$s', 'buddypress-docs' ), $user_link, $doc_link );
 
 	return $action;
@@ -395,8 +400,9 @@ function bp_docs_format_activity_action_bp_doc_comment( $action, $activity ) {
 
 	$doc_url = bp_docs_get_doc_link( $doc->ID );
 	$comment_url = $doc_url . '#comment-' . $comment->comment_ID;
-	$doc_link = sprintf( '<a href="%s">%s</a>', $comment_url, $doc->post_title );
+	$doc_link = sprintf( '<a href="%s">%s</a>', esc_url( $comment_url ), esc_html( $doc->post_title ) );
 
+	/* translators: 1: user link, 2: comment link */
 	$action = sprintf( __( '%1$s commented on the doc %2$s', 'buddypress-docs' ), $user_link, $doc_link );
 
 	return $action;
@@ -472,9 +478,9 @@ function bp_docs_activity_filter_options() {
 
 	?>
 
-	<option value="bp_doc_created"><?php _e( 'New Docs', 'buddypress-docs' ); ?></option>
-	<option value="bp_doc_edited"><?php _e( 'Doc Edits', 'buddypress-docs' ); ?></option>
-	<option value="bp_doc_comment"><?php _e( 'Doc Comments', 'buddypress-docs' ); ?></option>
+	<option value="bp_doc_created"><?php esc_html_e( 'New Docs', 'buddypress-docs' ); ?></option>
+	<option value="bp_doc_edited"><?php esc_html_e( 'Doc Edits', 'buddypress-docs' ); ?></option>
+	<option value="bp_doc_comment"><?php esc_html_e( 'Doc Comments', 'buddypress-docs' ); ?></option>
 
 	<?php
 }
