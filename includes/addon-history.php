@@ -61,14 +61,21 @@ class BP_Docs_History {
 			'view'
 		);
 
-		$this->action = !empty( $_GET['action'] ) && in_array( $_GET['action'], $actions ) ? $_GET['action'] : 'view';
+		/*
+		 * These params only select what the History screen shows. The 'restore'
+		 * action, which changes data, verifies its nonce in setup_action().
+		 */
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
+		$action       = ! empty( $_GET['action'] ) ? sanitize_key( wp_unslash( $_GET['action'] ) ) : '';
+		$this->action = in_array( $action, $actions, true ) ? $action : 'view';
 
-		$this->left = !empty( $_GET['left'] ) ? (int)$_GET['left'] : false;
-		$this->right = !empty( $_GET['right'] ) ? (int)$_GET['right'] : false;
+		$this->left  = ! empty( $_GET['left'] ) ? absint( $_GET['left'] ) : false;
+		$this->right = ! empty( $_GET['right'] ) ? absint( $_GET['right'] ) : false;
 
 		// Try to get the revision id out of the URL. If it's not provided, default to the
 		// current post
-		$this->revision_id = !empty( $_GET['revision'] ) ? (int)$_GET['revision'] : false;
+		$this->revision_id = ! empty( $_GET['revision'] ) ? absint( $_GET['revision'] ) : false;
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 		if ( ! $this->revision_id ) {
 			$current_doc = bp_docs_get_current_doc();
 			if ( $current_doc ) {
