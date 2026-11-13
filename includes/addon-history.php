@@ -159,7 +159,7 @@ class BP_Docs_History {
 
 			/* translators: %s: date the revision was created */
 			bp_core_add_message( sprintf( __( 'You have successfully restored the Doc to the revision from %s.', 'buddypress-docs' ), $this->revision->post_date ) );
-			$redirect = get_permalink( $post->ID ) . '/' . BP_DOCS_HISTORY_SLUG . '/';
+			$redirect = trailingslashit( get_permalink( $post->ID ) ) . BP_DOCS_HISTORY_SLUG . '/';
 			break;
 		case 'diff' :
 			// Both sides must have passed the checks in setup_params(). Note
