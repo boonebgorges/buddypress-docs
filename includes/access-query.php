@@ -386,6 +386,106 @@ function bp_docs_general_access_protection( $query ) {
 add_action( 'pre_get_posts', 'bp_docs_general_access_protection', 28 );
 
 /**
+ * Keep attachments of Docs the user can't read out of attachment queries.
+ *
+ * Covers the media library (list, grid and modal), XML-RPC media methods,
+ * galleries and attachment pages. Only attachment-only queries are changed:
+ * in mixed queries, post_parent__not_in would also hide child Docs.
+ *
+ * @since 2.2.8
+ *
+ * @param WP_Query $query The query.
+ */
+function bp_docs_attachment_access_protection( $query ) {
+	if ( current_user_can( 'bp_moderate' ) ) {
+		return;
+	}
+
+	$post_types = array_values( (array) $query->get( 'post_type' ) );
+	if ( array( 'attachment' ) !== $post_types && ! $query->is_attachment() ) {
+		return;
+	}
+
+	$protected_doc_ids = array_filter( wp_parse_id_list( bp_docs_access_query()->get_doc_ids() ) );
+	if ( empty( $protected_doc_ids ) ) {
+		return;
+	}
+
+	$query->set(
+		'post_parent__not_in',
+		array_merge( wp_parse_id_list( $query->get( 'post_parent__not_in' ) ), $protected_doc_ids )
+	);
+}
+add_action( 'pre_get_posts', 'bp_docs_attachment_access_protection', 29 );
+
+/**
+ * Whether an attachment belongs to a Doc that the current user can't read.
+ *
+ * @since 2.2.8
+ *
+ * @param int|WP_Post $attachment Attachment ID or object.
+ * @return bool
+ */
+function bp_docs_is_protected_doc_attachment( $attachment ) {
+	$attachment = get_post( $attachment );
+
+	if ( ! $attachment || 'attachment' !== $attachment->post_type || ! $attachment->post_parent ) {
+		return false;
+	}
+
+	if ( bp_docs_get_post_type_name() !== get_post_type( $attachment->post_parent ) ) {
+		return false;
+	}
+
+	// 'read_post' on a Doc's attachment maps to 'bp_docs_read' on the Doc.
+	return ! current_user_can( 'read_post', $attachment->ID );
+}
+
+/**
+ * Serve a 404 for attachment pages of Docs the current user can't read.
+ *
+ * Attachment pages reached through a Doc's URL (/docs/doc-slug/file-slug/)
+ * are resolved by WP_Query after 'pre_get_posts', so
+ * bp_docs_attachment_access_protection() can't exclude them.
+ *
+ * @since 2.2.8
+ */
+function bp_docs_attachment_page_protection() {
+	if ( ! is_attachment() || ! bp_docs_is_protected_doc_attachment( get_queried_object() ) ) {
+		return;
+	}
+
+	global $wp_query;
+	$wp_query->set_404();
+	status_header( 404 );
+	nocache_headers();
+}
+add_action( 'template_redirect', 'bp_docs_attachment_page_protection', 5 );
+
+/**
+ * Don't redirect ?attachment_id= requests to the permalink of a protected Doc's attachment.
+ *
+ * When the query finds nothing, core still redirects ?attachment_id= to the
+ * attachment's permalink, which contains the Doc's slug.
+ *
+ * @since 2.2.8
+ *
+ * @param string|false $redirect_url  Redirect URL.
+ * @param string       $requested_url Requested URL.
+ * @return string|false
+ */
+function bp_docs_attachment_canonical_protection( $redirect_url, $requested_url ) {
+	$attachment_id = (int) get_query_var( 'attachment_id' );
+
+	if ( $attachment_id && bp_docs_is_protected_doc_attachment( $attachment_id ) ) {
+		return false;
+	}
+
+	return $redirect_url;
+}
+add_filter( 'redirect_canonical', 'bp_docs_attachment_canonical_protection', 10, 2 );
+
+/**
  * Keep comments that the user shouldn't see out of primary WP_Comment_Query queries.
  *
  * By catching the query at pre_get_comments, we ensure that all queries are

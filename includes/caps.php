@@ -96,6 +96,14 @@ function bp_docs_map_meta_caps( $caps, $cap, $user_id, $args ) {
 				return array( 'exist' );
 			}
 
+			// A Doc still being created (see bp_docs_create_dummy_doc()) has no
+			// settings yet, so the defaults would apply. It belongs to its
+			// creator alone until it is first saved. Returning here also keeps
+			// group-based settings from granting access through the filter.
+			if ( 'auto-draft' === $doc->post_status ) {
+				return array( 'do_not_allow' );
+			}
+
 			$doc_settings = bp_docs_get_doc_settings( $doc->ID );
 
 			// Caps are stored without the 'bp_docs_' prefix,
@@ -157,6 +165,9 @@ add_filter( 'map_meta_cap', 'bp_docs_map_meta_caps', 10, 4 );
  *   require 'bp_docs_manage'; 'read_post' requires 'bp_docs_read'. Editing
  *   through the Docs interface uses the Docs caps directly and is unaffected.
  * - Folders: 'edit_post' and 'delete_post' require 'bp_docs_manage_folder'.
+ * - Attachments of a Doc: 'read_post' requires 'bp_docs_read' on the Doc;
+ *   'edit_post' and 'delete_post' require 'bp_docs_edit' on the Doc, as for
+ *   managing attachments in the Docs interface.
  *
  * Runs before BP_Docs_Attachments::map_meta_cap() (priority 10), which grants
  * 'edit_post' for the Doc being uploaded to.
@@ -183,6 +194,21 @@ function bp_docs_map_core_post_caps( $caps, $cap, $user_id, $args ) {
 
 	$post = get_post( $args[0] );
 	if ( ! $post ) {
+		return $caps;
+	}
+
+	// Attachments of a Doc follow the Doc.
+	if ( 'attachment' === $post->post_type && $post->post_parent && bp_docs_get_post_type_name() === get_post_type( $post->post_parent ) ) {
+		$attachment_caps = array(
+			'read_post'   => 'bp_docs_read',
+			'edit_post'   => 'bp_docs_edit',
+			'delete_post' => 'bp_docs_edit',
+		);
+
+		if ( isset( $attachment_caps[ $cap ] ) ) {
+			return map_meta_cap( $attachment_caps[ $cap ], $user_id, $post->post_parent );
+		}
+
 		return $caps;
 	}
 

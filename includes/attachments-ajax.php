@@ -77,6 +77,11 @@ function bp_docs_create_dummy_doc() {
 		bp_docs_set_associated_group_id( $doc_id, $group_id );
 	}
 
+	// Private to its creator until the first save applies the real settings.
+	// Without an access term, the Doc (and its attachments) would be hidden
+	// from the creator as well.
+	bp_docs_update_doc_access( $doc_id, 'creator' );
+
 	wp_send_json_success( array( 'doc_id' => $doc_id ) );
 }
 add_action( 'wp_ajax_bp_docs_create_dummy_doc', 'bp_docs_create_dummy_doc' );
