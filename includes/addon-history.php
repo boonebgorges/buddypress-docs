@@ -137,11 +137,13 @@ class BP_Docs_History {
 
 		switch ( $this->action ) :
 		case 'restore' :
+			// setup_params() has already limited revision_id to the current
+			// Doc and its own revisions.
 			if ( !$this->revision = wp_get_post_revision( $this->revision_id ) )
 				break;
-			if ( ! current_user_can( 'bp_docs_edit' ) )
-				break;
 			if ( !$post = get_post( $this->revision->post_parent ) )
+				break;
+			if ( ! current_user_can( 'bp_docs_edit', $post->ID ) )
 				break;
 
 			// Revisions disabled and we're not looking at an autosave
