@@ -1165,10 +1165,24 @@ function bp_docs_save_doc_via_post() {
 		'doc_id'       => null,
 	];
 
-	// Existing Docs have a more specific permission check.
-	if ( $args['doc_id'] && ! current_user_can( 'bp_docs_edit', $args['doc_id'] ) ) {
-		return $retval;
-	} elseif ( ! $args['doc_id'] && ! current_user_can( 'bp_docs_create' ) ) {
+	if ( $args['doc_id'] ) {
+		$doc = get_post( $args['doc_id'] );
+
+		// Only Docs can be saved through this form.
+		if ( ! $doc || bp_docs_get_post_type_name() !== $doc->post_type ) {
+			return $retval;
+		}
+
+		if ( 'auto-draft' === $doc->post_status ) {
+			// A Doc being created (see bp_docs_create_dummy_doc()). Only its
+			// creator may complete it.
+			if ( (int) $doc->post_author !== bp_loggedin_user_id() || ! current_user_can( 'bp_docs_create' ) ) {
+				return $retval;
+			}
+		} elseif ( ! current_user_can( 'bp_docs_edit', $args['doc_id'] ) ) {
+			return $retval;
+		}
+	} elseif ( ! current_user_can( 'bp_docs_create' ) ) {
 		return $retval;
 	}
 
