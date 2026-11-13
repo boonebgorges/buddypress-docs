@@ -442,10 +442,17 @@ function bp_docs_the_content() {
  * @return string
  */
 function bp_docs_directory_filter_form_action() {
-	$form_action = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+	$form_action = bp_get_requested_url();
 	$keeper_keys = array( 'folder' );
-	foreach ( $_GET as $k => $v ) {
-		if ( ! in_array( $k, $keeper_keys ) ) {
+
+	$query_args = array();
+	$query      = wp_parse_url( $form_action, PHP_URL_QUERY );
+	if ( $query ) {
+		wp_parse_str( $query, $query_args );
+	}
+
+	foreach ( array_keys( $query_args ) as $k ) {
+		if ( ! in_array( $k, $keeper_keys, true ) ) {
 			$form_action = remove_query_arg( $k, $form_action );
 		}
 	}
