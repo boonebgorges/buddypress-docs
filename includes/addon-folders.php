@@ -896,10 +896,10 @@ function bp_docs_get_folders( $args = array() ) {
 			$folder_taxonomies[] = 'bp_docs_folder_in_group';
 		}
 		$object_folders = get_terms(
-			$folder_taxonomies,
 			array(
+				'taxonomy'   => $folder_taxonomies,
 				'hide_empty' => false,
-				'fields' => 'ids',
+				'fields'     => 'ids',
 			)
 		);
 
@@ -1000,8 +1000,9 @@ function bp_docs_folder_tax_query( $tax_query, $bp_docs_query ) {
 	if ( 0 === $bp_docs_query->query_args['folder_id'] && ! bp_docs_is_directory_view_filtered() ) {
 		// Get all folders
 		// @todo Is there a better way? Not in WP_Query I don't think
-		$folder_terms = get_terms( 'bp_docs_doc_in_folder', array(
-			'fields' => 'ids',
+		$folder_terms = get_terms( array(
+			'taxonomy' => 'bp_docs_doc_in_folder',
+			'fields'   => 'ids',
 		) );
 
 		$tax_query[] = array(
