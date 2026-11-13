@@ -7,6 +7,12 @@
  * @subpackage History
  * @since 1.1
  */
+
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class BP_Docs_History {
 	var $action;
 	var $left;
