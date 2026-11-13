@@ -69,19 +69,47 @@ class BP_Docs_History {
 		$action       = ! empty( $_GET['action'] ) ? sanitize_key( wp_unslash( $_GET['action'] ) ) : '';
 		$this->action = in_array( $action, $actions, true ) ? $action : 'view';
 
-		$this->left  = ! empty( $_GET['left'] ) ? absint( $_GET['left'] ) : false;
-		$this->right = ! empty( $_GET['right'] ) ? absint( $_GET['right'] ) : false;
-
-		// Try to get the revision id out of the URL. If it's not provided, default to the
-		// current post
-		$this->revision_id = ! empty( $_GET['revision'] ) ? absint( $_GET['revision'] ) : false;
+		$left        = ! empty( $_GET['left'] ) ? absint( $_GET['left'] ) : 0;
+		$right       = ! empty( $_GET['right'] ) ? absint( $_GET['right'] ) : 0;
+		$revision_id = ! empty( $_GET['revision'] ) ? absint( $_GET['revision'] ) : 0;
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
-		if ( ! $this->revision_id ) {
-			$current_doc = bp_docs_get_current_doc();
-			if ( $current_doc ) {
-				$this->revision_id = $current_doc->ID;
-			}
+
+		/*
+		 * Only the current Doc and its own revisions may be viewed, compared or
+		 * restored here. IDs belonging to any other post are discarded.
+		 */
+		$current_doc    = bp_docs_get_current_doc();
+		$current_doc_id = $current_doc ? (int) $current_doc->ID : 0;
+
+		$this->left  = $this->belongs_to_doc( $left, $current_doc_id ) ? $left : false;
+		$this->right = $this->belongs_to_doc( $right, $current_doc_id ) ? $right : false;
+
+		// Try to get the revision id out of the URL. If it's not provided
+		// (or doesn't belong to this Doc), default to the current Doc.
+		$this->revision_id = $this->belongs_to_doc( $revision_id, $current_doc_id ) ? $revision_id : false;
+		if ( ! $this->revision_id && $current_doc_id ) {
+			$this->revision_id = $current_doc_id;
 		}
+	}
+
+	/**
+	 * Whether a post ID is the given Doc or one of its revisions.
+	 *
+	 * @since 2.2.8
+	 *
+	 * @param int $post_id ID to check.
+	 * @param int $doc_id  ID of the current Doc.
+	 * @return bool
+	 */
+	protected function belongs_to_doc( $post_id, $doc_id ) {
+		$post_id = (int) $post_id;
+		$doc_id  = (int) $doc_id;
+
+		if ( ! $post_id || ! $doc_id ) {
+			return false;
+		}
+
+		return $post_id === $doc_id || (int) wp_is_post_revision( $post_id ) === $doc_id;
 	}
 
 	/**
@@ -132,6 +160,10 @@ class BP_Docs_History {
 			$redirect = get_permalink( $post->ID ) . '/' . BP_DOCS_HISTORY_SLUG . '/';
 			break;
 		case 'diff' :
+			// Both sides must have passed the checks in setup_params(). Note
+			// that get_post( false ) would return the global post.
+			if ( ! $this->left || ! $this->right )
+				break;
 			if ( !$this->left_revision  = get_post( $this->left ) )
 				break;
 			if ( !$this->right_revision = get_post( $this->right ) )
