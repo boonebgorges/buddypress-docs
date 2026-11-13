@@ -463,10 +463,10 @@ function bp_docs_attachment_page_protection() {
 add_action( 'template_redirect', 'bp_docs_attachment_page_protection', 5 );
 
 /**
- * Don't redirect ?attachment_id= requests to the permalink of a protected Doc's attachment.
+ * Don't redirect ID-based requests to the permalink of a protected Doc or its attachment.
  *
- * When the query finds nothing, core still redirects ?attachment_id= to the
- * attachment's permalink, which contains the Doc's slug.
+ * When the query finds nothing, core still redirects ?p=, ?page_id= and
+ * ?attachment_id= to the post's permalink, which contains the Doc's slug.
  *
  * @since 2.2.8
  *
@@ -474,16 +474,63 @@ add_action( 'template_redirect', 'bp_docs_attachment_page_protection', 5 );
  * @param string       $requested_url Requested URL.
  * @return string|false
  */
-function bp_docs_attachment_canonical_protection( $redirect_url, $requested_url ) {
-	$attachment_id = (int) get_query_var( 'attachment_id' );
+function bp_docs_canonical_redirect_protection( $redirect_url, $requested_url ) {
+	if ( ! $redirect_url || ! is_404() ) {
+		return $redirect_url;
+	}
 
-	if ( $attachment_id && bp_docs_is_protected_doc_attachment( $attachment_id ) ) {
+	// The same ID that redirect_canonical() uses.
+	$post_id = (int) max( get_query_var( 'p' ), get_query_var( 'page_id' ), get_query_var( 'attachment_id' ) );
+	if ( ! $post_id ) {
+		return $redirect_url;
+	}
+
+	if ( bp_docs_get_post_type_name() === get_post_type( $post_id ) && ! current_user_can( 'bp_docs_read', $post_id ) ) {
+		return false;
+	}
+
+	if ( bp_docs_is_protected_doc_attachment( $post_id ) ) {
 		return false;
 	}
 
 	return $redirect_url;
 }
-add_filter( 'redirect_canonical', 'bp_docs_attachment_canonical_protection', 10, 2 );
+add_filter( 'redirect_canonical', 'bp_docs_canonical_redirect_protection', 10, 2 );
+
+/**
+ * Don't guess a 404's intended URL if the guess could be a protected Doc.
+ *
+ * redirect_guess_404_permalink() looks up the requested slug (as a prefix)
+ * among all public post types, Docs included, and redirects to the first
+ * match. That would reveal protected Docs' slugs. If any Doc the current user
+ * can't read matches, no guess is made and the 404 stands.
+ *
+ * @since 2.2.8
+ *
+ * @param mixed $pre Short-circuit value. Null to continue.
+ * @return mixed
+ */
+function bp_docs_guess_404_permalink_protection( $pre ) {
+	global $wpdb;
+
+	$name = get_query_var( 'name' );
+	if ( null !== $pre || ! $name || ! is_string( $name ) ) {
+		return $pre;
+	}
+
+	$protected_doc_ids = array_filter( wp_parse_id_list( bp_docs_access_query()->get_doc_ids() ) );
+	if ( empty( $protected_doc_ids ) ) {
+		return $pre;
+	}
+
+	// Core matches exactly or by prefix (the default); a prefix match covers both.
+	$id_list = implode( ',', $protected_doc_ids );
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Mirrors core's uncached lookup; IDs are integers from wp_parse_id_list().
+	$match = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE post_name LIKE %s AND ID IN ({$id_list}) LIMIT 1", $wpdb->esc_like( $name ) . '%' ) );
+
+	return $match ? false : $pre;
+}
+add_filter( 'pre_redirect_guess_404_permalink', 'bp_docs_guess_404_permalink_protection' );
 
 /**
  * Don't prepare protected Doc attachments for the media modal.
