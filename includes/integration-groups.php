@@ -373,8 +373,31 @@ class BP_Docs_Groups_Integration {
 	 */
 	public function post_save_set_group_association( $post_id, $args ) {
 		// Add to a group, if necessary
-		if ( ! is_null( $args['group_id'] ) ) {
-			bp_docs_set_associated_group_id( $post_id, $args['group_id'] );
+		if ( is_null( $args['group_id'] ) ) {
+			return;
+		}
+
+		$old_group_id = (int) bp_docs_get_associated_group_id( $post_id );
+		$new_group_id = (int) $args['group_id'];
+
+		bp_docs_set_associated_group_id( $post_id, $new_group_id );
+
+		if ( $old_group_id === $new_group_id ) {
+			return;
+		}
+
+		/*
+		 * Group-based access is stored as taxonomy terms that name the group,
+		 * so they must follow the Doc to its new group. Otherwise directory
+		 * queries would still use the old group's terms.
+		 */
+		if ( ! $new_group_id ) {
+			// Don't let a Doc that loses its group become public.
+			bp_docs_remove_group_related_doc_access_settings( $post_id );
+		} else {
+			$settings = bp_docs_get_doc_settings( $post_id );
+			bp_docs_update_doc_access( $post_id, isset( $settings['read'] ) ? $settings['read'] : 'anyone' );
+			bp_docs_update_doc_comment_access( $post_id, isset( $settings['read_comments'] ) ? $settings['read_comments'] : 'anyone' );
 		}
 	}
 
