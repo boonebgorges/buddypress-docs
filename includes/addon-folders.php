@@ -119,8 +119,9 @@ class BP_Docs_Folders {
 		// Add Folders meta box to Edit screen.
 		add_action( 'bp_docs_before_tags_meta_box', 'bp_docs_folders_meta_box' );
 
-		// Process new folder selections after save.
-		add_action( 'bp_docs_after_save', 'bp_docs_save_folder_selection' );
+		// Process new folder selections after a successful save. ('bp_docs_after_save'
+		// also fires when the save is refused.)
+		add_action( 'bp_docs_after_successful_save', 'bp_docs_save_folder_selection' );
 
 		// Screen controllers.
 		add_action( 'bp_actions', 'bp_docs_process_folder_edit_cb' );
@@ -1241,7 +1242,7 @@ function bp_docs_save_folder_selection( $doc_id ) {
 	$retval = false;
 
 	/*
-	 * Runs on 'bp_docs_after_save', so the Doc edit nonce has already been
+	 * Runs on 'bp_docs_after_successful_save', so the Doc edit nonce has already been
 	 * verified by the caller.
 	 */
 	// phpcs:disable WordPress.Security.NonceVerification.Missing

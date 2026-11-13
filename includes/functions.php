@@ -707,6 +707,7 @@ function bp_docs_remove_group_related_doc_access_settings( $doc_id ) {
 	$settings = bp_docs_get_doc_settings( $doc_id );
 	$group_settings = array( 'admins-mods','group-members' );
 	$settings_modified = false;
+	$new_settings      = array();
 
 	foreach ( $settings as $capability => $audience ) {
 		if ( in_array( $audience, $group_settings ) ) {
@@ -723,7 +724,7 @@ function bp_docs_remove_group_related_doc_access_settings( $doc_id ) {
 
 	// The 'read' setting must also be saved to a taxonomy, for
 	// easier directory queries. Update if modified.
-	if ( $settings['read'] != $new_settings['read'] ) {
+	if ( isset( $settings['read'] ) && $settings['read'] != $new_settings['read'] ) {
 		bp_docs_update_doc_access( $doc_id, $new_settings['read'] );
 	}
 
@@ -731,7 +732,7 @@ function bp_docs_remove_group_related_doc_access_settings( $doc_id ) {
 	 * The 'read_comments' setting must also be saved to a taxonomy,
 	 * to protect non-public comments. Update if modified.
 	 */
-	if ( $settings['read_comments'] != $new_settings['read_comments'] ) {
+	if ( isset( $settings['read_comments'] ) && $settings['read_comments'] != $new_settings['read_comments'] ) {
 		bp_docs_update_doc_comment_access( $doc_id, $new_settings['read_comments'] );
 	}
 }

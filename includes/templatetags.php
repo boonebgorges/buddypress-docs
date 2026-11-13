@@ -1303,7 +1303,7 @@ function bp_docs_doc_action_links() {
 		$links[] = '<a href="' . esc_url( bp_docs_get_doc_link() . BP_DOCS_HISTORY_SLUG ) . '">' . esc_html__( 'History', 'buddypress-docs' ) . '</a>';
 	}
 
-	if ( current_user_can( 'manage', get_the_ID() ) && bp_docs_is_doc_trashed( get_the_ID() ) ) {
+	if ( current_user_can( 'bp_docs_manage', get_the_ID() ) && bp_docs_is_doc_trashed( get_the_ID() ) ) {
 		$links[] = '<a href="' . esc_url( bp_docs_get_remove_from_trash_link( get_the_ID() ) ) . '" class="delete confirm">' . esc_html__( 'Untrash', 'buddypress-docs' ) . '</a>';
 	}
 
