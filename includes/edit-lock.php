@@ -266,6 +266,46 @@ function bp_docs_cancel_edit_link() {
 	}
 
 /**
+ * Whether a user may force-cancel another user's edit lock on a Doc.
+ *
+ * Site moderators, super admins, and admins of the Doc's associated group.
+ *
+ * @since 2.2.8
+ *
+ * @param int $doc_id  ID of the Doc.
+ * @param int $user_id Optional. Defaults to the current user.
+ * @return bool
+ */
+function bp_docs_user_can_force_unlock( $doc_id, $user_id = 0 ) {
+	if ( ! $user_id ) {
+		$user_id = bp_loggedin_user_id();
+	}
+
+	$doc_id = (int) $doc_id;
+	if ( ! $user_id || ! $doc_id || bp_docs_get_post_type_name() !== get_post_type( $doc_id ) ) {
+		return false;
+	}
+
+	$can = user_can( $user_id, 'bp_moderate' ) || is_super_admin( $user_id );
+
+	if ( ! $can && bp_is_active( 'groups' ) ) {
+		$group_id = (int) bp_docs_get_associated_group_id( $doc_id );
+		$can      = $group_id && groups_is_user_admin( $user_id, $group_id );
+	}
+
+	/**
+	 * Filters whether a user may force-cancel the edit lock on a Doc.
+	 *
+	 * @since 2.2.8
+	 *
+	 * @param bool $can     Whether the user may force-cancel the lock.
+	 * @param int  $doc_id  ID of the Doc.
+	 * @param int  $user_id ID of the user.
+	 */
+	return (bool) apply_filters( 'bp_docs_user_can_force_unlock', $can, $doc_id, $user_id );
+}
+
+/**
  * AJAX handler for remove_edit_lock option
  *
  * This function is called when a user is editing a Doc and clicks a link to leave the page
