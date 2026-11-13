@@ -29,8 +29,8 @@ function bp_docs_edit_doc_title() {
 	function bp_docs_get_edit_doc_title() {
 		// If a previously-submitted value is found, prefer it. It
 		// means that there was a failed submission just prior to this
-		if ( isset( buddypress()->bp_docs->submitted_data->doc->title ) && buddypress()->bp_docs->submitted_data->doc->title ) {
-			$title = buddypress()->bp_docs->submitted_data->doc->title;
+		if ( ! empty( buddypress()->bp_docs->submitted_data->title ) ) {
+			$title = buddypress()->bp_docs->submitted_data->title;
 		} else {
 			$title = bp_docs_is_existing_doc() ? get_the_title() : '';
 		}
@@ -68,8 +68,8 @@ function bp_docs_edit_doc_slug() {
 
 		// If a previously-submitted value is found, prefer it. It
 		// means that there was a failed submission just prior to this
-		if ( isset( buddypress()->bp_docs->submitted_data->doc->permalink ) && buddypress()->bp_docs->submitted_data->doc->permalink ) {
-			$slug = buddypress()->bp_docs->submitted_data->doc->permalink;
+		if ( ! empty( buddypress()->bp_docs->submitted_data->permalink ) ) {
+			$slug = buddypress()->bp_docs->submitted_data->permalink;
 		} else {
 			$slug = isset( $post->post_name ) ? $post->post_name : '';
 		}
@@ -96,8 +96,8 @@ function bp_docs_edit_doc_content() {
 	function bp_docs_get_edit_doc_content() {
 		global $post;
 
-		if ( isset( buddypress()->bp_docs->submitted_data->doc_content ) && buddypress()->bp_docs->submitted_data->doc_content ) {
-			$content = buddypress()->bp_docs->submitted_data->doc_content;
+		if ( ! empty( buddypress()->bp_docs->submitted_data->content ) ) {
+			$content = buddypress()->bp_docs->submitted_data->content;
 		} else {
 			$content = bp_docs_is_existing_doc() ? $post->post_content : '';
 		}
@@ -141,7 +141,7 @@ function bp_docs_edit_parent_dropdown() {
 	$current_doc = get_queried_object();
 	$exclude = $parent = false;
 
-	// If this is a failed submission, use the value from the POST cookie
+	// If this is a failed submission, use the previously submitted value
 	if ( ! empty( $bp->bp_docs->submitted_data->parent_id ) ) {
 		$parent = intval( $bp->bp_docs->submitted_data->parent_id );
 	} else if ( isset( $current_doc->post_type ) && $bp->bp_docs->post_type_name === $current_doc->post_type ) {

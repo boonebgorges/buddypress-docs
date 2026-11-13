@@ -644,11 +644,21 @@ function bp_docs_save_doc_access_settings( $doc_id, $author_id, $settings, $is_n
 	 *    OR the doc is new and should inherit default settings if none are supplied.
 	 */
 	if ( ! empty( $settings ) || $is_new_doc ) {
+		// Only known settings are accepted.
+		$known_settings = array_keys( bp_docs_get_default_access_options( $doc_id ) );
+		$settings       = array_intersect_key( (array) $settings, array_flip( $known_settings ) );
+
 		$verified_settings = bp_docs_verify_settings( $settings, $doc_id, $author_id );
 
-		$new_settings = array();
+		// Start from the Doc's current settings (the defaults, for a new Doc),
+		// so that settings missing from the submission are kept.
+		$new_settings = bp_docs_get_doc_settings( $doc_id );
 		foreach ( $verified_settings as $verified_setting_name => $verified_setting ) {
-			$new_settings[ $verified_setting_name ] = $verified_setting['verified_value'];
+			// With no valid value and no default, keep the current setting.
+			if ( '' !== $verified_setting['verified_value'] ) {
+				$new_settings[ $verified_setting_name ] = $verified_setting['verified_value'];
+			}
+
 			if ( $verified_setting['verified_value'] != $verified_setting['original_value'] ) {
 				$message = __( 'Your Doc was successfully saved, but some of your access settings have been changed to match the Doc\'s permissions.', 'buddypress-docs' );
 			}
@@ -753,14 +763,14 @@ function bp_docs_verify_settings( $settings, $doc_id, $user_id = 0 ) {
 				$verified_settings[ $setting_name ]['verified_value'] = $setting_value;
 			}
 
-			if ( empty( $verified_settings[ $setting_name ]['setting_default'] ) && 1 == $allowed_value['default'] ) {
-				$verified_settings[ $setting_name ]['setting_default'] = 1;
+			if ( empty( $verified_settings[ $setting_name ]['setting_default'] ) && ! empty( $allowed_value['default'] ) ) {
+				$verified_settings[ $setting_name ]['setting_default'] = $allowed_value['name'];
 			}
 		}
 
 		// If no whitelisted value has been found, attempt to fall
 		// back on a default value for that option
-		if ( empty( $verified_settings[ $setting_name ] ) ) {
+		if ( '' === $verified_settings[ $setting_name ]['verified_value'] ) {
 			$verified_settings[ $setting_name ]['verified_value'] = $verified_settings[ $setting_name ]['setting_default'];
 		}
 	}

@@ -669,9 +669,11 @@ class BP_Docs_Query {
 			$message_type = $result['redirect'] == 'single' ? 'success' : 'error';
 		}
 
-		// Stuff data into a cookie so it can be accessed on next page load
-		if ( 'error' === $message_type ) {
-			setcookie( 'bp-docs-submit-data', json_encode( $args ), time() + 30, '/' );
+		// Keep the submitted data briefly, so the form can be refilled on the
+		// next page load. Stored server-side, per user; see
+		// BP_Docs_Component::submitted_form_data().
+		if ( 'error' === $message_type && bp_loggedin_user_id() ) {
+			set_transient( 'bp_docs_submit_data_' . bp_loggedin_user_id(), wp_unslash( $args ), MINUTE_IN_SECONDS );
 		}
 
 		if ( $result['redirect'] == 'single' ) {

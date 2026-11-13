@@ -294,18 +294,47 @@ class BP_Docs_Component extends BP_Component {
 	}
 
 	/**
-	 * Get previously submitted form data out of the cookie, and stash.
+	 * Get the current user's previously submitted form data, and stash.
+	 *
+	 * Set by BP_Docs_Query::save() after a failed submission. Read once.
 	 *
 	 * @since 1.8
+	 * @since 2.2.8 Stored in a per-user transient instead of a cookie.
 	 */
 	public function submitted_form_data() {
-		if ( isset( $_COOKIE['bp-docs-submit-data'] ) ) {
-			// JSON-encoded form data from the user's own failed submission (see
-			// BP_Docs_Query::save()). Values are escaped where they're displayed.
-			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-			$this->submitted_data = json_decode( wp_unslash( $_COOKIE['bp-docs-submit-data'] ) );
-			setcookie( 'bp-docs-submit-data', '', time() - 24*60*60, '/' );
+		$user_id = bp_loggedin_user_id();
+		if ( ! $user_id ) {
+			return;
 		}
+
+		// Only the Create and Edit screens use it.
+		if ( ! bp_docs_is_doc_create() && ! bp_docs_is_doc_edit() ) {
+			return;
+		}
+
+		$key  = 'bp_docs_submit_data_' . $user_id;
+		$data = get_transient( $key );
+		if ( ! is_array( $data ) ) {
+			return;
+		}
+
+		// Only refill the form for the Doc that was submitted: the same Doc
+		// on its Edit screen, or a new Doc (or the user's own auto-draft) on
+		// the Create screen.
+		$submitted_doc_id = isset( $data['doc_id'] ) ? (int) $data['doc_id'] : 0;
+		$current_doc      = bp_docs_get_current_doc();
+		if ( $current_doc ) {
+			if ( $submitted_doc_id !== (int) $current_doc->ID ) {
+				return;
+			}
+		} elseif ( $submitted_doc_id && 'auto-draft' !== get_post_status( $submitted_doc_id ) ) {
+			return;
+		}
+
+		delete_transient( $key );
+
+		// Readers expect an object, with nested objects for arrays.
+		$this->submitted_data = json_decode( wp_json_encode( $data ) );
 	}
 
 	/**

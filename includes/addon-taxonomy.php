@@ -537,9 +537,9 @@ function bp_docs_post_tags_meta_box() {
 	$tax_name = esc_attr( $taxonomy );
 	$taxonomy = get_taxonomy( $taxonomy );
 
-	// If this is a failed submission, use the value from the POST cookie
-	if ( isset( buddypress()->bp_docs->submitted_data->{$tax_name} ) ) {
-		$terms = buddypress()->bp_docs->submitted_data->{$tax_name};
+	// If this is a failed submission, use the previously submitted value
+	if ( isset( buddypress()->bp_docs->submitted_data->taxonomies->{$tax_name} ) ) {
+		$terms = implode( ', ', (array) buddypress()->bp_docs->submitted_data->taxonomies->{$tax_name} );
 
 	// If it's an existing Doc, look up the terms
 	} else if ( bp_docs_is_existing_doc() ) {
