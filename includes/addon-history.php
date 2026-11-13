@@ -209,11 +209,6 @@ class BP_Docs_History {
 			)
 				break;
 
-			$post_title = '<a href="' . get_edit_post_link() . '">' . get_the_title() . '</a>';
-			/* translators: %1$s: linked Doc title */
-			$h2 = sprintf( __( 'Compare Revisions of &#8220;%1$s&#8221;', 'buddypress-docs' ), $post_title );
-			$title = __( 'Revisions', 'buddypress-docs' );
-
 			$this->left  = $this->left_revision->ID;
 			$this->right = $this->right_revision->ID;
 
@@ -239,12 +234,6 @@ class BP_Docs_History {
 				$redirect = 'edit.php?post_type=' . $post->post_type;
 				break;
 			}
-
-			$post_title = '<a href="' . get_edit_post_link() . '">' . get_the_title() . '</a>';
-			$revision_title = wp_post_revision_title( $this->revision, false );
-			/* translators: 1: linked Doc title, 2: revision date */
-			$h2 = sprintf( __( 'Revision for &#8220;%1$s&#8221; created on %2$s', 'buddypress-docs' ), $post_title, $revision_title );
-			$title = __( 'Revisions', 'buddypress-docs' );
 
 			// Sets up the diff radio buttons
 			$this->left  = $this->revision->ID;
