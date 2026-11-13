@@ -169,7 +169,7 @@ class BP_Docs_Folders {
 	 * @since 1.9
 	 */
 	public function enqueue_assets() {
-		wp_register_script( 'bp-docs-chosen', plugins_url() . '/buddypress-docs/lib/js/chosen/chosen.jquery.min.js', array( 'jquery' ) );
+		wp_register_script( 'bp-docs-chosen', plugins_url() . '/buddypress-docs/lib/js/chosen/chosen.jquery.min.js', array( 'jquery' ), '1.1.0', false );
 
 		$js_requirements = array(
 			'jquery',
@@ -177,13 +177,13 @@ class BP_Docs_Folders {
 			'jquery-ui-droppable',
 		);
 
-		wp_enqueue_script( 'bp-docs-folders', plugins_url() . '/buddypress-docs/includes/js/folders.js', $js_requirements );
+		wp_enqueue_script( 'bp-docs-folders', plugins_url() . '/buddypress-docs/includes/js/folders.js', $js_requirements, BP_DOCS_VERSION, false );
 
-		wp_register_style( 'bp-docs-chosen', plugins_url() . '/buddypress-docs/lib/css/chosen/chosen.min.css' );
+		wp_register_style( 'bp-docs-chosen', plugins_url() . '/buddypress-docs/lib/css/chosen/chosen.min.css', array(), '1.1.0' );
 		if ( is_rtl() ) {
-			wp_enqueue_style( 'bp-docs-folders', plugins_url() . '/buddypress-docs/includes/css-rtl/folders.css', array( 'bp-docs-chosen' ) );
+			wp_enqueue_style( 'bp-docs-folders', plugins_url() . '/buddypress-docs/includes/css-rtl/folders.css', array( 'bp-docs-chosen' ), BP_DOCS_VERSION );
 		} else {
-			wp_enqueue_style( 'bp-docs-folders', plugins_url() . '/buddypress-docs/includes/css/folders.css', array( 'bp-docs-chosen' ) );
+			wp_enqueue_style( 'bp-docs-folders', plugins_url() . '/buddypress-docs/includes/css/folders.css', array( 'bp-docs-chosen' ), BP_DOCS_VERSION );
 		}
 
 		/**
