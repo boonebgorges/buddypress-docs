@@ -127,6 +127,7 @@ class BP_Docs_History {
 
 			wp_restore_post_revision( $this->revision->ID );
 
+			/* translators: %s: date the revision was created */
 			bp_core_add_message( sprintf( __( 'You have successfully restored the Doc to the revision from %s.', 'buddypress-docs' ), $this->revision->post_date ) );
 			$redirect = get_permalink( $post->ID ) . '/' . BP_DOCS_HISTORY_SLUG . '/';
 			break;
@@ -175,6 +176,7 @@ class BP_Docs_History {
 				break;
 
 			$post_title = '<a href="' . get_edit_post_link() . '">' . get_the_title() . '</a>';
+			/* translators: %1$s: linked Doc title */
 			$h2 = sprintf( __( 'Compare Revisions of &#8220;%1$s&#8221;', 'buddypress-docs' ), $post_title );
 			$title = __( 'Revisions', 'buddypress-docs' );
 
@@ -206,6 +208,7 @@ class BP_Docs_History {
 
 			$post_title = '<a href="' . get_edit_post_link() . '">' . get_the_title() . '</a>';
 			$revision_title = wp_post_revision_title( $this->revision, false );
+			/* translators: 1: linked Doc title, 2: revision date */
 			$h2 = sprintf( __( 'Revision for &#8220;%1$s&#8221; created on %2$s', 'buddypress-docs' ), $post_title, $revision_title );
 			$title = __( 'Revisions', 'buddypress-docs' );
 
@@ -458,11 +461,11 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
 	<col style="width: 33%" />
 <thead>
 <tr>
-	<th scope="col"><?php /* translators: column name in revisons */ _e( 'Old', 'buddypress-docs' ); ?></th>
-	<th scope="col"><?php /* translators: column name in revisons */ _e( 'New', 'buddypress-docs' ); ?></th>
-	<th scope="col"><?php /* translators: column name in revisons */ _e( 'Date Created', 'buddypress-docs' ); ?></th>
-	<th scope="col"><?php _e( 'Author', 'buddypress-docs' ); ?></th>
-	<th scope="col" class="action-links"><?php _e( 'Actions', 'buddypress-docs' ); ?></th>
+	<th scope="col"><?php /* translators: column name in revisons */ esc_html_e( 'Old', 'buddypress-docs' ); ?></th>
+	<th scope="col"><?php /* translators: column name in revisons */ esc_html_e( 'New', 'buddypress-docs' ); ?></th>
+	<th scope="col"><?php /* translators: column name in revisons */ esc_html_e( 'Date Created', 'buddypress-docs' ); ?></th>
+	<th scope="col"><?php esc_html_e( 'Author', 'buddypress-docs' ); ?></th>
+	<th scope="col" class="action-links"><?php esc_html_e( 'Actions', 'buddypress-docs' ); ?></th>
 </tr>
 </thead>
 <tbody>
