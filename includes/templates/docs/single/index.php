@@ -25,7 +25,7 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 					?>
 				</p>
 
-				<?php if ( is_super_admin() || ( bp_is_active( 'groups' ) && bp_is_group() && bp_group_is_admin() ) ) : ?>
+				<?php if ( bp_docs_user_can_force_unlock( get_the_ID() ) ) : ?>
 					<p>
 						<?php
 						/* translators: %s: URL that cancels the edit lock */

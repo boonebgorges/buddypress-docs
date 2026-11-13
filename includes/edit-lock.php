@@ -322,6 +322,12 @@ function bp_docs_remove_edit_lock() {
 		return;
 	}
 
+	// bp_docs_check_post_lock() returns the ID of another user who holds an
+	// active lock. Only the current user's own (or an expired) lock is released.
+	if ( bp_docs_check_post_lock( $doc_id ) ) {
+		return;
+	}
+
 	delete_post_meta( $doc_id, '_bp_docs_last_pinged' );
 }
 add_action( 'wp_ajax_remove_edit_lock', 'bp_docs_remove_edit_lock' );
