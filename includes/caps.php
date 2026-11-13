@@ -68,6 +68,14 @@ function bp_docs_map_meta_caps( $caps, $cap, $user_id, $args ) {
 			$caps = array();
 
 			$doc = bp_docs_get_doc_for_caps( $args );
+
+			// An explicit ID that does not belong to a Doc is never allowed.
+			// Only the "no Doc yet" case below (eg the Create screen) falls back to 'read'.
+			if ( ! empty( $args[0] ) && empty( $doc ) ) {
+				$caps = array( 'do_not_allow' );
+				break;
+			}
+
 			if ( empty( $doc ) || ( $doc instanceof WP_Post && 0 === $doc->ID && bp_docs_get_post_type_name() === $doc->post_type ) ) {
 				return array( 'read' );
 			}
