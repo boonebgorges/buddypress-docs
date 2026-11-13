@@ -164,6 +164,9 @@ class BP_Docs_Access_Query {
 			} else {
 				$forbidden_fruit = new WP_Query( array(
 					'post_type' => bp_docs_get_post_type_name(),
+					// Every status, so that Docs which are trashed, pending or
+					// still being created are protected too (eg their attachments).
+					'post_status' => array_keys( get_post_stati() ),
 					'posts_per_page' => -1,
 					'nopaging' => true,
 					'tax_query' => $tax_query, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Access levels are taxonomy terms; results are cached.
