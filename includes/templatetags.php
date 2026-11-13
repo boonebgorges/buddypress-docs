@@ -297,7 +297,7 @@ function bp_docs_info_header() {
 			$view_all_url = remove_query_arg( 'p', $view_all_url );
 			$view_all_url = preg_replace( '|page/[0-9]+/|', '', $view_all_url );
 
-			$message .= ' - ' . sprintf( __( '<strong><a href="%s" title="View All Docs">View All Docs</a></strong>', 'buddypress-docs' ), esc_url( $view_all_url ) );
+			$message .= ' - ' . sprintf( '<strong><a href="%1$s" title="%2$s">%3$s</a></strong>', esc_url( $view_all_url ), esc_attr__( 'View All Docs', 'buddypress-docs' ), esc_html__( 'View All Docs', 'buddypress-docs' ) );
 		}
 
 		?>
@@ -308,8 +308,10 @@ function bp_docs_info_header() {
 		<?php if ( $filter_titles = bp_docs_filter_titles() ) : ?>
 			<div class="docs-filters">
 				<p id="docs-filter-meta">
-					<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-					<?php printf( __( 'Filter by: %s', 'buddypress-docs' ), $filter_titles ) ?>
+					<?php
+					/* translators: %s: list of filter links, such as Tags and Folders */
+					printf( esc_html__( 'Filter by: %s', 'buddypress-docs' ), $filter_titles ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					?>
 				</p>
 
 				<div id="docs-filter-sections">
@@ -460,6 +462,7 @@ function bp_docs_directory_filter_form_action() {
  */
 function bp_docs_search_term_filter_text( $message, $filters ) {
 	if ( !empty( $filters['search_terms'] ) ) {
+		/* translators: %s: search term */
 		$message[] = sprintf( __( 'You are searching for docs containing the term <em>%s</em>', 'buddypress-docs' ), esc_html( $filters['search_terms'] ) );
 	}
 
@@ -1105,12 +1108,8 @@ function bp_docs_associated_group_summary( $group_id = 0 ) {
 				'height' => '40',
 			) );
 			$_count = (int) groups_get_groupmeta( $group_id, 'total_member_count' );
-			if ( 1 === $_count ) {
-				// Using sprintf() to avoid creating another string.
-				$group_member_count = sprintf( __( '%s member', 'buddypress-docs', $_count ), number_format_i18n( $_count ) );
-			} else {
-				$group_member_count = sprintf( _n( '%s member', '%s members', $_count, 'buddypress-docs' ), number_format_i18n( $_count ) );
-			}
+			/* translators: %s: number of group members */
+			$group_member_count = sprintf( _n( '%s member', '%s members', $_count, 'buddypress-docs' ), number_format_i18n( $_count ) );
 
 			switch ( $group->status ) {
 				case 'public' :
@@ -1688,9 +1687,9 @@ function bp_docs_doc_permissions_snapshot( $args = array() ) {
 			$html .= '<div id="doc-group-summary">';
 
 			$html .= $summary_before_content ;
-			$html .= '<span>' . esc_html( 'Group: ', 'buddypress-docs' ) . '</span>';
+			$html .= '<span>' . esc_html__( 'Group: ', 'buddypress-docs' ) . '</span>';
 
-			$html .= sprintf( __( ' %s', 'buddypress-docs' ), '<a href="' . esc_url( $group_link ) . '">' . bp_core_fetch_avatar( 'item_id=' . $doc_groups[0]->id . '&object=group&type=thumb&width=25&height=25' ) . '</a> ' . '<a href="' . esc_url( $group_link ) . '">' . esc_html( $doc_groups[0]->name ) . '</a>' );
+			$html .= ' <a href="' . esc_url( $group_link ) . '">' . bp_core_fetch_avatar( 'item_id=' . $doc_groups[0]->id . '&object=group&type=thumb&width=25&height=25' ) . '</a> ' . '<a href="' . esc_url( $group_link ) . '">' . esc_html( $doc_groups[0]->name ) . '</a>';
 
 			$html .= $summary_after_content;
 
@@ -1710,7 +1709,9 @@ function bp_docs_doc_permissions_snapshot( $args = array() ) {
 	);
 
 	if ( bp_is_active( 'groups' ) ) {
+		/* translators: %s: group name */
 		$levels['group-members'] = sprintf( __( 'Members of: %s', 'buddypress-docs' ), $group_names );
+		/* translators: %s: group name */
 		$levels['admins-mods'] = sprintf( __( 'Admins and mods of the group %s', 'buddypress-docs' ), $group_names );
 	}
 
@@ -1722,22 +1723,27 @@ function bp_docs_doc_permissions_snapshot( $args = array() ) {
 
 	// Read
 	$read_class = bp_docs_get_permissions_css_class( $settings['read'] );
+	/* translators: %s: who can read the Doc */
 	$read_text  = sprintf( __( 'This Doc can be read by: <strong>%s</strong>', 'buddypress-docs' ), esc_html( $levels[ $settings['read'] ] ) );
 
 	// Edit
 	$edit_class = bp_docs_get_permissions_css_class( $settings['edit'] );
+	/* translators: %s: who can edit the Doc */
 	$edit_text  = sprintf( __( 'This Doc can be edited by: <strong>%s</strong>', 'buddypress-docs' ), esc_html( $levels[ $settings['edit'] ] ) );
 
 	// Read Comments
 	$read_comments_class = bp_docs_get_permissions_css_class( $settings['read_comments'] );
+	/* translators: %s: who can see comments */
 	$read_comments_text  = sprintf( __( 'Comments are visible to: <strong>%s</strong>', 'buddypress-docs' ), esc_html( $levels[ $settings['read_comments'] ] ) );
 
 	// Post Comments
 	$post_comments_class = bp_docs_get_permissions_css_class( $settings['post_comments'] );
+	/* translators: %s: who can post comments */
 	$post_comments_text  = sprintf( __( 'Comments can be posted by: <strong>%s</strong>', 'buddypress-docs' ), esc_html( $levels[ $settings['post_comments'] ] ) );
 
 	// View History
 	$view_history_class = bp_docs_get_permissions_css_class( $settings['view_history'] );
+	/* translators: %s: who can view the Doc's history */
 	$view_history_text  = sprintf( __( 'History can be viewed by: <strong>%s</strong>', 'buddypress-docs' ), esc_html( $levels[ $settings['view_history'] ] ) );
 
 	// Calculate summary
@@ -1791,7 +1797,8 @@ function bp_docs_doc_permissions_snapshot( $args = array() ) {
 
 	$html .= '<div id="doc-permissions-summary" class="doc-' . $summary . '">';
 	$html .= $summary_before_content;
- $html .=   sprintf( __( 'Access: <strong>%s</strong>', 'buddypress-docs' ), esc_html( $summary_label ) );
+	/* translators: %s: access summary, such as Public or Limited */
+	$html .=   sprintf( __( 'Access: <strong>%s</strong>', 'buddypress-docs' ), esc_html( $summary_label ) );
 	$html .=   '<a href="#" class="doc-permissions-toggle" id="doc-permissions-more">' . esc_html__( 'Show Details', 'buddypress-docs' ) . '</a>';
 	$html .= $summary_after_content;
  $html .= '</div>';
