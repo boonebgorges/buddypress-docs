@@ -650,7 +650,20 @@ function bp_docs_create_folder( $args ) {
 		$r['parent'] = intval( $r['parent'] );
 
 		$maybe_parent = get_post( $r['parent'] );
-		if ( ! is_a( $maybe_parent, 'WP_Post' ) ) {
+		if ( ! is_a( $maybe_parent, 'WP_Post' ) || 'bp_docs_folder' !== $maybe_parent->post_type ) {
+			return false;
+		}
+	}
+
+	// When updating, make sure the target is an existing folder.
+	if ( ! empty( $r['folder_id'] ) ) {
+		$maybe_folder = get_post( intval( $r['folder_id'] ) );
+		if ( ! is_a( $maybe_folder, 'WP_Post' ) || 'bp_docs_folder' !== $maybe_folder->post_type ) {
+			return false;
+		}
+
+		// A folder cannot be its own parent.
+		if ( ! empty( $r['parent'] ) && $r['parent'] === $maybe_folder->ID ) {
 			return false;
 		}
 	}
