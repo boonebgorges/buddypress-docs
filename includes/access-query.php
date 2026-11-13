@@ -452,6 +452,28 @@ function bp_docs_comment_feed_protection( $where, $query ) {
 add_filter( 'comment_feed_where', 'bp_docs_comment_feed_protection', 10, 2 );
 
 /**
+ * Don't serve oEmbed data for Docs that the current user can't read.
+ *
+ * Core only checks that the post is published, so the oEmbed endpoint and
+ * same-site embeds would otherwise reveal the title, excerpt and author of
+ * protected Docs. Returning 0 makes core treat the URL as not embeddable.
+ *
+ * @since 2.2.8
+ *
+ * @param int    $post_id ID of the post the URL resolved to.
+ * @param string $url     The requested URL.
+ * @return int
+ */
+function bp_docs_oembed_access_protection( $post_id, $url ) {
+	if ( $post_id && bp_docs_get_post_type_name() === get_post_type( $post_id ) && ! current_user_can( 'bp_docs_read', $post_id ) ) {
+		return 0;
+	}
+
+	return $post_id;
+}
+add_filter( 'oembed_request_post_id', 'bp_docs_oembed_access_protection', 10, 2 );
+
+/**
  * Reset the 'last_changed' cache incrementor when posts are updated.
  *
  * Big hammer, small nail.
