@@ -1058,8 +1058,8 @@ function bp_docs_doc_associated_group_markup() {
 	?>
 	<tr>
 		<td class="desc-column">
-			<label for="associated_group_id"><?php _e( 'Which group should this Doc be associated with?', 'buddypress-docs' ) ?></label>
-			<span class="description"><?php _e( '(Optional) Note that the Access settings available for this Doc may be limited by the privacy settings of the group you choose.', 'buddypress-docs' ) ?></span>
+			<label for="associated_group_id"><?php esc_html_e( 'Which group should this Doc be associated with?', 'buddypress-docs' ) ?></label>
+			<span class="description"><?php esc_html_e( '(Optional) Note that the Access settings available for this Doc may be limited by the privacy settings of the group you choose.', 'buddypress-docs' ) ?></span>
 		</td>
 
 		<td class="content-column">
