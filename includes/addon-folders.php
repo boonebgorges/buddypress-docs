@@ -741,7 +741,7 @@ function bp_docs_delete_folder_contents( $folder_id ) {
 	$folder_term = bp_docs_get_folder_term( $folder_id );
 	$folder_docs = get_posts( array(
 		'post_type' => bp_docs_get_post_type_name(),
-		'tax_query' => array(
+		'tax_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Folder membership is a taxonomy term.
 			array(
 				'taxonomy' => 'bp_docs_doc_in_folder',
 				'field' => 'term_id',
@@ -884,7 +884,7 @@ function bp_docs_get_folders( $args = array() ) {
 		'orderby' => $orderby,
 		'order' => $order,
 		'posts_per_page' => '-1',
-		'tax_query' => array(),
+		'tax_query' => array(), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Folder ownership (group/user) is a taxonomy term.
 	);
 
 	// @todo support for multiple items
@@ -2766,7 +2766,7 @@ class BP_Docs_Folder_Walker extends Walker {
 
 		$folder_docs = get_posts( array(
 			'post_type' => bp_docs_get_post_type_name(),
-			'tax_query' => array(
+			'tax_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Folder membership is a taxonomy term.
 				array(
 					'taxonomy' => 'bp_docs_doc_in_folder',
 					'field' => 'term_id',
@@ -2836,7 +2836,7 @@ function bp_docs_folders_calculate_modified_date( $folder_id = 0 ) {
 			'post_type'      => bp_docs_get_post_type_name(),
 			'orderby'        => 'modified',
 			'posts_per_page' => '1',
-			'tax_query'      => array(
+			'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Folder membership is a taxonomy term.
 				array(
 					'taxonomy' => 'bp_docs_doc_in_folder',
 					'field'    => 'term_id',

@@ -166,7 +166,7 @@ class BP_Docs_Access_Query {
 					'post_type' => bp_docs_get_post_type_name(),
 					'posts_per_page' => -1,
 					'nopaging' => true,
-					'tax_query' => $tax_query,
+					'tax_query' => $tax_query, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Access levels are taxonomy terms; results are cached.
 					'update_post_term_cache' => false,
 					'update_post_meta_cache' => false,
 					'no_found_rows' => 1,
@@ -225,7 +225,7 @@ class BP_Docs_Access_Query {
 					'post_type' => bp_docs_get_post_type_name(),
 					'posts_per_page' => -1,
 					'nopaging' => true,
-					'tax_query' => $tax_query,
+					'tax_query' => $tax_query, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Access levels are taxonomy terms; results are cached.
 					'update_post_term_cache' => false,
 					'update_post_meta_cache' => false,
 					'no_found_rows' => 1,

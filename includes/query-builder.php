@@ -189,8 +189,8 @@ class BP_Docs_Query {
 		// Set up the basic args
 		$wp_query_args = array(
 			'post_type'  => $this->post_type_name,
-			'tax_query'  => array(),
-			'meta_query' => array(),
+			'tax_query'  => array(), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Docs stores groups, tags, folders and access as taxonomy terms.
+			'meta_query' => array(), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Empty by default; available to plugins.
 		);
 
 		// Skip everything else if this is a single doc query
@@ -206,7 +206,7 @@ class BP_Docs_Query {
 			// 'orderby' generally passes through, except for in 'most_active' queries
 			if ( 'most_active' == $this->query_args['orderby'] ) {
 				$wp_query_args['orderby']  = 'meta_value_num';
-				$wp_query_args['meta_key'] = 'bp_docs_revision_count';
+				$wp_query_args['meta_key'] = 'bp_docs_revision_count'; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Needed to sort by edit count.
 			} else {
 				$wp_query_args['orderby']  = $this->query_args['orderby'];
 			}
@@ -252,7 +252,7 @@ class BP_Docs_Query {
 
 			// Set the taxonomy query. Filtered so that plugins can alter the query
 			// Filtering by groups and folders also happens in this way
-			$wp_query_args['tax_query'] = apply_filters( 'bp_docs_tax_query', $wp_query_args['tax_query'], $this );
+			$wp_query_args['tax_query'] = apply_filters( 'bp_docs_tax_query', $wp_query_args['tax_query'], $this ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Tag, group and folder filters are taxonomy queries.
 
 			if ( !empty( $this->query_args['parent_id'] ) ) {
 				$wp_query_args['post_parent'] = $this->query_args['parent_id'];
