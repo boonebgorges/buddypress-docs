@@ -1,5 +1,10 @@
 <?php
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( !function_exists( 'bp_is_root_blog' ) ) :
 	/**
 	 * Is this BP_ROOT_BLOG?
