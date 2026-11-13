@@ -425,7 +425,7 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
 
 	$rows = $right_checked = '';
 	$class = false;
-	$can_edit_post = current_user_can( 'bp_docs_edit' );
+	$can_edit_post = current_user_can( 'bp_docs_edit', $post->ID );
 	foreach ( $revisions as $revision ) {
 		if ( 'revision' === $type && wp_is_post_autosave( $revision ) )
 			continue;
@@ -514,7 +514,8 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
  * @since 1.1.4
  */
 function bp_docs_history_tab() {
-	if ( current_user_can( 'bp_docs_view_history' ) ) : ?>
+	$doc = bp_docs_get_current_doc();
+	if ( $doc && current_user_can( 'bp_docs_view_history', $doc->ID ) ) : ?>
 		<li<?php if ( bp_docs_is_doc_history() ) : ?> class="current"<?php endif ?>>
 			<a href="<?php echo esc_url( bp_docs_get_doc_link() . BP_DOCS_HISTORY_SLUG ); ?>"><?php esc_html_e( 'History', 'buddypress-docs' ) ?></a>
 		</li>
