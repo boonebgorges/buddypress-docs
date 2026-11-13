@@ -1186,6 +1186,15 @@ function bp_docs_save_doc_via_post() {
 		return $retval;
 	}
 
+	/*
+	 * Access settings and the associated group may only be changed by users
+	 * who can manage the Doc. The edit form only shows those fields to them;
+	 * this enforces it for crafted requests. The creator of a new Doc
+	 * manages it.
+	 */
+	$is_existing_doc = $args['doc_id'] && 'auto-draft' !== $doc->post_status;
+	$can_manage      = ! $is_existing_doc || current_user_can( 'bp_docs_manage', $args['doc_id'] );
+
 	if ( isset( $_POST['doc']['title'] ) ) {
 		// Doc titles are plain text. Strip markup so it can't be smuggled into contexts that render titles as HTML.
 		// Left slashed: BP_Docs_Query::save() passes it to wp_insert_post(), which expects slashed data.
@@ -1209,7 +1218,7 @@ function bp_docs_save_doc_via_post() {
 
 	$args['author_id'] = bp_loggedin_user_id();
 
-	if ( isset( $_POST['associated_group_id'] ) ) {
+	if ( $can_manage && isset( $_POST['associated_group_id'] ) ) {
 		$args['group_id'] = absint( $_POST['associated_group_id'] );
 	}
 
@@ -1221,7 +1230,7 @@ function bp_docs_save_doc_via_post() {
 	$args['taxonomies'] = apply_filters( 'bp_docs_prepare_terms_via_post', $args['taxonomies'] );
 
 	// Values are checked against the allowed access levels in bp_docs_verify_settings().
-	if ( ! empty( $_POST['settings'] ) && is_array( $_POST['settings'] ) ) {
+	if ( $can_manage && ! empty( $_POST['settings'] ) && is_array( $_POST['settings'] ) ) {
 		$posted_settings = map_deep( wp_unslash( $_POST['settings'] ), 'sanitize_key' );
 		foreach ( $posted_settings as $setting_name => $setting_value ) {
 			if ( is_string( $setting_value ) ) {
