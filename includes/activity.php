@@ -6,6 +6,11 @@
  * @since 1.7
  */
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Post an activity item when a comment is posted to a doc.
  *
