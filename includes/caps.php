@@ -161,10 +161,14 @@ add_filter( 'map_meta_cap', 'bp_docs_map_meta_caps', 10, 4 );
  * editing and others) would follow site roles: a site Editor could read and
  * change any Doc. Docs' own settings decide instead.
  *
- * - Docs (and their revisions): 'edit_post', 'delete_post' and 'publish_post'
- *   require 'bp_docs_manage'; 'read_post' requires 'bp_docs_read'. Editing
- *   through the Docs interface uses the Docs caps directly and is unaffected.
- * - Folders: 'edit_post' and 'delete_post' require 'bp_docs_manage_folder'.
+ * - Docs (and their revisions): 'read_post' requires 'bp_docs_read'.
+ *   'edit_post', 'delete_post' and 'publish_post' require 'bp_moderate'.
+ *   Docs are edited, deleted and moderated through the Docs interface, which
+ *   checks the Docs caps directly; core paths (XML-RPC, wp-admin comment
+ *   editing) would bypass Docs' own validation of settings, parents and
+ *   group association.
+ * - Folders: 'edit_post', 'delete_post' and 'publish_post' require
+ *   'bp_moderate', for the same reason.
  * - Attachments of a Doc: 'read_post' requires 'bp_docs_read' on the Doc;
  *   'edit_post' and 'delete_post' require 'bp_docs_edit' on the Doc, as for
  *   managing attachments in the Docs interface.
@@ -181,14 +185,7 @@ add_filter( 'map_meta_cap', 'bp_docs_map_meta_caps', 10, 4 );
  * @return array
  */
 function bp_docs_map_core_post_caps( $caps, $cap, $user_id, $args ) {
-	$doc_caps = array(
-		'edit_post'    => 'bp_docs_manage',
-		'delete_post'  => 'bp_docs_manage',
-		'publish_post' => 'bp_docs_manage',
-		'read_post'    => 'bp_docs_read',
-	);
-
-	if ( ! isset( $doc_caps[ $cap ] ) || empty( $args[0] ) ) {
+	if ( ! in_array( $cap, array( 'edit_post', 'delete_post', 'publish_post', 'read_post' ), true ) || empty( $args[0] ) ) {
 		return $caps;
 	}
 
@@ -225,15 +222,18 @@ function bp_docs_map_core_post_caps( $caps, $cap, $user_id, $args ) {
 		}
 	}
 
-	if ( bp_docs_get_post_type_name() === $post->post_type ) {
-		return map_meta_cap( $doc_caps[ $cap ], $user_id, $post->ID );
+	$is_doc    = bp_docs_get_post_type_name() === $post->post_type;
+	$is_folder = 'bp_docs_folder' === $post->post_type;
+
+	if ( ! $is_doc && ! $is_folder ) {
+		return $caps;
 	}
 
-	if ( 'bp_docs_folder' === $post->post_type && in_array( $cap, array( 'edit_post', 'delete_post' ), true ) ) {
-		return map_meta_cap( 'bp_docs_manage_folder', $user_id, $post->ID );
+	if ( 'read_post' === $cap ) {
+		return $is_doc ? map_meta_cap( 'bp_docs_read', $user_id, $post->ID ) : $caps;
 	}
 
-	return $caps;
+	return map_meta_cap( 'bp_moderate', $user_id );
 }
 add_filter( 'map_meta_cap', 'bp_docs_map_core_post_caps', 9, 4 );
 

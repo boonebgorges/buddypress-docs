@@ -56,6 +56,10 @@ class BP_Docs_Folders {
 			'labels' => $labels,
 			'public' => false,
 			'hierarchical' => true,
+			// Folders are created through the Docs interface only.
+			'capabilities' => array(
+				'create_posts' => 'bp_moderate',
+			),
 		) );
 	}
 

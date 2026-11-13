@@ -333,6 +333,11 @@ class BP_Docs {
 			'public'       => true,
 			'show_ui'      => $this->show_cpt_ui(),
 			'hierarchical' => true,
+			// Docs are created through the Docs interface. Keep core paths
+			// (eg XML-RPC) from creating them with arbitrary settings.
+			'capabilities' => array(
+				'create_posts' => 'bp_moderate',
+			),
 			'supports'     => array( 'title', 'editor', 'revisions', 'excerpt', 'comments', 'author' ),
 			'query_var'    => true,
 			'has_archive'  => true,

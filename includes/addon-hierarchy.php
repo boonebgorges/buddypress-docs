@@ -134,7 +134,13 @@ class BP_Docs_Hierarchy {
 
 		if ( ! empty( $post->post_parent ) ) {
 			$parent = get_post( $post->post_parent );
-			if ( !empty( $parent->ID ) ) {
+
+			// Only show a parent Doc that the current user can read.
+			if ( ! $parent || bp_docs_get_post_type_name() !== $parent->post_type || ! current_user_can( 'bp_docs_read', $parent->ID ) ) {
+				$parent = false;
+			}
+
+			if ( ! empty( $parent->ID ) ) {
 				$parent_url = bp_docs_get_doc_link( $parent->ID );
 				$parent_title = $parent->post_title;
 
