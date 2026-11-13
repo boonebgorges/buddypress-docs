@@ -343,6 +343,20 @@ class BP_Docs_Groups_Integration {
 			$result['error']    = true;
 			$result['message']  = __( 'You are not allowed to associate a Doc with that group.', 'buddypress-docs' );
 			$result['redirect'] = 'create';
+
+			return $result;
+		}
+
+		// Removing an existing Doc from its group, or moving it to another
+		// group, also requires permission to remove Docs from the current group.
+		if ( ! is_null( $args['group_id'] ) && ! empty( $args['doc_id'] ) && 'auto-draft' !== get_post_status( $args['doc_id'] ) ) {
+			$current_group_id = (int) bp_docs_get_associated_group_id( $args['doc_id'] );
+
+			if ( $current_group_id && $current_group_id !== (int) $args['group_id'] && ! user_can( $args['author_id'], 'bp_docs_dissociate_from_group', $current_group_id ) ) {
+				$result['error']    = true;
+				$result['message']  = __( 'You are not allowed to remove this Doc from its current group.', 'buddypress-docs' );
+				$result['redirect'] = 'edit';
+			}
 		}
 
 		return $result;
