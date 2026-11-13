@@ -1257,8 +1257,10 @@ function bp_docs_save_folder_selection( $doc_id ) {
 				if ( 0 === $folder_id ) {
 					$existing_folder_id = bp_docs_get_doc_folder( $doc_id );
 					$retval = bp_docs_remove_doc_from_folder( $doc_id, $existing_folder_id );
-				} else {
+				} else if ( current_user_can( 'bp_docs_use_folder', $folder_id ) ) {
 					$retval = bp_docs_add_doc_to_folder( $doc_id, $folder_id );
+				} else {
+					bp_core_add_message( __( 'You do not have permission to add Docs to that folder.', 'buddypress-docs' ), 'error' );
 				}
 			}
 
@@ -1280,13 +1282,22 @@ function bp_docs_save_folder_selection( $doc_id ) {
 				// Type
 				$folder_type = isset( $_POST['new-folder-type'] ) ? sanitize_key( wp_unslash( $_POST['new-folder-type'] ) ) : '';
 
-				if ( 'global' === $folder_type ) {
+				// If there's a parent, the parent's folder type takes precedence
+				if ( ! empty( $folder_args['parent'] ) ) {
+					$folder_args['group_id'] = bp_docs_get_folder_group( $folder_args['parent'] );
+					$folder_args['user_id']  = bp_docs_get_folder_user( $folder_args['parent'] );
+				} else if ( 'global' === $folder_type ) {
 					// Nothing to do
 				} else if ( 'me' === $folder_type ) {
 					$folder_args['user_id'] = bp_loggedin_user_id();
 				} else if ( is_numeric( $folder_type ) ) {
 					// This is a group
 					$folder_args['group_id'] = intval( $folder_type );
+				}
+
+				if ( ! current_user_can( 'bp_docs_create_folder', $folder_args ) ) {
+					bp_core_add_message( __( 'You do not have permission to create that folder.', 'buddypress-docs' ), 'error' );
+					break;
 				}
 
 				// Create the folder
