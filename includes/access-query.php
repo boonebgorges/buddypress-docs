@@ -412,6 +412,46 @@ function bp_docs_general_comment_protection( $query ) {
 add_action( 'pre_get_comments', 'bp_docs_general_comment_protection' );
 
 /**
+ * Keep comments that the user shouldn't see out of comment feeds.
+ *
+ * Core's comment feeds build their own SQL instead of using WP_Comment_Query,
+ * so bp_docs_general_comment_protection() doesn't reach them. Each feed item
+ * is titled with the Doc's title, so Docs the user can't read are excluded
+ * as well as Docs whose comments they can't read.
+ *
+ * @since 2.2.8
+ *
+ * @param string   $where WHERE clause of the comment feed query.
+ * @param WP_Query $query The query.
+ * @return string
+ */
+function bp_docs_comment_feed_protection( $where, $query ) {
+	if ( current_user_can( 'bp_moderate' ) ) {
+		return $where;
+	}
+
+	$bp_docs_access_query = bp_docs_access_query();
+
+	$excluded_doc_ids = array_merge(
+		(array) $bp_docs_access_query->get_restricted_comment_doc_ids(),
+		(array) $bp_docs_access_query->get_doc_ids()
+	);
+	$excluded_doc_ids = array_filter( wp_parse_id_list( $excluded_doc_ids ) );
+
+	if ( empty( $excluded_doc_ids ) ) {
+		return $where;
+	}
+
+	global $wpdb;
+
+	// IDs are integers from wp_parse_id_list().
+	$where .= " AND {$wpdb->comments}.comment_post_ID NOT IN (" . implode( ',', $excluded_doc_ids ) . ')';
+
+	return $where;
+}
+add_filter( 'comment_feed_where', 'bp_docs_comment_feed_protection', 10, 2 );
+
+/**
  * Reset the 'last_changed' cache incrementor when posts are updated.
  *
  * Big hammer, small nail.
