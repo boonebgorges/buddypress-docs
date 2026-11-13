@@ -417,6 +417,31 @@ function bp_docs_attachment_access_protection( $query ) {
 		return;
 	}
 
+	/*
+	 * WP_Query uses only one of 'post_parent', 'post_parent__in' and
+	 * 'post_parent__not_in', in that order, so a query that names its
+	 * parents (eg get_children(), [gallery id=…], "Uploaded to this post")
+	 * must be handled separately.
+	 */
+	$post_parent = $query->get( 'post_parent' );
+	if ( is_numeric( $post_parent ) ) {
+		if ( in_array( (int) $post_parent, $protected_doc_ids, true ) ) {
+			$query->set( 'post__in', array( 0 ) );
+		}
+		return;
+	}
+
+	$post_parent__in = wp_parse_id_list( $query->get( 'post_parent__in' ) );
+	if ( $post_parent__in ) {
+		$allowed_parents = array_values( array_diff( $post_parent__in, $protected_doc_ids ) );
+		if ( $allowed_parents ) {
+			$query->set( 'post_parent__in', $allowed_parents );
+		} else {
+			$query->set( 'post__in', array( 0 ) );
+		}
+		return;
+	}
+
 	$query->set(
 		'post_parent__not_in',
 		array_merge( wp_parse_id_list( $query->get( 'post_parent__not_in' ) ), $protected_doc_ids )
