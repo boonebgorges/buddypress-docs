@@ -469,9 +469,10 @@ class BP_Docs_Component extends BP_Component {
 
 		if ( ! empty( $_POST['doc-edit-submit'] ) || ! empty( $_POST['doc-edit-submit-continue'] ) ) {
 
+			// Must match the field read by bp_docs_save_doc_via_post().
 			$doc_id = false;
-			if ( isset( $_POST['doc-id'] ) ) {
-				$doc_id = absint( $_POST['doc-id'] );
+			if ( isset( $_POST['doc_id'] ) ) {
+				$doc_id = absint( $_POST['doc_id'] );
 			}
 
 			$current_doc = bp_docs_get_current_doc();
@@ -487,7 +488,11 @@ class BP_Docs_Component extends BP_Component {
 			// Legacy.
 			check_admin_referer( 'bp_docs_save' );
 
-			if ( $doc_id ) {
+			// Existing Docs need their own nonce. An auto-draft created on the
+			// Create screen (when attachments are added before the first save)
+			// has none; bp_docs_save_doc_via_post() checks that it belongs to
+			// the current user.
+			if ( $doc_id && 'auto-draft' !== get_post_status( $doc_id ) ) {
 				check_admin_referer( 'bp_docs_edit_' . (string) $doc_id, 'bp_docs_edit_nonce' );
 			}
 
