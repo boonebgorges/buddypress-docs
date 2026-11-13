@@ -41,12 +41,18 @@ function bp_docs_has_docs( $args = array() ) {
 	if ( empty( $bp->bp_docs->doc_query ) ) {
 		// Build some intelligent defaults
 
+		/*
+		 * The URL params below only filter, sort and paginate a list of Docs
+		 * that is subject to access checks, so they do not require a nonce.
+		 */
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
+
 		// Default to current group id, if available
 		if ( bp_is_active( 'groups' ) && bp_is_group() ) {
 			$d_group_id = bp_get_current_group_id();
 		} else if ( ! empty( $_REQUEST['group_id'] ) ) {
 			// This is useful for the AJAX request for folder contents.
-			$d_group_id = $_REQUEST['group_id'];
+			$d_group_id = wp_parse_id_list( wp_unslash( $_REQUEST['group_id'] ) );
 		} else if ( bp_docs_is_mygroups_directory() ) {
 			$my_groups = groups_get_user_groups( bp_loggedin_user_id() );
 			$d_group_id = ! empty( $my_groups['total'] ) ? $my_groups['groups'] : array( 0 );
@@ -61,10 +67,10 @@ function bp_docs_has_docs( $args = array() ) {
 		$d_edited_by_id = bp_docs_is_edited_by() ? bp_displayed_user_id() : array();
 
 		// Default to the tags in the URL string, if available
-		$d_tags = isset( $_REQUEST['bpd_tag'] ) ? explode( ',', urldecode( $_REQUEST['bpd_tag'] ) ) : array();
+		$d_tags = isset( $_REQUEST['bpd_tag'] ) ? explode( ',', sanitize_text_field( wp_unslash( $_REQUEST['bpd_tag'] ) ) ) : array();
 
 		// Order and orderby arguments
-		$d_orderby = !empty( $_GET['orderby'] ) ? urldecode( $_GET['orderby'] ) : apply_filters( 'bp_docs_default_sort_order', 'modified' );
+		$d_orderby = !empty( $_GET['orderby'] ) ? sanitize_text_field( wp_unslash( $_GET['orderby'] ) ) : apply_filters( 'bp_docs_default_sort_order', 'modified' );
 
 		if ( empty( $_GET['order'] ) ) {
 			// If no order is explicitly stated, we must provide one.
@@ -74,14 +80,15 @@ function bp_docs_has_docs( $args = array() ) {
 			else
 				$d_order = 'ASC';
 		} else {
-			$d_order = $_GET['order'];
+			$d_order = sanitize_text_field( wp_unslash( $_GET['order'] ) );
 		}
 
-		// Search
-		$d_search_terms = !empty( $_GET['s'] ) ? urldecode( $_GET['s'] ) : '';
+		// Search. Left slashed, because WP_Query unslashes 's' itself.
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+		$d_search_terms = !empty( $_GET['s'] ) ? sanitize_text_field( $_GET['s'] ) : '';
 
 		// Parent id
-		$d_parent_id = !empty( $_REQUEST['parent_doc'] ) ? (int)$_REQUEST['parent_doc'] : '';
+		$d_parent_id = !empty( $_REQUEST['parent_doc'] ) ? absint( $_REQUEST['parent_doc'] ) : '';
 
 		// Folder id
 		$d_folder_id = null;
@@ -115,6 +122,8 @@ function bp_docs_has_docs( $args = array() ) {
 		} else {
 			$d_paged = absint( $wp_query->get( 'paged', 1 ) );
 		}
+
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 		// Use the calculated posts_per_page number from $wp_query->query_vars.
 		// If that value isn't set, we assume 10 posts per page.
@@ -322,6 +331,7 @@ function bp_docs_filter_titles() {
 	$filter_types = apply_filters( 'bp_docs_filter_types', array() );
 	$links = array();
 	foreach ( $filter_types as $filter_type ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$current = isset( $_GET[ $filter_type['query_arg'] ] ) ? ' current' : '';
 		$links[] = sprintf(
 			'<a href="#" class="docs-filter-title%s" id="docs-filter-title-%s">%s</a>',
@@ -467,10 +477,13 @@ add_filter( 'bp_docs_info_header_message', 'bp_docs_search_term_filter_text', 10
 function bp_docs_get_current_filters() {
 	$filters = array();
 
+	// These URL params only describe the current Docs list filters.
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended
+
 	// First check for tag filters
 	if ( !empty( $_REQUEST['bpd_tag'] ) ) {
 		// The bpd_tag argument may be comma-separated
-		$tags = explode( ',', urldecode( $_REQUEST['bpd_tag'] ) );
+		$tags = explode( ',', sanitize_text_field( wp_unslash( $_REQUEST['bpd_tag'] ) ) );
 
 		foreach ( $tags as $tag ) {
 			$filters['tags'][] = $tag;
@@ -479,8 +492,10 @@ function bp_docs_get_current_filters() {
 
 	// Now, check for search terms
 	if ( !empty( $_REQUEST['s'] ) ) {
-		$filters['search_terms'] = urldecode( $_REQUEST['s'] );
+		$filters['search_terms'] = sanitize_text_field( wp_unslash( $_REQUEST['s'] ) );
 	}
+
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 	return apply_filters( 'bp_docs_get_current_filters', $filters );
 }
@@ -761,12 +776,14 @@ function bp_docs_directory_breadcrumb() {
  * @return str $new_order Either desc or asc
  */
 function bp_docs_get_sort_order( $orderby = 'modified' ) {
+	// Sorting params are read-only.
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended
 
 	$new_order	= false;
 
 	// We only want a non-default order if we are currently ordered by this $orderby
 	// The default order is Last Edited, so we must account for that
-	$current_orderby	= !empty( $_GET['orderby'] ) ? $_GET['orderby'] : apply_filters( 'bp_docs_default_sort_order', 'modified' );
+	$current_orderby	= !empty( $_GET['orderby'] ) ? sanitize_text_field( wp_unslash( $_GET['orderby'] ) ) : apply_filters( 'bp_docs_default_sort_order', 'modified' );
 
 	if ( $orderby == $current_orderby ) {
 		// Default sort orders are different for different fields
@@ -778,11 +795,13 @@ function bp_docs_get_sort_order( $orderby = 'modified' ) {
 			else
 				$current_order = 'ASC';
 		} else {
-			$current_order = $_GET['order'];
+			$current_order = sanitize_text_field( wp_unslash( $_GET['order'] ) );
 		}
 
 		$new_order = 'ASC' == $current_order ? 'DESC' : 'ASC';
 	}
+
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 	return apply_filters( 'bp_docs_get_sort_order', $new_order );
 }
@@ -822,8 +841,11 @@ function bp_docs_order_by_link( $orderby = 'modified' ) {
  * @param str $orderby The order_by item: title, author, created, modified, etc
  */
 function bp_docs_is_current_orderby_class( $orderby = 'modified' ) {
+	// Sorting params are read-only.
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended
+
 	// Get the current orderby column
-	$current_orderby = !empty( $_GET['orderby'] ) ? $_GET['orderby'] : apply_filters( 'bp_docs_default_sort_order', 'modified' );
+	$current_orderby = !empty( $_GET['orderby'] ) ? sanitize_text_field( wp_unslash( $_GET['orderby'] ) ) : apply_filters( 'bp_docs_default_sort_order', 'modified' );
 
 	// Does the current orderby match the $orderby parameter?
 	$is_current_orderby = $current_orderby == $orderby ? true : false;
@@ -845,6 +867,8 @@ function bp_docs_is_current_orderby_class( $orderby = 'modified' ) {
 			$class .= 'DESC' == $_GET['order'] ? ' desc' : ' asc';
 		}
 	}
+
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo apply_filters( 'bp_docs_is_current_orderby', $class, $is_current_orderby, $current_orderby );
@@ -994,7 +1018,8 @@ function bp_docs_doc_associated_group_markup() {
 	$old_gt = $groups_template;
 
 	// First, try to set the preselected group by looking at the URL params
-	$selected_group_slug = isset( $_GET['group'] ) ? $_GET['group'] : '';
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	$selected_group_slug = isset( $_GET['group'] ) ? sanitize_text_field( wp_unslash( $_GET['group'] ) ) : '';
 
 	// Support for BP Group Hierarchy
 	if ( false !== $slash = strrpos( $selected_group_slug, '/' ) ) {
@@ -1055,8 +1080,9 @@ function bp_docs_associated_group_summary( $group_id = 0 ) {
 	$html = '';
 
 	if ( ! $group_id ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( isset( $_GET['group'] ) ) {
-			$group_slug = $_GET['group'];
+			$group_slug = sanitize_text_field( wp_unslash( $_GET['group'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$group_id   = BP_Groups_Group::get_id_from_slug( $group_slug );
 		} else {
 			$doc_id = is_singular() ? get_the_ID() : 0;
