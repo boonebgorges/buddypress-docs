@@ -1989,14 +1989,14 @@ function bp_docs_create_new_folder_markup( $args = array() ) {
 
 	?>
 
-	<label for="new-folder"><?php _e( 'Name', 'buddypress-docs' ) ?></label> <input name="new-folder" id="new-folder" />
+	<label for="new-folder"><?php esc_html_e( 'Name', 'buddypress-docs' ) ?></label> <input name="new-folder" id="new-folder" />
 
 	<?php $folder_type_class = current_user_can( 'bp_docs_change_folder_type' ) ? 'can-change' : 'cannot-change' ?>
 
 	<div style="clear:both"></div>
 
 	<div class="folder-type-selector-div <?php echo esc_url( $folder_type_class ); ?>">
-		<label for="new-folder-type"><?php _e( 'Folder type', 'buddypress-docs' ) ?></label>
+		<label for="new-folder-type"><?php esc_html_e( 'Folder type', 'buddypress-docs' ) ?></label>
 		<?php bp_docs_folder_type_selector( array(
 			'selected' => $r['selected'],
 			'id' => $r['folder_type_id'],
@@ -2006,7 +2006,7 @@ function bp_docs_create_new_folder_markup( $args = array() ) {
 	</div>
 
 	<div style="clear:both"></div>
-	<label for="new-folder-parent"><?php _e( 'Parent (optional)', 'buddypress-docs' ) ?></label>
+	<label for="new-folder-parent"><?php esc_html_e( 'Parent (optional)', 'buddypress-docs' ) ?></label>
 	<?php bp_docs_folder_selector( array(
 		'name'     => 'new-folder-parent',
 		'id'       => 'new-folder-parent',
@@ -2049,21 +2049,21 @@ function bp_docs_folders_meta_box() {
 	<div id="doc-folders" class="doc-meta-box">
 		<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class( 'folders-meta-box' ) ?>">
 			<p id="folders-toggle-edit" class="toggle-switch">
-				<span class="hide-if-js toggle-link-no-js"><?php _e( 'Folders', 'buddypress-docs' ) ?></span>
-				<a class="hide-if-no-js toggle-link" id="folders-toggle-link" href="#"><span class="show-pane plus-or-minus"></span><span class="toggle-title"><?php _e( 'Folders', 'buddypress-docs' ) ?></span></a>
+				<span class="hide-if-js toggle-link-no-js"><?php esc_html_e( 'Folders', 'buddypress-docs' ) ?></span>
+				<a class="hide-if-no-js toggle-link" id="folders-toggle-link" href="#"><span class="show-pane plus-or-minus"></span><span class="toggle-title"><?php esc_html_e( 'Folders', 'buddypress-docs' ) ?></span></a>
 			</p>
 
 			<div class="toggle-content">
 				<table class="toggle-table" id="toggle-table-folders">
 					<tr>
 						<td class="desc-column">
-							<label for="bp_docs_tag"><?php _e( 'Select a folder for this Doc.', 'buddypress-docs' ) ?></label>
+							<label for="bp_docs_tag"><?php esc_html_e( 'Select a folder for this Doc.', 'buddypress-docs' ) ?></label>
 						</td>
 
 						<td>
 							<div class="existing-or-new-selector">
 								<input type="radio" name="existing-or-new-folder" id="use-existing-folder" value="existing" checked="checked" />
-								<label for="use-existing-folder" class="radio-label"><?php _e( 'Use an existing folder', 'buddypress-docs' ) ?></label><br />
+								<label for="use-existing-folder" class="radio-label"><?php esc_html_e( 'Use an existing folder', 'buddypress-docs' ) ?></label><br />
 								<div class="selector-content">
 									<?php bp_docs_folder_selector( array(
 										'name'     => 'bp-docs-folder',
@@ -2076,7 +2076,7 @@ function bp_docs_folders_meta_box() {
 
 							<div class="existing-or-new-selector" id="new-folder-block">
 								<input type="radio" name="existing-or-new-folder" id="create-new-folder" value="new" />
-								<label for="create-new-folder" class="radio-label"><?php _e( 'Create a new folder', 'buddypress-docs' ) ?></label>
+								<label for="create-new-folder" class="radio-label"><?php esc_html_e( 'Create a new folder', 'buddypress-docs' ) ?></label>
 								<div class="selector-content">
 
 									<?php bp_docs_create_new_folder_markup( array(
@@ -2255,6 +2255,7 @@ function bp_docs_folder_info_header_message( $message, $filters ) {
 		}
 
 		$message[] = sprintf(
+			/* translators: %s: comma-separated list of folder links */
 			_n( 'You are viewing docs in the following folder: %s', 'You are viewing docs in the following folders: %s', count( $folders ), 'buddypress-docs' ),
 			implode( ', ', $folder_links )
 		);
@@ -2417,6 +2418,7 @@ class BP_Docs_Folder_Dropdown_Walker extends Walker {
 
 		$title = $page->post_title . '&nbsp;';
 		if ( '' === $title ) {
+			/* translators: %d: folder ID */
 			$title = sprintf( __( '#%d (no title)', 'buddypress-docs' ), $page->ID );
 		}
 
