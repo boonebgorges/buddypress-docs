@@ -538,9 +538,9 @@ class BP_Docs_Component extends BP_Component {
 		// If this is the edit screen, ensure that the user can edit the
 		// doc before querying, and redirect if necessary
 		if ( bp_docs_is_doc_edit() ) {
-			if ( current_user_can( 'bp_docs_edit' ) ) {
-				$doc = bp_docs_get_current_doc();
+			$doc = bp_docs_get_current_doc();
 
+			if ( current_user_can( 'bp_docs_edit', $doc ? $doc->ID : 0 ) ) {
 				// The user can edit, so we check for edit locks
 				// Because we're not using WP autosave at the moment, ensure that
 				// the lock interval always returns as in process
@@ -555,7 +555,7 @@ class BP_Docs_Component extends BP_Component {
 
 						// Redirect back to the non-edit view of this document
 						bp_core_redirect( bp_docs_get_doc_link( $doc->ID ) );
-						bp_core_redirect( $group_permalink . $bp->bp_docs->slug . '/' . $doc_slug );
+						die();
 					}
 				}
 			} else {
@@ -567,7 +567,7 @@ class BP_Docs_Component extends BP_Component {
 				bp_core_add_message( __( 'You do not have permission to edit the doc.', 'buddypress-docs' ), 'error' );
 
 				// Redirect back to the non-edit view of this document
-				bp_core_redirect( bp_docs_get_doc_link( $doc->ID ) );
+				bp_core_redirect( $doc ? bp_docs_get_doc_link( $doc->ID ) : bp_docs_get_archive_link() );
 				die();
 			}
 		}
@@ -606,14 +606,13 @@ class BP_Docs_Component extends BP_Component {
 
 		// Cancel edit lock
 		if ( !empty( $_GET['bpd_action'] ) && $_GET['bpd_action'] == 'cancel_edit_lock' ) {
-			// Check the nonce
-			check_admin_referer( 'bp_docs_cancel_edit_lock' );
+			$doc = bp_docs_get_current_doc();
 
-			// Todo: make this part of the perms system
-			if ( is_super_admin() || bp_group_is_admin() ) {
-				$doc = bp_docs_get_current_doc();
+			if ( $doc ) {
+				check_admin_referer( 'bp_docs_cancel_edit_lock_' . $doc->ID );
+			}
 
-				// Todo: get this into a proper method as well, blech
+			if ( $doc && bp_docs_user_can_force_unlock( $doc->ID ) ) {
 				delete_post_meta( $doc->ID, '_bp_docs_last_pinged' );
 
 				bp_core_add_message( __( 'Lock successfully removed', 'buddypress-docs' ) );
