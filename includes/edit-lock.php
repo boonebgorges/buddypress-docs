@@ -220,7 +220,7 @@ function bp_docs_force_cancel_edit_lock_link() {
 
 		$doc_permalink = bp_docs_get_doc_link( $doc_id );
 
-		$cancel_link = wp_nonce_url( add_query_arg( 'bpd_action', 'cancel_edit_lock', $doc_permalink ), 'bp_docs_cancel_edit_lock' );
+		$cancel_link = wp_nonce_url( add_query_arg( 'bpd_action', 'cancel_edit_lock', $doc_permalink ), 'bp_docs_cancel_edit_lock_' . $doc_id );
 
 		return apply_filters( 'bp_docs_get_force_cancel_edit_lock_link', $cancel_link, $doc_permalink );
 	}
