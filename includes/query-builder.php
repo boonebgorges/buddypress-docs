@@ -505,6 +505,13 @@ class BP_Docs_Query {
 		 */
 		$result = apply_filters( 'bp_docs_filter_result_before_save', $result, $args );
 
+		// Only existing Docs can be updated. Never convert another post into a Doc.
+		if ( ! empty( $args['doc_id'] ) && $this->post_type_name !== get_post_type( $args['doc_id'] ) ) {
+			$result['error']    = true;
+			$result['message']  = __( 'There was an error when saving the doc.', 'buddypress-docs' );
+			$result['redirect'] = 'create';
+		}
+
 		// Is this a new doc?
 		$this->is_new_doc = ( 0 === $args['doc_id'] || 'auto-draft' === get_post_status( $args['doc_id'] ) );
 
