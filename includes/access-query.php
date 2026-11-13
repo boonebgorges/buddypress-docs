@@ -486,6 +486,70 @@ function bp_docs_attachment_canonical_protection( $redirect_url, $requested_url 
 add_filter( 'redirect_canonical', 'bp_docs_attachment_canonical_protection', 10, 2 );
 
 /**
+ * Don't prepare protected Doc attachments for the media modal.
+ *
+ * Core's 'get-attachment' AJAX action only checks 'upload_files', and would
+ * otherwise return the file URL, the file title and the Doc's title for any
+ * attachment ID. Returning false makes it send an error, as for a missing
+ * attachment.
+ *
+ * @since 2.2.8
+ *
+ * @param array|false $response   Prepared attachment data.
+ * @param WP_Post     $attachment Attachment object.
+ * @return array|false
+ */
+function bp_docs_attachment_js_protection( $response, $attachment ) {
+	if ( bp_docs_is_protected_doc_attachment( $attachment ) ) {
+		return false;
+	}
+
+	return $response;
+}
+add_filter( 'wp_prepare_attachment_for_js', 'bp_docs_attachment_js_protection', 10, 2 );
+
+/**
+ * Route XML-RPC 'wp.getMediaItem' through bp_docs_xmlrpc_get_media_item().
+ *
+ * @since 2.2.8
+ *
+ * @param array $methods XML-RPC methods.
+ * @return array
+ */
+function bp_docs_xmlrpc_methods( $methods ) {
+	if ( isset( $methods['wp.getMediaItem'] ) ) {
+		$methods['wp.getMediaItem'] = 'bp_docs_xmlrpc_get_media_item';
+	}
+
+	return $methods;
+}
+add_filter( 'xmlrpc_methods', 'bp_docs_xmlrpc_methods' );
+
+/**
+ * XML-RPC 'wp.getMediaItem', without protected Doc attachments.
+ *
+ * Core only checks 'upload_files' and returns any attachment by ID. Core
+ * runs first (login and cap check); a protected Doc attachment then gets the
+ * same error as a missing one.
+ *
+ * @since 2.2.8
+ *
+ * @param array $args Method arguments: blog ID, username, password, attachment ID.
+ * @return array|IXR_Error
+ */
+function bp_docs_xmlrpc_get_media_item( $args ) {
+	global $wp_xmlrpc_server;
+
+	$result = $wp_xmlrpc_server->wp_getMediaItem( $args );
+
+	if ( is_array( $result ) && isset( $args[3] ) && bp_docs_is_protected_doc_attachment( (int) $args[3] ) ) {
+		return new IXR_Error( 404, __( 'Invalid attachment ID.', 'buddypress-docs' ) );
+	}
+
+	return $result;
+}
+
+/**
  * Keep comments that the user shouldn't see out of primary WP_Comment_Query queries.
  *
  * By catching the query at pre_get_comments, we ensure that all queries are
