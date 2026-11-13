@@ -2381,10 +2381,17 @@ function bp_docs_folder_current_filters( $filters ) {
  */
 function bp_docs_folder_info_header_message( $message, $filters ) {
 	if ( ! empty( $filters['folders'] ) ) {
-		$folders = get_posts( array(
-			'post_type' => 'bp_docs_folder',
-			'post__in'  => $filters['folders'],
+		// Only name folders that are listed in the current context.
+		$folders = bp_docs_get_folders( array(
+			'display'      => 'flat',
+			'include'      => $filters['folders'],
+			'parent_id'    => null,
+			'search_terms' => null,
 		) );
+
+		if ( empty( $folders ) ) {
+			return $message;
+		}
 
 		$folder_links = array();
 
