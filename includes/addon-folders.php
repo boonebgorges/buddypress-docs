@@ -1373,6 +1373,13 @@ function bp_docs_process_folder_edit_cb() {
 		die();
 	}
 
+	$folder = get_post( $folder_id );
+	if ( ! $folder || 'bp_docs_folder' !== $folder->post_type || ! current_user_can( 'bp_docs_manage_folder', $folder_id ) ) {
+		bp_core_add_message( __( 'You do not have permission to edit that folder.', 'buddypress-docs' ), 'error' );
+		bp_core_redirect( $redirect_url );
+		die();
+	}
+
 	$parent = isset( $_POST['folder-parent-' . $folder_id] ) ? intval( $_POST['folder-parent-' . $folder_id] ) : '';
 
 
@@ -1388,9 +1395,15 @@ function bp_docs_process_folder_edit_cb() {
 		$edit_args['group_id'] = bp_docs_get_folder_group( $parent );
 		$edit_args['user_id']  = bp_docs_get_folder_user( $parent );
 
+		// Moving under a new parent changes the folder's type, so the user
+		// must be able to create a folder there.
+		if ( ! current_user_can( 'bp_docs_create_folder', $edit_args ) ) {
+			bp_core_add_message( __( 'You do not have permission to move the folder there.', 'buddypress-docs' ), 'error' );
+			bp_core_redirect( $redirect_url );
+			die();
+		}
 	}
 
-	// @todo permissions checks!!
 	$success = bp_docs_create_folder( $edit_args );
 
 	if ( ! empty( $success ) && ! is_wp_error( $success ) ) {
@@ -1460,8 +1473,13 @@ function bp_docs_process_folder_create_cb() {
 		}
 	}
 
+	if ( ! current_user_can( 'bp_docs_create_folder', $folder_args ) ) {
+		bp_core_add_message( __( 'You do not have permission to create that folder.', 'buddypress-docs' ), 'error' );
+		bp_core_redirect( $redirect_url );
+		die();
+	}
+
 	// Create the folder
-	// @todo permissions checks
 	$success = bp_docs_create_folder( $folder_args );
 
 	if ( ! empty( $success ) && ! is_wp_error( $success ) ) {
@@ -1503,7 +1521,7 @@ function bp_docs_process_folder_delete_cb() {
 		return;
 	}
 
-	if ( ! current_user_can( 'bp_docs_manage_folder', $folder_id ) ) {
+	if ( 'bp_docs_folder' !== get_post_type( $folder_id ) || ! current_user_can( 'bp_docs_manage_folder', $folder_id ) ) {
 		return;
 	}
 
@@ -1544,6 +1562,18 @@ function bp_docs_update_folders_cb() {
 	$doc_id = intval( $_POST['doc_id'] );
 	$group_id = intval( $_POST['group_id'] );
 
+	if ( $doc_id && ! current_user_can( 'bp_docs_edit', $doc_id ) ) {
+		die( '-1' );
+	}
+
+	// Group folders are listed only for groups the user can file Docs in,
+	// or the group the Doc already belongs to.
+	if ( $group_id && ! current_user_can( 'bp_docs_associate_with_group', $group_id ) ) {
+		if ( ! $doc_id || intval( bp_docs_get_associated_group_id( $doc_id ) ) !== $group_id ) {
+			die( '-1' );
+		}
+	}
+
 	bp_docs_folder_selector( array(
 		'group_id' => $group_id,
 		'doc_id' => $doc_id,
@@ -1583,6 +1613,10 @@ function bp_docs_update_parent_folders_cb() {
 	} else if ( is_numeric( $folder_type ) ) {
 		// This is a group
 		$selector_args['group_id'] = intval( $folder_type );
+
+		if ( ! current_user_can( 'bp_docs_associate_with_group', $selector_args['group_id'] ) ) {
+			die( '-1' );
+		}
 	}
 
 	bp_docs_folder_selector( $selector_args );
@@ -1636,6 +1670,10 @@ function bp_docs_update_folder_type_cb() {
 		$parent_post = get_post( $parent_id );
 
 		if ( ! is_a( $parent_post, 'WP_Post' ) || 'bp_docs_folder' !== $parent_post->post_type ) {
+			die( '-1' );
+		}
+
+		if ( ! current_user_can( 'bp_docs_use_folder', $parent_id ) ) {
 			die( '-1' );
 		}
 
@@ -1715,8 +1753,8 @@ function bp_docs_process_folder_drop_cb() {
 		wp_send_json_error( '-2' );
 	}
 
-	// @todo This needs testing with group admins, etc
-	if ( ! current_user_can( 'bp_docs_manage', bp_loggedin_user_id(), $doc_id ) ) {
+	// Same requirement as changing the folder in the Doc edit screen.
+	if ( ! current_user_can( 'bp_docs_edit', $doc_id ) ) {
 		wp_send_json_error( '-3' );
 	}
 
@@ -1726,6 +1764,10 @@ function bp_docs_process_folder_drop_cb() {
 	}
 
 	$folder_id = intval( $_POST['folder_id'] );
+
+	if ( $folder_id && ! current_user_can( 'bp_docs_use_folder', $folder_id ) ) {
+		wp_send_json_error( '-3' );
+	}
 
 	if ( 0 === $folder_id ) {
 		$existing_folder_id = bp_docs_get_doc_folder( $doc_id );
