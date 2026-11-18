@@ -5,6 +5,12 @@
  *
  * @since 1.9
  */
+
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class BP_Docs_Folders {
 
 	/**
@@ -50,6 +56,10 @@ class BP_Docs_Folders {
 			'labels' => $labels,
 			'public' => false,
 			'hierarchical' => true,
+			// Folders are created through the Docs interface only.
+			'capabilities' => array(
+				'create_posts' => 'bp_moderate',
+			),
 		) );
 	}
 
@@ -67,16 +77,19 @@ class BP_Docs_Folders {
 	 */
 	public function register_taxonomies() {
 		register_taxonomy( 'bp_docs_doc_in_folder', bp_docs_get_post_type_name(), array(
-			'public' => false,
+			'public'       => false,
+			'capabilities' => bp_docs_internal_taxonomy_capabilities(),
 		) );
 
 		register_taxonomy( 'bp_docs_folder_in_user', 'bp_docs_folder', array(
-			'public' => false,
+			'public'       => false,
+			'capabilities' => bp_docs_internal_taxonomy_capabilities(),
 		) );
 
 		if ( bp_is_active( 'groups' ) ) {
 			register_taxonomy( 'bp_docs_folder_in_group', 'bp_docs_folder', array(
-				'public' => false,
+				'public'       => false,
+				'capabilities' => bp_docs_internal_taxonomy_capabilities(),
 			) );
 		}
 	}
@@ -106,8 +119,9 @@ class BP_Docs_Folders {
 		// Add Folders meta box to Edit screen.
 		add_action( 'bp_docs_before_tags_meta_box', 'bp_docs_folders_meta_box' );
 
-		// Process new folder selections after save.
-		add_action( 'bp_docs_after_save', 'bp_docs_save_folder_selection' );
+		// Process new folder selections after a successful save. ('bp_docs_after_save'
+		// also fires when the save is refused.)
+		add_action( 'bp_docs_after_successful_save', 'bp_docs_save_folder_selection' );
 
 		// Screen controllers.
 		add_action( 'bp_actions', 'bp_docs_process_folder_edit_cb' );
@@ -163,7 +177,7 @@ class BP_Docs_Folders {
 	 * @since 1.9
 	 */
 	public function enqueue_assets() {
-		wp_register_script( 'bp-docs-chosen', plugins_url() . '/buddypress-docs/lib/js/chosen/chosen.jquery.min.js', array( 'jquery' ) );
+		wp_register_script( 'bp-docs-chosen', plugins_url() . '/buddypress-docs/lib/js/chosen/chosen.jquery.min.js', array( 'jquery' ), '1.1.0', false );
 
 		$js_requirements = array(
 			'jquery',
@@ -171,13 +185,13 @@ class BP_Docs_Folders {
 			'jquery-ui-droppable',
 		);
 
-		wp_enqueue_script( 'bp-docs-folders', plugins_url() . '/buddypress-docs/includes/js/folders.js', $js_requirements );
+		wp_enqueue_script( 'bp-docs-folders', plugins_url() . '/buddypress-docs/includes/js/folders.js', $js_requirements, BP_DOCS_VERSION, false );
 
-		wp_register_style( 'bp-docs-chosen', plugins_url() . '/buddypress-docs/lib/css/chosen/chosen.min.css' );
+		wp_register_style( 'bp-docs-chosen', plugins_url() . '/buddypress-docs/lib/css/chosen/chosen.min.css', array(), '1.1.0' );
 		if ( is_rtl() ) {
-			wp_enqueue_style( 'bp-docs-folders', plugins_url() . '/buddypress-docs/includes/css-rtl/folders.css', array( 'bp-docs-chosen' ) );
+			wp_enqueue_style( 'bp-docs-folders', plugins_url() . '/buddypress-docs/includes/css-rtl/folders.css', array( 'bp-docs-chosen' ), BP_DOCS_VERSION );
 		} else {
-			wp_enqueue_style( 'bp-docs-folders', plugins_url() . '/buddypress-docs/includes/css/folders.css', array( 'bp-docs-chosen' ) );
+			wp_enqueue_style( 'bp-docs-folders', plugins_url() . '/buddypress-docs/includes/css/folders.css', array( 'bp-docs-chosen' ), BP_DOCS_VERSION );
 		}
 
 		/**
@@ -644,7 +658,20 @@ function bp_docs_create_folder( $args ) {
 		$r['parent'] = intval( $r['parent'] );
 
 		$maybe_parent = get_post( $r['parent'] );
-		if ( ! is_a( $maybe_parent, 'WP_Post' ) ) {
+		if ( ! is_a( $maybe_parent, 'WP_Post' ) || 'bp_docs_folder' !== $maybe_parent->post_type ) {
+			return false;
+		}
+	}
+
+	// When updating, make sure the target is an existing folder.
+	if ( ! empty( $r['folder_id'] ) ) {
+		$maybe_folder = get_post( intval( $r['folder_id'] ) );
+		if ( ! is_a( $maybe_folder, 'WP_Post' ) || 'bp_docs_folder' !== $maybe_folder->post_type ) {
+			return false;
+		}
+
+		// A folder cannot be its own parent.
+		if ( ! empty( $r['parent'] ) && $r['parent'] === $maybe_folder->ID ) {
 			return false;
 		}
 	}
@@ -722,7 +749,7 @@ function bp_docs_delete_folder_contents( $folder_id ) {
 	$folder_term = bp_docs_get_folder_term( $folder_id );
 	$folder_docs = get_posts( array(
 		'post_type' => bp_docs_get_post_type_name(),
-		'tax_query' => array(
+		'tax_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Folder membership is a taxonomy term.
 			array(
 				'taxonomy' => 'bp_docs_doc_in_folder',
 				'field' => 'term_id',
@@ -790,6 +817,12 @@ function bp_docs_get_folders( $args = array() ) {
 		$user_id = bp_displayed_user_id();
 	}
 
+	/*
+	 * These URL params only filter, sort and search the folder list, so
+	 * they do not require a nonce.
+	 */
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended
+
 	$parent_id = 0;
 	if ( isset( $_GET['folder'] ) ) {
 		$parent_id = intval( $_GET['folder'] );
@@ -803,7 +836,7 @@ function bp_docs_get_folders( $args = array() ) {
 	}
 
 	// Default order
-	if ( isset( $_GET['order'] ) && 'desc' === strtolower( $_GET['order'] ) ) {
+	if ( isset( $_GET['order'] ) && 'desc' === strtolower( sanitize_text_field( wp_unslash( $_GET['order'] ) ) ) ) {
 		$order = 'DESC';
 	} else {
 		$order = 'ASC';
@@ -811,15 +844,19 @@ function bp_docs_get_folders( $args = array() ) {
 
 	// Order by
 	$orderby = 'title';
-	if ( isset( $_GET['orderby'] ) && 'modified' === strtolower( $_GET['orderby'] ) ) {
+	if ( isset( $_GET['orderby'] ) && 'modified' === strtolower( sanitize_text_field( wp_unslash( $_GET['orderby'] ) ) ) ) {
 		$orderby = 'modified';
 	}
 
 	// Default search terms
 	$search_terms = null;
 	if ( ! empty( $_GET['s'] ) ) {
-		$search_terms = urldecode( $_GET['s'] );
+		// Left slashed, because WP_Query unslashes 's' itself.
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+		$search_terms = sanitize_text_field( $_GET['s'] );
 	}
+
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 	$defaults = array(
 		'group_id'          => $group_id,
@@ -855,7 +892,7 @@ function bp_docs_get_folders( $args = array() ) {
 		'orderby' => $orderby,
 		'order' => $order,
 		'posts_per_page' => '-1',
-		'tax_query' => array(),
+		'tax_query' => array(), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Folder ownership (group/user) is a taxonomy term.
 	);
 
 	// @todo support for multiple items
@@ -880,10 +917,10 @@ function bp_docs_get_folders( $args = array() ) {
 			$folder_taxonomies[] = 'bp_docs_folder_in_group';
 		}
 		$object_folders = get_terms(
-			$folder_taxonomies,
 			array(
+				'taxonomy'   => $folder_taxonomies,
 				'hide_empty' => false,
-				'fields' => 'ids',
+				'fields'     => 'ids',
 			)
 		);
 
@@ -984,8 +1021,9 @@ function bp_docs_folder_tax_query( $tax_query, $bp_docs_query ) {
 	if ( 0 === $bp_docs_query->query_args['folder_id'] && ! bp_docs_is_directory_view_filtered() ) {
 		// Get all folders
 		// @todo Is there a better way? Not in WP_Query I don't think
-		$folder_terms = get_terms( 'bp_docs_doc_in_folder', array(
-			'fields' => 'ids',
+		$folder_terms = get_terms( array(
+			'taxonomy' => 'bp_docs_doc_in_folder',
+			'fields'   => 'ids',
 		) );
 
 		$tax_query[] = array(
@@ -1075,11 +1113,87 @@ function bp_docs_folders_map_meta_caps( $caps, $cap, $user_id, $args ) {
 		// Temp
 		case 'bp_docs_create_global_folder' :
 		case 'bp_docs_create_personal_folder' :
-			if ( is_user_logged_in() ) {
+			if ( $user_id ) {
 				$caps = array( 'exist' );
 			} else {
-				$caps = array();
+				$caps = array( 'do_not_allow' );
 			}
+			break;
+
+		/*
+		 * Whether the user may put Docs into a folder, or nest a new folder
+		 * under it. Global folders: any logged-in user. Group folders:
+		 * members of the group. Personal folders: the owner.
+		 */
+		case 'bp_docs_use_folder' :
+			$caps = array( 'do_not_allow' );
+
+			$folder_id = isset( $args[0] ) ? intval( $args[0] ) : 0;
+			$folder    = $folder_id ? get_post( $folder_id ) : null;
+
+			if ( ! $user_id || ! $folder || 'bp_docs_folder' !== $folder->post_type || 'publish' !== $folder->post_status ) {
+				break;
+			}
+
+			$group_id  = bp_docs_get_folder_group( $folder_id );
+			$f_user_id = bp_docs_get_folder_user( $folder_id );
+
+			if ( user_can( $user_id, 'bp_moderate' ) ) {
+				$caps = array( 'exist' );
+			} else if ( $group_id ) {
+				if ( bp_is_active( 'groups' ) && groups_is_user_member( $user_id, $group_id ) ) {
+					$caps = array( 'exist' );
+				}
+			} else if ( $f_user_id ) {
+				if ( $f_user_id == $user_id ) {
+					$caps = array( 'exist' );
+				}
+			} else {
+				$caps = array( 'exist' );
+			}
+
+			break;
+
+		/*
+		 * Whether the user may create a folder with the given arguments.
+		 * $args[0] is an array with optional 'parent', 'group_id' and
+		 * 'user_id' keys, as passed to bp_docs_create_folder().
+		 */
+		case 'bp_docs_create_folder' :
+			$caps = array( 'do_not_allow' );
+
+			$folder_args = isset( $args[0] ) && is_array( $args[0] ) ? $args[0] : array();
+			$parent_id   = ! empty( $folder_args['parent'] ) ? intval( $folder_args['parent'] ) : 0;
+			$group_id    = ! empty( $folder_args['group_id'] ) ? intval( $folder_args['group_id'] ) : 0;
+			$f_user_id   = ! empty( $folder_args['user_id'] ) ? intval( $folder_args['user_id'] ) : 0;
+
+			if ( ! $user_id ) {
+				break;
+			}
+
+			// A child folder must be of the same type as a parent the user can use.
+			if ( $parent_id ) {
+				if ( ! user_can( $user_id, 'bp_docs_use_folder', $parent_id ) ) {
+					break;
+				}
+
+				if ( intval( bp_docs_get_folder_group( $parent_id ) ) !== $group_id || intval( bp_docs_get_folder_user( $parent_id ) ) !== $f_user_id ) {
+					break;
+				}
+			}
+
+			if ( $group_id ) {
+				if ( bp_is_active( 'groups' ) && user_can( $user_id, 'bp_docs_associate_with_group', $group_id ) ) {
+					$caps = array( 'exist' );
+				}
+			} else if ( $f_user_id ) {
+				if ( $f_user_id === intval( $user_id ) || user_can( $user_id, 'bp_moderate' ) ) {
+					$caps = array( 'exist' );
+				}
+			} else if ( user_can( $user_id, 'bp_docs_create_global_folder' ) ) {
+				$caps = array( 'exist' );
+			}
+
 			break;
 
 		case 'bp_docs_change_folder_type' :
@@ -1127,6 +1241,12 @@ function bp_docs_folders_map_meta_caps( $caps, $cap, $user_id, $args ) {
 function bp_docs_save_folder_selection( $doc_id ) {
 	$retval = false;
 
+	/*
+	 * Runs on 'bp_docs_after_successful_save', so the Doc edit nonce has already been
+	 * verified by the caller.
+	 */
+	// phpcs:disable WordPress.Security.NonceVerification.Missing
+
 	if ( empty( $_POST['existing-or-new-folder'] ) ) {
 		return;
 	}
@@ -1137,7 +1257,7 @@ function bp_docs_save_folder_selection( $doc_id ) {
 		return $retval;
 	}
 
-	switch ( $_POST['existing-or-new-folder'] ) {
+	switch ( sanitize_key( wp_unslash( $_POST['existing-or-new-folder'] ) ) ) {
 		case 'existing' :
 			if ( isset( $_POST['bp-docs-folder'] ) ) {
 				$folder_id = intval( $_POST['bp-docs-folder'] );
@@ -1145,15 +1265,17 @@ function bp_docs_save_folder_selection( $doc_id ) {
 				if ( 0 === $folder_id ) {
 					$existing_folder_id = bp_docs_get_doc_folder( $doc_id );
 					$retval = bp_docs_remove_doc_from_folder( $doc_id, $existing_folder_id );
-				} else {
+				} else if ( current_user_can( 'bp_docs_use_folder', $folder_id ) ) {
 					$retval = bp_docs_add_doc_to_folder( $doc_id, $folder_id );
+				} else {
+					bp_core_add_message( __( 'You do not have permission to add Docs to that folder.', 'buddypress-docs' ), 'error' );
 				}
 			}
 
 			break;
 
 		case 'new' :
-			$folder_name = trim( stripslashes( $_POST['new-folder'] ) );
+			$folder_name = isset( $_POST['new-folder'] ) ? trim( sanitize_text_field( wp_unslash( $_POST['new-folder'] ) ) ) : '';
 
 			if ( empty( $folder_name ) ) {
 				bp_core_add_message( __( 'You must provide a folder name.', 'buddypress-docs' ), 'error' );
@@ -1166,15 +1288,24 @@ function bp_docs_save_folder_selection( $doc_id ) {
 				$folder_args['parent'] = ! empty( $_POST['new-folder-parent'] ) ? intval( $_POST['new-folder-parent'] ) : null;
 
 				// Type
-				$folder_type = stripslashes( $_POST['new-folder-type'] );
+				$folder_type = isset( $_POST['new-folder-type'] ) ? sanitize_key( wp_unslash( $_POST['new-folder-type'] ) ) : '';
 
-				if ( 'global' === $folder_type ) {
+				// If there's a parent, the parent's folder type takes precedence
+				if ( ! empty( $folder_args['parent'] ) ) {
+					$folder_args['group_id'] = bp_docs_get_folder_group( $folder_args['parent'] );
+					$folder_args['user_id']  = bp_docs_get_folder_user( $folder_args['parent'] );
+				} else if ( 'global' === $folder_type ) {
 					// Nothing to do
 				} else if ( 'me' === $folder_type ) {
 					$folder_args['user_id'] = bp_loggedin_user_id();
 				} else if ( is_numeric( $folder_type ) ) {
 					// This is a group
 					$folder_args['group_id'] = intval( $folder_type );
+				}
+
+				if ( ! current_user_can( 'bp_docs_create_folder', $folder_args ) ) {
+					bp_core_add_message( __( 'You do not have permission to create that folder.', 'buddypress-docs' ), 'error' );
+					break;
 				}
 
 				// Create the folder
@@ -1186,6 +1317,8 @@ function bp_docs_save_folder_selection( $doc_id ) {
 
 			break;
 	}
+
+	// phpcs:enable WordPress.Security.NonceVerification.Missing
 
 	return $retval;
 }
@@ -1201,9 +1334,11 @@ function bp_docs_validate_group_folder_selection_on_doc_save( $check, $doc_id ) 
 	}
 
 	// If creating a new folder, make sure the type and associated group
-	// are not a mismatch
-	$folder_type     = stripslashes( $_POST['new-folder-type'] );
-	$new_or_existing = stripslashes( $_POST['existing-or-new-folder'] );
+	// are not a mismatch. Runs during Doc save, after the nonce check.
+	// phpcs:disable WordPress.Security.NonceVerification.Missing
+	$folder_type     = isset( $_POST['new-folder-type'] ) ? sanitize_key( wp_unslash( $_POST['new-folder-type'] ) ) : '';
+	$new_or_existing = isset( $_POST['existing-or-new-folder'] ) ? sanitize_key( wp_unslash( $_POST['existing-or-new-folder'] ) ) : '';
+	// phpcs:enable WordPress.Security.NonceVerification.Missing
 	if ( 'new' === $new_or_existing && is_numeric( $folder_type ) ) {
 		// Associated group ID has been saved by this point
 		$group_id = bp_docs_get_associated_group_id( $doc_id );
@@ -1227,13 +1362,16 @@ function bp_docs_process_folder_edit_cb() {
 		return;
 	}
 
+	// The nonce action includes the folder ID, so it must be read first.
+	// phpcs:disable WordPress.Security.NonceVerification.Missing
 	if ( empty( $_POST['folder-id'] ) ) {
 		return;
 	}
 
 	$folder_id = intval( $_POST['folder-id'] );
 
-	$nonce = isset( $_POST['bp-docs-edit-folder-nonce-' . $folder_id] ) ? stripslashes( $_POST['bp-docs-edit-folder-nonce-' . $folder_id] ) : '';
+	$nonce = isset( $_POST['bp-docs-edit-folder-nonce-' . $folder_id] ) ? sanitize_text_field( wp_unslash( $_POST['bp-docs-edit-folder-nonce-' . $folder_id] ) ) : '';
+	// phpcs:enable WordPress.Security.NonceVerification.Missing
 
 	$redirect_url = bp_get_requested_url();
 
@@ -1243,12 +1381,19 @@ function bp_docs_process_folder_edit_cb() {
 		die();
 	}
 
+	$folder = get_post( $folder_id );
+	if ( ! $folder || 'bp_docs_folder' !== $folder->post_type || ! current_user_can( 'bp_docs_manage_folder', $folder_id ) ) {
+		bp_core_add_message( __( 'You do not have permission to edit that folder.', 'buddypress-docs' ), 'error' );
+		bp_core_redirect( $redirect_url );
+		die();
+	}
+
 	$parent = isset( $_POST['folder-parent-' . $folder_id] ) ? intval( $_POST['folder-parent-' . $folder_id] ) : '';
 
 
 	$edit_args = array(
 		'folder_id' => $folder_id,
-		'name'      => stripslashes( $_POST['folder-name-' . $folder_id] ),
+		'name'      => isset( $_POST['folder-name-' . $folder_id] ) ? sanitize_text_field( wp_unslash( $_POST['folder-name-' . $folder_id] ) ) : '',
 	);
 
 	if ( ! empty( $parent ) ) {
@@ -1258,9 +1403,15 @@ function bp_docs_process_folder_edit_cb() {
 		$edit_args['group_id'] = bp_docs_get_folder_group( $parent );
 		$edit_args['user_id']  = bp_docs_get_folder_user( $parent );
 
+		// Moving under a new parent changes the folder's type, so the user
+		// must be able to create a folder there.
+		if ( ! current_user_can( 'bp_docs_create_folder', $edit_args ) ) {
+			bp_core_add_message( __( 'You do not have permission to move the folder there.', 'buddypress-docs' ), 'error' );
+			bp_core_redirect( $redirect_url );
+			die();
+		}
 	}
 
-	// @todo permissions checks!!
 	$success = bp_docs_create_folder( $edit_args );
 
 	if ( ! empty( $success ) && ! is_wp_error( $success ) ) {
@@ -1285,11 +1436,12 @@ function bp_docs_process_folder_create_cb() {
 		return;
 	}
 
+	// phpcs:ignore WordPress.Security.NonceVerification.Missing
 	if ( empty( $_POST['bp-docs-create-folder-submit'] ) ) {
 		return;
 	}
 
-	$nonce = isset( $_POST['bp-docs-create-folder-nonce'] ) ? stripslashes( $_POST['bp-docs-create-folder-nonce'] ) : '';
+	$nonce = isset( $_POST['bp-docs-create-folder-nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['bp-docs-create-folder-nonce'] ) ) : '';
 
 	$redirect_url = bp_get_requested_url();
 
@@ -1300,7 +1452,7 @@ function bp_docs_process_folder_create_cb() {
 	}
 
 	$folder_args = array(
-		'name' => stripslashes( $_POST['new-folder'] ),
+		'name' => isset( $_POST['new-folder'] ) ? sanitize_text_field( wp_unslash( $_POST['new-folder'] ) ) : '',
 	);
 
 	$parent = isset( $_POST['new-folder-parent'] ) ? intval( $_POST['new-folder-parent'] ) : null;
@@ -1317,7 +1469,7 @@ function bp_docs_process_folder_create_cb() {
 	// Otherwise, trust the values passed
 	} else {
 		// Type
-		$folder_type = stripslashes( $_POST['new-folder-type'] );
+		$folder_type = isset( $_POST['new-folder-type'] ) ? sanitize_key( wp_unslash( $_POST['new-folder-type'] ) ) : '';
 
 		if ( 'global' === $folder_type ) {
 			// Nothing to do
@@ -1329,8 +1481,13 @@ function bp_docs_process_folder_create_cb() {
 		}
 	}
 
+	if ( ! current_user_can( 'bp_docs_create_folder', $folder_args ) ) {
+		bp_core_add_message( __( 'You do not have permission to create that folder.', 'buddypress-docs' ), 'error' );
+		bp_core_redirect( $redirect_url );
+		die();
+	}
+
 	// Create the folder
-	// @todo permissions checks
 	$success = bp_docs_create_folder( $folder_args );
 
 	if ( ! empty( $success ) && ! is_wp_error( $success ) ) {
@@ -1354,8 +1511,9 @@ function bp_docs_process_folder_delete_cb() {
 	}
 
 	$folder_id = 0;
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	if ( isset( $_GET['delete-folder'] ) ) {
-		$folder_id = intval( $_GET['delete-folder'] );
+		$folder_id = intval( $_GET['delete-folder'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	}
 
 	if ( ! $folder_id ) {
@@ -1364,14 +1522,14 @@ function bp_docs_process_folder_delete_cb() {
 
 	$nonce = '';
 	if ( isset( $_POST['_wpnonce'] ) ) {
-		$nonce = stripslashes( $_POST['_wpnonce'] );
+		$nonce = sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) );
 	}
 
 	if ( ! wp_verify_nonce( $nonce, 'bp-docs-delete-folder-' . $folder_id ) ) {
 		return;
 	}
 
-	if ( ! current_user_can( 'bp_docs_manage_folder', $folder_id ) ) {
+	if ( 'bp_docs_folder' !== get_post_type( $folder_id ) || ! current_user_can( 'bp_docs_manage_folder', $folder_id ) ) {
 		return;
 	}
 
@@ -1402,6 +1560,9 @@ function bp_docs_process_folder_delete_cb() {
  * @since 1.9
  */
 function bp_docs_update_folders_cb() {
+	// Returns selector markup only; nothing is changed.
+	// phpcs:disable WordPress.Security.NonceVerification.Missing
+
 	if ( ! isset( $_POST['doc_id'] ) || ! isset( $_POST['group_id'] ) ) {
 		die( '-1' );
 	}
@@ -1409,10 +1570,24 @@ function bp_docs_update_folders_cb() {
 	$doc_id = intval( $_POST['doc_id'] );
 	$group_id = intval( $_POST['group_id'] );
 
+	if ( $doc_id && ! current_user_can( 'bp_docs_edit', $doc_id ) ) {
+		die( '-1' );
+	}
+
+	// Group folders are listed only for groups the user can file Docs in,
+	// or the group the Doc already belongs to.
+	if ( $group_id && ! current_user_can( 'bp_docs_associate_with_group', $group_id ) ) {
+		if ( ! $doc_id || intval( bp_docs_get_associated_group_id( $doc_id ) ) !== $group_id ) {
+			die( '-1' );
+		}
+	}
+
 	bp_docs_folder_selector( array(
 		'group_id' => $group_id,
 		'doc_id' => $doc_id,
 	) );
+
+	// phpcs:enable WordPress.Security.NonceVerification.Missing
 
 	die();
 
@@ -1424,11 +1599,14 @@ function bp_docs_update_folders_cb() {
  * @since 1.9
  */
 function bp_docs_update_parent_folders_cb() {
+	// Returns selector markup only; nothing is changed.
+	// phpcs:disable WordPress.Security.NonceVerification.Missing
+
 	if ( ! isset( $_POST['folder_type'] ) ) {
 		die( '-1' );
 	}
 
-	$folder_type = stripslashes( $_POST['folder_type'] );
+	$folder_type = sanitize_key( wp_unslash( $_POST['folder_type'] ) );
 
 	$selector_args = array(
 		'id'    => 'new-folder-parent',
@@ -1443,9 +1621,15 @@ function bp_docs_update_parent_folders_cb() {
 	} else if ( is_numeric( $folder_type ) ) {
 		// This is a group
 		$selector_args['group_id'] = intval( $folder_type );
+
+		if ( ! current_user_can( 'bp_docs_associate_with_group', $selector_args['group_id'] ) ) {
+			die( '-1' );
+		}
 	}
 
 	bp_docs_folder_selector( $selector_args );
+
+	// phpcs:enable WordPress.Security.NonceVerification.Missing
 
 	die();
 
@@ -1455,6 +1639,9 @@ function bp_docs_update_parent_folders_cb() {
  * Update folder type selector based on value of parent selector.
  */
 function bp_docs_update_folder_type_cb() {
+	// Returns selector markup only; nothing is changed.
+	// phpcs:disable WordPress.Security.NonceVerification.Missing
+
 	if ( ! isset( $_POST['parent_id'] ) ) {
 		die( '-1' );
 	}
@@ -1463,7 +1650,7 @@ function bp_docs_update_folder_type_cb() {
 
 	$type_selector_name = '';
 	if ( isset( $_POST['type_selector_name'] ) ) {
-		$type_selector_name = stripslashes( $_POST['type_selector_name'] );
+		$type_selector_name = sanitize_key( wp_unslash( $_POST['type_selector_name'] ) );
 	}
 
 	// A $parent_id of 0 means to fetch all fields available to user
@@ -1494,6 +1681,10 @@ function bp_docs_update_folder_type_cb() {
 			die( '-1' );
 		}
 
+		if ( ! current_user_can( 'bp_docs_use_folder', $parent_id ) ) {
+			die( '-1' );
+		}
+
 		// Child folders must inherit the folder type of the parent
 		$folder_type = '';
 		$group_id = bp_docs_get_folder_group( $parent_id );
@@ -1518,6 +1709,8 @@ function bp_docs_update_folder_type_cb() {
 
 	bp_docs_folder_type_selector( $folder_type_args );
 
+	// phpcs:enable WordPress.Security.NonceVerification.Missing
+
 	die();
 }
 
@@ -1527,6 +1720,9 @@ function bp_docs_update_folder_type_cb() {
  * @since 1.9.0
  */
 function bp_docs_update_folder_type_for_group_cb() {
+	// Returns selector markup only; nothing is changed.
+	// phpcs:disable WordPress.Security.NonceVerification.Missing
+
 	if ( ! isset( $_POST['group_id'] ) ) {
 		die( '-1' );
 	}
@@ -1539,6 +1735,8 @@ function bp_docs_update_folder_type_for_group_cb() {
 		'include_all_groups' => false,
 	) );
 
+	// phpcs:enable WordPress.Security.NonceVerification.Missing
+
 	die();
 }
 
@@ -1548,20 +1746,23 @@ function bp_docs_update_folder_type_for_group_cb() {
  * @since 1.9
  */
 function bp_docs_process_folder_drop_cb() {
+	// The nonce action includes the Doc ID, so it must be read first.
+	// phpcs:disable WordPress.Security.NonceVerification.Missing
 	if ( empty( $_POST['doc_id'] ) ) {
 		wp_send_json_error( '-1' );
 	}
 
 	$doc_id = intval( $_POST['doc_id'] );
 
-	$nonce = isset( $_POST['nonce'] ) ? stripslashes( $_POST['nonce'] ) : '';
+	$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
+	// phpcs:enable WordPress.Security.NonceVerification.Missing
 
 	if ( ! wp_verify_nonce( $nonce, 'bp-docs-folder-drop-' . $doc_id ) ) {
 		wp_send_json_error( '-2' );
 	}
 
-	// @todo This needs testing with group admins, etc
-	if ( ! current_user_can( 'bp_docs_manage', bp_loggedin_user_id(), $doc_id ) ) {
+	// Same requirement as changing the folder in the Doc edit screen.
+	if ( ! current_user_can( 'bp_docs_edit', $doc_id ) ) {
 		wp_send_json_error( '-3' );
 	}
 
@@ -1571,6 +1772,10 @@ function bp_docs_process_folder_drop_cb() {
 	}
 
 	$folder_id = intval( $_POST['folder_id'] );
+
+	if ( $folder_id && ! current_user_can( 'bp_docs_use_folder', $folder_id ) ) {
+		wp_send_json_error( '-3' );
+	}
 
 	if ( 0 === $folder_id ) {
 		$existing_folder_id = bp_docs_get_doc_folder( $doc_id );
@@ -1608,8 +1813,9 @@ function bp_docs_get_folder_content_cb() {
  */
 function bp_docs_get_current_folder_id() {
 	$folder_id = null;
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	if ( isset( $_GET['folder'] ) ) {
-		$folder_id = intval( $_GET['folder'] );
+		$folder_id = intval( $_GET['folder'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	}
 	return $folder_id;
 }
@@ -1622,6 +1828,7 @@ function bp_docs_get_current_folder_id() {
  * @return bool
  */
 function bp_docs_is_folder_tree_view() {
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	if ( isset( $_GET['view'] ) && 'tree' === $_GET['view'] ) {
 		return true;
 	} else {
@@ -1637,6 +1844,7 @@ function bp_docs_is_folder_tree_view() {
  * @return bool
  */
 function bp_docs_is_folder_manage_view() {
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	if ( isset( $_GET['view'] ) && 'manage' === $_GET['view'] ) {
 		return true;
 	} else {
@@ -1870,8 +2078,8 @@ function bp_docs_get_folder_breadcrumbs( $doc = null ) {
 		$folder_id = bp_docs_get_doc_folder( $doc->ID );
 	} else if ( bp_docs_is_existing_doc() ) {
 		$folder_id = bp_docs_get_doc_folder( get_queried_object_id() );
-	} else if ( isset( $_GET['folder'] ) ) {
-		$folder_id = intval( $_GET['folder'] );
+	} else if ( isset( $_GET['folder'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$folder_id = intval( $_GET['folder'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	}
 
 	$folder_id = intval( $folder_id );
@@ -1931,14 +2139,14 @@ function bp_docs_create_new_folder_markup( $args = array() ) {
 
 	?>
 
-	<label for="new-folder"><?php _e( 'Name', 'buddypress-docs' ) ?></label> <input name="new-folder" id="new-folder" />
+	<label for="new-folder"><?php esc_html_e( 'Name', 'buddypress-docs' ) ?></label> <input name="new-folder" id="new-folder" />
 
 	<?php $folder_type_class = current_user_can( 'bp_docs_change_folder_type' ) ? 'can-change' : 'cannot-change' ?>
 
 	<div style="clear:both"></div>
 
 	<div class="folder-type-selector-div <?php echo esc_url( $folder_type_class ); ?>">
-		<label for="new-folder-type"><?php _e( 'Folder type', 'buddypress-docs' ) ?></label>
+		<label for="new-folder-type"><?php esc_html_e( 'Folder type', 'buddypress-docs' ) ?></label>
 		<?php bp_docs_folder_type_selector( array(
 			'selected' => $r['selected'],
 			'id' => $r['folder_type_id'],
@@ -1948,12 +2156,12 @@ function bp_docs_create_new_folder_markup( $args = array() ) {
 	</div>
 
 	<div style="clear:both"></div>
-	<label for="new-folder-parent"><?php _e( 'Parent (optional)', 'buddypress-docs' ) ?></label>
+	<label for="new-folder-parent"><?php esc_html_e( 'Parent (optional)', 'buddypress-docs' ) ?></label>
 	<?php bp_docs_folder_selector( array(
 		'name'     => 'new-folder-parent',
 		'id'       => 'new-folder-parent',
 		'class'    => 'folder-parent',
-		'selected' => isset( $_GET['folder'] ) ? intval( $_GET['folder'] ) : false,
+		'selected' => isset( $_GET['folder'] ) ? intval( $_GET['folder'] ) : false, // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		'group_id' => $r['group_id'],
 	) ) ?>
 
@@ -1971,8 +2179,9 @@ function bp_docs_folders_meta_box() {
 	$doc_id = get_the_ID();
 	$associated_group_id = bp_is_active( 'groups' ) ? bp_docs_get_associated_group_id( $doc_id ) : 0;
 
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	if ( ! $associated_group_id && isset( $_GET['group'] ) ) {
-		$group_id = BP_Groups_Group::get_id_from_slug( urldecode( $_GET['group'] ) );
+		$group_id = BP_Groups_Group::get_id_from_slug( sanitize_text_field( wp_unslash( $_GET['group'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( current_user_can( 'bp_docs_associate_with_group', $group_id ) ) {
 			$associated_group_id = $group_id;
 		}
@@ -1990,21 +2199,21 @@ function bp_docs_folders_meta_box() {
 	<div id="doc-folders" class="doc-meta-box">
 		<div class="toggleable <?php bp_docs_toggleable_open_or_closed_class( 'folders-meta-box' ) ?>">
 			<p id="folders-toggle-edit" class="toggle-switch">
-				<span class="hide-if-js toggle-link-no-js"><?php _e( 'Folders', 'buddypress-docs' ) ?></span>
-				<a class="hide-if-no-js toggle-link" id="folders-toggle-link" href="#"><span class="show-pane plus-or-minus"></span><span class="toggle-title"><?php _e( 'Folders', 'buddypress-docs' ) ?></span></a>
+				<span class="hide-if-js toggle-link-no-js"><?php esc_html_e( 'Folders', 'buddypress-docs' ) ?></span>
+				<a class="hide-if-no-js toggle-link" id="folders-toggle-link" href="#"><span class="show-pane plus-or-minus"></span><span class="toggle-title"><?php esc_html_e( 'Folders', 'buddypress-docs' ) ?></span></a>
 			</p>
 
 			<div class="toggle-content">
 				<table class="toggle-table" id="toggle-table-folders">
 					<tr>
 						<td class="desc-column">
-							<label for="bp_docs_tag"><?php _e( 'Select a folder for this Doc.', 'buddypress-docs' ) ?></label>
+							<label for="bp_docs_tag"><?php esc_html_e( 'Select a folder for this Doc.', 'buddypress-docs' ) ?></label>
 						</td>
 
 						<td>
 							<div class="existing-or-new-selector">
 								<input type="radio" name="existing-or-new-folder" id="use-existing-folder" value="existing" checked="checked" />
-								<label for="use-existing-folder" class="radio-label"><?php _e( 'Use an existing folder', 'buddypress-docs' ) ?></label><br />
+								<label for="use-existing-folder" class="radio-label"><?php esc_html_e( 'Use an existing folder', 'buddypress-docs' ) ?></label><br />
 								<div class="selector-content">
 									<?php bp_docs_folder_selector( array(
 										'name'     => 'bp-docs-folder',
@@ -2017,7 +2226,7 @@ function bp_docs_folders_meta_box() {
 
 							<div class="existing-or-new-selector" id="new-folder-block">
 								<input type="radio" name="existing-or-new-folder" id="create-new-folder" value="new" />
-								<label for="create-new-folder" class="radio-label"><?php _e( 'Create a new folder', 'buddypress-docs' ) ?></label>
+								<label for="create-new-folder" class="radio-label"><?php esc_html_e( 'Create a new folder', 'buddypress-docs' ) ?></label>
 								<div class="selector-content">
 
 									<?php bp_docs_create_new_folder_markup( array(
@@ -2102,8 +2311,8 @@ function bp_docs_get_folder_url( $folder_id ) {
  * @return string URL
  */
 function bp_docs_get_parent_folder_url( $folder_id = null ) {
-	if ( is_null( $folder_id ) && isset( $_GET['folder'] ) ) {
-		$folder_id = intval( $_GET['folder'] );
+	if ( is_null( $folder_id ) && isset( $_GET['folder'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$folder_id = intval( $_GET['folder'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	}
 
 	$parent_url = '';
@@ -2160,8 +2369,9 @@ function bp_docs_manage_folders_url() {
  * @return array
  */
 function bp_docs_folder_current_filters( $filters ) {
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	if ( ! empty( $_GET['folder'] ) ) {
-		$folder_ids = wp_parse_id_list( $_GET['folder'] );
+		$folder_ids = wp_parse_id_list( wp_unslash( $_GET['folder'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$filters['folders'] = $folder_ids;
 	}
 
@@ -2179,10 +2389,17 @@ function bp_docs_folder_current_filters( $filters ) {
  */
 function bp_docs_folder_info_header_message( $message, $filters ) {
 	if ( ! empty( $filters['folders'] ) ) {
-		$folders = get_posts( array(
-			'post_type' => 'bp_docs_folder',
-			'post__in'  => $filters['folders'],
+		// Only name folders that are listed in the current context.
+		$folders = bp_docs_get_folders( array(
+			'display'      => 'flat',
+			'include'      => $filters['folders'],
+			'parent_id'    => null,
+			'search_terms' => null,
 		) );
+
+		if ( empty( $folders ) ) {
+			return $message;
+		}
 
 		$folder_links = array();
 
@@ -2195,6 +2412,7 @@ function bp_docs_folder_info_header_message( $message, $filters ) {
 		}
 
 		$message[] = sprintf(
+			/* translators: %s: comma-separated list of folder links */
 			_n( 'You are viewing docs in the following folder: %s', 'You are viewing docs in the following folders: %s', count( $folders ), 'buddypress-docs' ),
 			implode( ', ', $folder_links )
 		);
@@ -2212,11 +2430,13 @@ function bp_docs_folder_info_header_message( $message, $filters ) {
  * @since 1.9.0
  */
 function bp_docs_folders_directory_filter_form_argument() {
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended
 	if ( ! empty( $_GET['folder'] ) ) {
 		printf(
 			'<input type="hidden" name="folder" value="%s" />',
 			intval( $_GET['folder'] )
 		);
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 }
 
@@ -2226,8 +2446,10 @@ function bp_docs_folders_directory_filter_form_argument() {
  * @since 1.9.0
  */
 function bp_docs_folders_directory_tag_link_argument( $link ) {
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended
 	if ( ! empty( $_GET['folder'] ) ) {
 		$link = add_query_arg( 'folder', intval( $_GET['folder'] ), $link );
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 
 	return $link;
@@ -2289,6 +2511,7 @@ function bp_docs_is_directory_view_filtered_by_folder( $is_filtered, $exclude ) 
 		return $is_filtered;
 	}
 
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	if ( ! empty( $_GET['folder'] ) ) {
 		$is_filtered = true;
 	}
@@ -2352,6 +2575,7 @@ class BP_Docs_Folder_Dropdown_Walker extends Walker {
 
 		$title = $page->post_title . '&nbsp;';
 		if ( '' === $title ) {
+			/* translators: %d: folder ID */
 			$title = sprintf( __( '#%d (no title)', 'buddypress-docs' ), $page->ID );
 		}
 
@@ -2446,8 +2670,8 @@ class BP_Docs_Folder_Manage_Walker extends Walker {
 		if ( current_user_can( 'bp_docs_manage_folder', $page->ID ) ) {
 			$delete_link_markup = sprintf(
 				'<a class="folder-delete" href="%s">%s</a>',
-				add_query_arg( 'delete-folder', $page->ID, bp_get_requested_url() ), // No nonce because actual deletion is done on the subsequent page
-				__( 'Delete', 'buddypress-docs' )
+				esc_url( add_query_arg( 'delete-folder', $page->ID, bp_get_requested_url() ) ), // No nonce because actual deletion is done on the subsequent page
+				esc_html__( 'Delete', 'buddypress-docs' )
 			);
 		}
 
@@ -2550,7 +2774,7 @@ class BP_Docs_Folder_Walker extends Walker {
 
 		$folder_docs = get_posts( array(
 			'post_type' => bp_docs_get_post_type_name(),
-			'tax_query' => array(
+			'tax_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Folder membership is a taxonomy term.
 				array(
 					'taxonomy' => 'bp_docs_doc_in_folder',
 					'field' => 'term_id',
@@ -2620,7 +2844,7 @@ function bp_docs_folders_calculate_modified_date( $folder_id = 0 ) {
 			'post_type'      => bp_docs_get_post_type_name(),
 			'orderby'        => 'modified',
 			'posts_per_page' => '1',
-			'tax_query'      => array(
+			'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Folder membership is a taxonomy term.
 				array(
 					'taxonomy' => 'bp_docs_doc_in_folder',
 					'field'    => 'term_id',

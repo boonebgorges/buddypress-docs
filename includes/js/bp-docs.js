@@ -11,7 +11,8 @@ jQuery(document).ready(function($){
 	if ( $( 'body' ).hasClass( 'bp-docs-edit' ) ) {
 		var lock_data = {
 			action: 'add_edit_lock',
-			doc_id: doc_id
+			doc_id: doc_id,
+			nonce: $( '#_wpnonce' ).val()
 		};
 
 		$.ajax({
@@ -154,25 +155,13 @@ jQuery(document).ready(function($){
 	/* Docs search highlighting */
 	var searchTerm = bpdocs_get_query_var( 's' );
 	if ( searchTerm ) {
-		// escape for use in regex
-		var searchRegExpPattern = '(<?\\w*(' + searchTerm.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + ')\\w*)'
-		var searchRegExp = new RegExp( searchRegExpPattern );
-		$('.doctable tbody .title-cell > a').html(function(index,html){
-			return html.replace(searchTerm, '<span class="search-term-match">' + searchTerm + '</span>');
+		$('.doctable tbody .title-cell > a').each(function(){
+			bpdocs_highlight_search_term( this, searchTerm );
 		});
 
-		$('.bp-docs-attachment-drawer li a').html(function(index,html){
-			var newHtml = html.replace(searchRegExp, function( match, a, b, c ) {
-				// Yikes. Skip if the match is on a 'span'.
-				if ( '<span' === a ) {
-					return match;
-				}
-
-				return match.replace( b, '<span class="search-term-match">' + b + '</span>' );
-			});
-
+		$('.bp-docs-attachment-drawer li a').each(function(){
 			// Open the drawer.
-			if ( newHtml !== html ) {
+			if ( bpdocs_highlight_search_term( this, searchTerm ) ) {
 				var $thisDrawer = $(this).closest('.bp-docs-attachment-drawer');
 				if ( ! $thisDrawer.is(':visible') ) {
 					var drawerDocId = $thisDrawer.attr('id').substr(26);
@@ -181,8 +170,6 @@ jQuery(document).ready(function($){
 					}
 				}
 			}
-
-			return newHtml;
 		});
 	}
 
@@ -319,6 +306,44 @@ function bp_docs_load_idle() {
 			});
 		});
 	}
+}
+
+/**
+ * Wrap the first occurrence of a search term in an element's text in a highlight span.
+ *
+ * Operates only on text nodes and builds the wrapper via the DOM, so neither
+ * the search term nor existing markup is ever (re)parsed as HTML.
+ *
+ * @param {Element} el   Element whose text should be searched.
+ * @param {String}  term Search term.
+ * @return {Boolean} True if a match was highlighted.
+ */
+function bpdocs_highlight_search_term( el, term ) {
+	if ( ! el || ! term ) {
+		return false;
+	}
+
+	var walker = document.createTreeWalker( el, NodeFilter.SHOW_TEXT, null, false );
+	var node, idx, match, span;
+
+	while ( ( node = walker.nextNode() ) ) {
+		idx = node.nodeValue.indexOf( term );
+		if ( -1 === idx ) {
+			continue;
+		}
+
+		match = node.splitText( idx );
+		match.splitText( term.length );
+
+		span = document.createElement( 'span' );
+		span.className = 'search-term-match';
+		match.parentNode.replaceChild( span, match );
+		span.appendChild( match );
+
+		return true;
+	}
+
+	return false;
 }
 
 /**

@@ -294,15 +294,47 @@ class BP_Docs_Component extends BP_Component {
 	}
 
 	/**
-	 * Get previously submitted form data out of the cookie, and stash.
+	 * Get the current user's previously submitted form data, and stash.
+	 *
+	 * Set by BP_Docs_Query::save() after a failed submission. Read once.
 	 *
 	 * @since 1.8
+	 * @since 2.2.8 Stored in a per-user transient instead of a cookie.
 	 */
 	public function submitted_form_data() {
-		if ( isset( $_COOKIE['bp-docs-submit-data'] ) ) {
-			$this->submitted_data = json_decode( stripslashes( $_COOKIE['bp-docs-submit-data'] ) );
-			setcookie( 'bp-docs-submit-data', '', time() - 24*60*60, '/' );
+		$user_id = bp_loggedin_user_id();
+		if ( ! $user_id ) {
+			return;
 		}
+
+		// Only the Create and Edit screens use it.
+		if ( ! bp_docs_is_doc_create() && ! bp_docs_is_doc_edit() ) {
+			return;
+		}
+
+		$key  = 'bp_docs_submit_data_' . $user_id;
+		$data = get_transient( $key );
+		if ( ! is_array( $data ) ) {
+			return;
+		}
+
+		// Only refill the form for the Doc that was submitted: the same Doc
+		// on its Edit screen, or a new Doc (or the user's own auto-draft) on
+		// the Create screen.
+		$submitted_doc_id = isset( $data['doc_id'] ) ? (int) $data['doc_id'] : 0;
+		$current_doc      = bp_docs_get_current_doc();
+		if ( $current_doc ) {
+			if ( $submitted_doc_id !== (int) $current_doc->ID ) {
+				return;
+			}
+		} elseif ( $submitted_doc_id && 'auto-draft' !== get_post_status( $submitted_doc_id ) ) {
+			return;
+		}
+
+		delete_transient( $key );
+
+		// Readers expect an object, with nested objects for arrays.
+		$this->submitted_data = json_decode( wp_json_encode( $data ) );
 	}
 
 	/**
@@ -385,10 +417,16 @@ class BP_Docs_Component extends BP_Component {
 
 		$parent_url = bp_docs_get_user_docs_url( bp_displayed_user_id() );
 
-		$mydocs_label = bp_is_my_profile() ? __( 'My Docs ', 'buddypress-docs' ) : sprintf( __( '%s&#8217;s Docs', 'buddypress-docs' ), bp_get_user_firstname( bp_get_displayed_user_fullname() ) );
+		$mydocs_label = bp_is_my_profile()
+			? __( 'My Docs ', 'buddypress-docs' )
+			/* translators: %s: first name of the displayed user */
+			: sprintf( __( '%s&#8217;s Docs', 'buddypress-docs' ), bp_get_user_firstname( bp_get_displayed_user_fullname() ) );
 
 		$sub_nav[] = array(
-			'name'            => bp_is_my_profile() ? __( 'Started By Me', 'buddypress-docs' ) : sprintf( __( 'Started By %s', 'buddypress-docs' ), bp_get_user_firstname() ),
+			'name'            => bp_is_my_profile()
+				? __( 'Started By Me', 'buddypress-docs' )
+				/* translators: %s: first name of the displayed user */
+				: sprintf( __( 'Started By %s', 'buddypress-docs' ), bp_get_user_firstname() ),
 			'slug'            => BP_DOCS_STARTED_SLUG,
 			'parent_url'      => $parent_url,
 			'parent_slug'     => bp_docs_get_docs_slug(),
@@ -397,7 +435,10 @@ class BP_Docs_Component extends BP_Component {
 		);
 
 		$sub_nav[] = array(
-			'name'            => bp_is_my_profile() ? __( 'Edited By Me', 'buddypress-docs' ) : sprintf( __( 'Edited By %s', 'buddypress-docs' ), bp_get_user_firstname() ),
+			'name'            => bp_is_my_profile()
+				? __( 'Edited By Me', 'buddypress-docs' )
+				/* translators: %s: first name of the displayed user */
+				: sprintf( __( 'Edited By %s', 'buddypress-docs' ), bp_get_user_firstname() ),
 			'slug'            => BP_DOCS_EDITED_SLUG,
 			'parent_url'      => $parent_url,
 			'parent_slug'     => bp_docs_get_docs_slug(),
@@ -457,9 +498,10 @@ class BP_Docs_Component extends BP_Component {
 
 		if ( ! empty( $_POST['doc-edit-submit'] ) || ! empty( $_POST['doc-edit-submit-continue'] ) ) {
 
+			// Must match the field read by bp_docs_save_doc_via_post().
 			$doc_id = false;
-			if ( isset( $_POST['doc-id'] ) ) {
-				$doc_id = absint( $_POST['doc-id'] );
+			if ( isset( $_POST['doc_id'] ) ) {
+				$doc_id = absint( $_POST['doc_id'] );
 			}
 
 			$current_doc = bp_docs_get_current_doc();
@@ -475,7 +517,11 @@ class BP_Docs_Component extends BP_Component {
 			// Legacy.
 			check_admin_referer( 'bp_docs_save' );
 
-			if ( $doc_id ) {
+			// Existing Docs need their own nonce. An auto-draft created on the
+			// Create screen (when attachments are added before the first save)
+			// has none; bp_docs_save_doc_via_post() checks that it belongs to
+			// the current user.
+			if ( $doc_id && 'auto-draft' !== get_post_status( $doc_id ) ) {
 				check_admin_referer( 'bp_docs_edit_' . (string) $doc_id, 'bp_docs_edit_nonce' );
 			}
 
@@ -492,9 +538,9 @@ class BP_Docs_Component extends BP_Component {
 		// If this is the edit screen, ensure that the user can edit the
 		// doc before querying, and redirect if necessary
 		if ( bp_docs_is_doc_edit() ) {
-			if ( current_user_can( 'bp_docs_edit' ) ) {
-				$doc = bp_docs_get_current_doc();
+			$doc = bp_docs_get_current_doc();
 
+			if ( current_user_can( 'bp_docs_edit', $doc ? $doc->ID : 0 ) ) {
 				// The user can edit, so we check for edit locks
 				// Because we're not using WP autosave at the moment, ensure that
 				// the lock interval always returns as in process
@@ -504,11 +550,12 @@ class BP_Docs_Component extends BP_Component {
 					$lock = bp_docs_check_post_lock( $doc->ID );
 
 					if ( $lock ) {
+						/* translators: %s: display name of the user editing the doc */
 						bp_core_add_message( sprintf( __( 'This doc is currently being edited by %s. To prevent overwrites, you cannot edit until that user has finished. Please try again in a few minutes.', 'buddypress-docs' ), bp_core_get_user_displayname( $lock ) ), 'error' );
 
 						// Redirect back to the non-edit view of this document
 						bp_core_redirect( bp_docs_get_doc_link( $doc->ID ) );
-						bp_core_redirect( $group_permalink . $bp->bp_docs->slug . '/' . $doc_slug );
+						die();
 					}
 				}
 			} else {
@@ -520,7 +567,7 @@ class BP_Docs_Component extends BP_Component {
 				bp_core_add_message( __( 'You do not have permission to edit the doc.', 'buddypress-docs' ), 'error' );
 
 				// Redirect back to the non-edit view of this document
-				bp_core_redirect( bp_docs_get_doc_link( $doc->ID ) );
+				bp_core_redirect( $doc ? bp_docs_get_doc_link( $doc->ID ) : bp_docs_get_archive_link() );
 				die();
 			}
 		}
@@ -559,14 +606,13 @@ class BP_Docs_Component extends BP_Component {
 
 		// Cancel edit lock
 		if ( !empty( $_GET['bpd_action'] ) && $_GET['bpd_action'] == 'cancel_edit_lock' ) {
-			// Check the nonce
-			check_admin_referer( 'bp_docs_cancel_edit_lock' );
+			$doc = bp_docs_get_current_doc();
 
-			// Todo: make this part of the perms system
-			if ( is_super_admin() || bp_group_is_admin() ) {
-				$doc = bp_docs_get_current_doc();
+			if ( $doc ) {
+				check_admin_referer( 'bp_docs_cancel_edit_lock_' . $doc->ID );
+			}
 
-				// Todo: get this into a proper method as well, blech
+			if ( $doc && bp_docs_user_can_force_unlock( $doc->ID ) ) {
 				delete_post_meta( $doc->ID, '_bp_docs_last_pinged' );
 
 				bp_core_add_message( __( 'Lock successfully removed', 'buddypress-docs' ) );
@@ -575,16 +621,26 @@ class BP_Docs_Component extends BP_Component {
 			}
 		}
 
-		// Cancel edit
-		// Have to have a catcher for this so the edit lock can be removed
-		if ( !empty( $_GET['bpd_action'] ) && $_GET['bpd_action'] == 'cancel_edit' ) {
+		// Cancel edit: release the current user's edit lock, then return to the Doc.
+		if ( ! empty( $_GET['bpd_action'] ) && 'cancel_edit' === $_GET['bpd_action'] ) {
 			$doc = bp_docs_get_current_doc();
 
-			// Todo: get this into a proper method as well, blech
-			delete_post_meta( $doc->ID, '_bp_docs_last_pinged' );
+			if ( $doc ) {
+				$nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
 
-			bp_core_redirect( bp_docs_get_doc_link( $doc->ID ) );
-			die();
+				// bp_docs_check_post_lock() returns the ID of another user who
+				// holds an active lock. Never release someone else's lock here.
+				if (
+					wp_verify_nonce( $nonce, 'bp_docs_cancel_edit_' . $doc->ID )
+					&& current_user_can( 'bp_docs_edit', $doc->ID )
+					&& ! bp_docs_check_post_lock( $doc->ID )
+				) {
+					delete_post_meta( $doc->ID, '_bp_docs_last_pinged' );
+				}
+
+				bp_core_redirect( bp_docs_get_doc_link( $doc->ID ) );
+				die();
+			}
 		}
 
 		// Todo: get this into a proper method
@@ -610,8 +666,9 @@ class BP_Docs_Component extends BP_Component {
 			}
 
 			// Send the user back to the most recently viewed directory if possible.
-			if ( isset( $_COOKIE[ 'bp-docs-last-docs-directory' ] ) && filter_var( $_COOKIE[ 'bp-docs-last-docs-directory' ], FILTER_VALIDATE_URL) ) {
-				$delete_redirect = $_COOKIE[ 'bp-docs-last-docs-directory' ];
+			$last_directory = isset( $_COOKIE['bp-docs-last-docs-directory'] ) ? esc_url_raw( wp_unslash( $_COOKIE['bp-docs-last-docs-directory'] ) ) : '';
+			if ( $last_directory && filter_var( $last_directory, FILTER_VALIDATE_URL ) ) {
+				$delete_redirect = $last_directory;
 			} else {
 				$delete_redirect = home_url( bp_docs_get_docs_slug() );
 			}
@@ -994,6 +1051,7 @@ class BP_Docs_Component extends BP_Component {
 	}
 
 	public static function filter_markup() {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only search filter.
 		$has_search = ! empty( $_GET['s'] );
 
 		$form_action = bp_get_requested_url();
@@ -1012,7 +1070,7 @@ class BP_Docs_Component extends BP_Component {
 			<form action="<?php echo esc_url( $form_action ); ?>" method="get">
 				<label for="docs-search" class="screen-reader-text"><?php esc_html_e( 'Search', 'buddypress-docs' ); ?></label>
 				<input id="docs-search" name="s" value="<?php the_search_query() ?>">
-				<input name="search_submit" type="submit" value="<?php _e( 'Search', 'buddypress-docs' ) ?>" />
+				<input name="search_submit" type="submit" value="<?php esc_attr_e( 'Search', 'buddypress-docs' ) ?>" />
 				<?php do_action( 'bp_docs_directory_filter_search_form' ) ?>
 			</form>
 		</div>
@@ -1035,6 +1093,7 @@ class BP_Docs_Component extends BP_Component {
 			return $is_filtered;
 		}
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only search filter.
 		if ( ! empty( $_GET['s'] ) ) {
 			$is_filtered = true;
 		}
@@ -1047,7 +1106,7 @@ class BP_Docs_Component extends BP_Component {
 	 * @since 1.0-beta
 	 */
 	function enqueue_scripts() {
-		wp_register_script( 'bp-docs-js', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/bp-docs.js' ), array( 'jquery' ) );
+		wp_register_script( 'bp-docs-js', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/bp-docs.js' ), array( 'jquery' ), BP_DOCS_VERSION, false );
 
 		// This is for edit/create scripts
 		if ( bp_docs_is_doc_edit()
@@ -1064,10 +1123,10 @@ class BP_Docs_Component extends BP_Component {
 			wp_enqueue_script( 'editor' );
 			wp_enqueue_script( 'utils' );
 
-			wp_register_script( 'bp-docs-idle-js', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/idle.js' ), array( 'jquery', 'bp-docs-js' ) );
+			wp_register_script( 'bp-docs-idle-js', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/idle.js' ), array( 'jquery', 'bp-docs-js' ), BP_DOCS_VERSION, false );
 			wp_enqueue_script( 'bp-docs-idle-js' );
 
-			wp_register_script( 'jquery-colorbox', plugins_url( BP_DOCS_PLUGIN_SLUG . '/lib/js/colorbox/jquery.colorbox-min.js' ), array( 'jquery' ) );
+			wp_register_script( 'jquery-colorbox', plugins_url( BP_DOCS_PLUGIN_SLUG . '/lib/js/colorbox/jquery.colorbox-min.js' ), array( 'jquery' ), '1.3.19', false );
 			wp_enqueue_script( 'jquery-colorbox' );
 			// Edit mode requires bp-docs-js to be dependent on TinyMCE, so we must
 			// reregister bp-docs-js with the correct dependencies
@@ -1076,13 +1135,18 @@ class BP_Docs_Component extends BP_Component {
 				'bp-docs-js',
 				plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/bp-docs.js' ),
 				array( 'jquery', 'editor' ),
-				'',
+				BP_DOCS_VERSION,
 				true
 			);
 
-			wp_register_script( 'word-counter', site_url() . '/wp-admin/js/word-count.js', array( 'jquery' ) );
-
-			wp_enqueue_script( 'bp-docs-edit-validation', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/edit-validation.js' ), array( 'jquery', 'bp-docs-js' ) );
+			wp_enqueue_script( 'bp-docs-edit-validation', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/edit-validation.js' ), array( 'jquery', 'bp-docs-js' ), BP_DOCS_VERSION, false );
+			wp_localize_script(
+				'bp-docs-edit-validation',
+				'bpDocsValidation',
+				array(
+					'nonce' => wp_create_nonce( 'bp_docs_validation' ),
+				)
+			);
 		}
 
 		// Only load our JS on the right sorts of pages. Generous to account for
@@ -1095,6 +1159,7 @@ class BP_Docs_Component extends BP_Component {
 			$submitted_data = isset( buddypress()->bp_docs->submitted_data ) ? buddypress()->bp_docs->submitted_data : null;
 
 			$strings = array(
+				/* translators: %d: number of additional items */
 				'and_x_more'        => __( 'and %d more', 'buddypress-docs' ),
 				'failed_submission' => ! empty( $submitted_data ) ? 1 : 0,
 				'show_all_tags'     => __( 'show all tags', 'buddypress-docs' ),
@@ -1134,17 +1199,17 @@ class BP_Docs_Component extends BP_Component {
 		// Load the main CSS only on the proper pages
 		if ( in_array( bp_docs_get_docs_slug(), $this->slugstocheck ) || bp_docs_is_docs_component() ) {
 			if ( is_rtl() ) {
-				wp_enqueue_style( 'bp-docs-css', $this->includes_url . 'css-rtl/screen.css' );
+				wp_enqueue_style( 'bp-docs-css', $this->includes_url . 'css-rtl/screen.css', array(), BP_DOCS_VERSION );
 			} else {
-				wp_enqueue_style( 'bp-docs-css', $this->includes_url . 'css/screen.css' );
+				wp_enqueue_style( 'bp-docs-css', $this->includes_url . 'css/screen.css', array(), BP_DOCS_VERSION );
 			}
 		}
 
 		if ( bp_docs_is_doc_edit() || bp_docs_is_doc_create() ) {
 			if ( is_rtl() ) {
-				wp_enqueue_style( 'bp-docs-edit-css', $this->includes_url . 'css-rtl/edit.css' );
+				wp_enqueue_style( 'bp-docs-edit-css', $this->includes_url . 'css-rtl/edit.css', array(), BP_DOCS_VERSION );
 			} else {
-				wp_enqueue_style( 'bp-docs-edit-css', $this->includes_url . 'css/edit.css' );
+				wp_enqueue_style( 'bp-docs-edit-css', $this->includes_url . 'css/edit.css', array(), BP_DOCS_VERSION );
 			}
 			wp_enqueue_style( 'thickbox' );
 		}

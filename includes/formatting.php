@@ -8,6 +8,10 @@
  * @since 1.0-beta
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 /**
  * Reduces the length of excerpts on the BP Docs doc list
  *

@@ -6,6 +6,10 @@
  * @since 1.6.0
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * BP Docs heartbeat interval.
  *
@@ -47,7 +51,7 @@ function bp_docs_heartbeat_callback( $response, $data ) {
 
 	$doc_id = intval( $data['doc_id'] );
 
-	if ( ! $doc_id ) {
+	if ( ! $doc_id || bp_docs_get_post_type_name() !== get_post_type( $doc_id ) || ! current_user_can( 'bp_docs_edit', $doc_id ) ) {
 		return $response;
 	}
 
@@ -91,7 +95,8 @@ function bp_docs_edit_lock_redirect() {
 
 	if ( ! empty( $lock ) && $lock != bp_loggedin_user_id() ) {
 		$bounce = bp_docs_get_doc_link( $doc_id );
-		wp_redirect( $bounce );
+		wp_safe_redirect( $bounce );
+		exit;
 	}
 }
 add_action( 'bp_actions', 'bp_docs_edit_lock_redirect' );
@@ -215,7 +220,7 @@ function bp_docs_force_cancel_edit_lock_link() {
 
 		$doc_permalink = bp_docs_get_doc_link( $doc_id );
 
-		$cancel_link = wp_nonce_url( add_query_arg( 'bpd_action', 'cancel_edit_lock', $doc_permalink ), 'bp_docs_cancel_edit_lock' );
+		$cancel_link = wp_nonce_url( add_query_arg( 'bpd_action', 'cancel_edit_lock', $doc_permalink ), 'bp_docs_cancel_edit_lock_' . $doc_id );
 
 		return apply_filters( 'bp_docs_get_force_cancel_edit_lock_link', $cancel_link, $doc_permalink );
 	}
@@ -246,7 +251,7 @@ function bp_docs_cancel_edit_link() {
 		if ( $doc_id ) {
 			$doc_permalink = bp_docs_get_doc_link( $doc_id );
 
-			$cancel_link = add_query_arg( 'bpd_action', 'cancel_edit', $doc_permalink );
+			$cancel_link = wp_nonce_url( add_query_arg( 'bpd_action', 'cancel_edit', $doc_permalink ), 'bp_docs_cancel_edit_' . $doc_id );
 		} else {
 			// This is a cancel request on a new (or otherwise unknown) doc.
 			if ( $previous_page = wp_get_referer() ) {
@@ -261,6 +266,46 @@ function bp_docs_cancel_edit_link() {
 	}
 
 /**
+ * Whether a user may force-cancel another user's edit lock on a Doc.
+ *
+ * Site moderators, super admins, and admins of the Doc's associated group.
+ *
+ * @since 2.2.8
+ *
+ * @param int $doc_id  ID of the Doc.
+ * @param int $user_id Optional. Defaults to the current user.
+ * @return bool
+ */
+function bp_docs_user_can_force_unlock( $doc_id, $user_id = 0 ) {
+	if ( ! $user_id ) {
+		$user_id = bp_loggedin_user_id();
+	}
+
+	$doc_id = (int) $doc_id;
+	if ( ! $user_id || ! $doc_id || bp_docs_get_post_type_name() !== get_post_type( $doc_id ) ) {
+		return false;
+	}
+
+	$can = user_can( $user_id, 'bp_moderate' ) || is_super_admin( $user_id );
+
+	if ( ! $can && bp_is_active( 'groups' ) ) {
+		$group_id = (int) bp_docs_get_associated_group_id( $doc_id );
+		$can      = $group_id && groups_is_user_admin( $user_id, $group_id );
+	}
+
+	/**
+	 * Filters whether a user may force-cancel the edit lock on a Doc.
+	 *
+	 * @since 2.2.8
+	 *
+	 * @param bool $can     Whether the user may force-cancel the lock.
+	 * @param int  $doc_id  ID of the Doc.
+	 * @param int  $user_id ID of the user.
+	 */
+	return (bool) apply_filters( 'bp_docs_user_can_force_unlock', $can, $doc_id, $user_id );
+}
+
+/**
  * AJAX handler for remove_edit_lock option
  *
  * This function is called when a user is editing a Doc and clicks a link to leave the page
@@ -268,12 +313,18 @@ function bp_docs_cancel_edit_link() {
  * @since 1.1
  */
 function bp_docs_remove_edit_lock() {
-	if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'bp_docs_save' ) ) {
+	if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'bp_docs_save' ) ) {
 		return;
 	}
 
-	$doc_id = isset( $_POST['doc_id'] ) ? $_POST['doc_id'] : false;
+	$doc_id = isset( $_POST['doc_id'] ) ? absint( $_POST['doc_id'] ) : false;
 	if ( ! $doc_id || ! current_user_can( 'bp_docs_edit', $doc_id ) ) {
+		return;
+	}
+
+	// bp_docs_check_post_lock() returns the ID of another user who holds an
+	// active lock. Only the current user's own (or an expired) lock is released.
+	if ( bp_docs_check_post_lock( $doc_id ) ) {
 		return;
 	}
 
@@ -289,7 +340,11 @@ add_action( 'wp_ajax_remove_edit_lock', 'bp_docs_remove_edit_lock' );
  * @since 1.6.0
  */
 function bp_docs_add_edit_lock_cb() {
-	$doc_id = isset( $_POST['doc_id'] ) ? (int) $_POST['doc_id'] : false;
+	if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'bp_docs_save' ) ) {
+		return;
+	}
+
+	$doc_id = isset( $_POST['doc_id'] ) ? absint( $_POST['doc_id'] ) : false;
 
 	if ( ! $doc_id ) {
 		return;
@@ -305,7 +360,7 @@ function bp_docs_add_edit_lock_cb() {
 		return;
 	}
 
-	if ( ! is_user_logged_in() ) {
+	if ( ! is_user_logged_in() || ! current_user_can( 'bp_docs_edit', $doc_id ) ) {
 		return;
 	}
 

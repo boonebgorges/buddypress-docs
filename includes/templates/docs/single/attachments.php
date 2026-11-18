@@ -1,3 +1,11 @@
+<?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
+?>
+
 <?php if ( bp_docs_is_doc_edit() || bp_docs_is_doc_create() ) : ?>
 	<?php bp_docs_media_buttons( 'doc_content' ) ?>
 <?php endif; ?>

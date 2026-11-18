@@ -89,9 +89,6 @@ class BP_Docs {
 		// Load the BP Component extension
 		add_action( 'bp_docs_load', 	array( $this, 'do_integration' ), 6 );
 
-		// Load textdomain
-		add_action( 'bp_docs_load',     array( $this, 'load_plugin_textdomain' ) );
-
 		// Let other plugins know that BP Docs has finished initializing
 		add_action( 'bp_init',          array( $this, 'init_hook' ) );
 
@@ -124,26 +121,6 @@ class BP_Docs {
 	 */
 	function bp_docs() {
 		$this->__construct();
-	}
-
-	/**
-	 * Loads the textdomain for the plugin.
-	 * Language files are used in this order of preference:
-	 *    - WP_LANG_DIR/plugins/buddypress-docs-LOCALE.mo
-	 *    - WP_PLUGIN_DIR/buddypress-docs/languages/buddypress-docs-LOCALE.mo
-	 *
-	 * @since 1.0.2
-	 */
-	function load_plugin_textdomain() {
-		/*
-		 * As of WP 4.6, WP has, by this point in the load order, already
-		 * automatically added language files in this location:
-		 * wp-content/languages/plugins/buddypress-docs-es_ES.mo
-		 * load_plugin_textdomain() also looks for language files in that location,
-		 * then it falls back to translations in the plugin's /languages folder, like
-		 * wp-content/buddypress-docs/languages/buddypress-docs-es_ES.mo
-		 */
-		load_plugin_textdomain( 'buddypress-docs', false, plugin_basename( dirname( __FILE__ ) ) . '/languages' );
 	}
 
 	/**
@@ -193,7 +170,6 @@ class BP_Docs {
 		// Dashboard-specific functions
 		if ( is_admin() ) {
 			require( BP_DOCS_INCLUDES_PATH . 'admin.php' );
-			require( BP_DOCS_INCLUDES_PATH . 'upgrade.php' );
 		}
 	}
 
@@ -357,6 +333,11 @@ class BP_Docs {
 			'public'       => true,
 			'show_ui'      => $this->show_cpt_ui(),
 			'hierarchical' => true,
+			// Docs are created through the Docs interface. Keep core paths
+			// (eg XML-RPC) from creating them with arbitrary settings.
+			'capabilities' => array(
+				'create_posts' => 'bp_moderate',
+			),
 			'supports'     => array( 'title', 'editor', 'revisions', 'excerpt', 'comments', 'author' ),
 			'query_var'    => true,
 			'has_archive'  => true,
@@ -381,6 +362,7 @@ class BP_Docs {
 			'hierarchical' => true,
 			'public'       => false,
 			'show_ui'      => false,
+			'capabilities' => bp_docs_internal_taxonomy_capabilities(),
 		) );
 
 		// Register the bp_docs_access taxonomy
@@ -388,6 +370,7 @@ class BP_Docs {
 			'hierarchical' => false,
 			'public'       => false,
 			'show_ui'      => false,
+			'capabilities' => bp_docs_internal_taxonomy_capabilities(),
 		) );
 
 		// Register the bp_docs_comment_access taxonomy.
@@ -395,6 +378,7 @@ class BP_Docs {
 			'hierarchical' => false,
 			'public'       => false,
 			'show_ui'      => false,
+			'capabilities' => bp_docs_internal_taxonomy_capabilities(),
 		) );
 
 		do_action( 'bp_docs_registered_post_type' );
@@ -608,15 +592,26 @@ class BP_Docs {
 		// that the current user is the admin of
 		if ( $posts_query->is_single && bp_docs_get_post_type_name() === $posts_query->get( 'post_type' ) ) {
 
+			$doc_id   = (int) $posts_query->get( 'p' );
 			$doc_slug = $posts_query->get( 'name' );
 
-			// Direct query, because barf
-			global $wpdb;
-			$author_id = $wpdb->get_var( $wpdb->prepare(
-				"SELECT post_author FROM {$wpdb->posts} WHERE post_type = %s AND post_name = %s",
-				bp_docs_get_post_type_name(),
-				$doc_slug
-			) );
+			// Prefer ID (set for ID-based URLs and by the hierarchy addon for child docs).
+			if ( $doc_id ) {
+				$doc       = get_post( $doc_id );
+				$author_id = ( $doc && bp_docs_get_post_type_name() === $doc->post_type ) ? $doc->post_author : false;
+			} elseif ( '' !== (string) $doc_slug ) {
+				$matched_posts = get_posts( array(
+					'name'        => $doc_slug,
+					'post_type'   => bp_docs_get_post_type_name(),
+					'post_status' => array( 'publish', 'trash', 'bp_docs_pending' ),
+					'numberposts' => 1,
+				) );
+
+				$author_id = ( ! empty( $matched_posts ) ) ? $matched_posts[0]->post_author : false;
+			} else {
+				// No ID or slug to look up; an empty post_name would match slugless drafts.
+				return;
+			}
 
 			// Post author or mod can visit it
 			if ( $author_id && ( $author_id == get_current_user_id() || current_user_can( 'bp_moderate' ) ) ) {

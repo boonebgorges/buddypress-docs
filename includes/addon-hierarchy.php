@@ -23,7 +23,7 @@ class BP_Docs_Hierarchy {
 		add_filter( 'bp_docs_post_type_args', array( $this, 'register_with_post_type' ) );
 
 		// Set parent_id for posts saved from the front end
-		add_filter( 'bp_docs_get_parent_id_via_post', array( $this, 'set_parent_id_via_post' ) );
+		add_filter( 'bp_docs_get_parent_id_via_post', array( $this, 'set_parent_id_via_post' ), 10, 2 );
 
 		// Display a doc's parent on its single doc page
 		add_action( 'bp_docs_single_doc_meta', array( $this, 'show_parent' ) );
@@ -38,34 +38,41 @@ class BP_Docs_Hierarchy {
 	/**
 	 * Ensure that child Docs have the query parsed correctly.
 	 *
-	 * get_page_by_path() is mangling the parse, because I've filtered out
-	 * the ancestors' slugs from the URL. What I'm doing below is pretty
-	 * hackish.
+	 * Docs are registered as a hierarchical post type, but Doc permalinks are
+	 * flat (see BP_Docs_Component::filter_permalinks()). For hierarchical
+	 * post types, WP_Query treats the post type query var as a full path
+	 * and resolves it with get_page_by_path(), which fails for child Docs
+	 * because the URL does not contain the ancestors' slugs.
+	 *
+	 * Doc slugs are unique across all hierarchies (see
+	 * bp_docs_force_unique_slugs()), so we clear the post type query var
+	 * and let WP_Query look the Doc up by 'name' alone.
 	 *
 	 * @since 1.8.5
+	 * @since 2.2.8 Rewritten to avoid a direct database query.
+	 *
+	 * @param WP_Query $q Query object.
 	 */
 	public function parse_query( $q ) {
-		$pt = $q->get( 'post_type' );
-		if ( ! $pt || bp_docs_get_post_type_name() !== $pt ) {
+		$pt = bp_docs_get_post_type_name();
+		if ( $pt !== $q->get( 'post_type' ) ) {
 			return;
 		}
 
-		$post_name = $q->get( 'name' );
-		if ( ! $post_name ) {
+		$pt_object = get_post_type_object( $pt );
+		if ( ! $pt_object || ! $pt_object->query_var ) {
 			return;
 		}
 
-		// Bypass get_post_by_path().
-		global $wpdb;
-		$sql = $wpdb->prepare( "SELECT * FROM {$wpdb->posts} WHERE post_name = %s AND post_type = %s AND post_parent != 0", $post_name, $pt );
-		$post_id = $wpdb->get_var( $sql );
+		$requested = $q->get( $pt_object->query_var );
 
-		if ( ! empty( $post_id ) ) {
-			$q->set( 'p', $post_id );
-			$q->set( 'name', '' );
-			$q->set( 'pagename', '' );
-			$q->set( bp_docs_get_post_type_name(), '' );
+		// Leave full paths (parent/child) to core, which resolves them correctly.
+		if ( ! $requested || false !== strpos( $requested, '/' ) ) {
+			return;
 		}
+
+		$q->set( $pt_object->query_var, '' );
+		$q->set( 'name', $requested );
 	}
 
 	/**
@@ -85,17 +92,33 @@ class BP_Docs_Hierarchy {
 	/**
 	 * Set parent_id for posts saved from the front end
 	 *
-	 * @since 1.0-beta
+	 * The submitted value is read (after nonce verification) by
+	 * bp_docs_save_doc_via_post() and passed in here.
 	 *
-	 * @param int $parent_id The parent ID from BP_Docs_Query->save()
-	 * @return int $parent_id Returns the doc's parent_id on success
+	 * @since 1.0-beta
+	 * @since 2.2.8 Added the `$posted_parent_id` parameter. No longer reads from $_POST.
+	 *
+	 * @param int $parent_id        Default parent ID.
+	 * @param int $posted_parent_id Parent ID submitted with the Doc form.
+	 * @return int
 	 */
-	function set_parent_id_via_post( $parent_id ) {
-		if ( ! empty( $_POST['parent_id'] ) ) {
-			$parent_id = $_POST['parent_id'];
+	function set_parent_id_via_post( $parent_id, $posted_parent_id = 0 ) {
+		$posted_parent_id = absint( $posted_parent_id );
+
+		if ( ! $posted_parent_id ) {
+			return $parent_id;
 		}
 
-		return $parent_id;
+		// The parent must be a Doc that the current user is able to read.
+		if ( bp_docs_get_post_type_name() !== get_post_type( $posted_parent_id ) ) {
+			return $parent_id;
+		}
+
+		if ( ! current_user_can( 'bp_docs_read', $posted_parent_id ) ) {
+			return $parent_id;
+		}
+
+		return $posted_parent_id;
 	}
 
 	/**
@@ -111,7 +134,13 @@ class BP_Docs_Hierarchy {
 
 		if ( ! empty( $post->post_parent ) ) {
 			$parent = get_post( $post->post_parent );
-			if ( !empty( $parent->ID ) ) {
+
+			// Only show a parent Doc that the current user can read.
+			if ( ! $parent || bp_docs_get_post_type_name() !== $parent->post_type || ! current_user_can( 'bp_docs_read', $parent->ID ) ) {
+				$parent = false;
+			}
+
+			if ( ! empty( $parent->ID ) ) {
 				$parent_url = bp_docs_get_doc_link( $parent->ID );
 				$parent_title = $parent->post_title;
 

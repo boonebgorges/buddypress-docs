@@ -3,19 +3,23 @@
 Plugin Name: BuddyPress Docs
 Plugin URI: http://github.com/boonebgorges/buddypress-docs
 Description: Adds collaborative Docs to BuddyPress
-Version: 2.2.7
+Version: 2.2.8
 Author: Boone B Gorges, David Cavins
 Author URI: http://boone.gorg.es
 Text Domain: buddypress-docs
 Domain Path: /languages/
-Licence: GPLv3
+License: GPLv3
 */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /*
 It's on like Donkey Kong
 */
 
-define( 'BP_DOCS_VERSION', '2.2.7' );
+define( 'BP_DOCS_VERSION', '2.2.8' );
 
 require_once __DIR__ . '/vendor/autoload.php';
 

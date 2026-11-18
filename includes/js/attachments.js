@@ -23,7 +23,7 @@ window.wp = window.wp || {};
 			data: {
 				'action': 'doc_attachment_item_markup',
 				'attachment_id': r.id,
-
+				'nonce': bp_docs_attachments.nonce
 			},
 			success: function(s) {
 				$('#doc-attachments-ul').prepend(s.data);
@@ -43,7 +43,8 @@ window.wp = window.wp || {};
 
 		options = {
 			data: {
-				group_slug: groupSlug
+				group_slug: groupSlug,
+				nonce: bp_docs_attachments.nonce
 			},
 			success: function( response ) {
 				wp.media.model.settings.post.id = response.doc_id;

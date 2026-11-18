@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class BP_Docs_Attachments {
 	protected $doc_id;
 	protected $override_doc_id;
@@ -46,7 +50,7 @@ class BP_Docs_Attachments {
 		// Catch delete request
 		add_action( 'bp_actions', array( $this, 'catch_delete_request' ) );
 
-		// Ensure that all logged-in users have the 'upload_files' cap
+		// Let Doc editors upload files to the Doc they're editing
 		add_filter( 'map_meta_cap', array( __CLASS__, 'map_meta_cap' ), 10, 4 );
 
 		// Admin notice about directory accessibility
@@ -103,9 +107,13 @@ class BP_Docs_Attachments {
 	 * @since 1.4
 	 */
 	function catch_attachment_request() {
-		if ( ! empty( $_GET['bp-attachment'] ) ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public file request. Read access to the Doc is enforced by BP_Docs::protect_doc_access().
+		$requested = isset( $_GET['bp-attachment'] ) ? sanitize_text_field( wp_unslash( $_GET['bp-attachment'] ) ) : '';
 
-			$fn = wp_basename( $_GET['bp-attachment'] );
+		if ( '' !== $requested ) {
+
+			// Further validated by filename_is_safe() below.
+			$fn = wp_basename( $requested );
 
 			// Sanity check - don't do anything if this is not a Doc
 			if ( ! bp_docs_is_existing_doc() ) {
@@ -123,8 +131,10 @@ class BP_Docs_Attachments {
 				wp_die( esc_html__( 'File not found.', 'buddypress-docs' ) );
 			}
 
-			error_reporting( 0 );
-			ob_end_clean();
+			// Discard any buffered output so that it doesn't corrupt the file.
+			while ( ob_get_level() ) {
+				ob_end_clean();
+			}
 
 			$headers = $this->generate_headers( $filepath );
 
@@ -135,7 +145,9 @@ class BP_Docs_Attachments {
 				@header("{$name}: {$field_value}");
 			}
 
-			ob_end_clean();
+			// Stream the file. WP_Filesystem has no streaming method, and
+			// get_contents() would read the whole file into memory.
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile
 			readfile( $filepath );
 			exit();
 		}
@@ -151,9 +163,11 @@ class BP_Docs_Attachments {
 	 * @return string
 	 */
 	public function redirect_canonical( $redirect_url, $requested_url ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Only carries a public query arg through a canonical redirect.
 		if ( isset( $_GET['p'] ) && isset( $_GET['bp-attachment'] ) && false !== strpos( $requested_url, 'bp-attachments' ) ) {
-			$redirect_url = add_query_arg( 'bp-attachment', $_GET['bp-attachment'], $redirect_url );
+			$redirect_url = add_query_arg( 'bp-attachment', rawurlencode( sanitize_text_field( wp_unslash( $_GET['bp-attachment'] ) ) ), $redirect_url );
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 		return $redirect_url;
 	}
@@ -205,7 +219,7 @@ class BP_Docs_Attachments {
 
 		$path = $this->get_htaccess_path();
 		if ( file_exists( $path ) ) {
-			unlink( $path );
+			wp_delete_file( $path );
 		}
 
 		return true;
@@ -343,14 +357,15 @@ class BP_Docs_Attachments {
 				}
 			} else {
 				// AJAX
+				// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Only identifies the Doc whose upload directory is in use. The upload or query request itself is checked by WordPress and self::map_meta_cap().
 				if ( isset( $_REQUEST['query']['auto_draft_id'] ) ) {
 
-					$this->doc_id = (int) $_REQUEST['query']['auto_draft_id'];
+					$this->doc_id = absint( $_REQUEST['query']['auto_draft_id'] );
 
-				} else if ( isset( $_REQUEST['action'] ) && 'upload-attachment' == $_REQUEST['action'] && isset( $_REQUEST['post_id'] ) ) {
+				} else if ( isset( $_REQUEST['action'] ) && 'upload-attachment' === $_REQUEST['action'] && isset( $_REQUEST['post_id'] ) ) {
 
-					$maybe_doc = get_post( $_REQUEST['post_id'] );
-					if ( bp_docs_get_post_type_name() == $maybe_doc->post_type ) {
+					$maybe_doc = get_post( absint( $_REQUEST['post_id'] ) );
+					if ( $maybe_doc && bp_docs_get_post_type_name() === $maybe_doc->post_type ) {
 						$this->doc_id = $maybe_doc->ID;
 					}
 
@@ -358,12 +373,19 @@ class BP_Docs_Attachments {
 					// In order to check if this is a doc, must check ajax referer
 					$this->doc_id = $this->get_doc_id_from_url( wp_get_referer() );
 				}
+				// phpcs:enable WordPress.Security.NonceVerification.Recommended
 			}
 		}
 
 		return $this->doc_id;
 	}
 
+	/**
+	 * Process a request to delete one of the current Doc's attachments.
+	 *
+	 * @since 1.4
+	 * @since 2.2.8 The attachment must belong to the current Doc.
+	 */
 	public function catch_delete_request() {
 		if ( ! bp_docs_is_existing_doc() ) {
 			return;
@@ -373,21 +395,34 @@ class BP_Docs_Attachments {
 			return;
 		}
 
-		if ( ! current_user_can( 'bp_docs_edit' ) ) {
+		$doc = bp_docs_get_current_doc();
+		if ( ! $doc || ! current_user_can( 'bp_docs_edit', $doc->ID ) ) {
 			return;
 		}
 
-		$attachment_id = intval( $_GET['delete_attachment'] );
+		$attachment_id = absint( $_GET['delete_attachment'] );
 
 		check_admin_referer( 'bp_docs_delete_attachment_' . $attachment_id );
 
-		if ( wp_delete_attachment( $attachment_id ) ) {
+		// Only attachments of the current Doc may be deleted from it.
+		$attachment = get_post( $attachment_id );
+		$is_doc_attachment = $attachment
+			&& 'attachment' === $attachment->post_type
+			&& (int) $doc->ID === (int) $attachment->post_parent;
+
+		if ( $is_doc_attachment && wp_delete_attachment( $attachment_id ) ) {
 			bp_core_add_message( __( 'Attachment deleted', 'buddypress-docs' ) );
 		} else {
 			bp_core_add_message( __( 'Could not delete attachment', 'buddypress-docs' ), 'error' );
 		}
 
-		wp_redirect( wp_get_referer() );
+		$redirect = wp_get_referer();
+		if ( ! $redirect ) {
+			$redirect = bp_docs_get_doc_edit_link( $doc->ID );
+		}
+
+		wp_safe_redirect( $redirect );
+		exit;
 	}
 
 	/**
@@ -428,11 +463,12 @@ class BP_Docs_Attachments {
 
 	function enqueue_scripts() {
 		if ( bp_docs_is_doc_edit() || bp_docs_is_doc_create() ) {
-			wp_enqueue_script( 'bp-docs-attachments', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/attachments.js' ), array( 'media-editor', 'media-views', 'bp-docs-js' ), false, true );
+			wp_enqueue_script( 'bp-docs-attachments', plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/js/attachments.js' ), array( 'media-editor', 'media-views', 'bp-docs-js' ), BP_DOCS_VERSION, true );
 
 			wp_localize_script( 'bp-docs-attachments', 'bp_docs_attachments', array(
 				'upload_title'  => __( 'Upload File', 'buddypress-docs' ),
 				'upload_button' => __( 'OK', 'buddypress-docs' ),
+				'nonce'         => wp_create_nonce( 'bp_docs_attachments' ),
 			) );
 		}
 	}
@@ -447,12 +483,14 @@ class BP_Docs_Attachments {
 	 * @since 1.4
 	 */
 	public function filter_gallery_posts( $query ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Narrows core's query-attachments request, which is capability-checked by WordPress.
 		// This is also a surrogate check for DOING_AJAX
 		if ( ! isset( $_POST['action'] ) || 'query-attachments' !== $_POST['action'] ) {
 			return;
 		}
 
-		$post_id = isset( $_POST['post_id'] ) ? intval( $_POST['post_id'] ) : 0;
+		$post_id = isset( $_POST['post_id'] ) ? absint( $_POST['post_id'] ) : 0;
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 
 		if ( ! $post_id ) {
 			return;
@@ -465,7 +503,7 @@ class BP_Docs_Attachments {
 		}
 
 		// Phew
-		$query->set( 'post_parent', $_REQUEST['post_id'] );
+		$query->set( 'post_parent', $post_id );
 	}
 
 	public function filter_directory_posts( $query ) {
@@ -475,7 +513,7 @@ class BP_Docs_Attachments {
 
 		remove_action( 'pre_get_posts', array( $this, 'filter_directory_posts' ), 48 );
 
-		$has_attachment = isset( $_REQUEST['has-attachment'] ) && in_array( $_REQUEST['has-attachment'], array( 'yes', 'no' ) ) ? $_REQUEST['has-attachment'] : '';
+		$has_attachment = self::get_has_attachment_filter();
 
 		if ( $has_attachment ) {
 			$post__in = $query->get( 'post__in' );
@@ -486,6 +524,20 @@ class BP_Docs_Attachments {
 		}
 
 		add_action( 'pre_get_posts', array( $this, 'filter_directory_posts' ), 48 );
+	}
+
+	/**
+	 * Gets the value of the 'has-attachment' directory filter from the request.
+	 *
+	 * @since 2.2.8
+	 *
+	 * @return string 'yes', 'no', or an empty string when not filtered.
+	 */
+	public static function get_has_attachment_filter() {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only directory filter.
+		$value = isset( $_REQUEST['has-attachment'] ) ? sanitize_key( wp_unslash( $_REQUEST['has-attachment'] ) ) : '';
+
+		return in_array( $value, array( 'yes', 'no' ), true ) ? $value : '';
 	}
 
 	public function get_docs_with_attachments() {
@@ -515,7 +567,7 @@ class BP_Docs_Attachments {
 		}
 
 		$url = bp_docs_get_doc_link( $doc_id );
-		$url_parts = parse_url( $url );
+		$url_parts = wp_parse_url( $url );
 
 		if ( ! empty( $url_parts['path'] ) ) {
 			$rules = array(
@@ -575,6 +627,8 @@ class BP_Docs_Attachments {
 		if ( function_exists( 'apache_setenv' ) ) {
 			@apache_setenv( 'no-gzip', 1 );
 		}
+		// Compression would make the Content-Length header below inaccurate.
+		// phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
 		@ini_set( 'zlib.output_compression', 'Off' );
 
 		// @todo Make this more configurable
@@ -625,22 +679,21 @@ class BP_Docs_Attachments {
 	}
 
 	public static function filter_markup() {
-		$has_attachment = isset( $_REQUEST['has-attachment'] ) && in_array( $_REQUEST['has-attachment'], array( 'yes', 'no' ) ) ? $_REQUEST['has-attachment'] : '';
-		$form_action = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-		foreach ( $_GET as $k => $v ) {
-			$form_action = remove_query_arg( $k, $form_action );
-		}
+		$has_attachment = self::get_has_attachment_filter();
+
+		// Current URL without its query string. (Browsers drop it from GET form actions anyway.)
+		$form_action = strtok( bp_get_requested_url(), '?' );
 		?>
 
 		<div id="docs-filter-section-attachments" class="docs-filter-section<?php if ( $has_attachment ) : ?> docs-filter-section-open<?php endif ?>">
-			<form method="get" action="<?php echo esc_attr( $form_action ); ?>">
-				<label for="has-attachment"><?php _e( 'Has attachment?', 'buddypress-docs' ) ?></label>
+			<form method="get" action="<?php echo esc_url( $form_action ); ?>">
+				<label for="has-attachment"><?php esc_html_e( 'Has attachment?', 'buddypress-docs' ) ?></label>
 				<select id="has-attachment" name="has-attachment">
-					<option value="yes"<?php selected( $has_attachment, 'yes' ) ?>><?php _e( 'Yes', 'buddypress-docs' ) ?></option>
-					<option value="no"<?php selected( $has_attachment, 'no' ) ?>><?php _e( 'No', 'buddypress-docs' ) ?></option>
-					<option value=""<?php selected( $has_attachment, '' ) ?>><?php _e( 'Doesn&#8217;t matter', 'buddypress-docs' ) ?></option>
+					<option value="yes"<?php selected( $has_attachment, 'yes' ) ?>><?php esc_html_e( 'Yes', 'buddypress-docs' ) ?></option>
+					<option value="no"<?php selected( $has_attachment, 'no' ) ?>><?php esc_html_e( 'No', 'buddypress-docs' ) ?></option>
+					<option value=""<?php selected( $has_attachment, '' ) ?>><?php esc_html_e( 'Doesn&#8217;t matter', 'buddypress-docs' ) ?></option>
 				</select>
-				<input type="submit" value="<?php _e( 'Filter', 'buddypress-docs' ) ?>" />
+				<input type="submit" value="<?php esc_attr_e( 'Filter', 'buddypress-docs' ) ?>" />
 				<?php do_action( 'bp_docs_directory_filter_attachments_form' ) ?>
 			</form>
 		</div>
@@ -665,21 +718,32 @@ class BP_Docs_Attachments {
 			return $is_filtered;
 		}
 
-		if ( isset( $_GET['has-attachment'] ) && ( 'yes' == $_GET['has-attachment'] || 'no' == $_GET['has-attachment'] ) ) {
+		if ( self::get_has_attachment_filter() ) {
 			$is_filtered = true;
 		}
 	    return $is_filtered;
 	}
 
 	/**
-	 * Give users the 'edit_post' and 'upload_files' cap, when appropriate
+	 * Give users the 'upload_files' and 'edit_post' caps needed to add files to a Doc.
+	 *
+	 * The caps are granted only in two contexts, and only to users who can
+	 * edit the Doc in question:
+	 *
+	 * - On the Doc Edit and Create screens, so the media modal can load.
+	 * - During an 'upload-attachment' request to async-upload.php that
+	 *   carries a valid 'media-form' nonce and targets a Doc.
+	 *
+	 * 'edit_post' is granted only for the Doc itself, never for other posts.
 	 *
 	 * @since 1.4
+	 * @since 2.2.8 Requires the 'bp_docs_edit' (or 'bp_docs_create') cap, and
+	 *              no longer grants 'edit_post' for arbitrary posts.
 	 *
-	 * @param array $caps The mapped caps
-	 * @param string $cap The cap being mapped
-	 * @param int $user_id The user id in question
-	 * @param $args
+	 * @param array  $caps    The mapped caps.
+	 * @param string $cap     The cap being mapped.
+	 * @param int    $user_id The user id in question.
+	 * @param array  $args    Additional arguments. For 'edit_post', the post ID.
 	 * @return array $caps
 	 */
 	public static function map_meta_cap( $caps, $cap, $user_id, $args ) {
@@ -687,63 +751,88 @@ class BP_Docs_Attachments {
 			return $caps;
 		}
 
-		$maybe_user = new WP_User( $user_id );
-		if ( ! is_a( $maybe_user, 'WP_User' ) || empty( $maybe_user->ID ) ) {
+		if ( ! $user_id ) {
 			return $caps;
 		}
 
-		$is_doc = false;
+		$doc_id = self::get_upload_doc_id( $user_id );
 
-		// DOING_AJAX is not set yet, so we cheat
-		$is_ajax = isset( $_SERVER['REQUEST_METHOD'] ) && 'POST' === $_SERVER['REQUEST_METHOD'] && 'async-upload.php' === substr( $_SERVER['REQUEST_URI'], strrpos( $_SERVER['REQUEST_URI'], '/' ) + 1 );
-
-		if ( $is_ajax ) {
-			// WordPress sends the 'media-form' nonce, which we use
-			// as an initial screen
-			$nonce   = isset( $_REQUEST['_wpnonce'] ) ? stripslashes( $_REQUEST['_wpnonce'] ) : '';
-			$post_id = isset( $_REQUEST['post_id'] ) ? intval( $_REQUEST['post_id'] ) : '';
-
-			if ( wp_verify_nonce( $nonce, 'media-form' ) && $post_id ) {
-				$post   = get_post( $post_id );
-
-				// The dummy Doc created during the Create
-				// process should pass this test, in addition to
-				// existing Docs
-				$is_doc = isset( $post->post_type ) && bp_docs_get_post_type_name() === $post->post_type;
-			}
-		} else {
-			$is_doc = bp_docs_is_existing_doc() || bp_docs_is_doc_create();
+		// Not a context in which this user may upload to a Doc.
+		if ( false === $doc_id ) {
+			return $caps;
 		}
 
-		if ( $is_doc ) {
-			$caps = array( 'exist' );
+		if ( 'upload_files' === $cap ) {
+			return array( 'exist' );
+		}
 
-			// Since we've already done the permissions check,
-			// we can filter future current_user_can() checks on
-			// this pageload
-			add_filter( 'map_meta_cap', array( __CLASS__, 'map_meta_cap_supp' ), 10, 4 );
+		// 'edit_post' is only granted for the Doc being uploaded to.
+		if ( $doc_id && isset( $args[0] ) && (int) $args[0] === $doc_id ) {
+			return array( 'exist' );
 		}
 
 		return $caps;
 	}
 
 	/**
-	 * Make sure the current user has the 'edit_post' and 'upload_files' caps, when appropriate
+	 * Get the ID of the Doc that a user is allowed to upload files to in the current request.
 	 *
-	 * We do the necessary permissions checks in self::map_meta_cap(). If
-	 * the checks pass, then we can blindly hook this filter without doing
-	 * the permissions logic again. *Do not call this filter directly.* I'd
-	 * mark it private but it's not possible given the way that WP's filter
-	 * system works.
+	 * @since 2.2.8
 	 *
-	 * @since 1.4
+	 * @param int $user_id ID of the user.
+	 * @return int|false Doc ID; 0 on the Create screen before a Doc exists;
+	 *                   false if the user may not upload to a Doc in this request.
 	 */
-	public static function map_meta_cap_supp( $caps, $cap, $user_id, $args ) {
-		if ( 'upload_files' !== $cap && 'edit_post' !== $cap ) {
-			return $caps;
+	protected static function get_upload_doc_id( $user_id ) {
+		// DOING_AJAX is not set yet, so we cheat
+		$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+		$is_ajax     = isset( $_SERVER['REQUEST_METHOD'] ) && 'POST' === $_SERVER['REQUEST_METHOD'] && 'async-upload.php' === substr( $request_uri, strrpos( $request_uri, '/' ) + 1 );
+
+		if ( $is_ajax ) {
+			// Only the upload action. async-upload.php's other mode
+			// ('fetch') displays details of arbitrary attachments.
+			$nonce_ok = isset( $_REQUEST['_wpnonce'], $_REQUEST['action'] )
+				&& 'upload-attachment' === $_REQUEST['action']
+				&& wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ), 'media-form' );
+
+			$post_id = $nonce_ok && isset( $_REQUEST['post_id'] ) ? absint( $_REQUEST['post_id'] ) : 0;
+
+			// Existing Docs, and the dummy Doc created on the Create
+			// screen (whose author is the current user), pass this test.
+			if ( $post_id && bp_docs_get_post_type_name() === get_post_type( $post_id ) && user_can( $user_id, 'bp_docs_edit', $post_id ) ) {
+				return $post_id;
+			}
+
+			return false;
 		}
 
-		return array( 'exist' );
+		if ( bp_docs_is_doc_edit() ) {
+			$doc = bp_docs_get_current_doc();
+			if ( $doc && user_can( $user_id, 'bp_docs_edit', $doc->ID ) ) {
+				return (int) $doc->ID;
+			}
+
+			return false;
+		}
+
+		if ( bp_docs_is_doc_create() && user_can( $user_id, 'bp_docs_create' ) ) {
+			return 0;
+		}
+
+		return false;
+	}
+
+	/**
+	 * No longer used.
+	 *
+	 * Previously hooked by self::map_meta_cap() to grant 'upload_files' and
+	 * 'edit_post' for all posts for the remainder of the request.
+	 *
+	 * @since 1.4
+	 * @deprecated 2.2.8
+	 */
+	public static function map_meta_cap_supp( $caps, $cap, $user_id, $args ) {
+		return $caps;
 	}
 
 	public function admin_notice_init() {
@@ -802,7 +891,7 @@ class BP_Docs_Attachments {
 	public function admin_notice() {
 		global $is_apache, $is_nginx, $is_IIS, $is_iis7;
 
-		$dismiss_url = add_query_arg( 'bpdocs-disable-attachment-notice', '1', $_SERVER['REQUEST_URI'] );
+		$dismiss_url = add_query_arg( 'bpdocs-disable-attachment-notice', '1' );
 		$dismiss_url = wp_nonce_url( $dismiss_url, 'bpdocs-disable-attachment-notice' );
 
 		if ( ! bp_is_root_blog() ) {
@@ -811,6 +900,10 @@ class BP_Docs_Attachments {
 
 		$upload_dir = $this->mod_upload_dir( wp_upload_dir( null, false ) );
 		$att_url = str_replace( get_option( 'home' ), '', $upload_dir['url'] );
+
+		// Server-specific help, if we recognize the server software.
+		$help_p   = '';
+		$help_url = '';
 
 		restore_current_blog();
 
@@ -845,12 +938,12 @@ class BP_Docs_Attachments {
 		$expiry_time     = absint( bp_get_option( 'bp_docs_attachment_protection_expiry' ) );
 		$expiry_stamp    = wp_date( 'Y-m-d g:i:s A', $expiry_time );
 		$last_check_time = wp_date( 'Y-m-d g:i:s A', $expiry_time - $this->check_interval );
-		$force_check_url = add_query_arg( 'bpdocs-check-attachment-protection', '1', $_SERVER['REQUEST_URI'] );
+		$force_check_url = add_query_arg( 'bpdocs-check-attachment-protection', '1' );
 		$force_check_url = wp_nonce_url( $force_check_url, 'bpdocs-check-attachment-protection' );
 		?>
 
 		<div class="message error">
-			<p><?php _e( '<strong>Your BuddyPress Docs attachments directory is publicly accessible.</strong> Doc attachments will not be properly protected from direct viewing, even if the parent Docs are non-public.', 'buddypress-docs' ) ?></p>
+			<p><?php echo wp_kses( __( '<strong>Your BuddyPress Docs attachments directory is publicly accessible.</strong> Doc attachments will not be properly protected from direct viewing, even if the parent Docs are non-public.', 'buddypress-docs' ), array( 'strong' => array() ) ); ?></p>
 
 			<?php if ( $help_p ) : ?>
 				<p><?php echo wp_kses_post( $help_p ); ?></p>
@@ -860,7 +953,8 @@ class BP_Docs_Attachments {
 				<?php
 					echo wp_kses_post(
 						sprintf(
-							__( 'Access protection was last checked %s and will be checked again %s. <a href="%s">Test access protection now.</a>', 'buddypress-docs' ),
+							/* translators: 1: date and time of the last check, 2: date and time of the next check, 3: URL that runs the check now */
+							__( 'Access protection was last checked %1$s and will be checked again %2$s. <a href="%3$s">Test access protection now.</a>', 'buddypress-docs' ),
 							esc_html( $last_check_time ),
 							esc_html( $expiry_stamp ),
 							esc_url( $force_check_url )
@@ -874,6 +968,7 @@ class BP_Docs_Attachments {
 					<?php
 					echo wp_kses_post(
 						sprintf(
+							/* translators: %s: URL of the wiki page */
 							__( 'See <a href="%s">this wiki page</a> for more information.', 'buddypress-docs' ),
 							esc_url( $help_url )
 						)

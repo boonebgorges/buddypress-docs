@@ -1,3 +1,8 @@
+<?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+?>
 <?php bp_docs_inline_toggle_js() ?>
 
 <?php if ( bp_docs_has_docs() ) : ?>
@@ -10,19 +15,19 @@
 			<?php endif ?>
 
 			<th scope="column" class="title-cell<?php bp_docs_is_current_orderby_class( 'title' ) ?>">
-				<a href="<?php bp_docs_order_by_link( 'title' ) ?>"><?php _e( 'Title', 'buddypress-docs' ); ?></a>
+				<a href="<?php bp_docs_order_by_link( 'title' ) ?>"><?php esc_html_e( 'Title', 'buddypress-docs' ); ?></a>
 			</th>
 
 			<th scope="column" class="author-cell<?php bp_docs_is_current_orderby_class( 'author' ) ?>">
-				<a href="<?php bp_docs_order_by_link( 'author' ) ?>"><?php _e( 'Author', 'buddypress-docs' ); ?></a>
+				<a href="<?php bp_docs_order_by_link( 'author' ) ?>"><?php esc_html_e( 'Author', 'buddypress-docs' ); ?></a>
 			</th>
 
 			<th scope="column" class="created-date-cell<?php bp_docs_is_current_orderby_class( 'created' ) ?>">
-				<a href="<?php bp_docs_order_by_link( 'created' ) ?>"><?php _e( 'Created', 'buddypress-docs' ); ?></a>
+				<a href="<?php bp_docs_order_by_link( 'created' ) ?>"><?php esc_html_e( 'Created', 'buddypress-docs' ); ?></a>
 			</th>
 
 			<th scope="column" class="edited-date-cell<?php bp_docs_is_current_orderby_class( 'modified' ) ?>">
-				<a href="<?php bp_docs_order_by_link( 'modified' ) ?>"><?php _e( 'Last Edited', 'buddypress-docs' ); ?></a>
+				<a href="<?php bp_docs_order_by_link( 'modified' ) ?>"><?php esc_html_e( 'Last Edited', 'buddypress-docs' ); ?></a>
 			</th>
 
 			<?php do_action( 'bp_docs_loop_additional_th' ) ?>
@@ -75,7 +80,17 @@
 
 	<div id="bp-docs-pagination">
 		<div id="bp-docs-pagination-count">
-			<?php echo esc_html( sprintf( __( 'Viewing %1$s-%2$s of %3$s docs', 'buddypress-docs' ), bp_docs_get_current_docs_start(), bp_docs_get_current_docs_end(), bp_docs_get_total_docs_num() ) ); ?>
+			<?php
+			echo esc_html(
+				sprintf(
+					/* translators: 1: number of the first doc on the page, 2: number of the last doc on the page, 3: total number of docs */
+					__( 'Viewing %1$s-%2$s of %3$s docs', 'buddypress-docs' ),
+					bp_docs_get_current_docs_start(),
+					bp_docs_get_current_docs_end(),
+					bp_docs_get_total_docs_num()
+				)
+			);
+			?>
 		</div>
 
 		<div id="bp-docs-paginate-links">
@@ -86,9 +101,19 @@
 <?php else: ?>
 
         <?php if ( bp_docs_current_user_can_create_in_context() ) : ?>
-			<p class="no-docs"><?php echo wp_kses_post( sprintf( __( 'There are no docs for this view. Why not <a href="%s">create one</a>?', 'buddypress-docs' ), esc_url( bp_docs_get_create_link() ) ) ); ?>
+			<p class="no-docs">
+				<?php
+				echo wp_kses_post(
+					sprintf(
+						/* translators: %s: URL of the Create Doc page */
+						__( 'There are no docs for this view. Why not <a href="%s">create one</a>?', 'buddypress-docs' ),
+						esc_url( bp_docs_get_create_link() )
+					)
+				);
+				?>
+			</p>
 	<?php else : ?>
-		<p class="no-docs"><?php _e( 'There are no docs for this view.', 'buddypress-docs' ) ?></p>
+		<p class="no-docs"><?php esc_html_e( 'There are no docs for this view.', 'buddypress-docs' ) ?></p>
         <?php endif ?>
 
 <?php endif ?>

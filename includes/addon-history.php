@@ -7,6 +7,12 @@
  * @subpackage History
  * @since 1.1
  */
+
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class BP_Docs_History {
 	var $action;
 	var $left;
@@ -55,20 +61,55 @@ class BP_Docs_History {
 			'view'
 		);
 
-		$this->action = !empty( $_GET['action'] ) && in_array( $_GET['action'], $actions ) ? $_GET['action'] : 'view';
+		/*
+		 * These params only select what the History screen shows. The 'restore'
+		 * action, which changes data, verifies its nonce in setup_action().
+		 */
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
+		$action       = ! empty( $_GET['action'] ) ? sanitize_key( wp_unslash( $_GET['action'] ) ) : '';
+		$this->action = in_array( $action, $actions, true ) ? $action : 'view';
 
-		$this->left = !empty( $_GET['left'] ) ? (int)$_GET['left'] : false;
-		$this->right = !empty( $_GET['right'] ) ? (int)$_GET['right'] : false;
+		$left        = ! empty( $_GET['left'] ) ? absint( $_GET['left'] ) : 0;
+		$right       = ! empty( $_GET['right'] ) ? absint( $_GET['right'] ) : 0;
+		$revision_id = ! empty( $_GET['revision'] ) ? absint( $_GET['revision'] ) : 0;
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
-		// Try to get the revision id out of the URL. If it's not provided, default to the
-		// current post
-		$this->revision_id = !empty( $_GET['revision'] ) ? (int)$_GET['revision'] : false;
-		if ( ! $this->revision_id ) {
-			$current_doc = bp_docs_get_current_doc();
-			if ( $current_doc ) {
-				$this->revision_id = $current_doc->ID;
-			}
+		/*
+		 * Only the current Doc and its own revisions may be viewed, compared or
+		 * restored here. IDs belonging to any other post are discarded.
+		 */
+		$current_doc    = bp_docs_get_current_doc();
+		$current_doc_id = $current_doc ? (int) $current_doc->ID : 0;
+
+		$this->left  = $this->belongs_to_doc( $left, $current_doc_id ) ? $left : false;
+		$this->right = $this->belongs_to_doc( $right, $current_doc_id ) ? $right : false;
+
+		// Try to get the revision id out of the URL. If it's not provided
+		// (or doesn't belong to this Doc), default to the current Doc.
+		$this->revision_id = $this->belongs_to_doc( $revision_id, $current_doc_id ) ? $revision_id : false;
+		if ( ! $this->revision_id && $current_doc_id ) {
+			$this->revision_id = $current_doc_id;
 		}
+	}
+
+	/**
+	 * Whether a post ID is the given Doc or one of its revisions.
+	 *
+	 * @since 2.2.8
+	 *
+	 * @param int $post_id ID to check.
+	 * @param int $doc_id  ID of the current Doc.
+	 * @return bool
+	 */
+	protected function belongs_to_doc( $post_id, $doc_id ) {
+		$post_id = (int) $post_id;
+		$doc_id  = (int) $doc_id;
+
+		if ( ! $post_id || ! $doc_id ) {
+			return false;
+		}
+
+		return $post_id === $doc_id || (int) wp_is_post_revision( $post_id ) === $doc_id;
 	}
 
 	/**
@@ -96,11 +137,13 @@ class BP_Docs_History {
 
 		switch ( $this->action ) :
 		case 'restore' :
+			// setup_params() has already limited revision_id to the current
+			// Doc and its own revisions.
 			if ( !$this->revision = wp_get_post_revision( $this->revision_id ) )
 				break;
-			if ( ! current_user_can( 'bp_docs_edit' ) )
-				break;
 			if ( !$post = get_post( $this->revision->post_parent ) )
+				break;
+			if ( ! current_user_can( 'bp_docs_edit', $post->ID ) )
 				break;
 
 			// Revisions disabled and we're not looking at an autosave
@@ -114,10 +157,15 @@ class BP_Docs_History {
 
 			wp_restore_post_revision( $this->revision->ID );
 
+			/* translators: %s: date the revision was created */
 			bp_core_add_message( sprintf( __( 'You have successfully restored the Doc to the revision from %s.', 'buddypress-docs' ), $this->revision->post_date ) );
-			$redirect = get_permalink( $post->ID ) . '/' . BP_DOCS_HISTORY_SLUG . '/';
+			$redirect = trailingslashit( get_permalink( $post->ID ) ) . BP_DOCS_HISTORY_SLUG . '/';
 			break;
 		case 'diff' :
+			// Both sides must have passed the checks in setup_params(). Note
+			// that get_post( false ) would return the global post.
+			if ( ! $this->left || ! $this->right )
+				break;
 			if ( !$this->left_revision  = get_post( $this->left ) )
 				break;
 			if ( !$this->right_revision = get_post( $this->right ) )
@@ -161,10 +209,6 @@ class BP_Docs_History {
 			)
 				break;
 
-			$post_title = '<a href="' . get_edit_post_link() . '">' . get_the_title() . '</a>';
-			$h2 = sprintf( __( 'Compare Revisions of &#8220;%1$s&#8221;', 'buddypress-docs' ), $post_title );
-			$title = __( 'Revisions', 'buddypress-docs' );
-
 			$this->left  = $this->left_revision->ID;
 			$this->right = $this->right_revision->ID;
 
@@ -191,11 +235,6 @@ class BP_Docs_History {
 				break;
 			}
 
-			$post_title = '<a href="' . get_edit_post_link() . '">' . get_the_title() . '</a>';
-			$revision_title = wp_post_revision_title( $this->revision, false );
-			$h2 = sprintf( __( 'Revision for &#8220;%1$s&#8221; created on %2$s', 'buddypress-docs' ), $post_title, $revision_title );
-			$title = __( 'Revisions', 'buddypress-docs' );
-
 			// Sets up the diff radio buttons
 			$this->left  = $this->revision->ID;
 			$this->right = $post->ID;
@@ -221,7 +260,7 @@ class BP_Docs_History {
 	function setup_is_identical() {
 		$this->revisions_are_identical = true;
 
-		foreach ( _wp_post_revision_fields() as $field => $field_title ) {
+		foreach ( bp_docs_history_get_revision_fields() as $field => $field_title ) {
 			if ( 'diff' == bp_docs_history_action() ) {
 				$left_content = apply_filters( "_wp_post_revision_field_$field", $this->left_revision->$field, $field, $this->left_revision, 'from' );
 				$right_content = apply_filters( "_wp_post_revision_field_$field", $this->right_revision->$field, $field, $this->right_revision, 'to' );
@@ -234,6 +273,32 @@ class BP_Docs_History {
 			}
 		}
 	}
+}
+
+/**
+ * Gets the revisioned fields shown when viewing or comparing Doc revisions.
+ *
+ * Replaces the use of core's private _wp_post_revision_fields().
+ *
+ * @since 2.2.8
+ *
+ * @return array Field labels, keyed by post field name.
+ */
+function bp_docs_history_get_revision_fields() {
+	$fields = array(
+		'post_title'   => __( 'Title', 'buddypress-docs' ),
+		'post_content' => __( 'Content', 'buddypress-docs' ),
+		'post_excerpt' => __( 'Excerpt', 'buddypress-docs' ),
+	);
+
+	/**
+	 * Filters the revisioned fields shown in Doc history.
+	 *
+	 * @since 2.2.8
+	 *
+	 * @param array $fields Field labels, keyed by post field name.
+	 */
+	return apply_filters( 'bp_docs_history_revision_fields', $fields );
 }
 
 /**
@@ -360,7 +425,7 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
 
 	$rows = $right_checked = '';
 	$class = false;
-	$can_edit_post = current_user_can( 'bp_docs_edit' );
+	$can_edit_post = current_user_can( 'bp_docs_edit', $post->ID );
 	foreach ( $revisions as $revision ) {
 		if ( 'revision' === $type && wp_is_post_autosave( $revision ) )
 			continue;
@@ -419,11 +484,11 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
 	<col style="width: 33%" />
 <thead>
 <tr>
-	<th scope="col"><?php /* translators: column name in revisons */ _e( 'Old', 'buddypress-docs' ); ?></th>
-	<th scope="col"><?php /* translators: column name in revisons */ _e( 'New', 'buddypress-docs' ); ?></th>
-	<th scope="col"><?php /* translators: column name in revisons */ _e( 'Date Created', 'buddypress-docs' ); ?></th>
-	<th scope="col"><?php _e( 'Author', 'buddypress-docs' ); ?></th>
-	<th scope="col" class="action-links"><?php _e( 'Actions', 'buddypress-docs' ); ?></th>
+	<th scope="col"><?php /* translators: column name in revisons */ esc_html_e( 'Old', 'buddypress-docs' ); ?></th>
+	<th scope="col"><?php /* translators: column name in revisons */ esc_html_e( 'New', 'buddypress-docs' ); ?></th>
+	<th scope="col"><?php /* translators: column name in revisons */ esc_html_e( 'Date Created', 'buddypress-docs' ); ?></th>
+	<th scope="col"><?php esc_html_e( 'Author', 'buddypress-docs' ); ?></th>
+	<th scope="col" class="action-links"><?php esc_html_e( 'Actions', 'buddypress-docs' ); ?></th>
 </tr>
 </thead>
 <tbody>
@@ -449,7 +514,8 @@ function bp_docs_list_post_revisions( $post_id = 0, $args = null ) {
  * @since 1.1.4
  */
 function bp_docs_history_tab() {
-	if ( current_user_can( 'bp_docs_view_history' ) ) : ?>
+	$doc = bp_docs_get_current_doc();
+	if ( $doc && current_user_can( 'bp_docs_view_history', $doc->ID ) ) : ?>
 		<li<?php if ( bp_docs_is_doc_history() ) : ?> class="current"<?php endif ?>>
 			<a href="<?php echo esc_url( bp_docs_get_doc_link() . BP_DOCS_HISTORY_SLUG ); ?>"><?php esc_html_e( 'History', 'buddypress-docs' ) ?></a>
 		</li>

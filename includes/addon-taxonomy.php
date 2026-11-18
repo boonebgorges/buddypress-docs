@@ -7,6 +7,10 @@
  * @package BuddyPressDocs
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * This class sets up the interface and back-end functions needed to use post tags with BP Docs.
  *
@@ -130,8 +134,11 @@ class BP_Docs_Taxonomy {
 				$tax_name = 'post_category';
 			}
 
-			// Separate out the terms
-			$terms = ! empty( $_POST[$tax_name] ) ? explode( ',', $_POST[$tax_name] ) : array();
+			// Separate out the terms. Called via bp_docs_save_doc_via_post(), whose
+			// caller verifies the nonces. Left slashed, because wp_set_post_terms()
+			// expects slashed term names.
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+			$terms = ! empty( $_POST[ $tax_name ] ) ? explode( ',', sanitize_text_field( $_POST[ $tax_name ] ) ) : array();
 
 			// Strip whitespace from the terms
 			foreach ( $terms as $key => $term ) {
@@ -196,6 +203,7 @@ class BP_Docs_Taxonomy {
 			}
 
 			if ( ! empty( $tagtext ) ) {
+				/* translators: %s: comma-separated list of tag links */
 				$html = '<p>' . sprintf( __( 'Tags: %s', 'buddypress-docs' ), implode( ', ', $tagtext ) ) . '</p>';
 			}
 
@@ -242,15 +250,11 @@ class BP_Docs_Taxonomy {
 	 */
 	function modify_tax_query( $tax_query ) {
 
-		// Check for the existence tag filters in the request URL
+		// Check for the existence tag filters in the request URL. Read-only directory filter.
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
 		if ( ! empty( $_REQUEST['bpd_tag'] ) ) {
 			// The bpd_tag argument may be comma-separated
-			$tags = explode( ',', urldecode( $_REQUEST['bpd_tag'] ) );
-
-			// Clean up the tag input
-			foreach ( $tags as $key => $value ) {
-				$tags[$key] = esc_attr( $value );
-			}
+			$tags = explode( ',', sanitize_text_field( wp_unslash( $_REQUEST['bpd_tag'] ) ) );
 
 			$tax_query[] = array(
 				'taxonomy'	=> $this->docs_tag_tax_name,
@@ -262,6 +266,7 @@ class BP_Docs_Taxonomy {
 				$tax_query['operator'] = 'AND';
 			}
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 		return apply_filters( 'bp_docs_modify_tax_query_for_tax', $tax_query );
 	}
@@ -275,7 +280,7 @@ class BP_Docs_Taxonomy {
 	function tags_th() {
 		?>
 
-		<th scope="column" class="tags-cell"><?php _e( 'Tags', 'buddypress-docs' ); ?></th>
+		<th scope="column" class="tags-cell"><?php esc_html_e( 'Tags', 'buddypress-docs' ); ?></th>
 
 		<?php
 	}
@@ -326,6 +331,7 @@ class BP_Docs_Taxonomy {
 				$tagtext[] = bp_docs_get_tag_link( array( 'tag' => $tag ) );
 			}
 
+			/* translators: %s: comma-separated list of tag links */
 			$message[] = sprintf( __( 'You are viewing docs with the following tags: %s', 'buddypress-docs' ), implode( ', ', $tagtext ) );
 		}
 
@@ -351,6 +357,7 @@ class BP_Docs_Taxonomy {
 
 		$existing_terms = $this->get_item_terms();
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only directory filter.
 		$tag_filter = ! empty( $_GET['bpd_tag'] );
 
 		?>
@@ -376,12 +383,15 @@ class BP_Docs_Taxonomy {
 
 					?>
 					<li>
-					<a href="<?php echo esc_url( bp_docs_get_tag_link( array( 'tag' => $term, 'type' => 'url' ) ) ); ?>" title="<?php echo esc_html( $term_name ) ?>"><?php echo esc_html( $term_name ) ?> <?php echo esc_html( sprintf( __( '(%d)', 'buddypress-docs' ), $term_count ) ); ?></a>
+					<a href="<?php echo esc_url( bp_docs_get_tag_link( array( 'tag' => $term, 'type' => 'url' ) ) ); ?>" title="<?php echo esc_html( $term_name ) ?>"><?php echo esc_html( $term_name ) ?> <?php
+					/* translators: %d: number of Docs with this tag */
+					echo esc_html( sprintf( __( '(%d)', 'buddypress-docs' ), $term_count ) );
+					?></a>
 					</li>
 
 				<?php endforeach ?>
 			<?php else: ?>
-				<li><?php _e( 'No tags to show.', 'buddypress-docs' )  ?></li>
+				<li><?php esc_html_e( 'No tags to show.', 'buddypress-docs' )  ?></li>
 			<?php endif; ?>
 			</ul>
 		</div>
@@ -407,6 +417,7 @@ class BP_Docs_Taxonomy {
 			return $is_filtered;
 		}
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only directory filter.
 		if ( ! empty( $_GET['bpd_tag'] ) ) {
 			$is_filtered = true;
 		}
@@ -419,17 +430,21 @@ class BP_Docs_Taxonomy {
 	 * @since 1.0-beta
 	 */
 	function handle_filters( $redirect_url ) {
-		if ( ! empty( $_POST['filter_terms'] ) ) {
+		// Legacy filter form. It only builds a redirect to a read-only directory filter.
+		// phpcs:disable WordPress.Security.NonceVerification.Missing
+		if ( ! empty( $_POST['filter_terms'] ) && is_array( $_POST['filter_terms'] ) ) {
 			$tags = array();
 
-			foreach ( $_POST['filter_terms'] as $term => $value ) {
-				$tags[] = urlencode( $term );
+			$filter_terms = map_deep( wp_unslash( $_POST['filter_terms'] ), 'sanitize_text_field' );
+			foreach ( array_keys( $filter_terms ) as $term ) {
+				$tags[] = urlencode( sanitize_text_field( $term ) );
 			}
 
 			$tags = implode( ',', $tags );
 
 			$redirect_url = add_query_arg( 'bpd_tag', $tags, $redirect_url );
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 
 		return $redirect_url;
 	}
@@ -485,7 +500,13 @@ function bp_docs_get_tag_link( $args = array() ) {
 	if ( $type != 'html' )
 		return apply_filters( 'bp_docs_get_tag_link_url', $url, $tag, $type );
 
-	$html = '<a href="' . esc_url( $url  ). '" title="' . esc_attr( sprintf( __( 'Docs tagged %s', 'buddypress-docs' ), esc_attr( $tag ) ) ) . '">' . esc_html( $tag ) . '</a>';
+	$html = '<a href="' . esc_url( $url  ). '" title="' . esc_attr(
+		sprintf(
+			/* translators: %s: tag name */
+			__( 'Docs tagged %s', 'buddypress-docs' ),
+			$tag
+		)
+	) . '">' . esc_html( $tag ) . '</a>';
 
 	return apply_filters( 'bp_docs_get_tag_link', $html, $url, $tag, $type );
 }
@@ -516,9 +537,9 @@ function bp_docs_post_tags_meta_box() {
 	$tax_name = esc_attr( $taxonomy );
 	$taxonomy = get_taxonomy( $taxonomy );
 
-	// If this is a failed submission, use the value from the POST cookie
-	if ( isset( buddypress()->bp_docs->submitted_data->{$tax_name} ) ) {
-		$terms = buddypress()->bp_docs->submitted_data->{$tax_name};
+	// If this is a failed submission, use the previously submitted value
+	if ( isset( buddypress()->bp_docs->submitted_data->taxonomies->{$tax_name} ) ) {
+		$terms = implode( ', ', (array) buddypress()->bp_docs->submitted_data->taxonomies->{$tax_name} );
 
 	// If it's an existing Doc, look up the terms
 	} else if ( bp_docs_is_existing_doc() ) {
@@ -560,7 +581,7 @@ function bp_docs_post_categories_meta_box( $post ) {
 	<div id="taxonomy-<?php echo esc_attr( $taxonomy ); ?>" class="categorydiv">
 		<ul id="<?php echo esc_attr( $taxonomy ); ?>-tabs" class="category-tabs">
 			<li class="tabs"><a href="#<?php echo esc_attr( $taxonomy ); ?>-all" tabindex="3"><?php echo esc_html( $tax->labels->all_items ); ?></a></li>
-			<li class="hide-if-no-js"><a href="#<?php echo esc_attr( $taxonomy ); ?>-pop" tabindex="3"><?php _e( 'Most Used', 'buddypress-docs' ); ?></a></li>
+			<li class="hide-if-no-js"><a href="#<?php echo esc_attr( $taxonomy ); ?>-pop" tabindex="3"><?php esc_html_e( 'Most Used', 'buddypress-docs' ); ?></a></li>
 		</ul>
 
 		<div id="<?php echo esc_attr( $taxonomy ); ?>-pop" class="tabs-panel" style="display: none;">

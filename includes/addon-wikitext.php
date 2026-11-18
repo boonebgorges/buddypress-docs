@@ -42,8 +42,6 @@ class BP_Docs_Wikitext {
 	 * @return str A formatted link
 	 */
 	function process_bracket_content( $match ) {
-		global $bp, $wpdb;
-
 		// Check for a pipe
 		if ( $pipe_pos = strpos( $match[1], '|' ) ) {
 			// If one is found, then the link text will be different from
@@ -55,12 +53,28 @@ class BP_Docs_Wikitext {
 			$link_text = $link_page = $match[1];
 		}
 
-		// Look for a page with this title. WP_Query does not allow this for some reason
-		$docs = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->posts WHERE post_title = %s AND post_type = %s", $link_page, bp_docs_get_post_type_name() ) );
+		/*
+		 * Look for a published Doc with this title. Docs access protection
+		 * applies, so Docs the current user cannot read are not matched.
+		 */
+		$query_args = array(
+			'post_type'              => bp_docs_get_post_type_name(),
+			'post_status'            => 'publish',
+			'posts_per_page'         => -1,
+			'orderby'                => 'ID',
+			'order'                  => 'ASC',
+			'no_found_rows'          => true,
+			'update_post_meta_cache' => false,
+			'update_post_term_cache' => false,
+		);
 
-		// If none were found, do the same query with page slugs
+		$docs = get_posts( array_merge( $query_args, array( 'title' => $link_page ) ) );
+
+		// If none were found, do the same query with page slugs. 'post_name__in'
+		// is used instead of 'name' because singular queries skip the access
+		// protection tax_query.
 		if ( empty( $docs ) ) {
-			$docs = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->posts WHERE post_name = %s AND post_type = %s", sanitize_title_with_dashes( $link_page ), bp_docs_get_post_type_name() ) );
+			$docs = get_posts( array_merge( $query_args, array( 'post_name__in' => array( sanitize_title_with_dashes( $link_page ) ) ) ) );
 		}
 
 		// Filter the docs. This will be used to exclude docs that do not belong to a group
@@ -79,9 +93,7 @@ class BP_Docs_Wikitext {
 			$class	   = 'nonexistent-doc';
 		}
 
-		return apply_filters( 'bp_docs_bracket_link', '<a href="' . $permalink . '" class="' . $class . '">' . $link_text . '</a>' );
+		return apply_filters( 'bp_docs_bracket_link', '<a href="' . esc_url( $permalink ) . '" class="' . esc_attr( $class ) . '">' . esc_html( $link_text ) . '</a>' );
 	}
 
 }
-
-?>

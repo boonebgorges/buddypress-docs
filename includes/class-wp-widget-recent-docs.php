@@ -41,7 +41,7 @@ class BP_Docs_Widget_Recent_Docs extends WP_Widget {
 		$widget_ops = array(
 			// Use the class `widget_recent_entries` to inherit WP Recent Posts widget styling.
 			'classname' => 'widget_recent_entries widget_recent_bp_docs',
-			'description' => __( 'Displays the most recent BuddyPress Docs that the visitor can read.' ) );
+			'description' => __( 'Displays the most recent BuddyPress Docs that the visitor can read.', 'buddypress-docs' ) );
 		parent::__construct( 'widget_recent_bp_docs', _x( '(BuddyPress Docs) Recent Docs', 'widget name', 'buddypress-docs' ), $widget_ops);
 		$this->alt_option_name = 'widget_recent_bp_docs';
 	}

@@ -13,6 +13,10 @@
  * @since 1.0-beta
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * This class filters a number of key values from BP Docs's core to work in BP groups
  *
@@ -206,8 +210,8 @@ class BP_Docs_Groups_Integration {
 
 		if ( array() === $group_ids ) {
 			$group_terms = get_terms(
-				bp_docs_get_associated_item_tax_name(),
 				array(
+					'taxonomy'               => bp_docs_get_associated_item_tax_name(),
 					'fields'                 => 'ids',
 					'update_term_meta_cache' => false,
 				)
@@ -275,6 +279,8 @@ class BP_Docs_Groups_Integration {
 			'update_term_cache' => true,
 			'showposts'         => '-1',
 			'posts_per_page'    => '-1',
+			// The group association is stored as a taxonomy term, so a tax_query is required.
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 			'tax_query'         => array(
 				self::tax_query_arg_for_groups( $group_id ),
 			),
@@ -331,12 +337,29 @@ class BP_Docs_Groups_Integration {
 	 * @param array $args The parameters for the doc about to be saved.
 	 */
 	public function pre_save_check_group_association( $result, $args ) {
+		// The group an existing Doc already belongs to.
+		$current_group_id = 0;
+		if ( ! empty( $args['doc_id'] ) && 'auto-draft' !== get_post_status( $args['doc_id'] ) ) {
+			$current_group_id = (int) bp_docs_get_associated_group_id( $args['doc_id'] );
+		}
+
 		// Check whether the user can associate the doc with the group.
-		// $args['group_id'] could be null (untouched) or 0, which unsets existing association
-		if ( ! empty( $args['group_id'] ) && ! user_can( $args['author_id'], 'bp_docs_associate_with_group', $args['group_id'] ) ) {
+		// $args['group_id'] could be null (untouched) or 0, which unsets existing association.
+		// Keeping a Doc in the group it already belongs to is not a new association.
+		if ( ! empty( $args['group_id'] ) && (int) $args['group_id'] !== $current_group_id && ! user_can( $args['author_id'], 'bp_docs_associate_with_group', $args['group_id'] ) ) {
 			$result['error']    = true;
-			$result['message']  = __( 'You are not allowed to associate a Doc with that group.', 'bp-docs' );
+			$result['message']  = __( 'You are not allowed to associate a Doc with that group.', 'buddypress-docs' );
 			$result['redirect'] = 'create';
+
+			return $result;
+		}
+
+		// Removing an existing Doc from its group, or moving it to another
+		// group, also requires permission to remove Docs from the current group.
+		if ( ! is_null( $args['group_id'] ) && $current_group_id && $current_group_id !== (int) $args['group_id'] && ! user_can( $args['author_id'], 'bp_docs_dissociate_from_group', $current_group_id ) ) {
+			$result['error']    = true;
+			$result['message']  = __( 'You are not allowed to remove this Doc from its current group.', 'buddypress-docs' );
+			$result['redirect'] = 'edit';
 		}
 
 		return $result;
@@ -353,8 +376,31 @@ class BP_Docs_Groups_Integration {
 	 */
 	public function post_save_set_group_association( $post_id, $args ) {
 		// Add to a group, if necessary
-		if ( ! is_null( $args['group_id'] ) ) {
-			bp_docs_set_associated_group_id( $post_id, $args['group_id'] );
+		if ( is_null( $args['group_id'] ) ) {
+			return;
+		}
+
+		$old_group_id = (int) bp_docs_get_associated_group_id( $post_id );
+		$new_group_id = (int) $args['group_id'];
+
+		bp_docs_set_associated_group_id( $post_id, $new_group_id );
+
+		if ( $old_group_id === $new_group_id ) {
+			return;
+		}
+
+		/*
+		 * Group-based access is stored as taxonomy terms that name the group,
+		 * so they must follow the Doc to its new group. Otherwise directory
+		 * queries would still use the old group's terms.
+		 */
+		if ( ! $new_group_id ) {
+			// Don't let a Doc that loses its group become public.
+			bp_docs_remove_group_related_doc_access_settings( $post_id );
+		} else {
+			$settings = bp_docs_get_doc_settings( $post_id );
+			bp_docs_update_doc_access( $post_id, isset( $settings['read'] ) ? $settings['read'] : 'anyone' );
+			bp_docs_update_doc_comment_access( $post_id, isset( $settings['read_comments'] ) ? $settings['read_comments'] : 'anyone' );
 		}
 	}
 
@@ -530,27 +576,52 @@ class BP_Docs_Groups_Integration {
 		}
 
 		// If this is the Doc creation page, check to see whether a
-		// group id has been passed somewhere
+		// group id has been passed somewhere. This only determines which
+		// options are offered; the group is checked against the user's
+		// 'bp_docs_associate_with_group' cap below, and saves are nonce-checked.
+		// phpcs:disable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
 		if ( empty( $group_id ) ) {
 			if ( isset( $_POST['associated_group_id'] ) ) {
-				$group_id = intval( $_POST['associated_group_id'] );
+				$group_id = absint( $_POST['associated_group_id'] );
 			} elseif ( isset( $_GET['associated_group_id'] ) ) {
-				$group_id = intval( $_GET['associated_group_id'] );
+				$group_id = absint( $_GET['associated_group_id'] );
 			} elseif ( isset( $_GET['group'] ) ) {
-				$maybe_group = BP_Groups_Group::get_id_from_slug( $_GET['group'] );
+				$maybe_group = BP_Groups_Group::get_id_from_slug( sanitize_title( wp_unslash( $_GET['group'] ) ) );
 				if ( $maybe_group ) {
 					$group_id = $maybe_group;
 				}
 			}
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
 
-		if ( $group_id && current_user_can( 'bp_docs_associate_with_group', $group_id ) ) {
+		/*
+		 * A Doc's current group-based setting is always offered, so that
+		 * someone who can no longer choose it (eg after leaving the group)
+		 * can still save the Doc without the setting changing. Otherwise the
+		 * form would fall back to another option, possibly 'anyone'.
+		 * Read straight from post meta: bp_docs_get_doc_settings() would
+		 * call back into this filter.
+		 */
+		$current_value = '';
+		if ( $doc_id && $group_id && (int) $group_id === (int) bp_docs_get_associated_group_id( $doc_id ) ) {
+			$saved_settings = get_post_meta( $doc_id, 'bp_docs_settings', true );
+			if ( is_array( $saved_settings ) && isset( $saved_settings[ $settings_field ] ) ) {
+				$current_value = $saved_settings[ $settings_field ];
+			}
+		}
+
+		$can_associate = $group_id && current_user_can( 'bp_docs_associate_with_group', $group_id );
+
+		if ( $can_associate || in_array( $current_value, array( 'group-members', 'admins-mods' ), true ) ) {
 			$group = groups_get_group( array( 'group_id' => intval( $group_id ) ) );
 
-			$options[40] = array(
-				'name'  => 'group-members',
-				'label' => sprintf( __( 'Members of %s', 'buddypress-docs' ), $group->name ),
-			);
+			if ( $can_associate || 'group-members' === $current_value ) {
+				$options[40] = array(
+					'name'  => 'group-members',
+					/* translators: %s: group name */
+					'label' => sprintf( __( 'Members of %s', 'buddypress-docs' ), $group->name ),
+				);
+			}
 
 			// "Admins and mods" setting only available to admins and mods
 			// Otherwise users end up locking themselves out
@@ -558,9 +629,10 @@ class BP_Docs_Groups_Integration {
 			$is_admin       = groups_is_user_admin( bp_loggedin_user_id(), $group_id );
 			$is_mod         = groups_is_user_mod( bp_loggedin_user_id(), $group_id );
 
-			if ( $is_admin || $is_mod ) {
+			if ( ( $can_associate && ( $is_admin || $is_mod ) ) || 'admins-mods' === $current_value ) {
 				$options[50] = array(
 					'name'  => 'admins-mods',
+					/* translators: %s: group name */
 					'label' => sprintf( __( 'Admins and mods of %s', 'buddypress-docs' ), $group->name ),
 				);
 			}
@@ -569,7 +641,7 @@ class BP_Docs_Groups_Integration {
 			// permissions limited to group-members by default. If
 			// the group is non-public, set the other permissions
 			// to group-members as well
-			if ( 'public' != $group->status || in_array( $settings_field, array( 'edit', 'post_comments' ) ) ) {
+			if ( isset( $options[40] ) && ( 'public' != $group->status || in_array( $settings_field, array( 'edit', 'post_comments' ) ) ) ) {
 				// First, unset existing defaults
 				foreach ( $options as &$option ) {
 					$option['default'] = 0;
@@ -647,8 +719,10 @@ class BP_Docs_Groups_Integration {
 			$group_link = '<a href="' . esc_url( $group_url ) . '">' . esc_html( $group->name ) . '</a>';
 
 			if ( $is_new_doc ) {
+				/* translators: 1: link to the user, 2: link to the doc, 3: link to the group */
 				$action = sprintf( __( '%1$s created the doc %2$s in the group %3$s', 'buddypress-docs' ), $user_link, $doc_link, $group_link );
 			} else {
+				/* translators: 1: link to the user, 2: link to the doc, 3: link to the group */
 				$action = sprintf( __( '%1$s edited the doc %2$s in the group %3$s', 'buddypress-docs' ), $user_link, $doc_link, $group_link );
 			}
 		}
@@ -704,6 +778,7 @@ class BP_Docs_Groups_Integration {
 			$group_url  = bp_get_group_url( $group );
 			$group_link = '<a href="' . esc_url( $group_url ) . '">' . esc_html( $group->name ) . '</a>';
 
+			/* translators: 1: link to the user, 2: link to the comment, 3: link to the group */
 			$action = sprintf( __( '%1$s commented on the doc %2$s in the group %3$s', 'buddypress-docs' ), $user_link, $comment_link, $group_link );
 		}
 
@@ -782,7 +857,7 @@ class BP_Docs_Groups_Integration {
 
 		?>
 
-		<th scope="column" class="groups-cell"><?php _e( 'Group', 'buddypress-docs' ); ?></th>
+		<th scope="column" class="groups-cell"><?php esc_html_e( 'Group', 'buddypress-docs' ); ?></th>
 
 		<?php
 	}
@@ -833,8 +908,8 @@ class BP_Docs_Groups_Integration {
 					?>
 
 					<li><a href="<?php echo esc_url( $group_permalink ); ?>">
-						<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 						<?php
+						// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Avatar markup is built and escaped by BuddyPress.
 						echo bp_core_fetch_avatar(
 							array(
 								'item_id'    => $group_id,
@@ -956,6 +1031,7 @@ class BP_Docs_Groups_Integration {
 				$doc_count = groups_get_groupmeta( $bp->groups->current_group->id, 'bp-docs-count' );
 			}
 
+			/* translators: 1: name of the Docs tab, 2: number of Docs */
 			$bp->bp_options_nav[ $group_slug ][ $docs_slug ]['name'] = sprintf( __( '%1$s <span>%2$d</span>', 'buddypress-docs' ), $current_tab_name, $doc_count );
 		}
 	}
@@ -1222,7 +1298,7 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
 			// On the edit screen, we have to provide a save button
 			?>
 		<p>
-			<input type="submit" value="<?php _e( 'Save Changes', 'buddypress-docs' ); ?>" id="save" name="save" />
+			<input type="submit" value="<?php esc_attr_e( 'Save Changes', 'buddypress-docs' ); ?>" id="save" name="save" />
 		</p>
 			<?php
 
@@ -1270,7 +1346,9 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
 				$group_id = $this->get_current_group_id();
 			}
 
-			$settings = ! empty( $_POST['bp-docs'] ) ? $_POST['bp-docs'] : array();
+			// Nonces are checked by the callers, create_screen_save() and edit_screen_save().
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$settings = ! empty( $_POST['bp-docs'] ) && is_array( $_POST['bp-docs'] ) ? map_deep( wp_unslash( $_POST['bp-docs'] ), 'sanitize_text_field' ) : array();
 
 			$old_settings = bp_docs_get_group_settings( $group_id );
 
@@ -1494,16 +1572,26 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
 		}
 
 		public function url_backpat() {
-			global $bp, $wpdb;
+			global $bp;
 
 			if ( bp_is_group() && bp_is_current_action( 'docs' ) ) {
 				if ( 'single' === $bp->bp_docs->current_view ) {
-					// Look up a Doc by this name
-					$maybe_id = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post_name = %s LIMIT 1", bp_action_variable( 0 ) ) );
+					// Look up a Doc by this name. 'name' rather than get_page_by_path(),
+					// because Doc permalinks don't include ancestors' slugs.
+					$maybe_ids = get_posts(
+						array(
+							'post_type'              => bp_docs_get_post_type_name(),
+							'name'                   => bp_action_variable( 0 ),
+							'posts_per_page'         => 1,
+							'fields'                 => 'ids',
+							'update_post_meta_cache' => false,
+							'update_post_term_cache' => false,
+						)
+					);
 
 					// Redirect to that Doc. Permissions will be handled there
-					if ( $maybe_id ) {
-						bp_core_redirect( bp_docs_get_doc_link( $maybe_id ) );
+					if ( $maybe_ids ) {
+						bp_core_redirect( bp_docs_get_doc_link( $maybe_ids[0] ) );
 					}
 				}
 			}

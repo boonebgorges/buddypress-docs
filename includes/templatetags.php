@@ -1,5 +1,10 @@
 <?php
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 if ( !function_exists( 'bp_is_root_blog' ) ) :
 	/**
 	 * Is this BP_ROOT_BLOG?
@@ -36,12 +41,18 @@ function bp_docs_has_docs( $args = array() ) {
 	if ( empty( $bp->bp_docs->doc_query ) ) {
 		// Build some intelligent defaults
 
+		/*
+		 * The URL params below only filter, sort and paginate a list of Docs
+		 * that is subject to access checks, so they do not require a nonce.
+		 */
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
+
 		// Default to current group id, if available
 		if ( bp_is_active( 'groups' ) && bp_is_group() ) {
 			$d_group_id = bp_get_current_group_id();
 		} else if ( ! empty( $_REQUEST['group_id'] ) ) {
 			// This is useful for the AJAX request for folder contents.
-			$d_group_id = $_REQUEST['group_id'];
+			$d_group_id = wp_parse_id_list( wp_unslash( $_REQUEST['group_id'] ) );
 		} else if ( bp_docs_is_mygroups_directory() ) {
 			$my_groups = groups_get_user_groups( bp_loggedin_user_id() );
 			$d_group_id = ! empty( $my_groups['total'] ) ? $my_groups['groups'] : array( 0 );
@@ -56,10 +67,10 @@ function bp_docs_has_docs( $args = array() ) {
 		$d_edited_by_id = bp_docs_is_edited_by() ? bp_displayed_user_id() : array();
 
 		// Default to the tags in the URL string, if available
-		$d_tags = isset( $_REQUEST['bpd_tag'] ) ? explode( ',', urldecode( $_REQUEST['bpd_tag'] ) ) : array();
+		$d_tags = isset( $_REQUEST['bpd_tag'] ) ? explode( ',', sanitize_text_field( wp_unslash( $_REQUEST['bpd_tag'] ) ) ) : array();
 
 		// Order and orderby arguments
-		$d_orderby = !empty( $_GET['orderby'] ) ? urldecode( $_GET['orderby'] ) : apply_filters( 'bp_docs_default_sort_order', 'modified' );
+		$d_orderby = !empty( $_GET['orderby'] ) ? sanitize_text_field( wp_unslash( $_GET['orderby'] ) ) : apply_filters( 'bp_docs_default_sort_order', 'modified' );
 
 		if ( empty( $_GET['order'] ) ) {
 			// If no order is explicitly stated, we must provide one.
@@ -69,14 +80,15 @@ function bp_docs_has_docs( $args = array() ) {
 			else
 				$d_order = 'ASC';
 		} else {
-			$d_order = $_GET['order'];
+			$d_order = sanitize_text_field( wp_unslash( $_GET['order'] ) );
 		}
 
-		// Search
-		$d_search_terms = !empty( $_GET['s'] ) ? urldecode( $_GET['s'] ) : '';
+		// Search. Left slashed, because WP_Query unslashes 's' itself.
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+		$d_search_terms = !empty( $_GET['s'] ) ? sanitize_text_field( $_GET['s'] ) : '';
 
 		// Parent id
-		$d_parent_id = !empty( $_REQUEST['parent_doc'] ) ? (int)$_REQUEST['parent_doc'] : '';
+		$d_parent_id = !empty( $_REQUEST['parent_doc'] ) ? absint( $_REQUEST['parent_doc'] ) : '';
 
 		// Folder id
 		$d_folder_id = null;
@@ -110,6 +122,8 @@ function bp_docs_has_docs( $args = array() ) {
 		} else {
 			$d_paged = absint( $wp_query->get( 'paged', 1 ) );
 		}
+
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 		// Use the calculated posts_per_page number from $wp_query->query_vars.
 		// If that value isn't set, we assume 10 posts per page.
@@ -283,7 +297,7 @@ function bp_docs_info_header() {
 			$view_all_url = remove_query_arg( 'p', $view_all_url );
 			$view_all_url = preg_replace( '|page/[0-9]+/|', '', $view_all_url );
 
-			$message .= ' - ' . sprintf( __( '<strong><a href="%s" title="View All Docs">View All Docs</a></strong>', 'buddypress-docs' ), esc_url( $view_all_url ) );
+			$message .= ' - ' . sprintf( '<strong><a href="%1$s" title="%2$s">%3$s</a></strong>', esc_url( $view_all_url ), esc_attr__( 'View All Docs', 'buddypress-docs' ), esc_html__( 'View All Docs', 'buddypress-docs' ) );
 		}
 
 		?>
@@ -294,8 +308,10 @@ function bp_docs_info_header() {
 		<?php if ( $filter_titles = bp_docs_filter_titles() ) : ?>
 			<div class="docs-filters">
 				<p id="docs-filter-meta">
-					<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-					<?php printf( __( 'Filter by: %s', 'buddypress-docs' ), $filter_titles ) ?>
+					<?php
+					/* translators: %s: list of filter links, such as Tags and Folders */
+					printf( esc_html__( 'Filter by: %s', 'buddypress-docs' ), $filter_titles ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					?>
 				</p>
 
 				<div id="docs-filter-sections">
@@ -317,6 +333,7 @@ function bp_docs_filter_titles() {
 	$filter_types = apply_filters( 'bp_docs_filter_types', array() );
 	$links = array();
 	foreach ( $filter_types as $filter_type ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$current = isset( $_GET[ $filter_type['query_arg'] ] ) ? ' current' : '';
 		$links[] = sprintf(
 			'<a href="#" class="docs-filter-title%s" id="docs-filter-title-%s">%s</a>',
@@ -425,10 +442,17 @@ function bp_docs_the_content() {
  * @return string
  */
 function bp_docs_directory_filter_form_action() {
-	$form_action = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+	$form_action = bp_get_requested_url();
 	$keeper_keys = array( 'folder' );
-	foreach ( $_GET as $k => $v ) {
-		if ( ! in_array( $k, $keeper_keys ) ) {
+
+	$query_args = array();
+	$query      = wp_parse_url( $form_action, PHP_URL_QUERY );
+	if ( $query ) {
+		wp_parse_str( $query, $query_args );
+	}
+
+	foreach ( array_keys( $query_args ) as $k ) {
+		if ( ! in_array( $k, $keeper_keys, true ) ) {
 			$form_action = remove_query_arg( $k, $form_action );
 		}
 	}
@@ -445,6 +469,7 @@ function bp_docs_directory_filter_form_action() {
  */
 function bp_docs_search_term_filter_text( $message, $filters ) {
 	if ( !empty( $filters['search_terms'] ) ) {
+		/* translators: %s: search term */
 		$message[] = sprintf( __( 'You are searching for docs containing the term <em>%s</em>', 'buddypress-docs' ), esc_html( $filters['search_terms'] ) );
 	}
 
@@ -462,10 +487,13 @@ add_filter( 'bp_docs_info_header_message', 'bp_docs_search_term_filter_text', 10
 function bp_docs_get_current_filters() {
 	$filters = array();
 
+	// These URL params only describe the current Docs list filters.
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended
+
 	// First check for tag filters
 	if ( !empty( $_REQUEST['bpd_tag'] ) ) {
 		// The bpd_tag argument may be comma-separated
-		$tags = explode( ',', urldecode( $_REQUEST['bpd_tag'] ) );
+		$tags = explode( ',', sanitize_text_field( wp_unslash( $_REQUEST['bpd_tag'] ) ) );
 
 		foreach ( $tags as $tag ) {
 			$filters['tags'][] = $tag;
@@ -474,8 +502,10 @@ function bp_docs_get_current_filters() {
 
 	// Now, check for search terms
 	if ( !empty( $_REQUEST['s'] ) ) {
-		$filters['search_terms'] = urldecode( $_REQUEST['s'] );
+		$filters['search_terms'] = sanitize_text_field( wp_unslash( $_REQUEST['s'] ) );
 	}
+
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 	return apply_filters( 'bp_docs_get_current_filters', $filters );
 }
@@ -756,12 +786,14 @@ function bp_docs_directory_breadcrumb() {
  * @return str $new_order Either desc or asc
  */
 function bp_docs_get_sort_order( $orderby = 'modified' ) {
+	// Sorting params are read-only.
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended
 
 	$new_order	= false;
 
 	// We only want a non-default order if we are currently ordered by this $orderby
 	// The default order is Last Edited, so we must account for that
-	$current_orderby	= !empty( $_GET['orderby'] ) ? $_GET['orderby'] : apply_filters( 'bp_docs_default_sort_order', 'modified' );
+	$current_orderby	= !empty( $_GET['orderby'] ) ? sanitize_text_field( wp_unslash( $_GET['orderby'] ) ) : apply_filters( 'bp_docs_default_sort_order', 'modified' );
 
 	if ( $orderby == $current_orderby ) {
 		// Default sort orders are different for different fields
@@ -773,11 +805,13 @@ function bp_docs_get_sort_order( $orderby = 'modified' ) {
 			else
 				$current_order = 'ASC';
 		} else {
-			$current_order = $_GET['order'];
+			$current_order = sanitize_text_field( wp_unslash( $_GET['order'] ) );
 		}
 
 		$new_order = 'ASC' == $current_order ? 'DESC' : 'ASC';
 	}
+
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 	return apply_filters( 'bp_docs_get_sort_order', $new_order );
 }
@@ -817,8 +851,11 @@ function bp_docs_order_by_link( $orderby = 'modified' ) {
  * @param str $orderby The order_by item: title, author, created, modified, etc
  */
 function bp_docs_is_current_orderby_class( $orderby = 'modified' ) {
+	// Sorting params are read-only.
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended
+
 	// Get the current orderby column
-	$current_orderby = !empty( $_GET['orderby'] ) ? $_GET['orderby'] : apply_filters( 'bp_docs_default_sort_order', 'modified' );
+	$current_orderby = !empty( $_GET['orderby'] ) ? sanitize_text_field( wp_unslash( $_GET['orderby'] ) ) : apply_filters( 'bp_docs_default_sort_order', 'modified' );
 
 	// Does the current orderby match the $orderby parameter?
 	$is_current_orderby = $current_orderby == $orderby ? true : false;
@@ -840,6 +877,8 @@ function bp_docs_is_current_orderby_class( $orderby = 'modified' ) {
 			$class .= 'DESC' == $_GET['order'] ? ' desc' : ' asc';
 		}
 	}
+
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo apply_filters( 'bp_docs_is_current_orderby', $class, $is_current_orderby, $current_orderby );
@@ -895,7 +934,11 @@ function bp_docs_associated_group_dropdown( $args = array() ) {
 		'echo'         => true,
 		'null_option'  => true,
 		'include'      => null,
+		// The group a Doc already belongs to. It is always listed, even if
+		// the user can no longer associate Docs with it.
+		'current_group_id' => 0,
 	) );
+	$r['current_group_id'] = (int) $r['current_group_id'];
 
 	$groups_args = array(
 		'per_page' => false,
@@ -917,7 +960,13 @@ function bp_docs_associated_group_dropdown( $args = array() ) {
 	$cache_key = 'bp_docs_associated_group_dropdown:' . md5( serialize( $groups_args ) . serialize( $r ) );
 	$cached = wp_cache_get( $cache_key, 'bp_docs_nonpersistent' );
 	if ( false !== $cached ) {
-		return $cached;
+		if ( false === $r['echo'] ) {
+			return $cached;
+		}
+
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $cached;
+		return;
 	}
 
 	// Populate the $groups_template global, but stash the old one
@@ -929,7 +978,13 @@ function bp_docs_associated_group_dropdown( $args = array() ) {
 
 	// Filter out the groups where associate_with permissions forbid
 	$removed = 0;
+	$has_current = false;
 	foreach ( $groups_template->groups as $gtg_key => $gtg ) {
+		if ( $r['current_group_id'] && (int) $gtg->id === $r['current_group_id'] ) {
+			$has_current = true;
+			continue;
+		}
+
 		if ( ! current_user_can( 'bp_docs_associate_with_group', $gtg->id ) ) {
 			unset( $groups_template->groups[ $gtg_key ] );
 			$removed++;
@@ -943,6 +998,22 @@ function bp_docs_associated_group_dropdown( $args = array() ) {
 		$groups_template->total_group_count = $groups_template->total_group_count - $removed;
 	}
 
+	$groups = $groups_template->groups;
+
+	// The Doc's current group may be missing, eg if the user has left it.
+	if ( $r['current_group_id'] && ! $has_current ) {
+		$current_group = groups_get_group( $r['current_group_id'] );
+		if ( ! empty( $current_group->id ) ) {
+			$groups[] = $current_group;
+			usort(
+				$groups,
+				function ( $a, $b ) {
+					return strcasecmp( $a->name, $b->name );
+				}
+			);
+		}
+	}
+
 	$html = '';
 
 	if ( ! $r['options_only'] ) {
@@ -953,7 +1024,7 @@ function bp_docs_associated_group_dropdown( $args = array() ) {
 		$html .= '<option value="">' . __( 'None', 'buddypress-docs' ) . '</option>';
 	}
 
-	foreach ( $groups_template->groups as $g ) {
+	foreach ( $groups as $g ) {
 		$html .= sprintf(
 			'<option value="%s" %s>%s</option>',
 			esc_attr( $g->id ),
@@ -989,7 +1060,8 @@ function bp_docs_doc_associated_group_markup() {
 	$old_gt = $groups_template;
 
 	// First, try to set the preselected group by looking at the URL params
-	$selected_group_slug = isset( $_GET['group'] ) ? $_GET['group'] : '';
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	$selected_group_slug = isset( $_GET['group'] ) ? sanitize_text_field( wp_unslash( $_GET['group'] ) ) : '';
 
 	// Support for BP Group Hierarchy
 	if ( false !== $slash = strrpos( $selected_group_slug, '/' ) ) {
@@ -1001,9 +1073,13 @@ function bp_docs_doc_associated_group_markup() {
 		$selected_group = 0;
 	}
 
+	// The group the Doc already belongs to, which must stay selectable.
+	$current_doc      = bp_docs_get_current_doc();
+	$current_group_id = $current_doc ? (int) bp_docs_get_associated_group_id( $current_doc->ID ) : 0;
+
 	// If the selected group is still 0, see if there's something in the db
-	if ( ! $selected_group && is_singular() ) {
-		$selected_group = bp_docs_get_associated_group_id( get_the_ID() );
+	if ( ! $selected_group ) {
+		$selected_group = $current_group_id;
 	}
 
 	// Last check: if this is a second attempt at a newly created Doc,
@@ -1018,8 +1094,8 @@ function bp_docs_doc_associated_group_markup() {
 	?>
 	<tr>
 		<td class="desc-column">
-			<label for="associated_group_id"><?php _e( 'Which group should this Doc be associated with?', 'buddypress-docs' ) ?></label>
-			<span class="description"><?php _e( '(Optional) Note that the Access settings available for this Doc may be limited by the privacy settings of the group you choose.', 'buddypress-docs' ) ?></span>
+			<label for="associated_group_id"><?php esc_html_e( 'Which group should this Doc be associated with?', 'buddypress-docs' ) ?></label>
+			<span class="description"><?php esc_html_e( '(Optional) Note that the Access settings available for this Doc may be limited by the privacy settings of the group you choose.', 'buddypress-docs' ) ?></span>
 		</td>
 
 		<td class="content-column">
@@ -1027,6 +1103,7 @@ function bp_docs_doc_associated_group_markup() {
 				'name' => 'associated_group_id',
 				'id' => 'associated_group_id',
 				'selected' => $selected_group,
+				'current_group_id' => $current_group_id,
 			) ) ?>
 
 			<div id="associated_group_summary">
@@ -1050,8 +1127,9 @@ function bp_docs_associated_group_summary( $group_id = 0 ) {
 	$html = '';
 
 	if ( ! $group_id ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( isset( $_GET['group'] ) ) {
-			$group_slug = $_GET['group'];
+			$group_slug = sanitize_text_field( wp_unslash( $_GET['group'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$group_id   = BP_Groups_Group::get_id_from_slug( $group_slug );
 		} else {
 			$doc_id = is_singular() ? get_the_ID() : 0;
@@ -1074,12 +1152,8 @@ function bp_docs_associated_group_summary( $group_id = 0 ) {
 				'height' => '40',
 			) );
 			$_count = (int) groups_get_groupmeta( $group_id, 'total_member_count' );
-			if ( 1 === $_count ) {
-				// Using sprintf() to avoid creating another string.
-				$group_member_count = sprintf( __( '%s member', 'buddypress-docs', $_count ), number_format_i18n( $_count ) );
-			} else {
-				$group_member_count = sprintf( _n( '%s member', '%s members', $_count, 'buddypress-docs' ), number_format_i18n( $_count ) );
-			}
+			/* translators: %s: number of group members */
+			$group_member_count = sprintf( _n( '%s member', '%s members', $_count, 'buddypress-docs' ), number_format_i18n( $_count ) );
 
 			switch ( $group->status ) {
 				case 'public' :
@@ -1178,6 +1252,15 @@ function bp_docs_access_options_helper( $settings_field, $doc_id = 0, $group_id 
 		$setting = isset( $doc_settings[ $settings_field['name'] ] ) ? $doc_settings[ $settings_field['name'] ] : '';
 	}
 
+	$access_options = bp_docs_get_access_options( $settings_field['name'], $doc_id, $group_id );
+
+	// A value that isn't on offer would leave nothing selected, and the
+	// browser would submit the first option (often 'anyone'). Select the
+	// default instead, as bp_docs_verify_settings() would on save.
+	if ( ! in_array( $setting, wp_list_pluck( $access_options, 'name' ), true ) ) {
+		$setting = '';
+	}
+
 	?>
 	<tr class="bp-docs-access-row bp-docs-access-row-<?php echo esc_attr( $settings_field['name'] ) ?>">
 		<td class="desc-column">
@@ -1186,7 +1269,6 @@ function bp_docs_access_options_helper( $settings_field, $doc_id = 0, $group_id 
 
 		<td class="content-column">
 			<select name="settings[<?php echo esc_attr( $settings_field['name'] ) ?>]" id="settings-<?php echo esc_attr( $settings_field['name'] ) ?>">
-				<?php $access_options = bp_docs_get_access_options( $settings_field['name'], $doc_id, $group_id ) ?>
 				<?php foreach ( $access_options as $key => $option ) : ?>
 					<?php
 					$selected = selected( $setting, $option['name'], false );
@@ -1221,7 +1303,7 @@ function bp_docs_doc_action_links() {
 		$links[] = '<a href="' . esc_url( bp_docs_get_doc_link() . BP_DOCS_HISTORY_SLUG ) . '">' . esc_html__( 'History', 'buddypress-docs' ) . '</a>';
 	}
 
-	if ( current_user_can( 'manage', get_the_ID() ) && bp_docs_is_doc_trashed( get_the_ID() ) ) {
+	if ( current_user_can( 'bp_docs_manage', get_the_ID() ) && bp_docs_is_doc_trashed( get_the_ID() ) ) {
 		$links[] = '<a href="' . esc_url( bp_docs_get_remove_from_trash_link( get_the_ID() ) ) . '" class="delete confirm">' . esc_html__( 'Untrash', 'buddypress-docs' ) . '</a>';
 	}
 
@@ -1657,9 +1739,9 @@ function bp_docs_doc_permissions_snapshot( $args = array() ) {
 			$html .= '<div id="doc-group-summary">';
 
 			$html .= $summary_before_content ;
-			$html .= '<span>' . esc_html( 'Group: ', 'buddypress-docs' ) . '</span>';
+			$html .= '<span>' . esc_html__( 'Group: ', 'buddypress-docs' ) . '</span>';
 
-			$html .= sprintf( __( ' %s', 'buddypress-docs' ), '<a href="' . esc_url( $group_link ) . '">' . bp_core_fetch_avatar( 'item_id=' . $doc_groups[0]->id . '&object=group&type=thumb&width=25&height=25' ) . '</a> ' . '<a href="' . esc_url( $group_link ) . '">' . esc_html( $doc_groups[0]->name ) . '</a>' );
+			$html .= ' <a href="' . esc_url( $group_link ) . '">' . bp_core_fetch_avatar( 'item_id=' . $doc_groups[0]->id . '&object=group&type=thumb&width=25&height=25' ) . '</a> ' . '<a href="' . esc_url( $group_link ) . '">' . esc_html( $doc_groups[0]->name ) . '</a>';
 
 			$html .= $summary_after_content;
 
@@ -1679,7 +1761,9 @@ function bp_docs_doc_permissions_snapshot( $args = array() ) {
 	);
 
 	if ( bp_is_active( 'groups' ) ) {
+		/* translators: %s: group name */
 		$levels['group-members'] = sprintf( __( 'Members of: %s', 'buddypress-docs' ), $group_names );
+		/* translators: %s: group name */
 		$levels['admins-mods'] = sprintf( __( 'Admins and mods of the group %s', 'buddypress-docs' ), $group_names );
 	}
 
@@ -1691,22 +1775,27 @@ function bp_docs_doc_permissions_snapshot( $args = array() ) {
 
 	// Read
 	$read_class = bp_docs_get_permissions_css_class( $settings['read'] );
+	/* translators: %s: who can read the Doc */
 	$read_text  = sprintf( __( 'This Doc can be read by: <strong>%s</strong>', 'buddypress-docs' ), esc_html( $levels[ $settings['read'] ] ) );
 
 	// Edit
 	$edit_class = bp_docs_get_permissions_css_class( $settings['edit'] );
+	/* translators: %s: who can edit the Doc */
 	$edit_text  = sprintf( __( 'This Doc can be edited by: <strong>%s</strong>', 'buddypress-docs' ), esc_html( $levels[ $settings['edit'] ] ) );
 
 	// Read Comments
 	$read_comments_class = bp_docs_get_permissions_css_class( $settings['read_comments'] );
+	/* translators: %s: who can see comments */
 	$read_comments_text  = sprintf( __( 'Comments are visible to: <strong>%s</strong>', 'buddypress-docs' ), esc_html( $levels[ $settings['read_comments'] ] ) );
 
 	// Post Comments
 	$post_comments_class = bp_docs_get_permissions_css_class( $settings['post_comments'] );
+	/* translators: %s: who can post comments */
 	$post_comments_text  = sprintf( __( 'Comments can be posted by: <strong>%s</strong>', 'buddypress-docs' ), esc_html( $levels[ $settings['post_comments'] ] ) );
 
 	// View History
 	$view_history_class = bp_docs_get_permissions_css_class( $settings['view_history'] );
+	/* translators: %s: who can view the Doc's history */
 	$view_history_text  = sprintf( __( 'History can be viewed by: <strong>%s</strong>', 'buddypress-docs' ), esc_html( $levels[ $settings['view_history'] ] ) );
 
 	// Calculate summary
@@ -1760,7 +1849,8 @@ function bp_docs_doc_permissions_snapshot( $args = array() ) {
 
 	$html .= '<div id="doc-permissions-summary" class="doc-' . $summary . '">';
 	$html .= $summary_before_content;
- $html .=   sprintf( __( 'Access: <strong>%s</strong>', 'buddypress-docs' ), esc_html( $summary_label ) );
+	/* translators: %s: access summary, such as Public or Limited */
+	$html .=   sprintf( __( 'Access: <strong>%s</strong>', 'buddypress-docs' ), esc_html( $summary_label ) );
 	$html .=   '<a href="#" class="doc-permissions-toggle" id="doc-permissions-more">' . esc_html__( 'Show Details', 'buddypress-docs' ) . '</a>';
 	$html .= $summary_after_content;
  $html .= '</div>';

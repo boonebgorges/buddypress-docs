@@ -1,0 +1,40 @@
+# Files and directories excluded from the wordpress.org release package.
+# Used by `wp dist-archive`. Patterns follow .gitignore syntax.
+#
+# Note: vendor/ is NOT excluded. loader.php requires vendor/autoload.php for
+# the BuddyPress 12 URL polyfills. Build it with `composer install --no-dev`
+# so dev dependencies (WPCS, etc.) are not shipped.
+
+# Version control
+/.git
+/.gitignore
+/.gitmodules
+/.distignore
+
+# Tests and CI
+/tests
+/phpunit.xml
+/phpunit.xml.dist
+/.travis.yml
+/.github
+
+# Coding standards
+/phpcs.xml
+/phpcs.xml.dist
+
+# Composer (the runtime vendor/ directory ships)
+/composer.json
+/composer.lock
+
+# Node / Grunt / Sass build tooling
+/node_modules
+/Gruntfile.js
+/package.json
+/package-lock.json
+/.sass-cache
+/config.rb
+/config.codekit
+
+# Local and editor files
+.DS_Store
+*.sw*

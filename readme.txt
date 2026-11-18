@@ -2,9 +2,10 @@
 Contributors: boonebgorges, cuny-academic-commons, dcavins
 Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
-Requires at least: 3.3
-Tested up to: 6.9
-Stable tag: 2.2.7
+Requires at least: 5.4
+Tested up to: 7.1
+Stable tag: 2.2.8
+License: GPLv3
 
 Adds collaborative Docs to BuddyPress.
 
@@ -32,6 +33,30 @@ This plugin is in active development. For feature requests and bug reports, visi
 1. Sit back and watch the jack roll in.
 
 == Changelog ==
+
+= 2.2.8 =
+This is a security release. All users are strongly encouraged to update.
+
+Security fixes:
+* Security fix: Prevent users from saving changes to Docs, or to other content on the site, that they do not have permission to edit.
+* Security fix: Ensure that only users who can manage a Doc can change its access settings or move it to a different group, and that saving a Doc never loosens its access settings unintentionally.
+* Security fix: Prevent the content of protected Docs, including revision history, comments, and attachments, from being shown to users who do not have permission to read them.
+* Security fix: Ensure that WordPress's built-in post permissions, as used in the Dashboard and by other WordPress interfaces, respect Docs access settings.
+* Security fix: Add missing permission and nonce checks to edit locks, history restoration, folders, and attachment uploads and deletion.
+* Security fix: Improve escaping and sanitization throughout the plugin to prevent certain cross-site scripting (XSS) attacks. Props to KAIS0ps for reporting an XSS issue via Patchstack.
+
+Other changes:
+* Only users who can moderate the site can now edit, create, or delete Docs and folders, or moderate Doc comments, from the Dashboard or other interfaces than the Docs front-end interface. Previously, users with the Author role could do this for their own Docs. Editing Docs from the front end is unchanged.
+* Group admins can now remove another user's edit lock on a group Doc.
+* Bundled translation files have been removed. Translations are now provided by translate.wordpress.org.
+* WordPress 5.4 or higher is now required.
+
+Developer notes:
+* Docs permission checks against IDs that do not belong to a Doc now return false.
+* Only the six built-in Doc access settings are saved. Custom settings keys added by other plugins are discarded.
+* The folder selection handler now runs on 'bp_docs_after_successful_save' instead of 'bp_docs_after_save'.
+* Doc history now uses the 'bp_docs_history_revision_fields' filter in place of WordPress's private _wp_post_revision_fields().
+* Removed the unused includes/upgrade.php and the 'word-counter' script registration.
 
 = 2.2.7 =
 * Fixed regression in 2.2.5 that resulted in Doc editing permissions being incorrect for certain new Docs.
@@ -609,6 +634,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 * Initial public release
 
 == Upgrade Notice ==
+
+= 2.2.8 =
+Security release, fixing several access-control and data-exposure issues. All users should update immediately.
 
 = 1.2 =
 * Major plugin rewrite. See http://dev.commons.gc.cuny.edu/2012/11/15/buddypress-docs-1-2/ for more details.

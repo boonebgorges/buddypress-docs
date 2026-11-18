@@ -7,6 +7,10 @@
  * @since 1.2
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Return the bp_doc post type name
  *
@@ -156,6 +160,7 @@ function bp_docs_get_item_term_id( $item_id, $item_type, $item_name = '' ) {
 		}
 
 		$item_term_args = apply_filters( 'bp_docs_item_term_values', array(
+			/* translators: 1: item type, such as "group" or "user", 2: item name */
 			'description' => sprintf( _x( 'Docs associated with the %1$s %2$s', 'Description for the associated-item taxonomy term. Of the form "Docs associated with the [item-type] [item-name]" - item-type is group, user, etc', 'buddypress-docs' ), $item_type, $item_name ),
 			'slug'        => $item_term_slug,
 		) );
@@ -192,8 +197,8 @@ function bp_docs_locate_template( $template = '', $load = false, $require_once =
 		return false;
 
 	// Try to load custom templates first
-	$stylesheet_path = STYLESHEETPATH . '/docs/';
-	$template_path   = TEMPLATEPATH . '/docs/';
+	$stylesheet_path = get_stylesheet_directory() . '/docs/';
+	$template_path   = get_template_directory() . '/docs/';
 
 	if ( file_exists( $stylesheet_path . $template ) )
 		$template_path = $stylesheet_path . $template;
@@ -641,12 +646,24 @@ function bp_docs_save_doc_access_settings( $doc_id, $author_id, $settings, $is_n
 	 *    OR the doc is new and should inherit default settings if none are supplied.
 	 */
 	if ( ! empty( $settings ) || $is_new_doc ) {
+		// Only known settings are accepted.
+		$known_settings = array_keys( bp_docs_get_default_access_options( $doc_id ) );
+		$settings       = array_intersect_key( (array) $settings, array_flip( $known_settings ) );
+
 		$verified_settings = bp_docs_verify_settings( $settings, $doc_id, $author_id );
 
-		$new_settings = array();
+		// Start from the Doc's current settings (the defaults, for a new Doc),
+		// so that settings missing from the submission are kept.
+		$new_settings = bp_docs_get_doc_settings( $doc_id );
 		foreach ( $verified_settings as $verified_setting_name => $verified_setting ) {
-			$new_settings[ $verified_setting_name ] = $verified_setting['verified_value'];
-			if ( $verified_setting['verified_value'] != $verified_setting['original_value'] ) {
+			// A value the user can't choose keeps the current setting (the
+			// default, for a new Doc) rather than falling back to the default,
+			// which may be less restrictive.
+			if ( '' !== $verified_setting['verified_value'] && $verified_setting['verified_value'] === $verified_setting['original_value'] ) {
+				$new_settings[ $verified_setting_name ] = $verified_setting['verified_value'];
+			}
+
+			if ( $new_settings[ $verified_setting_name ] != $verified_setting['original_value'] ) {
 				$message = __( 'Your Doc was successfully saved, but some of your access settings have been changed to match the Doc\'s permissions.', 'buddypress-docs' );
 			}
 		}
@@ -692,6 +709,7 @@ function bp_docs_remove_group_related_doc_access_settings( $doc_id ) {
 	$settings = bp_docs_get_doc_settings( $doc_id );
 	$group_settings = array( 'admins-mods','group-members' );
 	$settings_modified = false;
+	$new_settings      = array();
 
 	foreach ( $settings as $capability => $audience ) {
 		if ( in_array( $audience, $group_settings ) ) {
@@ -708,7 +726,7 @@ function bp_docs_remove_group_related_doc_access_settings( $doc_id ) {
 
 	// The 'read' setting must also be saved to a taxonomy, for
 	// easier directory queries. Update if modified.
-	if ( $settings['read'] != $new_settings['read'] ) {
+	if ( isset( $settings['read'] ) && $settings['read'] != $new_settings['read'] ) {
 		bp_docs_update_doc_access( $doc_id, $new_settings['read'] );
 	}
 
@@ -716,7 +734,7 @@ function bp_docs_remove_group_related_doc_access_settings( $doc_id ) {
 	 * The 'read_comments' setting must also be saved to a taxonomy,
 	 * to protect non-public comments. Update if modified.
 	 */
-	if ( $settings['read_comments'] != $new_settings['read_comments'] ) {
+	if ( isset( $settings['read_comments'] ) && $settings['read_comments'] != $new_settings['read_comments'] ) {
 		bp_docs_update_doc_comment_access( $doc_id, $new_settings['read_comments'] );
 	}
 }
@@ -750,14 +768,14 @@ function bp_docs_verify_settings( $settings, $doc_id, $user_id = 0 ) {
 				$verified_settings[ $setting_name ]['verified_value'] = $setting_value;
 			}
 
-			if ( empty( $verified_settings[ $setting_name ]['setting_default'] ) && 1 == $allowed_value['default'] ) {
-				$verified_settings[ $setting_name ]['setting_default'] = 1;
+			if ( empty( $verified_settings[ $setting_name ]['setting_default'] ) && ! empty( $allowed_value['default'] ) ) {
+				$verified_settings[ $setting_name ]['setting_default'] = $allowed_value['name'];
 			}
 		}
 
 		// If no whitelisted value has been found, attempt to fall
 		// back on a default value for that option
-		if ( empty( $verified_settings[ $setting_name ] ) ) {
+		if ( '' === $verified_settings[ $setting_name ]['verified_value'] ) {
 			$verified_settings[ $setting_name ]['verified_value'] = $verified_settings[ $setting_name ]['setting_default'];
 		}
 	}
@@ -998,17 +1016,49 @@ function bp_docs_hide_sitewide_for_doc( $doc_id ) {
 	return apply_filters( 'bp_docs_hide_sitewide_for_doc', $hide_sitewide, $doc_id );
 }
 
+/**
+ * Get the IDs of all Docs that the current user is allowed to read.
+ *
+ * @since 1.4
+ * @since 2.2.8 Results are cached for the duration of the request.
+ *
+ * @return array Doc IDs, as numeric strings.
+ */
 function bp_docs_get_doc_ids_accessible_to_current_user() {
 	global $wpdb;
 
-	// Direct query for speeeeeeed
-	$exclude = bp_docs_access_query()->get_doc_ids();
+	// Built from the per-user list of forbidden Docs, which is cached
+	// against the Docs 'last_changed' incrementor. Core's 'posts' incrementor
+	// additionally covers Docs being created or permanently deleted.
+	$last_changed = wp_cache_get( 'last_changed', 'bp_docs_nonpersistent' );
+	if ( false === $last_changed ) {
+		$last_changed = microtime();
+		wp_cache_set( 'last_changed', $last_changed, 'bp_docs_nonpersistent' );
+	}
+
+	$cache_key = 'bp_docs_accessible_docs_for_user_' . bp_loggedin_user_id() . '_' . $last_changed . '_' . wp_cache_get_last_changed( 'posts' );
+	$cached    = wp_cache_get( $cache_key, 'bp_docs_nonpersistent' );
+	if ( false !== $cached ) {
+		return $cached;
+	}
+
+	$exclude = array_map( 'intval', bp_docs_access_query()->get_doc_ids() );
 	if ( empty( $exclude ) ) {
 		$exclude = array( 0 );
 	}
-	$exclude_sql = '(' . implode( ',', $exclude ) . ')';
-	$items_sql = $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post_type = %s AND ID NOT IN $exclude_sql", bp_docs_get_post_type_name() );
-	return $wpdb->get_col( $items_sql );
+
+	// Direct query for speeeeeeed
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+	$doc_ids = $wpdb->get_col(
+		$wpdb->prepare(
+			"SELECT ID FROM $wpdb->posts WHERE post_type = %s AND ID NOT IN (" . implode( ', ', array_fill( 0, count( $exclude ), '%d' ) ) . ')',
+			array_merge( array( bp_docs_get_post_type_name() ), $exclude )
+		)
+	);
+
+	wp_cache_set( $cache_key, $doc_ids, 'bp_docs_nonpersistent' );
+
+	return $doc_ids;
 }
 
 /**
@@ -1094,8 +1144,15 @@ function bp_docs_get_docs_directory_title() {
  *		  @type string $redirect_url URL to use for redirect after save.
  *		  @type int    $doc_id ID of the updated doc, if applicable.
  *        }
+ *
+ * Callers must verify the request's nonces first. See
+ * BP_Docs_Component::catch_page_load(), which checks 'bp_docs_save' and, for
+ * existing Docs, 'bp_docs_edit_{$doc_id}'.
  */
 function bp_docs_save_doc_via_post() {
+	// Nonces are verified by the caller; see above.
+	// phpcs:disable WordPress.Security.NonceVerification.Missing
+
 	// Defaults for the array of args that the save() method is expecting:
 	$args = array(
 		'doc_id'       => 0,
@@ -1113,7 +1170,7 @@ function bp_docs_save_doc_via_post() {
 	);
 
 	if ( empty( $args['doc_id'] ) && ! empty( $_POST['doc_id'] ) ) {
-		$args['doc_id'] = (int) $_POST['doc_id'];
+		$args['doc_id'] = absint( $_POST['doc_id'] );
 	}
 
 	$retval = [
@@ -1123,48 +1180,87 @@ function bp_docs_save_doc_via_post() {
 		'doc_id'       => null,
 	];
 
-	// Existing Docs have a more specific permission check.
-	if ( $args['doc_id'] && ! current_user_can( 'bp_docs_edit', $args['doc_id'] ) ) {
-		return $retval;
-	} elseif ( ! $args['doc_id'] && ! current_user_can( 'bp_docs_create' ) ) {
+	if ( $args['doc_id'] ) {
+		$doc = get_post( $args['doc_id'] );
+
+		// Only Docs can be saved through this form.
+		if ( ! $doc || bp_docs_get_post_type_name() !== $doc->post_type ) {
+			return $retval;
+		}
+
+		if ( 'auto-draft' === $doc->post_status ) {
+			// A Doc being created (see bp_docs_create_dummy_doc()). Only its
+			// creator may complete it.
+			if ( (int) $doc->post_author !== bp_loggedin_user_id() || ! current_user_can( 'bp_docs_create' ) ) {
+				return $retval;
+			}
+		} elseif ( ! current_user_can( 'bp_docs_edit', $args['doc_id'] ) ) {
+			return $retval;
+		}
+	} elseif ( ! current_user_can( 'bp_docs_create' ) ) {
 		return $retval;
 	}
 
+	/*
+	 * Access settings and the associated group may only be changed by users
+	 * who can manage the Doc. The edit form only shows those fields to them;
+	 * this enforces it for crafted requests. The creator of a new Doc
+	 * manages it.
+	 */
+	$is_existing_doc = $args['doc_id'] && 'auto-draft' !== $doc->post_status;
+	$can_manage      = ! $is_existing_doc || current_user_can( 'bp_docs_manage', $args['doc_id'] );
+
 	if ( isset( $_POST['doc']['title'] ) ) {
-		$args['title'] = $_POST['doc']['title'];
+		// Doc titles are plain text. Strip markup so it can't be smuggled into contexts that render titles as HTML.
+		// Left slashed: BP_Docs_Query::save() passes it to wp_insert_post(), which expects slashed data.
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+		$args['title'] = trim( wp_strip_all_tags( $_POST['doc']['title'] ) );
 	}
 
 	// Using WP editor necessitated the change to $_POST['doc_content'].
 	// Maintain backward compatibility by checking $_POST['doc']['content'] too.
+	// Content is left slashed: sanitize_post_field() runs the 'content_save_pre'
+	// filters (including kses), and wp_insert_post() then unslashes it.
+	// phpcs:disable WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 	if ( isset( $_POST['doc_content'] ) ) {
 		$args['content'] = sanitize_post_field( 'post_content', $_POST['doc_content'], 0, 'db' );
 	} elseif ( isset( $_POST['doc']['content'] ) ) {
 		$args['content'] = sanitize_post_field( 'post_content', $_POST['doc']['content'], 0, 'db' );
 	}
+	// phpcs:enable WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
-	$args['permalink'] = isset( $_POST['doc']['permalink'] ) ? sanitize_title( $_POST['doc']['permalink'] ) : sanitize_title( $args['title'] );
+	$args['permalink'] = isset( $_POST['doc']['permalink'] ) ? sanitize_title( wp_unslash( $_POST['doc']['permalink'] ) ) : sanitize_title( $args['title'] );
 
 	$args['author_id'] = bp_loggedin_user_id();
 
-	if ( isset( $_POST['associated_group_id'] ) ) {
+	if ( $can_manage && isset( $_POST['associated_group_id'] ) ) {
 		$args['group_id'] = absint( $_POST['associated_group_id'] );
 	}
 
 	if ( ! empty( $_POST['is_auto'] ) ) {
-		$args['is_auto'] = $_POST['is_auto'];
+		$args['is_auto'] = 1;
 	}
 
 	// Calculate terms only if taxonomy addon is active.
 	$args['taxonomies'] = apply_filters( 'bp_docs_prepare_terms_via_post', $args['taxonomies'] );
 
-	if ( ! empty( $_POST['settings'] ) ) {
-		$args['settings'] = $_POST['settings'];
+	// Values are checked against the allowed access levels in bp_docs_verify_settings().
+	if ( $can_manage && ! empty( $_POST['settings'] ) && is_array( $_POST['settings'] ) ) {
+		$posted_settings = map_deep( wp_unslash( $_POST['settings'] ), 'sanitize_key' );
+		foreach ( $posted_settings as $setting_name => $setting_value ) {
+			if ( is_string( $setting_value ) ) {
+				$args['settings'][ sanitize_key( $setting_name ) ] = $setting_value;
+			}
+		}
 	}
 
 	// Calculate parent_id only if hierarchy addon is active.
-	$args['parent_id'] = apply_filters( 'bp_docs_get_parent_id_via_post', $args['parent_id'] );
+	$posted_parent_id  = isset( $_POST['parent_id'] ) ? absint( $_POST['parent_id'] ) : 0;
+	$args['parent_id'] = apply_filters( 'bp_docs_get_parent_id_via_post', $args['parent_id'], $posted_parent_id );
 
 	$args['redirect_to'] = isset( $_POST['doc-edit-submit-continue'] ) ? 'edit' : 'single';
+
+	// phpcs:enable WordPress.Security.NonceVerification.Missing
 
 	$instance = new BP_Docs_Query;
 	return $instance->save( $args );
@@ -1185,7 +1281,7 @@ function bp_docs_set_last_docs_directory_cookie() {
 	$url = home_url( $wp->request );
 
 	if ( isset( $_COOKIE['bp-docs-last-docs-directory'] ) ) {
-		$existing = urldecode( $_COOKIE['bp-docs-last-docs-directory'] );
+		$existing = urldecode( esc_url_raw( wp_unslash( $_COOKIE['bp-docs-last-docs-directory'] ) ) );
 		if ( $existing === $url ) {
 			return;
 		}
@@ -1200,26 +1296,49 @@ function bp_docs_set_last_docs_directory_cookie() {
  * @since 2.1.0
  */
 function bp_docs_force_unique_slugs( $slug, $post_ID, $post_status, $post_type, $post_parent, $original_slug ) {
-	global $wpdb;
-
 	if ( bp_docs_get_post_type_name() !== $post_type ) {
 		return $slug;
 	}
 
-	$check_sql = "SELECT post_name FROM $wpdb->posts WHERE post_name = %s AND post_type = %s AND ID != %d LIMIT 1";
-	$post_name_check = $wpdb->get_var( $wpdb->prepare( $check_sql, $slug, bp_docs_get_post_type_name(), $post_ID ) );
-
-	if ( ! $post_name_check ) {
+	if ( ! bp_docs_slug_is_taken( $slug, $post_ID ) ) {
 		return $slug;
 	}
 
 	$suffix = 2;
 	do {
 		$alt_post_name = _truncate_post_slug( $original_slug, 200 - ( strlen( $suffix ) + 1 ) ) . "-$suffix";
-		$post_name_check = $wpdb->get_var( $wpdb->prepare( $check_sql, $alt_post_name, $post_type, $post_ID ) );
 		$suffix++;
-	} while ( $post_name_check );
+	} while ( bp_docs_slug_is_taken( $alt_post_name, $post_ID ) );
 
 	return $alt_post_name;
 }
 add_filter( 'wp_unique_post_slug', 'bp_docs_force_unique_slugs', 10, 6 );
+
+/**
+ * Check whether a slug is used by any Doc other than the given one, in any hierarchy.
+ *
+ * @since 2.2.8
+ *
+ * @param string $slug    Slug to check.
+ * @param int    $post_ID ID of the Doc being saved, which is excluded from the check.
+ * @return bool
+ */
+function bp_docs_slug_is_taken( $slug, $post_ID ) {
+	global $wpdb;
+
+	// A direct, uncached query, as in core's wp_unique_post_slug(): this must
+	// reflect the current state of the database and must see every Doc. WP_Query
+	// skips trashed, auto-draft and pending Docs even with post_status 'any', and
+	// Doc queries are subject to Docs' per-user access protection.
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+	$found = $wpdb->get_var(
+		$wpdb->prepare(
+			"SELECT post_name FROM $wpdb->posts WHERE post_name = %s AND post_type = %s AND ID != %d LIMIT 1",
+			$slug,
+			bp_docs_get_post_type_name(),
+			$post_ID
+		)
+	);
+
+	return (bool) $found;
+}

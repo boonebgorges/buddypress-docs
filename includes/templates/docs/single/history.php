@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 $bp_docs_do_theme_compat = is_buddypress() && bp_docs_do_theme_compat( 'single/history.php' );
 if ( ! $bp_docs_do_theme_compat ) : ?>
 <div id="buddypress" class="<?php bp_docs_buddypress_container_class(); ?>">
@@ -12,9 +15,9 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 
 	<?php if ( bp_docs_history_is_latest() ) : ?>
 
-		<p><?php _e( "Click on a revision date from the list below to view that revision.", 'buddypress-docs' ) ?></p>
+		<p><?php esc_html_e( "Click on a revision date from the list below to view that revision.", 'buddypress-docs' ) ?></p>
 
-		<p><?php _e( "Alternatively, you can compare two revisions by selecting them in the 'Old' and 'New' columns, and clicking 'Compare Revisions'.", 'buddypress-docs' ) ?></p>
+		<p><?php esc_html_e( "Alternatively, you can compare two revisions by selecting them in the 'Old' and 'New' columns, and clicking 'Compare Revisions'.", 'buddypress-docs' ) ?></p>
 
 	<?php endif ?>
 
@@ -25,23 +28,40 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 			<tr id="revision">
 				<th scope="row"></th>
 				<th scope="col" class="th-full">
-					<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-					<span class="alignleft"><?php printf( __( 'Older: %s', 'buddypress-docs' ), bp_docs_history_post_revision_field( 'left', 'post_title' ) ); ?></span>
-					<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-					<span class="alignright"><?php printf( __( 'Newer: %s', 'buddypress-docs' ), bp_docs_history_post_revision_field( 'right', 'post_title' ) ); ?></span>
+					<span class="alignleft">
+						<?php
+						/* translators: %s: title of the older revision */
+						printf( esc_html__( 'Older: %s', 'buddypress-docs' ), esc_html( bp_docs_history_post_revision_field( 'left', 'post_title' ) ) );
+						?>
+					</span>
+					<span class="alignright">
+						<?php
+						/* translators: %s: title of the newer revision */
+						printf( esc_html__( 'Newer: %s', 'buddypress-docs' ), esc_html( bp_docs_history_post_revision_field( 'right', 'post_title' ) ) );
+						?>
+					</span>
 				</th>
 			</tr>
 		<?php elseif ( !bp_docs_history_is_latest() ) : ?>
 			<tr id="revision">
 				<th scope="row"></th>
 				<th scope="col" class="th-full">
-					<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-					<span class="alignleft"><?php printf( __( 'You are currently viewing a revision titled "%1$s", saved on %2$s by %3$s', 'buddypress-docs' ), bp_docs_history_post_revision_field( false, 'post_title' ), esc_html( bp_format_time( strtotime( bp_docs_history_post_revision_field( false, 'post_date' ) ) ) ), bp_core_get_userlink( bp_docs_history_post_revision_field( false, 'post_author' ) ) ); ?></span>
+					<span class="alignleft">
+						<?php
+						printf(
+							/* translators: 1: revision title, 2: date the revision was saved, 3: link to the profile of the user who saved it */
+							esc_html__( 'You are currently viewing a revision titled "%1$s", saved on %2$s by %3$s', 'buddypress-docs' ),
+							esc_html( bp_docs_history_post_revision_field( false, 'post_title' ) ),
+							esc_html( bp_format_time( strtotime( bp_docs_history_post_revision_field( false, 'post_date' ) ) ) ),
+							wp_kses_post( bp_core_get_userlink( bp_docs_history_post_revision_field( false, 'post_author' ) ) )
+						);
+						?>
+					</span>
 				</th>
 			</tr>
 		<?php endif ?>
 
-		<?php foreach ( _wp_post_revision_fields() as $field => $field_title ) : ?>
+		<?php foreach ( bp_docs_history_get_revision_fields() as $field => $field_title ) : ?>
 			<?php if ( 'diff' == bp_docs_history_action() ) : ?>
 				<tr id="revision-field-<?php echo esc_attr( $field ); ?>">
 					<th scope="row"><?php echo esc_html( $field_title ); ?></th>
@@ -62,7 +82,7 @@ if ( ! $bp_docs_do_theme_compat ) : ?>
 		<?php do_action( 'bp_docs_revisions_comparisons' ) ?>
 
 		<?php if ( 'diff' == bp_docs_history_action() && bp_docs_history_revisions_are_identical() ) : ?>
-			<tr><td colspan="2"><div class="updated"><p><?php _e( 'These revisions are identical.', 'buddypress-docs' ); ?></p></div></td></tr>
+			<tr><td colspan="2"><div class="updated"><p><?php esc_html_e( 'These revisions are identical.', 'buddypress-docs' ); ?></p></div></td></tr>
 		<?php endif ?>
 
 	</table>

@@ -6,6 +6,11 @@
  * @since 1.7
  */
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Post an activity item when a comment is posted to a doc.
  *
@@ -61,8 +66,9 @@ function bp_docs_post_comment_activity( $comment_id ) {
 	$user_link    = bp_core_get_userlink( $commenter_id );
 	$doc_url      = bp_docs_get_doc_link( $doc_id );
 	$comment_url  = $doc_url . '#comment-' . $comment->comment_ID;
-	$comment_link = '<a href="' . $comment_url . '">' . $doc->post_title . '</a>';
+	$comment_link = '<a href="' . esc_url( $comment_url ) . '">' . esc_html( $doc->post_title ) . '</a>';
 
+	/* translators: 1: user link, 2: comment link */
 	$action = sprintf( __( '%1$s commented on the doc %2$s', 'buddypress-docs' ), $user_link, $comment_link );
 
 	$action	= apply_filters( 'bp_docs_comment_activity_action', $action, $user_link, $comment_link, $component, $item );
@@ -182,11 +188,13 @@ function bp_docs_post_activity( $query ) {
 	$action 	= '';
 	$user_link 	= bp_core_get_userlink( $last_editor );
 	$doc_url	= bp_docs_get_doc_link( $doc_id );
-	$doc_link	= '<a href="' . $doc_url . '">' . $doc->post_title . '</a>';
+	$doc_link	= '<a href="' . esc_url( $doc_url ) . '">' . esc_html( $doc->post_title ) . '</a>';
 
 	if ( $query->is_new_doc ) {
+		/* translators: 1: user link, 2: doc link */
 		$action = sprintf( __( '%1$s created the doc %2$s', 'buddypress-docs' ), $user_link, $doc_link );
 	} else {
+		/* translators: 1: user link, 2: doc link */
 		$action = sprintf( __( '%1$s edited the doc %2$s', 'buddypress-docs' ), $user_link, $doc_link );
 	}
 
@@ -330,8 +338,9 @@ function bp_docs_format_activity_action_bp_doc_created( $action, $activity ) {
 	$user_link = bp_core_get_userlink( $activity->user_id );
 
 	$doc_url = bp_docs_get_doc_link( $activity->secondary_item_id );
-	$doc_link = sprintf( '<a href="%s">%s</a>', $doc_url, $doc->post_title );
+	$doc_link = sprintf( '<a href="%s">%s</a>', esc_url( $doc_url ), esc_html( $doc->post_title ) );
 
+	/* translators: 1: user link, 2: doc link */
 	$action = sprintf( __( '%1$s created the doc %2$s', 'buddypress-docs' ), $user_link, $doc_link );
 
 	return $action;
@@ -359,8 +368,9 @@ function bp_docs_format_activity_action_bp_doc_edited( $action, $activity ) {
 	$user_link = bp_core_get_userlink( $activity->user_id );
 
 	$doc_url = bp_docs_get_doc_link( $activity->secondary_item_id );
-	$doc_link = sprintf( '<a href="%s">%s</a>', $doc_url, $doc->post_title );
+	$doc_link = sprintf( '<a href="%s">%s</a>', esc_url( $doc_url ), esc_html( $doc->post_title ) );
 
+	/* translators: 1: user link, 2: doc link */
 	$action = sprintf( __( '%1$s edited the doc %2$s', 'buddypress-docs' ), $user_link, $doc_link );
 
 	return $action;
@@ -390,8 +400,9 @@ function bp_docs_format_activity_action_bp_doc_comment( $action, $activity ) {
 
 	$doc_url = bp_docs_get_doc_link( $doc->ID );
 	$comment_url = $doc_url . '#comment-' . $comment->comment_ID;
-	$doc_link = sprintf( '<a href="%s">%s</a>', $comment_url, $doc->post_title );
+	$doc_link = sprintf( '<a href="%s">%s</a>', esc_url( $comment_url ), esc_html( $doc->post_title ) );
 
+	/* translators: 1: user link, 2: comment link */
 	$action = sprintf( __( '%1$s commented on the doc %2$s', 'buddypress-docs' ), $user_link, $doc_link );
 
 	return $action;
@@ -427,14 +438,22 @@ function bp_docs_prefetch_activity_object_data( $activities ) {
 		}
 	}
 
-	// We've got to get the comments. Don't know of an easy way to do this
-	// using the WP API
+	// Fetch the comments, which primes the comment cache used when building
+	// action strings, and collect the IDs of the Docs they belong to.
 	if ( ! empty( $doc_comment_ids ) ) {
-		global $wpdb;
-		$doc_comment_ids_sql = implode( ',', wp_parse_id_list( $doc_comment_ids ) );
-		$comment_post_ids = $wpdb->get_col( "SELECT comment_post_ID FROM {$wpdb->comments} WHERE comment_ID IN ({$doc_comment_ids_sql})" );
-		$doc_ids = array_unique( array_merge( $doc_ids, $comment_post_ids ) );
+		$doc_comments = get_comments(
+			array(
+				'comment__in'               => wp_parse_id_list( $doc_comment_ids ),
+				'status'                    => 'any',
+				'orderby'                   => 'none',
+				'update_comment_meta_cache' => false,
+			)
+		);
+
+		$doc_ids = array_merge( $doc_ids, wp_list_pluck( $doc_comments, 'comment_post_ID' ) );
 	}
+
+	$doc_ids = wp_parse_id_list( $doc_ids );
 
 	if ( ! empty( $doc_ids ) ) {
 		// prime post caches
@@ -442,6 +461,8 @@ function bp_docs_prefetch_activity_object_data( $activities ) {
 		// weren't caching correctly. @todo fix this
 		_prime_post_caches( $doc_ids, false, false );
 	}
+
+	return $activities;
 }
 add_filter( 'bp_activity_prefetch_object_data', 'bp_docs_prefetch_activity_object_data' );
 
@@ -457,9 +478,9 @@ function bp_docs_activity_filter_options() {
 
 	?>
 
-	<option value="bp_doc_created"><?php _e( 'New Docs', 'buddypress-docs' ); ?></option>
-	<option value="bp_doc_edited"><?php _e( 'Doc Edits', 'buddypress-docs' ); ?></option>
-	<option value="bp_doc_comment"><?php _e( 'Doc Comments', 'buddypress-docs' ); ?></option>
+	<option value="bp_doc_created"><?php esc_html_e( 'New Docs', 'buddypress-docs' ); ?></option>
+	<option value="bp_doc_edited"><?php esc_html_e( 'Doc Edits', 'buddypress-docs' ); ?></option>
+	<option value="bp_doc_comment"><?php esc_html_e( 'Doc Comments', 'buddypress-docs' ); ?></option>
 
 	<?php
 }
@@ -488,42 +509,36 @@ add_action( 'bp_screens', 'bp_docs_load_activity_filter_options', 1 );
  *
  * @since 2.0
  * @since 2.1.2 Avoids filtering when activity scope doesn't include Docs-related items.
+ * @since 2.2.8 Decides from the query's 'filter' arguments. Group activity
+ *              streams (component 'groups') are now protected.
  *
- * @param $where_conditions
+ * @param array $where_conditions WHERE conditions of the activity query.
+ * @param array $r                Parsed arguments of the activity query.
+ * @return array
  */
 function bp_docs_access_protection_for_activity_feed( $where_conditions, $r ) {
-	$is_docs_query = true;
-
 	/*
-	 * Err on the side of caution: it's a Docs query if the string appears anywhere,
-	 * or if component + type are empty - ie, no restrictions on query.
+	 * Skip only when the query's filter rules out Docs activity: a type filter
+	 * with no Docs types, or a component filter with neither 'bp_docs' nor
+	 * 'groups' (group Docs activity is recorded under 'groups'). In every
+	 * other case, apply the protection. It is harmless when no Docs items
+	 * match.
 	 */
-	$contains_docs = false;
-	$has_type      = false;
-	$has_component = false;
+	$filter = ( isset( $r['filter'] ) && is_array( $r['filter'] ) ) ? $r['filter'] : array();
 
-	$exclude_clauses = array( 'excluded_types', 'spam_sql', 'hidden_sql' );
-
-	foreach ( $where_conditions as $condition_type => $condition ) {
-		if ( in_array( $condition_type, $exclude_clauses, true ) ) {
-			continue;
-		}
-
-		if ( false !== strpos( $condition, 'bp_doc' ) ) {
-			$contains_docs = true;
-		}
-
-		if ( false !== strpos( $condition, 'component' ) ) {
-			$has_component = true;
-		}
-
-		if ( false !== strpos( $condition, 'type' ) ) {
-			$has_type = true;
+	if ( ! empty( $filter['action'] ) ) {
+		$types      = is_array( $filter['action'] ) ? $filter['action'] : explode( ',', $filter['action'] );
+		$docs_types = array( 'bp_doc_created', 'bp_doc_edited', 'bp_doc_comment' );
+		if ( ! array_intersect( array_map( 'trim', $types ), $docs_types ) ) {
+			return $where_conditions;
 		}
 	}
 
-	if ( ! $contains_docs && ( $has_type || $has_component ) ) {
-		return $where_conditions;
+	if ( ! empty( $filter['object'] ) ) {
+		$components = is_array( $filter['object'] ) ? $filter['object'] : explode( ',', $filter['object'] );
+		if ( ! array_intersect( array_map( 'trim', $components ), array( 'bp_docs', 'groups' ) ) ) {
+			return $where_conditions;
+		}
 	}
 
 	$bp_docs_access_query  = bp_docs_access_query();
