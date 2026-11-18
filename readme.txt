@@ -4,7 +4,7 @@ Donate link: http://teleogistic.net/donate
 Tags: buddypress, docs, wiki, documents, collaboration
 Requires at least: 5.4
 Tested up to: 7.1
-Stable tag: 2.2.7
+Stable tag: 2.2.8
 License: GPLv3
 
 Adds collaborative Docs to BuddyPress.
